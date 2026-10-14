@@ -1,10 +1,36 @@
 "use client";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { track } from "@/lib/analytics";
 
 export default function ApplicationPage(){
  const [sent,setSent]=useState(false);
- async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault(); await track("operator_application_submitted"); setSent(true);}
+ const [error,setError]=useState("");
+ const [sending,setSending]=useState(false);
+
+ async function submit(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();
+  setError("");
+  setSending(true);
+  const form = new FormData(e.currentTarget);
+  const payload = Object.fromEntries(form.entries());
+
+  try {
+    const response = await fetch("/api/operator-applications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error("submit_failed");
+    await track("operator_application_submitted");
+    setSent(true);
+  } catch {
+    setError("Non è stato possibile inviare la candidatura. Riprova tra poco.");
+  } finally {
+    setSending(false);
+  }
+ }
+
  return <><section className="page-hero"><div className="kicker">Per gli operatori</div><h1>Presenta la tua realtà</h1><p>BIMARIS sta costruendo una selezione di operatori, produttori ed esperienze capaci di rappresentare Messina con qualità, autenticità e forte legame con il territorio.</p></section><section className="section">
  {sent ? <div className="detail-panel"><h3>Candidatura ricevuta</h3><p>Grazie per averci presentato la tua realtà. La candidatura sarà valutata in base alla coerenza con il progetto BIMARIS e con i criteri di qualità, autenticità e valore territoriale. L'invio non comporta l'inserimento automatico nella selezione.</p></div> :
  <form className="form" onSubmit={submit} onFocus={()=>track("operator_application_started")}>
@@ -12,7 +38,9 @@ export default function ApplicationPage(){
   <label>Email<input required type="email" name="email" /></label><label>Telefono<input name="phone" /></label>
   <label>Categoria<select name="category"><option>Esperienze</option><option>Mare</option><option>Natura</option><option>Gastronomia</option><option>Cultura</option><option>Artigianato</option></select></label><label>Località<input required name="location" /></label>
   <label className="wide">Sito o social<input name="website" /></label><label className="wide">Raccontaci cosa proponi<textarea required name="description" /></label>
-  <div className="wide"><button className="button" type="submit">Invia candidatura</button></div>
+  <label className="wide"><span><input required type="checkbox" name="privacy_consent" value="yes" /> Ho letto l'<Link href="/privacy">informativa privacy</Link> e acconsento al trattamento dei dati necessari alla valutazione della candidatura.</span></label>
+  {error && <div className="wide detail-panel"><p>{error}</p></div>}
+  <div className="wide"><button className="button" type="submit" disabled={sending}>{sending ? "Invio in corso..." : "Invia candidatura"}</button></div>
  </form>}
  </section></>;
 }
