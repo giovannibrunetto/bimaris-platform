@@ -14,6 +14,8 @@ type ItineraryRow = {
   duration_minutes: number | null;
   target: string | null;
   territory: string | null;
+  image_url: string | null;
+  image_alt: string | null;
   published: boolean;
   featured: boolean;
   stops: Array<{
@@ -38,6 +40,9 @@ function stateMessage(state?: string) {
     unfeatured: "Itinerario rimosso dalle proposte in evidenza.",
     "stop-added": "Tappa aggiunta.",
     "stop-deleted": "Tappa rimossa.",
+    "cover-uploaded": "Copertina aggiornata.",
+    "cover-too-large": "La copertina supera il limite di 4 MB.",
+    "invalid-cover": "Formato copertina non valido. Usa PNG, JPG o WEBP.",
     "no-stops": "Aggiungi almeno una tappa prima di pubblicare l'itinerario.",
     "invalid-data": "Controlla i campi obbligatori.",
     "action-error": "Operazione non riuscita. Controlla i dati e riprova.",
@@ -56,7 +61,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
   if (!supabase) throw new Error("Supabase service client non configurato");
 
   const [{ data: itinerariesData }, { data: culturesData }, { data: storiesData }, { data: experiencesData }, { data: operatorsData }] = await Promise.all([
-    supabase.from("itineraries").select("id,slug,title,excerpt,duration_minutes,target,territory,published,featured,stops:itinerary_stops(id,position,custom_title,experience:experiences(name),culture:culture_entries(title),story:stories(title),operator:operators(name))").order("created_at", { ascending: false }),
+    supabase.from("itineraries").select("id,slug,title,excerpt,duration_minutes,target,territory,image_url,image_alt,published,featured,stops:itinerary_stops(id,position,custom_title,experience:experiences(name),culture:culture_entries(title),story:stories(title),operator:operators(name))").order("created_at", { ascending: false }),
     supabase.from("culture_entries").select("id,slug,title").eq("published", true).order("title"),
     supabase.from("stories").select("id,slug,title").eq("published", true).order("title"),
     supabase.from("experiences").select("id,slug,name").eq("published", true).order("name"),
@@ -141,7 +146,34 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                   </div>
                 </div>
 
-                <div style={{ marginTop: 22 }}>
+                <div style={{ marginTop: 22, paddingTop: 20, borderTop: "1px solid var(--line)" }}>
+                  <strong>Copertina</strong>
+                  <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 280px) minmax(0, 1fr)", gap: 18, alignItems: "start", marginTop: 12 }}>
+                    <div>
+                      {itinerary.image_url ? (
+                        <img src={itinerary.image_url} alt={itinerary.image_alt ?? `Copertina ${itinerary.title}`} style={{ width: "100%", aspectRatio: "16 / 9", objectFit: "cover", borderRadius: 14, border: "1px solid var(--line)" }} />
+                      ) : (
+                        <div style={{ aspectRatio: "16 / 9", display: "grid", placeItems: "center", borderRadius: 14, border: "1px dashed var(--line)", color: "var(--muted)", background: "#f7f7f5" }}>Nessuna copertina</div>
+                      )}
+                    </div>
+                    <form className="form" method="post" action="/api/admin/itineraries" encType="multipart/form-data" style={{ maxWidth: 620 }}>
+                      <input type="hidden" name="action" value="upload_cover" />
+                      <input type="hidden" name="itinerary_id" value={itinerary.id} />
+                      <label className="wide">Carica copertina
+                        <input required type="file" name="cover" accept="image/png,image/jpeg,image/webp" />
+                      </label>
+                      <label className="wide">Testo alternativo
+                        <input name="image_alt" defaultValue={itinerary.image_alt ?? `Illustrazione di copertina per ${itinerary.title}`} maxLength={300} />
+                      </label>
+                      <div className="wide">
+                        <div className="muted" style={{ fontSize: 12, marginBottom: 10 }}>PNG, JPG o WEBP · massimo 4 MB · formato consigliato 16:9.</div>
+                        <button className="button" type="submit">Carica copertina</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 22, paddingTop: 20, borderTop: "1px solid var(--line)" }}>
                   <strong>Tappe</strong>
                   {stops.length > 0 ? (
                     <ol style={{ paddingLeft: 22, marginBottom: 20 }}>
