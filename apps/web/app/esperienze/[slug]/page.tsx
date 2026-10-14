@@ -1,16 +1,13 @@
-"use client";
+import { notFound } from "next/navigation";
+import { ExperienceDetailActions } from "@/components/ExperienceDetailActions";
+import { getPublishedExperienceBySlug } from "@/data/live";
 
-import { notFound, useParams } from "next/navigation";
-import { experiences } from "@/data/mock";
-import { track } from "@/lib/analytics";
-import { useEffect } from "react";
+export const revalidate = 300;
 
-export default function ExperienceDetailPage() {
-  const params = useParams<{ slug: string }>();
-  const experience = experiences.find(e => e.slug === params.slug);
-  useEffect(() => {
-    if (experience) track("experience_view", { experience_id: experience.id, experience_name: experience.name, territory: experience.territory, category: experience.category });
-  }, [experience]);
+export default async function ExperienceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const experience = await getPublishedExperienceBySlug(slug);
+
   if (!experience) notFound();
 
   return <>
@@ -25,11 +22,11 @@ export default function ExperienceDetailPage() {
         <h3>Informazioni</h3>
         <ul className="list">
           <li><strong>Operatore</strong><br />{experience.operatorName}</li>
-          <li><strong>Durata</strong><br />{experience.duration}</li>
-          <li><strong>Prezzo indicativo</strong><br />Da € {experience.priceFrom}</li>
-          <li><strong>Territorio</strong><br />{experience.territory}</li>
+          {experience.duration && <li><strong>Durata</strong><br />{experience.duration}</li>}
+          {experience.priceFrom != null && <li><strong>Prezzo indicativo</strong><br />Da € {experience.priceFrom}</li>}
+          <li><strong>Territorio</strong><br />{experience.location}</li>
         </ul>
-        <button className="button" onClick={() => track("whatsapp_click", { experience_id: experience.id, operator: experience.operatorName })}>Contatta su WhatsApp</button>
+        <ExperienceDetailActions experience={experience} />
       </aside>
     </section>
   </>;
