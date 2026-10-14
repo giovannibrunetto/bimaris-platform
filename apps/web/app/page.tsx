@@ -10,7 +10,6 @@ const categories = [
   { label: "Natura", href: "/esperienze" },
   { label: "Cultura", href: "/cultura" },
   { label: "Shopping e artigianato", href: "/esperienze" },
-  { label: "Famiglia", href: "/esperienze" },
   { label: "Vicino a te", href: "/mappa" },
 ];
 
