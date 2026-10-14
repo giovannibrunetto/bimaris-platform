@@ -23,7 +23,7 @@ export function Header() {
         <Link href="/mappa">Mappa</Link>
         <Link href="/itinerari">Itinerari</Link>
         <Link href="/eventi">Eventi</Link>
-        <Link href="/operatori/candidatura">Operatori</Link>
+        <Link href="/operatori">Operatori</Link>
       </nav>
 
       <details className="mobile-menu" ref={mobileMenuRef}>
@@ -34,7 +34,7 @@ export function Header() {
           <Link href="/storie-miti-leggende" onClick={closeMobileMenu}>Miti e leggende</Link>
           <Link href="/mappa" onClick={closeMobileMenu}>Mappa</Link>
           <Link href="/eventi" onClick={closeMobileMenu}>Eventi</Link>
-          <Link href="/operatori/candidatura" onClick={closeMobileMenu}>Operatori</Link>
+          <Link href="/operatori" onClick={closeMobileMenu}>Operatori</Link>
           <Link href="/contatti" onClick={closeMobileMenu}>Contatti</Link>
         </nav>
       </details>
