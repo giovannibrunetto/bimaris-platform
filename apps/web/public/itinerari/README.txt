@@ -1,1 +1,1 @@
-Itinerary cover assets.
+placeholder
