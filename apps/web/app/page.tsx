@@ -18,7 +18,7 @@ export default async function Home() {
       <section className="brand-hero">
         <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
         <div className="brand-hero-visual">
-          <img src="/bimaris-main.jpeg" alt="BIMARIS — Messina da Vivere" />
+          <img src="/brand/bimaris-main.jpeg" alt="BIMARIS — Messina da Vivere" />
         </div>
         <div className="brand-hero-copy">
           <div className="kicker">Tra due mari. Un territorio da vivere.</div>
