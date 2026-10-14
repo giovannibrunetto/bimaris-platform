@@ -9,10 +9,11 @@ export function Footer() {
       <div className="footer-links">
         <Link href="/esperienze">Esperienze</Link>
         <Link href="/mappa">Mappa</Link>
-        <Link href="/operatori/candidatura">Candidati</Link>
-        <Link href="/admin/analytics">Analytics demo</Link>
+        <Link href="/itinerari">Itinerari</Link>
+        <Link href="/eventi">Eventi</Link>
+        <Link href="/operatori/candidatura">Operatori</Link>
       </div>
-      <p className="muted">© 2026 BIMARIS. MVP tecnico.</p>
+      <p className="muted">© 2026 BIMARIS — Messina da Vivere.</p>
     </footer>
   );
 }
