@@ -38,9 +38,16 @@ export default async function ItineraryDetailPage({ params }: { params: Promise<
   const itinerary = await getPublishedItineraryBySlug(slug);
   if (!itinerary) notFound();
 
-  const mappableStops = itinerary.stops
-    .map(stop => stop.googleMapsQuery)
-    .filter((value): value is string => Boolean(value));
+  const mappableStops = itinerary.stops.reduce<string[]>((queries, stop) => {
+    const query = stop.googleMapsQuery?.trim();
+    if (!query) return queries;
+
+    const previous = queries[queries.length - 1];
+    if (!previous || previous.toLocaleLowerCase("it-IT") !== query.toLocaleLowerCase("it-IT")) {
+      queries.push(query);
+    }
+    return queries;
+  }, []);
   const fullRoute = routeUrl(mappableStops);
 
   return (
