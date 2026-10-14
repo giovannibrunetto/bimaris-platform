@@ -8,7 +8,7 @@ const categories = [
   { label: "Esperienze", href: "/esperienze" },
   { label: "Mare", href: "/esperienze" },
   { label: "Natura", href: "/esperienze" },
-  { label: "Cultura", href: "/esperienze" },
+  { label: "Cultura", href: "/cultura" },
   { label: "Shopping e artigianato", href: "/esperienze" },
   { label: "Famiglia", href: "/esperienze" },
   { label: "Vicino a te", href: "/mappa" },
