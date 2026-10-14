@@ -12,6 +12,10 @@ export function Footer() {
         <Link href="/itinerari">Itinerari</Link>
         <Link href="/eventi">Eventi</Link>
         <Link href="/operatori/candidatura">Operatori</Link>
+        <Link href="/contatti">Contatti</Link>
+        <Link href="/privacy">Privacy</Link>
+        <Link href="/cookie">Cookie</Link>
+        <Link href="/note-legali">Note legali</Link>
       </div>
       <p className="muted">© 2026 BIMARIS — Messina da Vivere.</p>
     </footer>
