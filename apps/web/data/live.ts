@@ -1,4 +1,4 @@
-import type { CategorySlug, Experience, TerritorySlug } from "@/lib/types";
+import type { CategorySlug, CultureEntry, Experience, TerritorySlug } from "@/lib/types";
 import { createPublicClient } from "@/lib/supabase/public";
 import { territories as mockTerritories } from "@/data/mock";
 
@@ -20,6 +20,25 @@ type RawTerritory = {
   slug: string;
   name: string;
   description: string | null;
+};
+
+type RawCultureEntry = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  body: string | null;
+  category: string | null;
+  source_label: string | null;
+  source_url: string | null;
+  featured: boolean | null;
+  place: {
+    name: string;
+    address: string | null;
+    google_maps_query: string | null;
+    latitude: number | string | null;
+    longitude: number | string | null;
+  } | null;
 };
 
 function formatDuration(minutes: number | null) {
@@ -69,6 +88,30 @@ function mapExperience(row: RawExperience): Experience | null {
   };
 }
 
+function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
+  if (!row.place) return null;
+
+  const latitude = row.place.latitude == null ? undefined : Number(row.place.latitude);
+  const longitude = row.place.longitude == null ? undefined : Number(row.place.longitude);
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt ?? "Luogo culturale di Messina selezionato da BIMARIS.",
+    body: row.body ?? row.excerpt ?? "Luogo culturale di Messina selezionato da BIMARIS.",
+    category: row.category ?? "Cultura",
+    placeName: row.place.name,
+    address: row.place.address ?? undefined,
+    googleMapsQuery: row.place.google_maps_query ?? row.place.name,
+    latitude: Number.isFinite(latitude) ? latitude : undefined,
+    longitude: Number.isFinite(longitude) ? longitude : undefined,
+    sourceLabel: row.source_label ?? undefined,
+    sourceUrl: row.source_url ?? undefined,
+    featured: row.featured ?? false,
+  };
+}
+
 export async function getPublishedExperiences(): Promise<Experience[]> {
   const client = createPublicClient();
   if (!client) return [];
@@ -107,6 +150,46 @@ export async function getPublishedExperienceBySlug(slug: string): Promise<Experi
   }
 
   return data ? mapExperience(data as unknown as RawExperience) : null;
+}
+
+export async function getPublishedCultureEntries(): Promise<CultureEntry[]> {
+  const client = createPublicClient();
+  if (!client) return [];
+
+  const { data, error } = await client
+    .from("culture_entries")
+    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,place:places(name,address,google_maps_query,latitude,longitude)")
+    .eq("published", true)
+    .order("featured", { ascending: false })
+    .order("title");
+
+  if (error) {
+    console.error("BIMARIS Supabase culture read failed", error.message);
+    return [];
+  }
+
+  return (data as unknown as RawCultureEntry[])
+    .map(mapCultureEntry)
+    .filter((item): item is CultureEntry => item !== null);
+}
+
+export async function getPublishedCultureEntryBySlug(slug: string): Promise<CultureEntry | null> {
+  const client = createPublicClient();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("culture_entries")
+    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,place:places(name,address,google_maps_query,latitude,longitude)")
+    .eq("published", true)
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    console.error("BIMARIS Supabase culture detail read failed", error.message);
+    return null;
+  }
+
+  return data ? mapCultureEntry(data as unknown as RawCultureEntry) : null;
 }
 
 export async function getActiveTerritories() {
