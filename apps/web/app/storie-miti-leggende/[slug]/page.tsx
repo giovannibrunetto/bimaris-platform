@@ -37,11 +37,16 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
       {story.imageUrl && (
         <section className="culture-hero-wrap">
-          <figure className="culture-hero-figure">
-            <img src={story.imageUrl} alt={story.imageAlt ?? story.title} decoding="async" />
+          <figure className="culture-hero-figure" style={{ maxWidth: 760 }}>
+            <img
+              src={story.imageUrl}
+              alt={story.imageAlt ?? story.title}
+              decoding="async"
+              style={{ width: "100%", height: "auto", maxHeight: "none", objectFit: "contain" }}
+            />
             {(story.imageAuthor || story.imageLicense) && (
               <figcaption>
-                Foto: {story.imageAuthor ?? "Wikimedia Commons"}
+                Illustrazione: {story.imageAuthor ?? "BIMARIS"}
                 {story.imageLicense && <> · {story.imageLicense}</>}
                 {story.imageSourceUrl && (
                   <> · <a href={story.imageSourceUrl} target="_blank" rel="noreferrer">fonte</a></>
