@@ -12,6 +12,19 @@ declare global {
 const MESSINA_CENTER = { lat: 38.1938, lng: 15.5540 };
 
 type MapPointKind = "culture" | "legend" | "operator" | "experience";
+export type MapFilterKey = "cultura" | "attrazioni" | "sapori" | "natura" | "mare" | "artigianato" | "operatori";
+type ActiveMapFilter = "all" | MapFilterKey;
+
+const FILTERS: Array<{ key: ActiveMapFilter; label: string }> = [
+  { key: "all", label: "Tutto" },
+  { key: "cultura", label: "Cultura" },
+  { key: "attrazioni", label: "Attrazioni" },
+  { key: "sapori", label: "Sapori" },
+  { key: "natura", label: "Natura" },
+  { key: "mare", label: "Mare" },
+  { key: "artigianato", label: "Artigianato" },
+  { key: "operatori", label: "Operatori" },
+];
 
 export type BimarisMapPoint = {
   id: string;
@@ -21,6 +34,8 @@ export type BimarisMapPoint = {
   googleMapsQuery: string;
   latitude?: number;
   longitude?: number;
+  filterCategories: MapFilterKey[];
+  categoryLabel?: string;
   links: Array<{
     label: string;
     href: string;
@@ -41,27 +56,11 @@ function markerLabel(kind: MapPointKind) {
   return "M";
 }
 
-function categoryLabel(kind: MapPointKind) {
+function pointTypeLabel(kind: MapPointKind) {
   if (kind === "culture") return "Cultura";
   if (kind === "operator") return "Operatore BIMARIS";
   if (kind === "experience") return "Esperienza BIMARIS";
   return "Miti e leggende";
-}
-
-function markerIcon(maps: any, kind: MapPointKind) {
-  const fill = markerColor(kind);
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="50" viewBox="0 0 38 50">
-      <path d="M19 1C9.1 1 1 9.1 1 19c0 13.3 18 29.8 18 29.8S37 32.3 37 19C37 9.1 28.9 1 19 1Z" fill="${fill}" stroke="#ffffff" stroke-width="2"/>
-      <circle cx="19" cy="19" r="9" fill="rgba(3,17,26,.30)"/>
-    </svg>`;
-
-  return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new maps.Size(38, 50),
-    anchor: new maps.Point(19, 49),
-    labelOrigin: new maps.Point(19, 19),
-  };
 }
 
 function createInfoWindowContent(point: BimarisMapPoint) {
@@ -72,11 +71,11 @@ function createInfoWindowContent(point: BimarisMapPoint) {
   root.style.fontFamily = "Arial, Helvetica, sans-serif";
 
   const category = document.createElement("div");
-  category.textContent = categoryLabel(point.kind);
+  category.textContent = point.categoryLabel ? `${pointTypeLabel(point.kind)} · ${point.categoryLabel}` : pointTypeLabel(point.kind);
   category.style.color = markerColor(point.kind);
   category.style.fontSize = "11px";
   category.style.fontWeight = "700";
-  category.style.letterSpacing = ".12em";
+  category.style.letterSpacing = ".10em";
   category.style.textTransform = "uppercase";
   root.appendChild(category);
 
@@ -137,12 +136,16 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
   const coordinateCacheRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [locationMessage, setLocationMessage] = useState("");
-  const [activeKinds, setActiveKinds] = useState<Record<MapPointKind, boolean>>({
-    culture: true,
-    legend: true,
-    operator: true,
-    experience: true,
-  });
+  const [activeFilter, setActiveFilter] = useState<ActiveMapFilter>("all");
+
+  const availableFilters = FILTERS.filter(filter =>
+    filter.key === "all" || points.some(point => point.filterCategories.includes(filter.key as MapFilterKey)),
+  );
+
+  const filterCount = (filter: ActiveMapFilter) => {
+    if (filter === "all") return points.length;
+    return points.filter(point => point.filterCategories.includes(filter)).length;
+  };
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -204,7 +207,9 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
     markersRef.current = [];
     infoWindowRef.current?.close();
 
-    const visiblePoints = points.filter(point => activeKinds[point.kind]);
+    const visiblePoints = activeFilter === "all"
+      ? points
+      : points.filter(point => point.filterCategories.includes(activeFilter));
 
     const resolvePosition = async (point: BimarisMapPoint) => {
       if (Number.isFinite(point.latitude) && Number.isFinite(point.longitude)) {
@@ -252,7 +257,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
         marker.addListener("click", () => {
           infoWindowRef.current?.setContent(createInfoWindowContent(point));
           infoWindowRef.current?.open({ map, anchor: marker });
-          track("map_marker_click", { point_id: point.id, kind: point.kind, title: point.title });
+          track("map_marker_click", { point_id: point.id, kind: point.kind, title: point.title, filter: activeFilter });
         });
 
         markersRef.current.push(marker);
@@ -278,7 +283,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
     return () => {
       cancelled = true;
     };
-  }, [activeKinds, points, status]);
+  }, [activeFilter, points, status]);
 
   const locateUser = () => {
     if (!navigator.geolocation) {
@@ -301,11 +306,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
         if (userMarkerRef.current) {
           userMarkerRef.current.setPosition(position);
         } else {
-          userMarkerRef.current = new window.google.maps.Marker({
-            map,
-            position,
-            title: "La tua posizione",
-          });
+          userMarkerRef.current = new window.google.maps.Marker({ map, position, title: "La tua posizione" });
         }
 
         setLocationMessage("Posizione trovata.");
@@ -315,21 +316,10 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
     );
   };
 
-  const toggleKind = (kind: MapPointKind) => {
-    setActiveKinds(current => ({ ...current, [kind]: !current[kind] }));
-    track("filter_used", { section: "map", filter: "kind", value: kind });
+  const chooseFilter = (filter: ActiveMapFilter) => {
+    setActiveFilter(filter);
+    track("filter_used", { section: "map", filter: "category", value: filter });
   };
-
-  const filterStyle = (kind: MapPointKind) => ({
-    border: "1px solid rgba(3,17,26,.12)",
-    borderRadius: 999,
-    padding: "10px 14px",
-    background: activeKinds[kind] ? markerColor(kind) : "rgba(255,255,255,.96)",
-    color: activeKinds[kind] && kind !== "culture" ? "#ffffff" : "#101820",
-    fontWeight: 700,
-    cursor: "pointer",
-    boxShadow: "0 6px 20px rgba(7,24,35,.10)",
-  });
 
   return (
     <div style={{ position: "relative" }}>
@@ -357,13 +347,46 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
       {status === "ready" && (
         <>
           <div
-            aria-label="Filtri della mappa"
-            style={{ position: "absolute", left: 18, top: 18, zIndex: 3, display: "flex", flexWrap: "wrap", gap: 8, maxWidth: "calc(100% - 36px)" }}
+            aria-label="Filtra i punti BIMARIS per categoria"
+            style={{
+              position: "absolute",
+              left: 18,
+              right: 18,
+              top: 18,
+              zIndex: 3,
+              display: "flex",
+              gap: 8,
+              overflowX: "auto",
+              paddingBottom: 4,
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+            }}
           >
-            <button type="button" aria-pressed={activeKinds.culture} onClick={() => toggleKind("culture")} style={filterStyle("culture")}>Cultura</button>
-            <button type="button" aria-pressed={activeKinds.legend} onClick={() => toggleKind("legend")} style={filterStyle("legend")}>Miti e leggende</button>
-            <button type="button" aria-pressed={activeKinds.operator} onClick={() => toggleKind("operator")} style={filterStyle("operator")}>Operatori</button>
-            <button type="button" aria-pressed={activeKinds.experience} onClick={() => toggleKind("experience")} style={filterStyle("experience")}>Esperienze</button>
+            {availableFilters.map(filter => {
+              const selected = activeFilter === filter.key;
+              return (
+                <button
+                  key={filter.key}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => chooseFilter(filter.key)}
+                  style={{
+                    flex: "0 0 auto",
+                    border: selected ? "1px solid #caa86a" : "1px solid rgba(3,17,26,.14)",
+                    borderRadius: 999,
+                    padding: "10px 14px",
+                    background: selected ? "#101820" : "rgba(255,255,255,.96)",
+                    color: selected ? "#ffffff" : "#101820",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    boxShadow: "0 6px 20px rgba(7,24,35,.12)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {filter.label} <span style={{ opacity: .72 }}>({filterCount(filter.key)})</span>
+                </button>
+              );
+            })}
           </div>
 
           <div style={{ position: "absolute", left: 18, bottom: 18, zIndex: 2, display: "grid", gap: 8 }}>
