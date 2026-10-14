@@ -26,21 +26,40 @@ export default async function CulturePage() {
             <div className="kicker">Luoghi da conoscere</div>
             <h2>Messina attraverso i suoi monumenti</h2>
           </div>
-          <p>Ogni scheda raccoglie una breve introduzione storica, l'indirizzo e un collegamento diretto per raggiungere il luogo.</p>
+          <p>Ogni scheda raccoglie una breve introduzione storica, immagini di repertorio, l'indirizzo e un collegamento diretto per raggiungere il luogo.</p>
         </div>
 
         {entries.length > 0 ? (
           <div className="cards">
             {entries.map(entry => (
-              <Link className="card" href={`/cultura/${entry.slug}`} key={entry.id}>
-                <div className="card-media"><span>{entry.category}</span></div>
-                <div className="card-body">
-                  <div className="eyebrow">{entry.address ?? "Messina"}</div>
-                  <h3>{entry.title}</h3>
-                  <p>{entry.excerpt}</p>
-                  <span className="text-link">Scopri il luogo →</span>
-                </div>
-              </Link>
+              <article className="card culture-card" key={entry.id}>
+                <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
+                  <div className="culture-card-media">
+                    {entry.imageUrl ? (
+                      <img
+                        src={entry.imageUrl}
+                        alt={entry.imageAlt ?? entry.title}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="culture-card-placeholder" />
+                    )}
+                    <span>{entry.category}</span>
+                  </div>
+                  <div className="card-body">
+                    <div className="eyebrow">{entry.address ?? "Messina"}</div>
+                    <h3>{entry.title}</h3>
+                    <p>{entry.excerpt}</p>
+                    <span className="text-link">Scopri il luogo →</span>
+                  </div>
+                </Link>
+                {entry.imageAuthor && entry.imageLicense && (
+                  <div className="photo-credit">
+                    Foto: {entry.imageAuthor} · {entry.imageLicense}
+                  </div>
+                )}
+              </article>
             ))}
           </div>
         ) : (
