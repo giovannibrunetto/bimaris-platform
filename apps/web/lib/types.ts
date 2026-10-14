@@ -13,6 +13,14 @@ export type CategorySlug =
   | "shopping-artigianato"
   | "famiglia";
 
+export type HistoricalPeriodKey =
+  | "medioevo"
+  | "rinascimento-cinquecento"
+  | "seicento-settecento"
+  | "ottocento"
+  | "novecento"
+  | "trasversale";
+
 export type Experience = {
   id: string;
   slug: string;
@@ -64,6 +72,10 @@ export type CultureEntry = {
   imageLicense?: string;
   imageSourceUrl?: string;
   imageLicenseUrl?: string;
+  primaryHistoricalPeriod?: HistoricalPeriodKey;
+  historicalPeriods: HistoricalPeriodKey[];
+  historicalPeriodNote?: string;
+  historicalSortYear?: number;
 };
 
 export type AnalyticsEventName =
