@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: Readonly<{ children: Rea
       {authenticated && (
         <nav aria-label="Amministrazione BIMARIS" style={{ padding: "14px 6vw", display: "flex", gap: 18, flexWrap: "wrap", borderBottom: "1px solid rgba(3,17,26,.10)", background: "#f7f2e8" }}>
           <Link className="text-link" href="/admin">Dashboard</Link>
-          <Link className="text-link" href="/admin#operatori">Operatori</Link>
+          <Link className="text-link" href="/admin/operatori">Operatori</Link>
           <Link className="text-link" href="/admin/esperienze">Esperienze</Link>
           <Link className="text-link" href="/admin/analytics">Analytics</Link>
         </nav>
