@@ -79,6 +79,9 @@ main { min-height: 70vh; }
 .form input, .form textarea, .form select { width: 100%; border: 1px solid #cfd6db; border-radius: 12px; padding: 13px 14px; background: white; }
 .form textarea { min-height: 140px; resize: vertical; }
 .form .wide { grid-column: 1 / -1; }
+.form .privacy-check { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.45; font-weight: 600; }
+.form .privacy-check input { width: 18px; height: 18px; margin: 2px 0 0; padding: 0; flex: 0 0 18px; }
+.form .privacy-check a { text-decoration: underline; text-underline-offset: 2px; }
 .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .metric { background: white; border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
 .metric strong { display: block; font-size: 34px; font-family: Georgia, serif; margin-top: 10px; }
