@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Experience } from "@bimaris/core";
+import type { Experience } from "@/lib/types";
 import { track } from "@/lib/analytics";
 
 export function ExperienceCard({ experience }: { experience: Experience }) {
