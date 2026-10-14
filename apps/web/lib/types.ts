@@ -29,6 +29,23 @@ export type Experience = {
   featured?: boolean;
 };
 
+export type CultureEntry = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  category: string;
+  placeName: string;
+  address?: string;
+  googleMapsQuery: string;
+  latitude?: number;
+  longitude?: number;
+  sourceLabel?: string;
+  sourceUrl?: string;
+  featured?: boolean;
+};
+
 export type AnalyticsEventName =
   | "page_view"
   | "experience_view"
