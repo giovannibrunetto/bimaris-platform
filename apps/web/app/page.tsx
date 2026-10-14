@@ -3,7 +3,16 @@ import { getActiveTerritories } from "@/data/live";
 
 export const revalidate = 300;
 
-const categories = ["Mangiare", "Esperienze", "Mare", "Natura", "Cultura", "Shopping e artigianato", "Famiglia", "Vicino a te"];
+const categories = [
+  { label: "Mangiare", href: "/esperienze" },
+  { label: "Esperienze", href: "/esperienze" },
+  { label: "Mare", href: "/esperienze" },
+  { label: "Natura", href: "/esperienze" },
+  { label: "Cultura", href: "/esperienze" },
+  { label: "Shopping e artigianato", href: "/esperienze" },
+  { label: "Famiglia", href: "/esperienze" },
+  { label: "Vicino a te", href: "/mappa" },
+];
 
 const inspirations = [
   {
@@ -54,7 +63,13 @@ export default async function Home() {
 
       <section className="section sand">
         <div className="section-head"><div><div className="kicker">Scopri</div><h2>Cosa vuoi vivere oggi?</h2></div><p>BIMARIS organizza il territorio per esperienze e interessi, per aiutarti a scoprire Messina oltre i percorsi più scontati.</p></div>
-        <div className="category-grid">{categories.map(c => <div className="category" key={c}>{c}</div>)}</div>
+        <div className="category-grid">
+          {categories.map(category => (
+            <Link className="category" href={category.href} key={category.label} aria-label={`Scopri ${category.label}`}>
+              {category.label}
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="section">
