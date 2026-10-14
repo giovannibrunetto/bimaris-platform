@@ -1,6 +1,6 @@
 "use client";
 
-import type { AnalyticsEventName } from "@bimaris/core";
+import type { AnalyticsEventName } from "@/lib/types";
 
 const CONSENT_KEY = "bimaris_consent_v1";
 const ANON_KEY = "bimaris_anon_id";
