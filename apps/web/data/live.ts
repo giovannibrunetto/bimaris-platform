@@ -1,4 +1,4 @@
-import type { CategorySlug, CultureEntry, Experience, TerritorySlug } from "@/lib/types";
+import type { CategorySlug, CultureEntry, Experience, HistoricalPeriodKey, TerritorySlug } from "@/lib/types";
 import { createPublicClient } from "@/lib/supabase/public";
 import { territories as mockTerritories } from "@/data/mock";
 
@@ -55,6 +55,10 @@ type RawCultureEntry = {
   image_license: string | null;
   image_source_url: string | null;
   image_license_url: string | null;
+  primary_historical_period: string | null;
+  historical_periods: string[] | null;
+  historical_period_note: string | null;
+  historical_sort_year: number | null;
   place: {
     name: string;
     address: string | null;
@@ -82,6 +86,10 @@ function isTerritorySlug(value: string): value is TerritorySlug {
 
 function isCategorySlug(value: string): value is CategorySlug {
   return ["mangiare", "esperienze", "mare", "natura", "cultura", "shopping-artigianato", "famiglia"].includes(value);
+}
+
+function isHistoricalPeriodKey(value: string): value is HistoricalPeriodKey {
+  return ["medioevo", "rinascimento-cinquecento", "seicento-settecento", "ottocento", "novecento", "trasversale"].includes(value);
 }
 
 function mapExperience(row: RawExperience): Experience | null {
@@ -132,6 +140,10 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
 
   const latitude = row.place.latitude == null ? undefined : Number(row.place.latitude);
   const longitude = row.place.longitude == null ? undefined : Number(row.place.longitude);
+  const primaryHistoricalPeriod = row.primary_historical_period && isHistoricalPeriodKey(row.primary_historical_period)
+    ? row.primary_historical_period
+    : undefined;
+  const historicalPeriods = (row.historical_periods ?? []).filter(isHistoricalPeriodKey);
 
   return {
     id: row.id,
@@ -154,10 +166,15 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
     imageLicense: row.image_license ?? undefined,
     imageSourceUrl: row.image_source_url ?? undefined,
     imageLicenseUrl: row.image_license_url ?? undefined,
+    primaryHistoricalPeriod,
+    historicalPeriods,
+    historicalPeriodNote: row.historical_period_note ?? undefined,
+    historicalSortYear: row.historical_sort_year ?? undefined,
   };
 }
 
 const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators(slug,name,why_selected,whatsapp,website,instagram)";
+const cultureSelect = "id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,primary_historical_period,historical_periods,historical_period_note,historical_sort_year,place:places(name,address,google_maps_query,latitude,longitude)";
 
 export async function getPublishedExperiences(): Promise<Experience[]> {
   const client = createPublicClient();
@@ -205,7 +222,7 @@ export async function getPublishedCultureEntries(): Promise<CultureEntry[]> {
 
   const { data, error } = await client
     .from("culture_entries")
-    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,place:places(name,address,google_maps_query,latitude,longitude)")
+    .select(cultureSelect)
     .eq("published", true)
     .order("featured", { ascending: false })
     .order("title");
@@ -226,7 +243,7 @@ export async function getPublishedCultureEntryBySlug(slug: string): Promise<Cult
 
   const { data, error } = await client
     .from("culture_entries")
-    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,place:places(name,address,google_maps_query,latitude,longitude)")
+    .select(cultureSelect)
     .eq("published", true)
     .eq("slug", slug)
     .maybeSingle();
