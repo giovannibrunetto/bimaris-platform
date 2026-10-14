@@ -11,9 +11,26 @@ type RawExperience = {
   duration_minutes: number | null;
   price_from: number | string | null;
   featured: boolean | null;
+  bookable: boolean | null;
+  why_selected: string | null;
+  image_url: string | null;
+  image_alt: string | null;
+  meeting_point: string | null;
+  google_maps_query: string | null;
+  booking_url: string | null;
+  booking_note: string | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
   territory: { slug: string; name: string } | null;
   category: { slug: string; name: string } | null;
-  operator: { name: string; why_selected: string | null } | null;
+  operator: {
+    slug: string;
+    name: string;
+    why_selected: string | null;
+    whatsapp: string | null;
+    website: string | null;
+    instagram: string | null;
+  } | null;
 };
 
 type RawTerritory = {
@@ -76,6 +93,8 @@ function mapExperience(row: RawExperience): Experience | null {
   }
 
   const price = row.price_from == null ? undefined : Number(row.price_from);
+  const latitude = row.latitude == null ? undefined : Number(row.latitude);
+  const longitude = row.longitude == null ? undefined : Number(row.longitude);
 
   return {
     id: row.id,
@@ -85,12 +104,26 @@ function mapExperience(row: RawExperience): Experience | null {
     description: row.description ?? row.excerpt ?? "Esperienza selezionata da BIMARIS.",
     territory: territorySlug,
     category: categorySlug,
+    categoryName: row.category?.name ?? "Esperienza",
     location: row.territory?.name ?? "Messina",
     duration: formatDuration(row.duration_minutes),
     priceFrom: Number.isFinite(price) ? price : undefined,
     operatorName: row.operator?.name ?? "Operatore BIMARIS",
-    whySelected: row.operator?.why_selected ?? "Esperienza coerente con i criteri di selezione BIMARIS.",
+    operatorSlug: row.operator?.slug ?? undefined,
+    operatorWhatsapp: row.operator?.whatsapp ?? undefined,
+    operatorWebsite: row.operator?.website ?? undefined,
+    operatorInstagram: row.operator?.instagram ?? undefined,
+    whySelected: row.why_selected ?? row.operator?.why_selected ?? "Esperienza coerente con i criteri di selezione BIMARIS.",
     featured: row.featured ?? false,
+    bookable: row.bookable ?? false,
+    bookingUrl: row.booking_url ?? undefined,
+    bookingNote: row.booking_note ?? undefined,
+    meetingPoint: row.meeting_point ?? undefined,
+    googleMapsQuery: row.google_maps_query ?? row.meeting_point ?? `${row.name} ${row.territory?.name ?? "Messina"}`,
+    latitude: Number.isFinite(latitude) ? latitude : undefined,
+    longitude: Number.isFinite(longitude) ? longitude : undefined,
+    imageUrl: row.image_url ?? undefined,
+    imageAlt: row.image_alt ?? undefined,
   };
 }
 
@@ -124,13 +157,15 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
   };
 }
 
+const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators(slug,name,why_selected,whatsapp,website,instagram)";
+
 export async function getPublishedExperiences(): Promise<Experience[]> {
   const client = createPublicClient();
   if (!client) return [];
 
   const { data, error } = await client
     .from("experiences")
-    .select("id,slug,name,excerpt,description,duration_minutes,price_from,featured,territory:territories(slug,name),category:categories(slug,name),operator:operators(name,why_selected)")
+    .select(experienceSelect)
     .eq("published", true)
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
@@ -151,7 +186,7 @@ export async function getPublishedExperienceBySlug(slug: string): Promise<Experi
 
   const { data, error } = await client
     .from("experiences")
-    .select("id,slug,name,excerpt,description,duration_minutes,price_from,featured,territory:territories(slug,name),category:categories(slug,name),operator:operators(name,why_selected)")
+    .select(experienceSelect)
     .eq("published", true)
     .eq("slug", slug)
     .maybeSingle();
