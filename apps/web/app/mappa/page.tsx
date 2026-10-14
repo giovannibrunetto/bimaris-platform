@@ -1,5 +1,5 @@
 import { BimarisGoogleMap, type BimarisMapPoint } from "@/components/BimarisGoogleMap";
-import { getPublishedCultureEntries } from "@/data/live";
+import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedStories } from "@/data/stories";
 
@@ -7,10 +7,11 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function MapPage() {
-  const [cultureEntries, stories, operators] = await Promise.all([
+  const [cultureEntries, stories, operators, experiences] = await Promise.all([
     getPublishedCultureEntries(),
     getPublishedStories(),
     getPublishedOperators(),
+    getPublishedExperiences(),
   ]);
 
   const culturePoints: BimarisMapPoint[] = cultureEntries.map(entry => ({
@@ -21,12 +22,7 @@ export default async function MapPage() {
     googleMapsQuery: entry.googleMapsQuery,
     latitude: entry.latitude,
     longitude: entry.longitude,
-    links: [
-      {
-        label: "Apri la scheda culturale",
-        href: `/cultura/${entry.slug}`,
-      },
-    ],
+    links: [{ label: "Apri la scheda culturale", href: `/cultura/${entry.slug}` }],
   }));
 
   const legendPointsByQuery = new Map<string, BimarisMapPoint>();
@@ -35,15 +31,10 @@ export default async function MapPage() {
     story.places.forEach(place => {
       const key = place.googleMapsQuery.trim().toLowerCase();
       const existing = legendPointsByQuery.get(key);
-      const storyLink = {
-        label: story.title,
-        href: `/storie-miti-leggende/${story.slug}`,
-      };
+      const storyLink = { label: story.title, href: `/storie-miti-leggende/${story.slug}` };
 
       if (existing) {
-        if (!existing.links.some(link => link.href === storyLink.href)) {
-          existing.links.push(storyLink);
-        }
+        if (!existing.links.some(link => link.href === storyLink.href)) existing.links.push(storyLink);
         return;
       }
 
@@ -70,15 +61,23 @@ export default async function MapPage() {
     googleMapsQuery: operator.googleMapsQuery,
     latitude: operator.latitude,
     longitude: operator.longitude,
-    links: [
-      {
-        label: "Apri la scheda operatore",
-        href: `/operatori/${operator.slug}`,
-      },
-    ],
+    links: [{ label: "Apri la scheda operatore", href: `/operatori/${operator.slug}` }],
   }));
 
-  const points = [...culturePoints, ...legendPoints, ...operatorPoints];
+  const experiencePoints: BimarisMapPoint[] = experiences
+    .filter(experience => Boolean(experience.googleMapsQuery))
+    .map(experience => ({
+      id: `experience-${experience.id}`,
+      kind: "experience",
+      title: experience.name,
+      address: experience.meetingPoint,
+      googleMapsQuery: experience.googleMapsQuery as string,
+      latitude: experience.latitude,
+      longitude: experience.longitude,
+      links: [{ label: "Apri l'esperienza", href: `/esperienze/${experience.slug}` }],
+    }));
+
+  const points = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints];
 
   return (
     <>
@@ -86,7 +85,7 @@ export default async function MapPage() {
         <div className="kicker">Esplora</div>
         <h1>Mappa BIMARIS</h1>
         <p>
-          Monumenti, luoghi culturali, punti legati ai miti dello Stretto e operatori selezionati riuniti in un'unica mappa. Seleziona un segnaposto per aprire la relativa scheda o avviare le indicazioni stradali.
+          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Seleziona un segnaposto per aprire la relativa scheda o avviare le indicazioni stradali.
         </p>
       </section>
 
@@ -97,7 +96,7 @@ export default async function MapPage() {
             <h2>Scopri il territorio sulla mappa.</h2>
           </div>
           <p>
-            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende e {operatorPoints.length} operatori selezionati. Usa i filtri per scegliere cosa visualizzare oppure “La mia posizione” per orientarti rispetto ai punti BIMARIS.
+            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Usa i filtri per scegliere cosa visualizzare oppure “La mia posizione” per orientarti.
           </p>
         </div>
 
