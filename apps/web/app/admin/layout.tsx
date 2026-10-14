@@ -22,6 +22,7 @@ export default async function AdminLayout({ children }: Readonly<{ children: Rea
           <Link className="text-link" href="/admin">Dashboard</Link>
           <Link className="text-link" href="/admin/operatori">Operatori</Link>
           <Link className="text-link" href="/admin/esperienze">Esperienze</Link>
+          <Link className="text-link" href="/admin/itinerari">Itinerari</Link>
           <Link className="text-link" href="/admin/analytics">Analytics</Link>
         </nav>
       )}
