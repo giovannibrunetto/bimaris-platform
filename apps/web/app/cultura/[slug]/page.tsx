@@ -14,6 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${entry.title} | Cultura a Messina | BIMARIS`,
     description: entry.excerpt,
+    openGraph: entry.imageUrl ? { images: [entry.imageUrl] } : undefined,
   };
 }
 
@@ -32,6 +33,26 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
         <h1>{entry.title}</h1>
         <p>{entry.excerpt}</p>
       </section>
+
+      {entry.imageUrl && (
+        <section className="culture-hero-wrap">
+          <figure className="culture-hero-figure">
+            <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} decoding="async" />
+            {(entry.imageAuthor || entry.imageLicense) && (
+              <figcaption>
+                Foto: {entry.imageAuthor ?? "Wikimedia Commons"}
+                {entry.imageLicense && <> · {entry.imageLicense}</>}
+                {entry.imageSourceUrl && (
+                  <> · <a href={entry.imageSourceUrl} target="_blank" rel="noreferrer">fonte</a></>
+                )}
+                {entry.imageLicenseUrl && (
+                  <> · <a href={entry.imageLicenseUrl} target="_blank" rel="noreferrer">licenza</a></>
+                )}
+              </figcaption>
+            )}
+          </figure>
+        </section>
+      )}
 
       <section className="section detail-grid">
         <article>
