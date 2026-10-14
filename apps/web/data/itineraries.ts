@@ -71,6 +71,17 @@ function numberOrUndefined(value: number | string | null | undefined) {
   return Number.isFinite(n) ? n : undefined;
 }
 
+function normalizeLocationText(value?: string | null) {
+  return value?.trim().toLocaleLowerCase("it-IT").replace(/\s+/g, " ") ?? "";
+}
+
+function sameLocationText(a?: string | null, b?: string | null) {
+  const left = normalizeLocationText(a);
+  const right = normalizeLocationText(b);
+  if (!left || !right) return false;
+  return left === right || (left.length > 8 && right.length > 8 && (left.includes(right) || right.includes(left)));
+}
+
 function formatDuration(minutes?: number) {
   if (!minutes) return "Durata variabile";
   if (minutes < 60) return `${minutes} min`;
@@ -156,21 +167,38 @@ async function loadStops(itineraryIds: string[]): Promise<Map<string, ItineraryS
       };
     } else if (row.story_id) {
       const item = storyById.get(row.story_id);
-      const firstPlace = item?.places[0];
-      if (item) stop = {
-        id: row.id,
-        position: row.position,
-        kind: "story",
-        title: item.title,
-        excerpt: item.excerpt,
-        href: `/storie-miti-leggende/${item.slug}`,
-        address: firstPlace?.address,
-        googleMapsQuery: row.google_maps_query ?? firstPlace?.googleMapsQuery,
-        latitude: lat ?? firstPlace?.latitude,
-        longitude: lng ?? firstPlace?.longitude,
-        stayMinutes: row.stay_minutes ?? undefined,
-        note: row.note ?? undefined,
-      };
+      if (item) {
+        const queryMatchedPlace = row.google_maps_query
+          ? item.places.find(place =>
+              sameLocationText(row.google_maps_query, place.googleMapsQuery) ||
+              sameLocationText(row.google_maps_query, place.name) ||
+              sameLocationText(row.google_maps_query, place.address)
+            )
+          : undefined;
+        const coordinateMatchedPlace = lat != null && lng != null
+          ? item.places.find(place =>
+              place.latitude != null && place.longitude != null &&
+              Math.abs(place.latitude - lat) < 0.001 &&
+              Math.abs(place.longitude - lng) < 0.001
+            )
+          : undefined;
+        const matchedPlace = queryMatchedPlace ?? coordinateMatchedPlace ?? item.places[0];
+
+        stop = {
+          id: row.id,
+          position: row.position,
+          kind: "story",
+          title: item.title,
+          excerpt: item.excerpt,
+          href: `/storie-miti-leggende/${item.slug}`,
+          address: matchedPlace?.address,
+          googleMapsQuery: row.google_maps_query ?? matchedPlace?.googleMapsQuery,
+          latitude: lat ?? matchedPlace?.latitude,
+          longitude: lng ?? matchedPlace?.longitude,
+          stayMinutes: row.stay_minutes ?? undefined,
+          note: row.note ?? undefined,
+        };
+      }
     } else if (row.experience_id) {
       const item = experienceById.get(row.experience_id);
       if (item) stop = {
