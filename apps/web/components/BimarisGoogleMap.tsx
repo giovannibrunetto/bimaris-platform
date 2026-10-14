@@ -63,6 +63,22 @@ function pointTypeLabel(kind: MapPointKind) {
   return "Miti e leggende";
 }
 
+function markerIcon(maps: any, kind: MapPointKind) {
+  const fill = markerColor(kind);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="50" viewBox="0 0 38 50">
+      <path d="M19 1C9.1 1 1 9.1 1 19c0 13.3 18 29.8 18 29.8S37 32.3 37 19C37 9.1 28.9 1 19 1Z" fill="${fill}" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="19" cy="19" r="9" fill="rgba(3,17,26,.30)"/>
+    </svg>`;
+
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new maps.Size(38, 50),
+    anchor: new maps.Point(19, 49),
+    labelOrigin: new maps.Point(19, 19),
+  };
+}
+
 function createInfoWindowContent(point: BimarisMapPoint) {
   const root = document.createElement("div");
   root.style.maxWidth = "270px";
