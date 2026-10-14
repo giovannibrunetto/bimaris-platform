@@ -18,7 +18,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm --filter web lint
-      - run: pnpm --filter web typecheck
-      - run: pnpm --filter mobile typecheck
-      - run: pnpm --filter web build
+      - run: pnpm --filter @bimaris/web lint
+      - run: pnpm --filter @bimaris/web typecheck
+      - run: pnpm --filter @bimaris/mobile typecheck
+      - run: pnpm --filter @bimaris/web build
