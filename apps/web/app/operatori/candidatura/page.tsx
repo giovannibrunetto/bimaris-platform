@@ -38,7 +38,7 @@ export default function ApplicationPage(){
   <label>Email<input required type="email" name="email" /></label><label>Telefono<input name="phone" /></label>
   <label>Categoria<select name="category"><option>Esperienze</option><option>Mare</option><option>Natura</option><option>Gastronomia</option><option>Cultura</option><option>Artigianato</option></select></label><label>Località<input required name="location" /></label>
   <label className="wide">Sito o social<input name="website" /></label><label className="wide">Raccontaci cosa proponi<textarea required name="description" /></label>
-  <label className="wide"><span><input required type="checkbox" name="privacy_consent" value="yes" /> Ho letto l'<Link href="/privacy">informativa privacy</Link> e acconsento al trattamento dei dati necessari alla valutazione della candidatura.</span></label>
+  <label className="wide privacy-check"><input required type="checkbox" name="privacy_consent" value="yes" /><span>Ho letto l'<Link href="/privacy">informativa privacy</Link> e acconsento al trattamento dei dati necessari alla valutazione della candidatura.</span></label>
   {error && <div className="wide detail-panel"><p>{error}</p></div>}
   <div className="wide"><button className="button" type="submit" disabled={sending}>{sending ? "Invio in corso..." : "Invia candidatura"}</button></div>
  </form>}
