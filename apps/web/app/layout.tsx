@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BIMARIS — Messina da Vivere",
     description: "Esperienze, sapori e luoghi selezionati per vivere davvero Messina.",
-    images: ["/bimaris-main.jpeg"],
+    images: ["/brand/bimaris-main.jpeg"],
   },
 };
 
