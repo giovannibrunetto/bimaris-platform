@@ -1,22 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { readConsent, saveConsent, type ConsentState } from "@/lib/analytics";
 
 const allOn: ConsentState = { analytics: true, personalization: true, marketing: true };
 const allOff: ConsentState = { analytics: false, personalization: false, marketing: false };
 
+function subscribeConsent(callback: () => void) {
+  window.addEventListener("bimaris-consent-changed", callback);
+  return () => window.removeEventListener("bimaris-consent-changed", callback);
+}
+
+function getConsentSnapshot() {
+  return readConsent() ? "set" : "unset";
+}
+
+function getServerConsentSnapshot() {
+  return "loading";
+}
+
 export function ConsentBanner() {
-  const [open, setOpen] = useState(false);
+  const consentStatus = useSyncExternalStore(
+    subscribeConsent,
+    getConsentSnapshot,
+    getServerConsentSnapshot,
+  );
   const [details, setDetails] = useState(false);
   const [state, setState] = useState<ConsentState>({ analytics: true, personalization: false, marketing: false });
 
-  useEffect(() => setOpen(!readConsent()), []);
-  if (!open) return null;
+  if (consentStatus !== "unset") return null;
 
   const commit = (value: ConsentState) => {
     saveConsent(value);
-    setOpen(false);
   };
 
   return (
