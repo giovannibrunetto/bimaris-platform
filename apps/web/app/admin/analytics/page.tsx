@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
 
 async function getSummary(){
@@ -15,9 +17,10 @@ async function getSummary(){
 }
 
 export default async function AnalyticsPage(){
+ if (!(await isAdminAuthenticated())) redirect("/admin/login");
  const live=await getSummary();
- const summary=live ?? {users:1284,sessions:1741,pageViews:4932,contacts:186,events:[["page_view",4932],["experience_view",2180],["map_open",710],["whatsapp_click",92],["directions_click",61]] as [string,number][]};
- return <><section className="page-hero"><div className="kicker">Admin</div><h1>BIMARIS Analytics</h1><p>{live?"Dati reali degli ultimi 30 giorni.":"Modalità demo: collega Supabase per visualizzare i dati reali."}</p></section><section className="section sand">
+ const summary=live ?? {users:0,sessions:0,pageViews:0,contacts:0,events:[] as [string,number][]};
+ return <><section className="page-hero"><div className="kicker">Area privata</div><h1>BIMARIS Analytics</h1><p>Dati reali degli ultimi 30 giorni, registrati solo con consenso analytics.</p></section><section className="section sand">
  <div className="dashboard"><div className="metric">Utenti unici<strong>{summary.users}</strong></div><div className="metric">Sessioni<strong>{summary.sessions}</strong></div><div className="metric">Page view<strong>{summary.pageViews}</strong></div><div className="metric">Contatti generati<strong>{summary.contacts}</strong></div></div>
  <div style={{marginTop:36}}><h2 style={{fontFamily:"Georgia,serif",fontSize:36}}>Eventi principali</h2><table className="table"><thead><tr><th>Evento</th><th>Occorrenze</th></tr></thead><tbody>{summary.events.map(([name,count])=><tr key={name}><td>{name}</td><td>{count}</td></tr>)}</tbody></table></div>
  </section></>;
