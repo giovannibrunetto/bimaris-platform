@@ -1,4 +1,4 @@
-import type { Experience } from "@bimaris/core";
+import type { Experience } from "@/lib/types";
 
 export const experiences: Experience[] = [
   {
