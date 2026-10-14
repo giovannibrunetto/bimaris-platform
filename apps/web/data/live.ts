@@ -1,6 +1,6 @@
 import type { CategorySlug, Experience, TerritorySlug } from "@/lib/types";
 import { createPublicClient } from "@/lib/supabase/public";
-import { experiences as mockExperiences, territories as mockTerritories } from "@/data/mock";
+import { territories as mockTerritories } from "@/data/mock";
 
 type RawExperience = {
   id: string;
@@ -71,7 +71,7 @@ function mapExperience(row: RawExperience): Experience | null {
 
 export async function getPublishedExperiences(): Promise<Experience[]> {
   const client = createPublicClient();
-  if (!client) return mockExperiences;
+  if (!client) return [];
 
   const { data, error } = await client
     .from("experiences")
@@ -82,7 +82,7 @@ export async function getPublishedExperiences(): Promise<Experience[]> {
 
   if (error) {
     console.error("BIMARIS Supabase experiences read failed", error.message);
-    return mockExperiences;
+    return [];
   }
 
   return (data as unknown as RawExperience[])
@@ -92,7 +92,7 @@ export async function getPublishedExperiences(): Promise<Experience[]> {
 
 export async function getPublishedExperienceBySlug(slug: string): Promise<Experience | null> {
   const client = createPublicClient();
-  if (!client) return mockExperiences.find(item => item.slug === slug) ?? null;
+  if (!client) return null;
 
   const { data, error } = await client
     .from("experiences")
@@ -103,7 +103,7 @@ export async function getPublishedExperienceBySlug(slug: string): Promise<Experi
 
   if (error) {
     console.error("BIMARIS Supabase experience read failed", error.message);
-    return mockExperiences.find(item => item.slug === slug) ?? null;
+    return null;
   }
 
   return data ? mapExperience(data as unknown as RawExperience) : null;
