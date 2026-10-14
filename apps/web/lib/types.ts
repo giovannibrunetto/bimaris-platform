@@ -44,6 +44,12 @@ export type CultureEntry = {
   sourceLabel?: string;
   sourceUrl?: string;
   featured?: boolean;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageAuthor?: string;
+  imageLicense?: string;
+  imageSourceUrl?: string;
+  imageLicenseUrl?: string;
 };
 
 export type AnalyticsEventName =
