@@ -1,0 +1,97 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getPublishedOperatorBySlug } from "@/data/operators";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function externalUrl(value?: string) {
+  if (!value) return undefined;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+function whatsappUrl(value?: string) {
+  if (!value) return undefined;
+  const digits = value.replace(/\D/g, "");
+  return digits ? `https://wa.me/${digits}` : undefined;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const operator = await getPublishedOperatorBySlug(slug);
+  if (!operator) return {};
+
+  return {
+    title: `${operator.name} | Operatori BIMARIS`,
+    description: operator.description,
+    openGraph: operator.imageUrl ? { images: [operator.imageUrl] } : undefined,
+  };
+}
+
+export default async function OperatorDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const operator = await getPublishedOperatorBySlug(slug);
+  if (!operator) notFound();
+
+  const website = externalUrl(operator.website);
+  const instagram = externalUrl(operator.instagram);
+  const whatsapp = whatsappUrl(operator.whatsapp);
+  const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(operator.googleMapsQuery)}`;
+
+  return (
+    <>
+      <section className="page-hero">
+        <div className="kicker">{operator.category ?? "Operatore selezionato"} · BIMARIS</div>
+        <h1>{operator.name}</h1>
+        <p>{operator.description}</p>
+      </section>
+
+      {operator.imageUrl && (
+        <section className="culture-hero-wrap">
+          <figure className="culture-hero-figure">
+            <img src={operator.imageUrl} alt={operator.imageAlt ?? operator.name} decoding="async" />
+          </figure>
+        </section>
+      )}
+
+      <section className="section detail-grid">
+        <article>
+          <div className="kicker">La selezione BIMARIS</div>
+          <h2 style={{ fontFamily: "Georgia,serif", fontSize: 42, marginTop: 8 }}>Perché questa realtà</h2>
+          <p style={{ fontSize: 18, lineHeight: 1.75, color: "#4d5962" }}>
+            {operator.whySelected ?? "Realtà coerente con i criteri BIMARIS di qualità, autenticità e legame con il territorio."}
+          </p>
+
+          {operator.territoryName && (
+            <p style={{ fontSize: 17, lineHeight: 1.65, color: "#4d5962" }}>
+              <strong>Territorio:</strong> {operator.territoryName}
+            </p>
+          )}
+        </article>
+
+        <aside className="detail-panel">
+          <div className="kicker">Informazioni</div>
+          <h3>Contatta l'operatore</h3>
+
+          <ul className="list">
+            {operator.address && <li><strong>Indirizzo</strong><br />{operator.address}</li>}
+            {operator.phone && <li><strong>Telefono</strong><br /><a className="text-link" href={`tel:${operator.phone}`}>{operator.phone}</a></li>}
+            {operator.email && <li><strong>Email</strong><br /><a className="text-link" href={`mailto:${operator.email}`}>{operator.email}</a></li>}
+          </ul>
+
+          <div className="actions" style={{ marginTop: 22 }}>
+            <a className="button" href={directions} target="_blank" rel="noreferrer">Indicazioni</a>
+            {whatsapp && <a className="button ghost" href={whatsapp} target="_blank" rel="noreferrer">WhatsApp</a>}
+            {website && <a className="button ghost" href={website} target="_blank" rel="noreferrer">Sito web</a>}
+            {instagram && <a className="button ghost" href={instagram} target="_blank" rel="noreferrer">Instagram</a>}
+          </div>
+
+          <div style={{ marginTop: 28 }}>
+            <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>
+          </div>
+        </aside>
+      </section>
+    </>
+  );
+}
