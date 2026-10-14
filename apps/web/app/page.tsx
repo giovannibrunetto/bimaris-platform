@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getActiveTerritories } from "@/data/live";
+import { getPublishedItineraries } from "@/data/itineraries";
 
 export const revalidate = 300;
 
@@ -29,7 +30,12 @@ const inspirations = [
 ];
 
 export default async function Home() {
-  const territories = await getActiveTerritories();
+  const [territories, itineraries] = await Promise.all([
+    getActiveTerritories(),
+    getPublishedItineraries(),
+  ]);
+  const featuredItineraries = itineraries.filter(item => item.featured).slice(0, 2);
+  const homeItineraries = featuredItineraries.length > 0 ? featuredItineraries : itineraries.slice(0, 2);
 
   return (
     <>
@@ -90,8 +96,30 @@ export default async function Home() {
       </section>
 
       <section className="section sand">
-        <div className="section-head"><div><div className="kicker">Percorsi</div><h2>Itinerari in preparazione</h2></div><Link className="text-link" href="/itinerari">Scopri il progetto →</Link></div>
-        <p>Stiamo costruendo percorsi editoriali dedicati a Messina e alla sua provincia. Pubblicheremo gli itinerari solo dopo aver verificato tappe, tempi e contenuti.</p>
+        <div className="section-head">
+          <div><div className="kicker">Percorsi BIMARIS</div><h2>Scopri Messina attraverso i nostri itinerari</h2></div>
+          <Link className="text-link" href="/itinerari">Vedi tutti gli itinerari →</Link>
+        </div>
+        <p style={{maxWidth: 760, lineHeight: 1.65, color: "var(--muted)", marginBottom: 28}}>Percorsi editoriali costruiti per collegare luoghi, storie e identità del territorio, con tappe e tempi verificati da BIMARIS.</p>
+        {homeItineraries.length > 0 ? (
+          <div className="cards">
+            {homeItineraries.map(item => (
+              <Link className="card" href={`/itinerari/${item.slug}`} key={item.id}>
+                <div className="card-media" style={item.imageUrl ? {backgroundImage: `linear-gradient(rgba(6,22,36,.18), rgba(6,22,36,.55)), url(${item.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center"} : undefined}>
+                  <span>{item.duration}</span>
+                </div>
+                <div className="card-body">
+                  <div className="eyebrow">{item.territory ?? "Messina"}</div>
+                  <h3>{item.title}</h3>
+                  <p>{item.excerpt}</p>
+                  <div className="meta-row"><span>{item.stops.length} tappe</span><span>Scopri il percorso →</span></div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p>Gli itinerari BIMARIS saranno disponibili a breve.</p>
+        )}
       </section>
 
       <section className="section">
