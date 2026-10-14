@@ -1,2 +1,16 @@
-import { events } from "@/data/mock";
-export default function EventsPage(){return <><section className="page-hero"><div className="kicker">Agenda</div><h1>Eventi</h1><p>Cosa succede oggi, questo weekend e nei prossimi giorni.</p></section><section className="section"><ul className="list">{events.map(e=><li key={e.title}><strong>{e.date}</strong><h3>{e.title}</h3><p>{e.place} · {e.category}</p></li>)}</ul></section></>}
+export default function EventsPage(){
+  return <>
+    <section className="page-hero">
+      <div className="kicker">Agenda</div>
+      <h1>Eventi</h1>
+      <p>Una sezione dedicata agli appuntamenti del territorio messinese, con informazioni chiare e aggiornate.</p>
+    </section>
+    <section className="section">
+      <div className="detail-panel">
+        <div className="eyebrow">In preparazione</div>
+        <h3>Pubblicheremo solo appuntamenti verificati</h3>
+        <p>La futura agenda BIMARIS raccoglierà eventi reali, date confermate e informazioni utili per partecipare. In questa fase non mostriamo eventi dimostrativi come se fossero già programmati.</p>
+      </div>
+    </section>
+  </>;
+}
