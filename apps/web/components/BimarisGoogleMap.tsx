@@ -10,7 +10,7 @@ declare global {
 
 const MESSINA_CENTER = { lat: 38.1938, lng: 15.5540 };
 
-type MapPointKind = "culture" | "legend";
+type MapPointKind = "culture" | "legend" | "operator";
 
 export type BimarisMapPoint = {
   id: string;
@@ -26,8 +26,26 @@ export type BimarisMapPoint = {
   }>;
 };
 
+function markerColor(kind: MapPointKind) {
+  if (kind === "culture") return "#caa86a";
+  if (kind === "operator") return "#244b3b";
+  return "#376070";
+}
+
+function markerLabel(kind: MapPointKind) {
+  if (kind === "culture") return "C";
+  if (kind === "operator") return "O";
+  return "M";
+}
+
+function categoryLabel(kind: MapPointKind) {
+  if (kind === "culture") return "Cultura";
+  if (kind === "operator") return "Operatore BIMARIS";
+  return "Miti e leggende";
+}
+
 function markerIcon(maps: any, kind: MapPointKind) {
-  const fill = kind === "culture" ? "#caa86a" : "#376070";
+  const fill = markerColor(kind);
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="38" height="50" viewBox="0 0 38 50">
       <path d="M19 1C9.1 1 1 9.1 1 19c0 13.3 18 29.8 18 29.8S37 32.3 37 19C37 9.1 28.9 1 19 1Z" fill="${fill}" stroke="#ffffff" stroke-width="2"/>
@@ -50,8 +68,8 @@ function createInfoWindowContent(point: BimarisMapPoint) {
   root.style.fontFamily = "Arial, Helvetica, sans-serif";
 
   const category = document.createElement("div");
-  category.textContent = point.kind === "culture" ? "Cultura" : "Miti e leggende";
-  category.style.color = point.kind === "culture" ? "#8d6b34" : "#376070";
+  category.textContent = categoryLabel(point.kind);
+  category.style.color = markerColor(point.kind);
   category.style.fontSize = "11px";
   category.style.fontWeight = "700";
   category.style.letterSpacing = ".12em";
@@ -118,6 +136,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
   const [activeKinds, setActiveKinds] = useState<Record<MapPointKind, boolean>>({
     culture: true,
     legend: true,
+    operator: true,
   });
 
   useEffect(() => {
@@ -216,12 +235,12 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
           title: point.title,
           icon: markerIcon(maps, point.kind),
           label: {
-            text: point.kind === "culture" ? "C" : "M",
+            text: markerLabel(point.kind),
             color: "#ffffff",
             fontSize: "11px",
             fontWeight: "700",
           },
-          zIndex: point.kind === "culture" ? 20 : 10,
+          zIndex: point.kind === "operator" ? 30 : point.kind === "culture" ? 20 : 10,
         });
 
         marker.addListener("click", () => {
@@ -364,6 +383,23 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
               }}
             >
               Miti e leggende
+            </button>
+            <button
+              type="button"
+              aria-pressed={activeKinds.operator}
+              onClick={() => toggleKind("operator")}
+              style={{
+                border: "1px solid rgba(3,17,26,.12)",
+                borderRadius: 999,
+                padding: "10px 14px",
+                background: activeKinds.operator ? "#244b3b" : "rgba(255,255,255,.96)",
+                color: activeKinds.operator ? "#ffffff" : "#101820",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
+              }}
+            >
+              Operatori
             </button>
           </div>
 
