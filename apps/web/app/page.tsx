@@ -45,6 +45,14 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="section">
+        <div className="section-head">
+          <div><div className="kicker">Sei un operatore del territorio?</div><h2>BIMARIS sta costruendo la propria rete.</h2></div>
+          <p>Stiamo selezionando realtà, produttori ed esperienze capaci di rappresentare Messina con qualità, autenticità e forte legame con il territorio.</p>
+        </div>
+        <Link className="button" href="/operatori/candidatura">Presenta la tua candidatura</Link>
+      </section>
+
       <section className="section sand">
         <div className="section-head"><div><div className="kicker">Scopri</div><h2>Cosa vuoi vivere oggi?</h2></div><p>BIMARIS organizza il territorio per esperienze e interessi, per aiutarti a scoprire Messina oltre i percorsi più scontati.</p></div>
         <div className="category-grid">{categories.map(c => <div className="category" key={c}>{c}</div>)}</div>
