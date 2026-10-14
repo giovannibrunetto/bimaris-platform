@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
 
+const COVER_BUCKET = "itinerary-covers";
+const MAX_COVER_BYTES = 4 * 1024 * 1024;
+const COVER_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
+
 function text(value: FormDataEntryValue | null, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
@@ -62,6 +70,48 @@ export async function POST(request: NextRequest) {
       });
       if (error) throw error;
       return back(request, "created");
+    }
+
+    if (action === "upload_cover" && itineraryId) {
+      const cover = form.get("cover");
+      if (!(cover instanceof File) || cover.size === 0) return back(request, "invalid-cover");
+      if (cover.size > MAX_COVER_BYTES) return back(request, "cover-too-large");
+
+      const extension = COVER_EXTENSIONS[cover.type];
+      if (!extension) return back(request, "invalid-cover");
+
+      const { data: itinerary, error: itineraryError } = await supabase
+        .from("itineraries")
+        .select("slug,title")
+        .eq("id", itineraryId)
+        .maybeSingle();
+      if (itineraryError) throw itineraryError;
+      if (!itinerary) return back(request, "invalid-data");
+
+      const storagePath = `${itinerary.slug}/${Date.now()}.${extension}`;
+      const bytes = new Uint8Array(await cover.arrayBuffer());
+      const { error: uploadError } = await supabase.storage
+        .from(COVER_BUCKET)
+        .upload(storagePath, bytes, {
+          contentType: cover.type,
+          cacheControl: "31536000",
+          upsert: false,
+        });
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage.from(COVER_BUCKET).getPublicUrl(storagePath);
+      const imageAlt = text(form.get("image_alt"), 300) || `Illustrazione di copertina per ${itinerary.title}`;
+      const { error: updateError } = await supabase
+        .from("itineraries")
+        .update({
+          image_url: publicUrlData.publicUrl,
+          image_alt: imageAlt,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", itineraryId);
+      if (updateError) throw updateError;
+
+      return back(request, "cover-uploaded");
     }
 
     if ((action === "publish" || action === "unpublish" || action === "feature" || action === "unfeature") && itineraryId) {
