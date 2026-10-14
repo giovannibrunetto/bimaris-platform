@@ -33,6 +33,7 @@ export function Header() {
           <Link href="/cultura" onClick={closeMobileMenu}>Cultura</Link>
           <Link href="/storie-miti-leggende" onClick={closeMobileMenu}>Miti e leggende</Link>
           <Link href="/mappa" onClick={closeMobileMenu}>Mappa</Link>
+          <Link href="/itinerari" onClick={closeMobileMenu}>Itinerari</Link>
           <Link href="/eventi" onClick={closeMobileMenu}>Eventi</Link>
           <Link href="/operatori" onClick={closeMobileMenu}>Operatori</Link>
           <Link href="/contatti" onClick={closeMobileMenu}>Contatti</Link>
