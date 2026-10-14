@@ -32,6 +32,12 @@ type RawCultureEntry = {
   source_label: string | null;
   source_url: string | null;
   featured: boolean | null;
+  image_url: string | null;
+  image_alt: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
+  image_license_url: string | null;
   place: {
     name: string;
     address: string | null;
@@ -109,6 +115,12 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
     sourceLabel: row.source_label ?? undefined,
     sourceUrl: row.source_url ?? undefined,
     featured: row.featured ?? false,
+    imageUrl: row.image_url ?? undefined,
+    imageAlt: row.image_alt ?? undefined,
+    imageAuthor: row.image_author ?? undefined,
+    imageLicense: row.image_license ?? undefined,
+    imageSourceUrl: row.image_source_url ?? undefined,
+    imageLicenseUrl: row.image_license_url ?? undefined,
   };
 }
 
@@ -158,7 +170,7 @@ export async function getPublishedCultureEntries(): Promise<CultureEntry[]> {
 
   const { data, error } = await client
     .from("culture_entries")
-    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,place:places(name,address,google_maps_query,latitude,longitude)")
+    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,place:places(name,address,google_maps_query,latitude,longitude)")
     .eq("published", true)
     .order("featured", { ascending: false })
     .order("title");
@@ -179,7 +191,7 @@ export async function getPublishedCultureEntryBySlug(slug: string): Promise<Cult
 
   const { data, error } = await client
     .from("culture_entries")
-    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,place:places(name,address,google_maps_query,latitude,longitude)")
+    .select("id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,place:places(name,address,google_maps_query,latitude,longitude)")
     .eq("published", true)
     .eq("slug", slug)
     .maybeSingle();
