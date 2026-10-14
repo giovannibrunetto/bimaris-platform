@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMapV2";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
@@ -134,7 +135,7 @@ export default async function MapPage() {
         <div className="kicker">Esplora</div>
         <h1>Mappa BIMARIS</h1>
         <p>
-          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Filtra ciò che ti interessa, seleziona singolarmente le tappe e crea il tuo percorso personale.
+          Monumenti, miti, operatori selezionati ed esperienze riuniti in un&apos;unica mappa. Filtra ciò che ti interessa, seleziona singolarmente le tappe e crea il tuo percorso personale.
         </p>
       </section>
 
@@ -150,6 +151,19 @@ export default async function MapPage() {
         </div>
 
         <BimarisGoogleMap points={points} />
+      </section>
+
+      <section className="section sand">
+        <div className="section-head">
+          <div>
+            <div className="kicker">Messina nel tempo</div>
+            <h2>Vuoi scegliere i monumenti per epoca storica?</h2>
+          </div>
+          <p>
+            La mappa storica BIMARIS separa Medioevo, Rinascimento e Cinquecento, Seicento e Settecento, Ottocento e Novecento. Puoi quindi creare un percorso composto soltanto dai monumenti dell&apos;epoca che vuoi approfondire.
+          </p>
+        </div>
+        <Link className="button" href="/mappa/epoche">Apri la mappa storica</Link>
       </section>
     </>
   );
