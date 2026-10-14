@@ -90,10 +90,7 @@ export default async function CulturePage() {
                       <span>{entry.category}</span>
                     </div>
                     <div className="card-body">
-                      <div className="eyebrow">
-                        {historicalPeriodLabel(entry.primaryHistoricalPeriod)}
-                        {entry.historicalSortYear ? ` · ${entry.historicalSortYear}` : ""}
-                      </div>
+                      <div className="eyebrow">{historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
                       <h3>{entry.title}</h3>
                       <p>{entry.excerpt}</p>
                       {entry.historicalPeriodNote && (
