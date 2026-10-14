@@ -1,0 +1,15 @@
+{
+  "name": "bimaris-platform",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.19.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @bimaris/web dev",
+    "dev:mobile": "pnpm --filter @bimaris/mobile start",
+    "build:web": "pnpm --filter @bimaris/web build",
+    "lint:web": "pnpm --filter @bimaris/web lint",
+    "typecheck:web": "pnpm --filter @bimaris/web exec tsc --noEmit",
+    "typecheck:mobile": "pnpm --filter @bimaris/mobile exec tsc --noEmit",
+    "check": "pnpm lint:web && pnpm typecheck:web && pnpm typecheck:mobile"
+  }
+}

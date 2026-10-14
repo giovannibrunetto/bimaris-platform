@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "BIMARIS",
+    "slug": "bimaris",
+    "scheme": "bimaris",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "plugins": ["expo-router"],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "it.bimaris.app" },
+    "android": { "package": "it.bimaris.app" },
+    "experiments": { "typedRoutes": true }
+  }
+}

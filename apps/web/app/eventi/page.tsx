@@ -1,0 +1,2 @@
+import { events } from "@/data/mock";
+export default function EventsPage(){return <><section className="page-hero"><div className="kicker">Agenda</div><h1>Eventi</h1><p>Cosa succede oggi, questo weekend e nei prossimi giorni.</p></section><section className="section"><ul className="list">{events.map(e=><li key={e.title}><strong>{e.date}</strong><h3>{e.title}</h3><p>{e.place} · {e.category}</p></li>)}</ul></section></>}

@@ -1,0 +1,25 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { ConsentBanner } from "@/components/ConsentBanner";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
+
+export const metadata: Metadata = {
+  title: "BIMARIS — Messina da Vivere",
+  description: "Esperienze, sapori e luoghi selezionati per vivere davvero Messina.",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="it">
+      <body>
+        <Header />
+        <AnalyticsTracker />
+        <main>{children}</main>
+        <Footer />
+        <ConsentBanner />
+      </body>
+    </html>
+  );
+}

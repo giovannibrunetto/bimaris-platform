@@ -1,0 +1,2 @@
+import { itineraries } from "@/data/mock";
+export default function ItinerariesPage(){return <><section className="page-hero"><div className="kicker">Percorsi</div><h1>Itinerari BIMARIS</h1><p>Percorsi pensati per trasformare il tempo disponibile in esperienze concrete.</p></section><section className="section"><div className="itinerary-grid">{itineraries.map(i=><div className="detail-panel" key={i.title}><div className="eyebrow">{i.target}</div><h3>{i.title}</h3><p>{i.duration} · {i.stops} tappe</p></div>)}</div></section></>}

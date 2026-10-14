@@ -1,0 +1,10 @@
+import { Link } from "expo-router";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { theme } from "@/src/theme";
+import { mobileExperiences } from "@/src/data";
+
+export default function HomeScreen(){return <SafeAreaView style={styles.safe}><ScrollView>
+ <View style={styles.hero}><Text style={styles.kicker}>TRA DUE MARI. UN TERRITORIO DA VIVERE.</Text><Text style={styles.logo}>BIMARIS</Text><Text style={styles.payoff}>Messina da Vivere</Text><Text style={styles.desc}>Esperienze, sapori e luoghi selezionati per vivere davvero Messina.</Text><Link href="/experiences" style={styles.button}>Scopri Messina</Link></View>
+ <View style={styles.section}><Text style={styles.heading}>In evidenza</Text>{mobileExperiences.map(e=><View style={styles.card} key={e.id}><Text style={styles.category}>{e.category}</Text><Text style={styles.title}>{e.title}</Text><Text style={styles.place}>{e.place}</Text><Text style={styles.subtitle}>{e.subtitle}</Text></View>)}</View>
+ </ScrollView></SafeAreaView>}
+const styles=StyleSheet.create({safe:{flex:1,backgroundColor:theme.navy},hero:{paddingHorizontal:24,paddingTop:72,paddingBottom:54,backgroundColor:theme.navy},kicker:{color:theme.gold,fontWeight:"700",fontSize:11,letterSpacing:1.8},logo:{color:"white",fontSize:56,fontFamily:"serif",letterSpacing:4,marginTop:12},payoff:{color:"white",fontSize:25,marginTop:2},desc:{color:"#cbd5dc",fontSize:17,lineHeight:25,marginTop:18,marginBottom:28},button:{backgroundColor:theme.gold,color:theme.navy,paddingVertical:13,paddingHorizontal:18,borderRadius:24,overflow:"hidden",fontWeight:"700",alignSelf:"flex-start"},section:{backgroundColor:"#fbfbfa",padding:20,gap:14},heading:{fontFamily:"serif",fontSize:34,color:theme.ink,marginBottom:4},card:{backgroundColor:"white",padding:20,borderRadius:20,borderWidth:1,borderColor:"#e0e5e8"},category:{color:"#8a6d3d",fontSize:11,fontWeight:"700",letterSpacing:1.4},title:{fontFamily:"serif",fontSize:26,color:theme.ink,marginTop:8},place:{color:theme.gold,fontWeight:"700",marginTop:6},subtitle:{color:theme.muted,lineHeight:21,marginTop:8}})
