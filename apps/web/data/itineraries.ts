@@ -62,7 +62,7 @@ type RawItinerary = {
   stops: RawStop[] | null;
 };
 
-const itinerarySelect = `
+const itinerarySelect: string = `
   id,slug,title,excerpt,description,duration_minutes,target,territory,featured,image_url,image_alt,
   stops:itinerary_stops(
     id,position,stay_minutes,note,custom_title,custom_description,google_maps_query,latitude,longitude,
