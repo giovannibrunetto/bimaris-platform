@@ -1,10 +1,51 @@
-import { BimarisGoogleMap, type BimarisMapPoint } from "@/components/BimarisGoogleMap";
+import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMap";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedStories } from "@/data/stories";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+function uniqueFilters(filters: MapFilterKey[]) {
+  return Array.from(new Set(filters));
+}
+
+function experienceFilters(category: string): MapFilterKey[] {
+  const thematic: Record<string, MapFilterKey | undefined> = {
+    cultura: "cultura",
+    mangiare: "sapori",
+    natura: "natura",
+    mare: "mare",
+    "shopping-artigianato": "artigianato",
+  };
+
+  return uniqueFilters(["attrazioni", ...(thematic[category] ? [thematic[category] as MapFilterKey] : [])]);
+}
+
+function categoryDisplayName(category: string) {
+  const names: Record<string, string> = {
+    cultura: "Cultura",
+    esperienze: "Attrazioni",
+    mangiare: "Sapori",
+    natura: "Natura",
+    mare: "Mare",
+    "shopping-artigianato": "Artigianato",
+  };
+  return names[category] ?? "Esperienza";
+}
+
+function operatorFilters(category?: string): MapFilterKey[] {
+  const filters: MapFilterKey[] = ["operatori"];
+  const value = (category ?? "").toLowerCase();
+
+  if (/ristor|enotec|cantin|vino|vinicol|degust|gastronom|produtt|caseific|salum|pastic|panific|agritur|food|sapori/.test(value)) filters.push("sapori");
+  if (/mare|barca|naut|diving|subac|kayak|vela|pesca/.test(value)) filters.push("mare");
+  if (/natura|trek|escursion|outdoor|ambient|parco|bike|cicl/.test(value)) filters.push("natura");
+  if (/artig|ceramic|bottega|shopping|laboratorio/.test(value)) filters.push("artigianato");
+  if (/cultur|muse|stor|teatr|guida turistic/.test(value)) filters.push("cultura");
+
+  return uniqueFilters(filters);
+}
 
 export default async function MapPage() {
   const [cultureEntries, stories, operators, experiences] = await Promise.all([
@@ -22,6 +63,8 @@ export default async function MapPage() {
     googleMapsQuery: entry.googleMapsQuery,
     latitude: entry.latitude,
     longitude: entry.longitude,
+    filterCategories: ["cultura"],
+    categoryLabel: entry.category,
     links: [{ label: "Apri la scheda culturale", href: `/cultura/${entry.slug}` }],
   }));
 
@@ -46,6 +89,8 @@ export default async function MapPage() {
         googleMapsQuery: place.googleMapsQuery,
         latitude: place.latitude,
         longitude: place.longitude,
+        filterCategories: ["cultura"],
+        categoryLabel: "Miti e leggende",
         links: [storyLink],
       });
     });
@@ -61,6 +106,8 @@ export default async function MapPage() {
     googleMapsQuery: operator.googleMapsQuery,
     latitude: operator.latitude,
     longitude: operator.longitude,
+    filterCategories: operatorFilters(operator.category),
+    categoryLabel: operator.category,
     links: [{ label: "Apri la scheda operatore", href: `/operatori/${operator.slug}` }],
   }));
 
@@ -74,6 +121,8 @@ export default async function MapPage() {
       googleMapsQuery: experience.googleMapsQuery as string,
       latitude: experience.latitude,
       longitude: experience.longitude,
+      filterCategories: experienceFilters(experience.category),
+      categoryLabel: categoryDisplayName(experience.category),
       links: [{ label: "Apri l'esperienza", href: `/esperienze/${experience.slug}` }],
     }));
 
@@ -85,7 +134,7 @@ export default async function MapPage() {
         <div className="kicker">Esplora</div>
         <h1>Mappa BIMARIS</h1>
         <p>
-          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Seleziona un segnaposto per aprire la relativa scheda o avviare le indicazioni stradali.
+          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Puoi vedere tutto insieme oppure scegliere una sola categoria: cultura, attrazioni, sapori, natura, mare, artigianato o operatori.
         </p>
       </section>
 
@@ -96,7 +145,7 @@ export default async function MapPage() {
             <h2>Scopri il territorio sulla mappa.</h2>
           </div>
           <p>
-            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Usa i filtri per scegliere cosa visualizzare oppure “La mia posizione” per orientarti.
+            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Le lettere dei marker identificano il tipo di punto, mentre i filtri permettono di mostrare solo ciò che ti interessa.
           </p>
         </div>
 
