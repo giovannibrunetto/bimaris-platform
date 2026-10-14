@@ -16,11 +16,10 @@ export function Header() {
       <details className="mobile-menu">
         <summary aria-label="Apri menu di navigazione">Menu</summary>
         <nav className="mobile-nav" aria-label="Navigazione mobile">
-          <Link href="/esperienze">Esperienze</Link>
           <Link href="/mappa">Mappa</Link>
-          <Link href="/itinerari">Itinerari</Link>
           <Link href="/eventi">Eventi</Link>
           <Link href="/operatori/candidatura">Operatori</Link>
+          <Link href="/contatti">Contatti</Link>
         </nav>
       </details>
     </header>
