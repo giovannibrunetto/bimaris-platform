@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { track } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -10,7 +11,7 @@ declare global {
 
 const MESSINA_CENTER = { lat: 38.1938, lng: 15.5540 };
 
-type MapPointKind = "culture" | "legend" | "operator";
+type MapPointKind = "culture" | "legend" | "operator" | "experience";
 
 export type BimarisMapPoint = {
   id: string;
@@ -29,18 +30,21 @@ export type BimarisMapPoint = {
 function markerColor(kind: MapPointKind) {
   if (kind === "culture") return "#caa86a";
   if (kind === "operator") return "#244b3b";
+  if (kind === "experience") return "#8a5a35";
   return "#376070";
 }
 
 function markerLabel(kind: MapPointKind) {
   if (kind === "culture") return "C";
   if (kind === "operator") return "O";
+  if (kind === "experience") return "E";
   return "M";
 }
 
 function categoryLabel(kind: MapPointKind) {
   if (kind === "culture") return "Cultura";
   if (kind === "operator") return "Operatore BIMARIS";
+  if (kind === "experience") return "Esperienza BIMARIS";
   return "Miti e leggende";
 }
 
@@ -137,6 +141,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
     culture: true,
     legend: true,
     operator: true,
+    experience: true,
   });
 
   useEffect(() => {
@@ -161,6 +166,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
 
       infoWindowRef.current = new window.google.maps.InfoWindow();
       setStatus("ready");
+      track("map_open", { points: points.length });
     };
 
     if (window.google?.maps) {
@@ -184,7 +190,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
     script.addEventListener("load", initialiseMap, { once: true });
     script.addEventListener("error", () => setStatus("error"), { once: true });
     document.head.appendChild(script);
-  }, []);
+  }, [points.length]);
 
   useEffect(() => {
     if (status !== "ready" || !mapRef.current || !window.google?.maps) return;
@@ -240,12 +246,13 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
             fontSize: "11px",
             fontWeight: "700",
           },
-          zIndex: point.kind === "operator" ? 30 : point.kind === "culture" ? 20 : 10,
+          zIndex: point.kind === "experience" ? 40 : point.kind === "operator" ? 30 : point.kind === "culture" ? 20 : 10,
         });
 
         marker.addListener("click", () => {
           infoWindowRef.current?.setContent(createInfoWindowContent(point));
           infoWindowRef.current?.open({ map, anchor: marker });
+          track("map_marker_click", { point_id: point.id, kind: point.kind, title: point.title });
         });
 
         markersRef.current.push(marker);
@@ -310,7 +317,19 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
 
   const toggleKind = (kind: MapPointKind) => {
     setActiveKinds(current => ({ ...current, [kind]: !current[kind] }));
+    track("filter_used", { section: "map", filter: "kind", value: kind });
   };
+
+  const filterStyle = (kind: MapPointKind) => ({
+    border: "1px solid rgba(3,17,26,.12)",
+    borderRadius: 999,
+    padding: "10px 14px",
+    background: activeKinds[kind] ? markerColor(kind) : "rgba(255,255,255,.96)",
+    color: activeKinds[kind] && kind !== "culture" ? "#ffffff" : "#101820",
+    fontWeight: 700,
+    cursor: "pointer",
+    boxShadow: "0 6px 20px rgba(7,24,35,.10)",
+  });
 
   return (
     <div style={{ position: "relative" }}>
@@ -339,68 +358,12 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
         <>
           <div
             aria-label="Filtri della mappa"
-            style={{
-              position: "absolute",
-              left: 18,
-              top: 18,
-              zIndex: 3,
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              maxWidth: "calc(100% - 36px)",
-            }}
+            style={{ position: "absolute", left: 18, top: 18, zIndex: 3, display: "flex", flexWrap: "wrap", gap: 8, maxWidth: "calc(100% - 36px)" }}
           >
-            <button
-              type="button"
-              aria-pressed={activeKinds.culture}
-              onClick={() => toggleKind("culture")}
-              style={{
-                border: "1px solid rgba(3,17,26,.12)",
-                borderRadius: 999,
-                padding: "10px 14px",
-                background: activeKinds.culture ? "#caa86a" : "rgba(255,255,255,.96)",
-                color: "#101820",
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
-              }}
-            >
-              Cultura
-            </button>
-            <button
-              type="button"
-              aria-pressed={activeKinds.legend}
-              onClick={() => toggleKind("legend")}
-              style={{
-                border: "1px solid rgba(3,17,26,.12)",
-                borderRadius: 999,
-                padding: "10px 14px",
-                background: activeKinds.legend ? "#376070" : "rgba(255,255,255,.96)",
-                color: activeKinds.legend ? "#ffffff" : "#101820",
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
-              }}
-            >
-              Miti e leggende
-            </button>
-            <button
-              type="button"
-              aria-pressed={activeKinds.operator}
-              onClick={() => toggleKind("operator")}
-              style={{
-                border: "1px solid rgba(3,17,26,.12)",
-                borderRadius: 999,
-                padding: "10px 14px",
-                background: activeKinds.operator ? "#244b3b" : "rgba(255,255,255,.96)",
-                color: activeKinds.operator ? "#ffffff" : "#101820",
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
-              }}
-            >
-              Operatori
-            </button>
+            <button type="button" aria-pressed={activeKinds.culture} onClick={() => toggleKind("culture")} style={filterStyle("culture")}>Cultura</button>
+            <button type="button" aria-pressed={activeKinds.legend} onClick={() => toggleKind("legend")} style={filterStyle("legend")}>Miti e leggende</button>
+            <button type="button" aria-pressed={activeKinds.operator} onClick={() => toggleKind("operator")} style={filterStyle("operator")}>Operatori</button>
+            <button type="button" aria-pressed={activeKinds.experience} onClick={() => toggleKind("experience")} style={filterStyle("experience")}>Esperienze</button>
           </div>
 
           <div style={{ position: "absolute", left: 18, bottom: 18, zIndex: 2, display: "grid", gap: 8 }}>
