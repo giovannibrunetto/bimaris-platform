@@ -10,12 +10,115 @@ declare global {
 
 const MESSINA_CENTER = { lat: 38.1938, lng: 15.5540 };
 
-export function BimarisGoogleMap() {
+type MapPointKind = "culture" | "legend";
+
+export type BimarisMapPoint = {
+  id: string;
+  kind: MapPointKind;
+  title: string;
+  address?: string;
+  googleMapsQuery: string;
+  latitude?: number;
+  longitude?: number;
+  links: Array<{
+    label: string;
+    href: string;
+  }>;
+};
+
+function markerIcon(maps: any, kind: MapPointKind) {
+  const fill = kind === "culture" ? "#caa86a" : "#376070";
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="50" viewBox="0 0 38 50">
+      <path d="M19 1C9.1 1 1 9.1 1 19c0 13.3 18 29.8 18 29.8S37 32.3 37 19C37 9.1 28.9 1 19 1Z" fill="${fill}" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="19" cy="19" r="9" fill="rgba(3,17,26,.30)"/>
+    </svg>`;
+
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new maps.Size(38, 50),
+    anchor: new maps.Point(19, 49),
+    labelOrigin: new maps.Point(19, 19),
+  };
+}
+
+function createInfoWindowContent(point: BimarisMapPoint) {
+  const root = document.createElement("div");
+  root.style.maxWidth = "270px";
+  root.style.padding = "4px 2px 2px";
+  root.style.color = "#101820";
+  root.style.fontFamily = "Arial, Helvetica, sans-serif";
+
+  const category = document.createElement("div");
+  category.textContent = point.kind === "culture" ? "Cultura" : "Miti e leggende";
+  category.style.color = point.kind === "culture" ? "#8d6b34" : "#376070";
+  category.style.fontSize = "11px";
+  category.style.fontWeight = "700";
+  category.style.letterSpacing = ".12em";
+  category.style.textTransform = "uppercase";
+  root.appendChild(category);
+
+  const title = document.createElement("div");
+  title.textContent = point.title;
+  title.style.fontFamily = "Georgia, serif";
+  title.style.fontSize = "20px";
+  title.style.fontWeight = "700";
+  title.style.margin = "7px 0 6px";
+  root.appendChild(title);
+
+  if (point.address) {
+    const address = document.createElement("div");
+    address.textContent = point.address;
+    address.style.fontSize = "13px";
+    address.style.lineHeight = "1.4";
+    address.style.color = "#59656d";
+    address.style.marginBottom = "12px";
+    root.appendChild(address);
+  }
+
+  const links = document.createElement("div");
+  links.style.display = "grid";
+  links.style.gap = "7px";
+
+  point.links.forEach(link => {
+    const anchor = document.createElement("a");
+    anchor.href = link.href;
+    anchor.textContent = `${link.label} →`;
+    anchor.style.color = "#8d6b34";
+    anchor.style.fontSize = "13px";
+    anchor.style.fontWeight = "700";
+    anchor.style.textDecoration = "none";
+    links.appendChild(anchor);
+  });
+
+  const directions = document.createElement("a");
+  directions.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(point.googleMapsQuery)}`;
+  directions.target = "_blank";
+  directions.rel = "noreferrer";
+  directions.textContent = "Indicazioni con Google Maps →";
+  directions.style.color = "#376070";
+  directions.style.fontSize = "13px";
+  directions.style.fontWeight = "700";
+  directions.style.textDecoration = "none";
+  links.appendChild(directions);
+
+  root.appendChild(links);
+  return root;
+}
+
+export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const userMarkerRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const infoWindowRef = useRef<any>(null);
+  const coordinateCacheRef = useRef<Map<string, { lat: number; lng: number }>>(new Map());
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [locationMessage, setLocationMessage] = useState("");
+  const [activeKinds, setActiveKinds] = useState<Record<MapPointKind, boolean>>({
+    culture: true,
+    legend: true,
+  });
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -26,17 +129,18 @@ export function BimarisGoogleMap() {
     }
 
     const initialiseMap = () => {
-      if (!mapElement.current || !window.google?.maps) return;
+      if (!mapElement.current || !window.google?.maps || mapRef.current) return;
 
       mapRef.current = new window.google.maps.Map(mapElement.current, {
         center: MESSINA_CENTER,
-        zoom: 13,
+        zoom: 12,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: true,
         gestureHandling: "greedy",
       });
 
+      infoWindowRef.current = new window.google.maps.InfoWindow();
       setStatus("ready");
     };
 
@@ -62,6 +166,93 @@ export function BimarisGoogleMap() {
     script.addEventListener("error", () => setStatus("error"), { once: true });
     document.head.appendChild(script);
   }, []);
+
+  useEffect(() => {
+    if (status !== "ready" || !mapRef.current || !window.google?.maps) return;
+
+    const maps = window.google.maps;
+    const map = mapRef.current;
+    const geocoder = new maps.Geocoder();
+    let cancelled = false;
+
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+    infoWindowRef.current?.close();
+
+    const visiblePoints = points.filter(point => activeKinds[point.kind]);
+
+    const resolvePosition = async (point: BimarisMapPoint) => {
+      if (Number.isFinite(point.latitude) && Number.isFinite(point.longitude)) {
+        return { lat: point.latitude as number, lng: point.longitude as number };
+      }
+
+      const cached = coordinateCacheRef.current.get(point.googleMapsQuery);
+      if (cached) return cached;
+
+      try {
+        const response = await geocoder.geocode({ address: point.googleMapsQuery });
+        const location = response.results?.[0]?.geometry?.location;
+        if (!location) return null;
+
+        const position = { lat: location.lat(), lng: location.lng() };
+        coordinateCacheRef.current.set(point.googleMapsQuery, position);
+        return position;
+      } catch {
+        return null;
+      }
+    };
+
+    const renderMarkers = async () => {
+      const bounds = new maps.LatLngBounds();
+      let rendered = 0;
+
+      for (const point of visiblePoints) {
+        const position = await resolvePosition(point);
+        if (cancelled || !position) continue;
+
+        const marker = new maps.Marker({
+          map,
+          position,
+          title: point.title,
+          icon: markerIcon(maps, point.kind),
+          label: {
+            text: point.kind === "culture" ? "C" : "M",
+            color: "#ffffff",
+            fontSize: "11px",
+            fontWeight: "700",
+          },
+          zIndex: point.kind === "culture" ? 20 : 10,
+        });
+
+        marker.addListener("click", () => {
+          infoWindowRef.current?.setContent(createInfoWindowContent(point));
+          infoWindowRef.current?.open({ map, anchor: marker });
+        });
+
+        markersRef.current.push(marker);
+        bounds.extend(position);
+        rendered += 1;
+      }
+
+      if (cancelled || rendered === 0) return;
+
+      if (rendered === 1) {
+        map.setCenter(bounds.getCenter());
+        map.setZoom(15);
+      } else {
+        map.fitBounds(bounds, 58);
+        maps.event.addListenerOnce(map, "idle", () => {
+          if (map.getZoom() > 14) map.setZoom(14);
+        });
+      }
+    };
+
+    renderMarkers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeKinds, points, status]);
 
   const locateUser = () => {
     if (!navigator.geolocation) {
@@ -98,12 +289,16 @@ export function BimarisGoogleMap() {
     );
   };
 
+  const toggleKind = (kind: MapPointKind) => {
+    setActiveKinds(current => ({ ...current, [kind]: !current[kind] }));
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <div
         ref={mapElement}
         aria-label="Mappa interattiva BIMARIS di Messina"
-        style={{ width: "100%", minHeight: "560px", borderRadius: "26px", overflow: "hidden", background: "#e8ecef" }}
+        style={{ width: "100%", minHeight: "620px", borderRadius: "26px", overflow: "hidden", background: "#e8ecef" }}
       />
 
       {status === "loading" && (
@@ -122,14 +317,65 @@ export function BimarisGoogleMap() {
       )}
 
       {status === "ready" && (
-        <div style={{ position: "absolute", left: 18, bottom: 18, zIndex: 2, display: "grid", gap: 8 }}>
-          <button className="button" type="button" onClick={locateUser}>La mia posizione</button>
-          {locationMessage && (
-            <div style={{ background: "rgba(255,255,255,.96)", color: "#101820", borderRadius: 12, padding: "8px 12px", fontSize: 13, maxWidth: 260 }}>
-              {locationMessage}
-            </div>
-          )}
-        </div>
+        <>
+          <div
+            aria-label="Filtri della mappa"
+            style={{
+              position: "absolute",
+              left: 18,
+              top: 18,
+              zIndex: 3,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 8,
+              maxWidth: "calc(100% - 36px)",
+            }}
+          >
+            <button
+              type="button"
+              aria-pressed={activeKinds.culture}
+              onClick={() => toggleKind("culture")}
+              style={{
+                border: "1px solid rgba(3,17,26,.12)",
+                borderRadius: 999,
+                padding: "10px 14px",
+                background: activeKinds.culture ? "#caa86a" : "rgba(255,255,255,.96)",
+                color: "#101820",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
+              }}
+            >
+              Cultura
+            </button>
+            <button
+              type="button"
+              aria-pressed={activeKinds.legend}
+              onClick={() => toggleKind("legend")}
+              style={{
+                border: "1px solid rgba(3,17,26,.12)",
+                borderRadius: 999,
+                padding: "10px 14px",
+                background: activeKinds.legend ? "#376070" : "rgba(255,255,255,.96)",
+                color: activeKinds.legend ? "#ffffff" : "#101820",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 6px 20px rgba(7,24,35,.10)",
+              }}
+            >
+              Miti e leggende
+            </button>
+          </div>
+
+          <div style={{ position: "absolute", left: 18, bottom: 18, zIndex: 2, display: "grid", gap: 8 }}>
+            <button className="button" type="button" onClick={locateUser}>La mia posizione</button>
+            {locationMessage && (
+              <div style={{ background: "rgba(255,255,255,.96)", color: "#101820", borderRadius: 12, padding: "8px 12px", fontSize: 13, maxWidth: 260 }}>
+                {locationMessage}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
