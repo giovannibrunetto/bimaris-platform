@@ -1,10 +1,18 @@
 import Link from "next/link";
 import { ExperienceCard } from "@/components/ExperienceCard";
-import { experiences, territories, itineraries, events } from "@/data/mock";
+import { getActiveTerritories, getPublishedExperiences } from "@/data/live";
+import { itineraries, events } from "@/data/mock";
+
+export const revalidate = 300;
 
 const categories = ["Mangiare", "Esperienze", "Mare", "Natura", "Cultura", "Shopping e artigianato", "Famiglia", "Vicino a te"];
 
-export default function Home() {
+export default async function Home() {
+  const [experiences, territories] = await Promise.all([
+    getPublishedExperiences(),
+    getActiveTerritories(),
+  ]);
+
   return (
     <>
       <section className="hero">
@@ -31,7 +39,7 @@ export default function Home() {
 
       <section className="section">
         <div className="section-head"><div><div className="kicker">Selezionati da BIMARIS</div><h2>Esperienze in evidenza</h2></div><Link className="text-link" href="/esperienze">Vedi tutte →</Link></div>
-        <div className="cards">{experiences.map(e => <ExperienceCard key={e.id} experience={e} />)}</div>
+        <div className="cards">{experiences.filter(e => e.featured).map(e => <ExperienceCard key={e.id} experience={e} />)}</div>
       </section>
 
       <section className="section dark">
