@@ -6,8 +6,11 @@ import { track } from "@/lib/analytics";
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
+
   useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
     track("page_view", { pathname });
   }, [pathname]);
+
   return null;
 }
