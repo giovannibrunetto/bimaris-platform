@@ -1,4 +1,4 @@
-import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMap";
+import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMapV2";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedStories } from "@/data/stories";
@@ -134,7 +134,7 @@ export default async function MapPage() {
         <div className="kicker">Esplora</div>
         <h1>Mappa BIMARIS</h1>
         <p>
-          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Puoi vedere tutto insieme oppure scegliere una sola categoria: cultura, attrazioni, sapori, natura, mare, artigianato o operatori.
+          Monumenti, miti, operatori selezionati ed esperienze riuniti in un'unica mappa. Filtra ciò che ti interessa, seleziona singolarmente le tappe e crea il tuo percorso personale.
         </p>
       </section>
 
@@ -145,7 +145,7 @@ export default async function MapPage() {
             <h2>Scopri il territorio sulla mappa.</h2>
           </div>
           <p>
-            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Le lettere dei marker identificano il tipo di punto, mentre i filtri permettono di mostrare solo ciò che ti interessa.
+            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Tocca un marker e scegli “Aggiungi al mio percorso”: puoi combinare liberamente monumenti, miti e altre attrazioni e ottenere le indicazioni solo per le tappe selezionate.
           </p>
         </div>
 
