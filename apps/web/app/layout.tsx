@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
+import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
 
 export const metadata: Metadata = {
   title: "BIMARIS — Messina da Vivere",
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <Header />
         <AnalyticsTracker />
+        <AnalyticsClickTracker />
         <main>{children}</main>
         <Footer />
         <ConsentBanner />
