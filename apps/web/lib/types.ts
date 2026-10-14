@@ -21,12 +21,26 @@ export type Experience = {
   description: string;
   territory: TerritorySlug;
   category: CategorySlug;
+  categoryName: string;
   location: string;
   duration?: string;
   priceFrom?: number;
   operatorName: string;
+  operatorSlug?: string;
+  operatorWhatsapp?: string;
+  operatorWebsite?: string;
+  operatorInstagram?: string;
   whySelected: string;
   featured?: boolean;
+  bookable?: boolean;
+  bookingUrl?: string;
+  bookingNote?: string;
+  meetingPoint?: string;
+  googleMapsQuery?: string;
+  latitude?: number;
+  longitude?: number;
+  imageUrl?: string;
+  imageAlt?: string;
 };
 
 export type CultureEntry = {
