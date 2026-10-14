@@ -1,0 +1,214 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { createServiceClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type Application = {
+  id: string;
+  business_name: string;
+  contact_name: string;
+  email: string;
+  phone: string | null;
+  whatsapp: string | null;
+  category: string | null;
+  location: string | null;
+  address: string | null;
+  website: string | null;
+  instagram: string | null;
+  description: string;
+  status: string;
+  review_notes: string | null;
+  operator_id: string | null;
+  created_at: string;
+};
+
+type Operator = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string | null;
+  published: boolean;
+  selection_status: string;
+};
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("it-IT", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/Rome",
+  }).format(new Date(value));
+}
+
+function statusLabel(value: string) {
+  return ({
+    new: "Nuova",
+    reviewing: "In valutazione",
+    accepted: "Accettata",
+    rejected: "Rifiutata",
+  } as Record<string, string>)[value] ?? value;
+}
+
+function stateMessage(state?: string) {
+  const messages: Record<string, string> = {
+    reviewing: "Candidatura messa in valutazione.",
+    rejected: "Candidatura rifiutata.",
+    accepted: "Candidatura approvata.",
+    published: "Operatore pubblicato.",
+    unpublished: "Operatore nascosto.",
+    "invalid-slug": "Slug non valido.",
+    "action-error": "Operazione non riuscita. Riprova.",
+  };
+  return state ? (messages[state] ?? state) : null;
+}
+
+export default async function AdminOperatorsPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
+  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+
+  const supabase = createServiceClient();
+  if (!supabase) throw new Error("Supabase service client non configurato");
+
+  const [{ data: applicationsData }, { data: operatorsData }] = await Promise.all([
+    supabase
+      .from("operator_applications")
+      .select("id,business_name,contact_name,email,phone,whatsapp,category,location,address,website,instagram,description,status,review_notes,operator_id,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100),
+    supabase
+      .from("operators")
+      .select("id,slug,name,category,published,selection_status")
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+
+  const applications = (applicationsData ?? []) as Application[];
+  const operators = (operatorsData ?? []) as Operator[];
+  const { state } = await searchParams;
+  const message = stateMessage(state);
+
+  const counts = applications.reduce<Record<string, number>>((acc, item) => {
+    acc[item.status] = (acc[item.status] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <>
+      <section className="page-hero">
+        <div className="kicker">Area privata</div>
+        <h1>Gestione operatori</h1>
+        <p>Valuta le candidature, approva le realtà selezionate e controlla quali operatori sono pubblicati su BIMARIS.</p>
+        <div className="actions">
+          <Link className="button ghost" href="/admin">Dashboard</Link>
+          <Link className="button" href="/operatori" target="_blank" rel="noreferrer">Vedi operatori sul sito ↗</Link>
+        </div>
+      </section>
+
+      {message && (
+        <section style={{ padding: "22px 6vw 0" }}>
+          <div className="detail-panel" style={{ padding: 16 }}>{message}</div>
+        </section>
+      )}
+
+      <section className="section sand">
+        <div className="section-head">
+          <div>
+            <div className="kicker">Candidature</div>
+            <h2>Valutazione operatori</h2>
+          </div>
+          <p>Nuove: {counts.new ?? 0} · In valutazione: {counts.reviewing ?? 0} · Accettate: {counts.accepted ?? 0} · Rifiutate: {counts.rejected ?? 0}</p>
+        </div>
+
+        <div style={{ display: "grid", gap: 18 }}>
+          {applications.length > 0 ? applications.map(application => (
+            <article className="detail-panel" key={application.id}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                <div>
+                  <div className="eyebrow">{application.category ?? "Categoria non indicata"} · {statusLabel(application.status)}</div>
+                  <h3 style={{ marginBottom: 6 }}>{application.business_name}</h3>
+                  <div className="muted">{application.location ?? "Località non indicata"} · ricevuta {formatDate(application.created_at)}</div>
+                </div>
+                {application.operator_id && (
+                  <Link className="text-link" href={`/operatori/${operators.find(item => item.id === application.operator_id)?.slug ?? ""}`} target="_blank" rel="noreferrer">
+                    Scheda pubblica ↗
+                  </Link>
+                )}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 12, marginTop: 18 }}>
+                <div><strong>Referente</strong><br />{application.contact_name}</div>
+                <div><strong>Email</strong><br /><a href={`mailto:${application.email}`}>{application.email}</a></div>
+                <div><strong>Telefono</strong><br />{application.phone ?? "—"}</div>
+                <div><strong>WhatsApp</strong><br />{application.whatsapp ?? "—"}</div>
+                <div><strong>Indirizzo</strong><br />{application.address ?? application.location ?? "—"}</div>
+                <div><strong>Sito / Instagram</strong><br />{application.website ?? application.instagram ?? "—"}</div>
+              </div>
+
+              <p style={{ lineHeight: 1.65, marginTop: 18 }}>{application.description}</p>
+
+              {(application.status === "new" || application.status === "reviewing") && (
+                <form method="post" action="/api/admin/applications" style={{ display: "grid", gap: 12, marginTop: 18 }}>
+                  <input type="hidden" name="application_id" value={application.id} />
+                  <input type="hidden" name="business_name" value={application.business_name} />
+                  <label>
+                    Slug della scheda
+                    <input name="slug" defaultValue={application.business_name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")} />
+                  </label>
+                  <label>
+                    Note / perché BIMARIS la seleziona
+                    <textarea name="notes" defaultValue={application.review_notes ?? ""} style={{ width: "100%", minHeight: 90, border: "1px solid #cfd6db", borderRadius: 12, padding: 12 }} />
+                  </label>
+                  <div className="actions" style={{ marginTop: 0 }}>
+                    <button className="button ghost" name="action" value="reviewing" type="submit">In valutazione</button>
+                    <button className="button" name="action" value="accept" type="submit">Approva</button>
+                    <button className="button" name="action" value="accept_publish" type="submit">Approva e pubblica</button>
+                    <button className="button ghost" name="action" value="reject" type="submit">Rifiuta</button>
+                  </div>
+                </form>
+              )}
+            </article>
+          )) : <div className="detail-panel"><p>Nessuna candidatura presente.</p></div>}
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-head">
+          <div>
+            <div className="kicker">Catalogo</div>
+            <h2>Operatori creati</h2>
+          </div>
+          <p>{operators.filter(item => item.published).length} pubblicati su {operators.length} operatori presenti.</p>
+        </div>
+
+        <div style={{ overflowX: "auto" }}>
+          <table className="table">
+            <thead><tr><th>Operatore</th><th>Categoria</th><th>Stato</th><th>Pubblicazione</th><th>Azioni</th></tr></thead>
+            <tbody>
+              {operators.map(operator => (
+                <tr key={operator.id}>
+                  <td><strong>{operator.name}</strong><br /><code>{operator.slug}</code></td>
+                  <td>{operator.category ?? "—"}</td>
+                  <td>{operator.selection_status}</td>
+                  <td>{operator.published ? "Online" : "Non pubblicato"}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {operator.published && <Link className="text-link" href={`/operatori/${operator.slug}`} target="_blank" rel="noreferrer">Apri ↗</Link>}
+                      <form method="post" action="/api/admin/applications">
+                        <input type="hidden" name="operator_id" value={operator.id} />
+                        <button className="button ghost" name="action" value={operator.published ? "unpublish_operator" : "publish_operator"} type="submit">
+                          {operator.published ? "Nascondi" : "Pubblica"}
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {operators.length === 0 && <tr><td colSpan={5}>Nessun operatore presente.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
+}
