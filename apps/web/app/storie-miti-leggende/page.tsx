@@ -38,8 +38,27 @@ export default async function StoriesPage() {
           <div className="cards">
             {stories.map(story => (
               <Link className="card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
-                <div className="card-media">
-                  <span>{story.storyType}</span>
+                <div
+                  className="card-media"
+                  style={{
+                    position: "relative",
+                    minHeight: 0,
+                    padding: 0,
+                    aspectRatio: "4 / 5",
+                    overflow: "hidden",
+                    background: "linear-gradient(135deg, #8d7354, #4f3b28)",
+                  }}
+                >
+                  {story.imageUrl && (
+                    <img
+                      src={story.imageUrl}
+                      alt={story.imageAlt ?? story.title}
+                      loading="lazy"
+                      decoding="async"
+                      style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
+                    />
+                  )}
+                  <span style={{ position: "absolute", top: 16, right: 16 }}>{story.storyType}</span>
                 </div>
                 <div className="card-body">
                   <div className="eyebrow">
