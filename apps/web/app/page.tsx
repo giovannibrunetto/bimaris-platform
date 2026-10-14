@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getActiveTerritories } from "@/data/live";
-import { itineraries, events } from "@/data/mock";
 
 export const revalidate = 300;
 
@@ -77,13 +76,13 @@ export default async function Home() {
       </section>
 
       <section className="section sand">
-        <div className="section-head"><div><div className="kicker">Percorsi</div><h2>Itinerari BIMARIS</h2></div><Link className="text-link" href="/itinerari">Tutti gli itinerari →</Link></div>
-        <div className="itinerary-grid">{itineraries.map(i => <div className="itinerary itinerary-light" key={i.title}><div className="eyebrow">{i.target}</div><h3>{i.title}</h3><p>{i.duration} · {i.stops} tappe</p></div>)}</div>
+        <div className="section-head"><div><div className="kicker">Percorsi</div><h2>Itinerari in preparazione</h2></div><Link className="text-link" href="/itinerari">Scopri il progetto →</Link></div>
+        <p>Stiamo costruendo percorsi editoriali dedicati a Messina e alla sua provincia. Pubblicheremo gli itinerari solo dopo aver verificato tappe, tempi e contenuti.</p>
       </section>
 
       <section className="section">
-        <div className="section-head"><div><div className="kicker">Agenda</div><h2>Cosa succede a Messina</h2></div><Link className="text-link" href="/eventi">Calendario →</Link></div>
-        <ul className="list">{events.map(e => <li key={e.title}><strong>{e.date}</strong> · {e.title} — {e.place} <span className="eyebrow">{e.category}</span></li>)}</ul>
+        <div className="section-head"><div><div className="kicker">Agenda</div><h2>Eventi e appuntamenti</h2></div><Link className="text-link" href="/eventi">Scopri la sezione →</Link></div>
+        <p>La sezione eventi verrà popolata con appuntamenti verificati e aggiornati. Non pubblichiamo eventi dimostrativi come se fossero reali.</p>
       </section>
 
       <section className="section dark">
