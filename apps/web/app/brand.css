@@ -1,0 +1,318 @@
+:root {
+  --navy: #15120f;
+  --navy-2: #2c2219;
+  --gold: #d2a05a;
+  --gold-light: #f1ca8a;
+  --sand: #f4eadc;
+  --white: #fffdf9;
+  --ink: #1d1915;
+  --muted: #74695e;
+  --line: #ddd0c2;
+  --wave: #1598d0;
+}
+
+body {
+  background: #fffaf4;
+  color: var(--ink);
+}
+
+.site-header {
+  height: 88px;
+  padding: 0 4vw;
+  background: rgba(17, 15, 13, .95);
+  border-bottom: 1px solid rgba(210, 160, 90, .28);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .18);
+}
+
+.brand-image {
+  width: 218px;
+  height: 64px;
+  flex: 0 0 auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid rgba(241, 202, 138, .35);
+  background-image: url('/brand/bimaris-main.jpeg');
+  background-size: cover;
+  background-position: center 49%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 6px 20px rgba(0,0,0,.22);
+}
+
+.nav {
+  gap: 24px;
+  font-size: 13px;
+  letter-spacing: .03em;
+}
+
+.nav a {
+  color: #f6ead9;
+}
+
+.nav a:hover {
+  color: var(--gold-light);
+}
+
+.brand-hero {
+  background: #100e0c;
+  color: white;
+  padding-bottom: 54px;
+  overflow: hidden;
+}
+
+.brand-hero-visual {
+  width: 100%;
+  background: #100e0c;
+}
+
+.brand-hero-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.brand-hero-copy {
+  position: relative;
+  z-index: 2;
+  width: min(980px, calc(100% - 8vw));
+  margin: -82px auto 0;
+  padding: 30px 34px 34px;
+  border: 1px solid rgba(241, 202, 138, .25);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(20,16,13,.96), rgba(38,27,18,.93));
+  box-shadow: 0 24px 70px rgba(0,0,0,.35);
+  backdrop-filter: blur(14px);
+}
+
+.brand-hero-copy p {
+  max-width: 760px;
+  margin: 10px 0 0;
+  color: #efe5d8;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.kicker {
+  color: var(--gold-light);
+}
+
+.button {
+  background: linear-gradient(135deg, #e0b46f, #c78e3e);
+  color: #1b140d;
+  box-shadow: 0 8px 22px rgba(118,75,27,.18);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.button.secondary {
+  color: #fff5e6;
+  border-color: rgba(241,202,138,.46);
+  background: rgba(255,255,255,.03);
+}
+
+.search-box {
+  background: rgba(255, 250, 244, .97);
+  border: 1px solid rgba(210,160,90,.22);
+  box-shadow: 0 16px 40px rgba(0,0,0,.22);
+}
+
+.section.sand {
+  background: linear-gradient(180deg, #f7efe4, #f2e5d4);
+}
+
+.section.dark {
+  background: linear-gradient(145deg, #18130f, #0d0c0b 68%, #15110e);
+}
+
+.section-head h2,
+.card h3,
+.territory h3,
+.itinerary h3,
+.page-hero h1,
+.detail-panel h3,
+.map-label h3 {
+  color: inherit;
+}
+
+.category {
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(145deg, #3f2d1d, #17110c);
+  box-shadow: inset 0 0 40px rgba(230,170,90,.05);
+}
+
+.category:nth-child(2n) {
+  background: linear-gradient(145deg, #224c5e, #0d2028);
+}
+
+.category:nth-child(3n) {
+  background: linear-gradient(145deg, #5a3f27, #21160f);
+}
+
+.category:nth-child(4n) {
+  background: linear-gradient(145deg, #1d3f46, #0c181b);
+}
+
+.card {
+  background: #fffdfa;
+  border-color: #e2d4c5;
+  box-shadow: 0 14px 42px rgba(58,37,19,.08);
+}
+
+.card-media {
+  background: linear-gradient(135deg, #7b5a39, #24170f);
+}
+
+.media-mangiare {
+  background: linear-gradient(135deg, #9a6e3d, #3a2111);
+}
+
+.media-natura {
+  background: linear-gradient(135deg, #476956, #17281d);
+}
+
+.media-mare {
+  background: linear-gradient(135deg, #2a718d, #102b37);
+}
+
+.eyebrow {
+  color: #9a6b2e;
+}
+
+.text-link {
+  color: #8f642c;
+}
+
+.text-link:hover {
+  color: var(--wave);
+}
+
+.territory,
+.itinerary {
+  border-color: rgba(241,202,138,.16);
+  background: rgba(255,255,255,.035);
+}
+
+.territory p {
+  color: #d1c4b4;
+}
+
+.itinerary-light {
+  background: #fffdfa;
+  border-color: #dfd1c3;
+  color: var(--ink);
+}
+
+.map-shell {
+  border-color: rgba(241,202,138,.24);
+  background:
+    radial-gradient(circle at 35% 45%, rgba(21,152,208,.34), transparent 12%),
+    radial-gradient(circle at 67% 32%, rgba(210,160,90,.30), transparent 10%),
+    linear-gradient(145deg,#203a43,#17110d 70%);
+}
+
+.page-hero {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(210,160,90,.20), transparent 24%),
+    linear-gradient(135deg, #241a12, #0f0d0b 68%);
+}
+
+.detail-panel {
+  background: #fffdfa;
+  border-color: #dfd2c4;
+}
+
+.footer {
+  background: #0a0908;
+  border-top: 1px solid rgba(210,160,90,.22);
+  color: #fff5e6;
+}
+
+.footer-brand {
+  width: 240px;
+  height: 78px;
+  display: block;
+}
+
+.footer-brand-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid rgba(241,202,138,.25);
+  background-image: url('/brand/bimaris-main.jpeg');
+  background-size: cover;
+  background-position: center 49%;
+}
+
+.footer-links a:hover {
+  color: var(--gold-light);
+}
+
+.consent {
+  background: #fffaf4;
+  border-color: #dfd2c4;
+}
+
+@media (max-width: 950px) {
+  .site-header {
+    height: 82px;
+  }
+
+  .brand-image {
+    width: 202px;
+    height: 58px;
+  }
+
+  .brand-hero-copy {
+    margin-top: -46px;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-header {
+    height: 76px;
+    padding: 0 3.5vw;
+  }
+
+  .brand-image {
+    width: 174px;
+    height: 52px;
+  }
+
+  .brand-hero {
+    padding-bottom: 34px;
+  }
+
+  .brand-hero-copy {
+    width: calc(100% - 8vw);
+    margin-top: -18px;
+    padding: 24px 20px 26px;
+    border-radius: 18px;
+  }
+
+  .brand-hero-copy p {
+    font-size: 16px;
+  }
+
+  .search-box {
+    padding: 9px 10px;
+  }
+
+  .footer-brand {
+    width: 210px;
+    height: 70px;
+  }
+}

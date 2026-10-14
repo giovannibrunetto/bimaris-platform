@@ -3,7 +3,9 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="footer">
-      <div><strong>BIMARIS</strong><p>Messina da Vivere</p></div>
+      <Link className="footer-brand" href="/" aria-label="BIMARIS — Messina da Vivere">
+        <span className="footer-brand-image" />
+      </Link>
       <div className="footer-links">
         <Link href="/esperienze">Esperienze</Link>
         <Link href="/mappa">Mappa</Link>

@@ -15,11 +15,13 @@ export default async function Home() {
 
   return (
     <>
-      <section className="hero">
-        <div className="hero-content">
+      <section className="brand-hero">
+        <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
+        <div className="brand-hero-visual">
+          <img src="/brand/bimaris-main.jpeg" alt="BIMARIS — Messina da Vivere" />
+        </div>
+        <div className="brand-hero-copy">
           <div className="kicker">Tra due mari. Un territorio da vivere.</div>
-          <h1>BIMARIS</h1>
-          <h2>Messina da Vivere</h2>
           <p>Esperienze, sapori e luoghi selezionati per chi vuole conoscere Messina oltre i percorsi più scontati.</p>
           <div className="search-box">
             <input aria-label="Cerca" placeholder="Cosa vuoi fare a Messina?" />
@@ -55,7 +57,7 @@ export default async function Home() {
 
       <section className="section sand">
         <div className="section-head"><div><div className="kicker">Percorsi</div><h2>Itinerari BIMARIS</h2></div><Link className="text-link" href="/itinerari">Tutti gli itinerari →</Link></div>
-        <div className="itinerary-grid">{itineraries.map(i => <div className="itinerary" style={{background:"white", borderColor:"#dfe4e8"}} key={i.title}><div className="eyebrow">{i.target}</div><h3>{i.title}</h3><p>{i.duration} · {i.stops} tappe</p></div>)}</div>
+        <div className="itinerary-grid">{itineraries.map(i => <div className="itinerary itinerary-light" key={i.title}><div className="eyebrow">{i.target}</div><h3>{i.title}</h3><p>{i.duration} · {i.stops} tappe</p></div>)}</div>
       </section>
 
       <section className="section">
