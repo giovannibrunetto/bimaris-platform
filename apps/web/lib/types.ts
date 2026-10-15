@@ -86,6 +86,7 @@ export type AnalyticsEventName =
   | "itinerary_view"
   | "map_open"
   | "map_marker_click"
+  | "map_custom_route_open_google"
   | "search"
   | "filter_used"
   | "favorite_added"
