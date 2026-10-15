@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import VillageRouteBuilder from "@/components/VillageRouteBuilder";
-import { getPublishedVillageBySlug } from "@/data/villages";
+import { getPublishedVillageBySlug, getPublishedVillagePoints } from "@/data/villages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,16 +14,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: `${village.name} | Borghi | BIMARIS`, description: village.excerpt, openGraph: village.imageUrl ? { images: [village.imageUrl] } : undefined };
 }
 
-function getVillagePoints(thingsToSee?: string) {
-  if (!thingsToSee) return [];
-  return thingsToSee.split(";").map((item) => item.trim().replace(/\.$/, "")).filter(Boolean);
-}
-
 export default async function VillagePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const village = await getPublishedVillageBySlug(slug);
   if (!village) notFound();
-  const points = getVillagePoints(village.thingsToSee);
+  const points = await getPublishedVillagePoints(village.id);
 
   return <>
     <section
