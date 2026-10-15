@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPublishedOperatorBySlug } from "@/data/operators";
+import { ExperienceCard } from "@/components/ExperienceCard";
+import { getPublishedExperiencesByOperatorSlug, getPublishedOperatorBySlug } from "@/data/operators";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -31,7 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function OperatorDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const operator = await getPublishedOperatorBySlug(slug);
+  const [operator, experiences] = await Promise.all([
+    getPublishedOperatorBySlug(slug),
+    getPublishedExperiencesByOperatorSlug(slug),
+  ]);
   if (!operator) notFound();
 
   const website = externalUrl(operator.website);
@@ -86,11 +90,26 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
             {website && <a className="button ghost" href={website} target="_blank" rel="noreferrer">Sito web</a>}
             {instagram && <a className="button ghost" href={instagram} target="_blank" rel="noreferrer">Instagram</a>}
           </div>
-
-          <div style={{ marginTop: 28 }}>
-            <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>
-          </div>
         </aside>
+      </section>
+
+      {experiences.length > 0 && (
+        <section className="section sand">
+          <div className="section-head">
+            <div>
+              <div className="kicker">Cosa puoi vivere</div>
+              <h2>Le esperienze di {operator.name}</h2>
+            </div>
+            <p>Attività proposte da questa realtà e selezionate da BIMARIS.</p>
+          </div>
+          <div className="cards">
+            {experiences.map(experience => <ExperienceCard key={experience.id} experience={experience} />)}
+          </div>
+        </section>
+      )}
+
+      <section className="section">
+        <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>
       </section>
     </>
   );
