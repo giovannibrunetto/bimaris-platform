@@ -88,6 +88,10 @@ main { min-height: 70vh; }
 .page-hero { padding: 90px 6vw 52px; background: var(--navy); color: white; }
 .page-hero h1 { font-family: Georgia, serif; font-size: clamp(44px, 7vw, 76px); margin: 12px 0; }
 .page-hero p { max-width: 720px; color: #c4cdd3; line-height: 1.6; }
+.village-hero.has-image { min-height: 430px; display: flex; align-items: end; background-size: cover; background-position: center; }
+.village-hero-content { width: 100%; max-width: 900px; }
+.village-hero.has-image p { color: #f1f3f4; text-shadow: 0 1px 12px rgba(0,0,0,.5); }
+.village-hero.has-image h1 { text-shadow: 0 2px 18px rgba(0,0,0,.5); }
 .detail-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 46px; }
 .detail-panel { border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; background: white; }
 .detail-panel h3 { margin-top: 0; font-family: Georgia, serif; font-size: 28px; }
@@ -134,4 +138,5 @@ main { min-height: 70vh; }
   .culture-card-media { height: 230px; }
   .culture-hero-wrap { padding: 28px 5vw 0; }
   .culture-hero-figure img { max-height: 520px; border-radius: 20px; }
+  .village-hero.has-image { min-height: 360px; background-position: center; }
 }
