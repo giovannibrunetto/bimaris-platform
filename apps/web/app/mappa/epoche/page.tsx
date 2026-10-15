@@ -10,14 +10,12 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Mappa storica di Messina | BIMARIS",
-  description: "Esplora i monumenti di Messina per epoca storica e costruisci un percorso personalizzato tra Medioevo, Rinascimento, Ottocento e Novecento.",
+  description: "Esplora i monumenti di Messina attraverso le epoche realmente rappresentate dal patrimonio pubblicato su BIMARIS e costruisci il tuo percorso personalizzato.",
 };
 
 type EraKey = "all" | Exclude<HistoricalPeriodKey, "trasversale">;
 
-function isEraKey(value?: string): value is Exclude<HistoricalPeriodKey, "trasversale"> {
-  return HISTORICAL_PERIODS.some(period => period.key === value);
-}
+const MIN_PLACES_FOR_FEATURED_ERA = 2;
 
 export default async function HistoricalMapPage({
   searchParams,
@@ -26,8 +24,22 @@ export default async function HistoricalMapPage({
 }) {
   const entries = await getPublishedCultureEntries();
   const { epoca } = await searchParams;
-  const initialPeriod: EraKey = isEraKey(epoca) ? epoca : "all";
   const mappedEntries = entries.filter(entry => entry.historicalPeriods.length > 0);
+
+  // Le epoche mostrate come percorsi devono derivare dai monumenti realmente
+  // pubblicati. Evitiamo sezioni arbitrarie o percorsi composti da un solo luogo.
+  const availablePeriods = HISTORICAL_PERIODS
+    .map(period => ({
+      ...period,
+      count: mappedEntries.filter(entry => entry.historicalPeriods.includes(period.key)).length,
+    }))
+    .filter(period => period.count >= MIN_PLACES_FOR_FEATURED_ERA);
+
+  const isAvailableEra = (value?: string): value is Exclude<HistoricalPeriodKey, "trasversale"> =>
+    availablePeriods.some(period => period.key === value);
+
+  const initialPeriod: EraKey = isAvailableEra(epoca) ? epoca : "all";
+  const availablePeriodKeys = availablePeriods.map(period => period.key);
 
   return (
     <>
@@ -35,7 +47,7 @@ export default async function HistoricalMapPage({
         <div className="kicker">Messina nel tempo</div>
         <h1>Mappa storica</h1>
         <p>
-          Scegli un&apos;epoca e scopri sulla mappa i monumenti che raccontano quella fase della storia di Messina. Puoi selezionare le tappe che preferisci e creare il tuo percorso personale.
+          Esplora Messina attraverso le epoche raccontate dai monumenti realmente presenti su BIMARIS. Scegli le tappe che preferisci e costruisci il tuo percorso personale.
         </p>
       </section>
 
@@ -43,29 +55,26 @@ export default async function HistoricalMapPage({
         <div className="section-head">
           <div>
             <div className="kicker">Percorsi nel tempo</div>
-            <h2>Esplora Messina per epoca storica.</h2>
+            <h2>Le epoche raccontate dai monumenti.</h2>
           </div>
           <p>
-            Alcuni luoghi attraversano più epoche: in questi casi compaiono in più filtri. La classificazione distingue l&apos;origine storica dalle ricostruzioni successive, così il visitatore può capire cosa sta osservando.
+            BIMARIS mostra un percorso storico solo quando il patrimonio pubblicato offre abbastanza luoghi per renderlo utile. Alcuni monumenti attraversano più epoche e possono comparire in più percorsi.
           </p>
         </div>
 
         <div className="cards">
-          {HISTORICAL_PERIODS.map(period => {
-            const count = mappedEntries.filter(entry => entry.historicalPeriods.includes(period.key)).length;
-            return (
-              <article className="card" key={period.key}>
-                <div className="card-body">
-                  <div className="eyebrow">{period.range}</div>
-                  <h3>{period.label}</h3>
-                  <p>{period.shortDescription}</p>
-                  <Link className="text-link" href={`/mappa/epoche?epoca=${period.key}`}>
-                    Mostra sulla mappa ({count}) →
-                  </Link>
-                </div>
-              </article>
-            );
-          })}
+          {availablePeriods.map(period => (
+            <article className="card" key={period.key}>
+              <div className="card-body">
+                <div className="eyebrow">{period.range}</div>
+                <h3>{period.label}</h3>
+                <p>{period.shortDescription}</p>
+                <Link className="text-link" href={`/mappa/epoche?epoca=${period.key}`}>
+                  Mostra sulla mappa ({period.count}) →
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -76,11 +85,15 @@ export default async function HistoricalMapPage({
             <h2>Costruisci la tua visita.</h2>
           </div>
           <p>
-            Filtra per epoca, apri un monumento e aggiungilo al percorso. Le tappe selezionate possono essere aperte direttamente in Google Maps a piedi o in auto.
+            Filtra per una delle epoche realmente rappresentate, apri un monumento e aggiungilo al percorso. Le tappe selezionate possono essere aperte direttamente in Google Maps a piedi o in auto.
           </p>
         </div>
 
-        <HistoricalCultureMap entries={mappedEntries} initialPeriod={initialPeriod} />
+        <HistoricalCultureMap
+          entries={mappedEntries}
+          initialPeriod={initialPeriod}
+          availablePeriodKeys={availablePeriodKeys}
+        />
       </section>
 
       <section className="section sand">
@@ -89,7 +102,7 @@ export default async function HistoricalMapPage({
             <div className="kicker">Tutti i contenuti</div>
             <h2>Vuoi tornare alla selezione culturale completa?</h2>
           </div>
-          <p>La sezione Cultura include anche musei e luoghi che non appartengono a una sola epoca monumentale.</p>
+          <p>La sezione Cultura include anche musei e luoghi che attraversano più epoche e non appartengono a un singolo percorso monumentale.</p>
         </div>
         <div className="actions">
           <Link className="button" href="/cultura">Apri Cultura</Link>
