@@ -7,10 +7,10 @@ export function Footer() {
         <span className="footer-brand-image" />
       </Link>
       <div className="footer-links">
-        <Link href="/esperienze">Esperienze</Link>
+        <Link href="/cultura">Cultura</Link>
+        <Link href="/storie-miti-leggende">Miti e leggende</Link>
+        <Link href="/itinerari">Percorsi</Link>
         <Link href="/mappa">Mappa</Link>
-        <Link href="/itinerari">Itinerari</Link>
-        <Link href="/eventi">Eventi</Link>
         <Link href="/operatori/candidatura">Operatori</Link>
         <Link href="/contatti">Contatti</Link>
         <Link href="/privacy">Privacy</Link>
