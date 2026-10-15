@@ -19,13 +19,16 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
   if (!village) notFound();
 
   return <>
-    <section className="page-hero">
-      <div className="kicker">{village.territory?.name ?? "Borghi"}</div>
-      <h1>{village.name}</h1>
-      <p>{village.excerpt}</p>
+    <section
+      className={`page-hero village-hero${village.imageUrl ? " has-image" : ""}`}
+      style={village.imageUrl ? { backgroundImage: `linear-gradient(90deg, rgba(4,15,24,.82) 0%, rgba(4,15,24,.56) 52%, rgba(4,15,24,.24) 100%), url("${village.imageUrl}")` } : undefined}
+    >
+      <div className="village-hero-content">
+        <div className="kicker">{village.territory?.name ?? "Borghi"}</div>
+        <h1>{village.name}</h1>
+        <p>{village.excerpt}</p>
+      </div>
     </section>
-
-    {village.imageUrl && <section className="culture-hero-wrap"><figure className="culture-hero-figure"><img src={village.imageUrl} alt={village.imageAlt ?? village.name} decoding="async" /></figure></section>}
 
     <section className="section detail-grid">
       <article>
