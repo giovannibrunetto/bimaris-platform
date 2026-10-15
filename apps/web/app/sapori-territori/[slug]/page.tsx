@@ -1,0 +1,59 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getPublishedFoodProductBySlug } from "@/data/food-products";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getPublishedFoodProductBySlug(slug);
+  if (!product) return {};
+  return { title: `${product.name} | Sapori e territori | BIMARIS`, description: product.excerpt, openGraph: product.imageUrl ? { images: [product.imageUrl] } : undefined };
+}
+
+export default async function FoodProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = await getPublishedFoodProductBySlug(slug);
+  if (!product) notFound();
+
+  return (
+    <>
+      <section className="page-hero">
+        <div className="kicker">{product.territory?.name ?? "Sapori e territori"}</div>
+        <h1>{product.name}</h1>
+        <p>{product.excerpt}</p>
+      </section>
+
+      {product.imageUrl && <section className="culture-hero-wrap"><figure className="culture-hero-figure"><img src={product.imageUrl} alt={product.imageAlt ?? product.name} decoding="async" /></figure></section>}
+
+      <section className="section detail-grid">
+        <article>
+          <div className="kicker">Il prodotto</div>
+          <h2 style={{ fontFamily: "Georgia,serif", fontSize: 42, marginTop: 8 }}>Identità e territorio</h2>
+          <p style={{ fontSize: 18, lineHeight: 1.75, color: "#4d5962" }}>{product.description}</p>
+          {product.characteristics && <><h3>Caratteristiche</h3><p>{product.characteristics}</p></>}
+          {product.history && <><h3>Storia e tradizione</h3><p>{product.history}</p></>}
+        </article>
+
+        <aside className="detail-panel">
+          <div className="kicker">Dove trovarlo</div>
+          <h3>Operatori selezionati da BIMARIS</h3>
+          {product.operators.length > 0 ? (
+            <ul className="list">{product.operators.map(operator => <li key={operator.slug}><Link className="text-link" href={`/operatori/${operator.slug}`}>{operator.name}</Link>{operator.note && <><br /><span className="muted">{operator.note}</span></>}</li>)}</ul>
+          ) : <p className="muted">La selezione degli operatori per questo prodotto è in corso.</p>}
+        </aside>
+      </section>
+
+      {product.experiences.length > 0 && (
+        <section className="section sand">
+          <div className="section-head"><div><div className="kicker">Dal prodotto all'esperienza</div><h2>Vivi {product.name}</h2></div><p>Degustazioni, visite e attività collegate a questo prodotto.</p></div>
+          <div className="cards">{product.experiences.map(experience => <article className="card" key={experience.slug}><div className="card-body"><div className="kicker">Esperienza BIMARIS</div><h3>{experience.name}</h3>{experience.excerpt && <p>{experience.excerpt}</p>}<Link className="text-link" href={`/esperienze/${experience.slug}`}>Scopri l'esperienza →</Link></div></article>)}</div>
+        </section>
+      )}
+
+      <section className="section"><Link className="text-link" href="/sapori-territori">← Sapori e territori</Link></section>
+    </>
+  );
+}
