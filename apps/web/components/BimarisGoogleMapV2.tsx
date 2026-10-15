@@ -7,15 +7,16 @@ declare global { interface Window { google?: any } }
 
 const CENTER = { lat: 38.1938, lng: 15.5540 };
 type Kind = "culture" | "legend" | "operator" | "experience";
-export type MapFilterKey = "cultura" | "attrazioni" | "sapori" | "natura" | "mare" | "artigianato" | "operatori";
+export type MapFilterKey = "cultura" | "miti-leggende" | "attrazioni" | "sapori" | "natura" | "mare" | "artigianato" | "operatori";
 type Filter = "all" | MapFilterKey;
 type Mode = "walking" | "driving";
 
 const FILTERS: Array<{ key: Filter; label: string }> = [
-  { key: "all", label: "Tutto" }, { key: "cultura", label: "Cultura" },
-  { key: "attrazioni", label: "Attrazioni" }, { key: "sapori", label: "Sapori" },
-  { key: "natura", label: "Natura" }, { key: "mare", label: "Mare" },
-  { key: "artigianato", label: "Artigianato" }, { key: "operatori", label: "Operatori" },
+  { key: "all", label: "Tutto" }, { key: "cultura", label: "Monumenti" },
+  { key: "miti-leggende", label: "Miti e leggende" }, { key: "attrazioni", label: "Attrazioni" },
+  { key: "sapori", label: "Sapori" }, { key: "natura", label: "Natura" },
+  { key: "mare", label: "Mare" }, { key: "artigianato", label: "Artigianato" },
+  { key: "operatori", label: "Operatori" },
 ];
 
 export type BimarisMapPoint = {
@@ -27,7 +28,7 @@ export type BimarisMapPoint = {
 const keyOf = (point: BimarisMapPoint) => `${point.kind}:${point.id}`;
 const colorOf = (kind: Kind) => kind === "culture" ? "#caa86a" : kind === "operator" ? "#244b3b" : kind === "experience" ? "#8a5a35" : "#376070";
 const letterOf = (kind: Kind) => kind === "culture" ? "C" : kind === "operator" ? "O" : kind === "experience" ? "E" : "M";
-const kindLabel = (kind: Kind) => kind === "culture" ? "Cultura" : kind === "operator" ? "Operatore BIMARIS" : kind === "experience" ? "Esperienza BIMARIS" : "Miti e leggende";
+const kindLabel = (kind: Kind) => kind === "culture" ? "Monumento" : kind === "operator" ? "Operatore BIMARIS" : kind === "experience" ? "Esperienza BIMARIS" : "Miti e leggende";
 
 function markerIcon(maps: any, kind: Kind, selected: boolean) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="52" viewBox="0 0 40 52"><path d="M20 1C9.5 1 1 9.5 1 20c0 14 19 31 19 31s19-17 19-31C39 9.5 30.5 1 20 1Z" fill="${colorOf(kind)}" stroke="${selected ? "#101820" : "#fff"}" stroke-width="${selected ? 4 : 2}"/><circle cx="20" cy="20" r="9" fill="rgba(3,17,26,.3)"/></svg>`;
@@ -128,7 +129,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
           <button type="button" onClick={() => setMode("driving")} aria-pressed={mode === "driving"} style={{ border: mode === "driving" ? "1px solid #caa86a" : "1px solid rgba(3,17,26,.15)", borderRadius: 999, padding: "8px 11px", background: mode === "driving" ? "#101820" : "#fff", color: mode === "driving" ? "#fff" : "#101820", fontWeight: 700, cursor: "pointer" }}>In auto</button>
           <a className="button" href={routeUrl} target="_blank" rel="noreferrer" onClick={() => track("map_custom_route_open_google", { stops: selectedPoints.length, travel_mode: mode })}>Indicazioni per le tappe selezionate</a>
         </div>
-        <div style={{ marginTop: 8, fontSize: 12, color: "#59656d" }}>Le tappe vengono aperte in Google Maps nell’ordine in cui le hai selezionate.</div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#59656d" }}>Le tappe vengono aperte in Google Maps nell&apos;ordine in cui le hai selezionate. Massimo 10 tappe.</div>
       </div>}
     </>}
   </div>;
