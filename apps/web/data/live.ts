@@ -85,7 +85,7 @@ function isTerritorySlug(value: string): value is TerritorySlug {
 }
 
 function isCategorySlug(value: string): value is CategorySlug {
-  return ["mangiare", "esperienze", "mare", "natura", "cultura", "shopping-artigianato", "famiglia"].includes(value);
+  return ["degustazioni", "mare", "avventura", "trekking-natura", "visite-guidate", "artigianato-laboratori"].includes(value);
 }
 
 function isHistoricalPeriodKey(value: string): value is HistoricalPeriodKey {
