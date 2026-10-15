@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Borghi di Messina | BIMARIS",
-  description: "Scopri i borghi più caratteristici del territorio messinese, la loro storia, identità e i luoghi da conoscere.",
+  description: "Scopri i borghi del territorio messinese attraverso schede dedicate alla loro storia, identità, paesaggio e patrimonio.",
 };
 
 export default async function VillagesPage() {
@@ -18,13 +18,13 @@ export default async function VillagesPage() {
       <section className="page-hero">
         <div className="kicker">Scopri il territorio</div>
         <h1>Borghi</h1>
-        <p>Paesi e piccoli centri del territorio messinese da conoscere attraverso storia, paesaggio, tradizioni e identità locali.</p>
+        <p>Storia, paesaggio, tradizioni e patrimonio dei borghi che raccontano le diverse identità del territorio messinese.</p>
       </section>
 
       <section className="section sand">
         <div className="section-head">
-          <div><div className="kicker">Selezione BIMARIS</div><h2>I borghi da scoprire.</h2></div>
-          <p>Non un elenco di comuni: una selezione di luoghi con un'identità precisa, una storia da raccontare e motivi concreti per essere visitati.</p>
+          <div><div className="kicker">Borghi</div><h2>Scopri i luoghi e le loro storie.</h2></div>
+          <p>Ogni borgo ha una scheda dedicata per conoscere la sua identità, la sua storia e i luoghi più significativi da vedere.</p>
         </div>
 
         {villages.length > 0 ? (
@@ -41,18 +41,7 @@ export default async function VillagesPage() {
               </article>
             ))}
           </div>
-        ) : (
-          <div className="detail-panel">
-            <div className="eyebrow">In preparazione</div>
-            <h3>Stiamo selezionando i primi borghi.</h3>
-            <p>Le schede saranno pubblicate progressivamente, privilegiando luoghi che abbiano una storia, un'identità territoriale e motivi reali per essere scoperti.</p>
-          </div>
-        )}
-      </section>
-
-      <section className="section">
-        <div className="section-head"><div><div className="kicker">Sulla mappa</div><h2>Costruisci il tuo percorso.</h2></div><p>I borghi pubblicati compariranno automaticamente anche nella mappa BIMARIS e potranno essere aggiunti alle altre tappe del viaggio.</p></div>
-        <Link className="button secondary" href="/mappa">Esplora la mappa</Link>
+        ) : null}
       </section>
     </>
   );
