@@ -89,7 +89,7 @@ export default async function MapPage() {
         googleMapsQuery: place.googleMapsQuery,
         latitude: place.latitude,
         longitude: place.longitude,
-        filterCategories: ["cultura"],
+        filterCategories: ["miti-leggende"],
         categoryLabel: "Miti e leggende",
         links: [storyLink],
       });
@@ -145,7 +145,7 @@ export default async function MapPage() {
             <h2>Scegli cosa vuoi vedere.</h2>
           </div>
           <p>
-            Monumenti, miti, operatori ed esperienze sono riuniti sulla stessa mappa. Seleziona solo ciò che ti interessa e apri le indicazioni per le tappe scelte.
+            Monumenti, miti e leggende, operatori ed esperienze sono riuniti sulla stessa mappa. Seleziona solo ciò che ti interessa e apri le indicazioni per le tappe scelte.
           </p>
         </div>
 
