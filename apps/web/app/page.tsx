@@ -50,15 +50,21 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="actions" style={{ marginTop: 32 }}>
-          <Link className="button" href="/itinerari">Scopri i percorsi BIMARIS</Link>
-        </div>
+        <Link href="/itinerari" className="discovery-link">
+          <div>
+            <div className="kicker">Percorsi BIMARIS</div>
+            <h3>Lasciati guidare da un itinerario</h3>
+            <p>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
+          </div>
+          <span>Scopri i percorsi →</span>
+        </Link>
 
-        <Link href="/mappa" className="map-shell" style={{ display: "block", marginTop: 36 }}>
+        <Link href="/mappa" className="map-shell home-map-shell">
           <div className="map-label">
             <div className="kicker">Esplora</div>
             <h3>Apri la mappa di BIMARIS</h3>
             <p>Scopri le aree e i punti di interesse del territorio messinese.</p>
+            <span className="map-action">Apri la mappa →</span>
           </div>
         </Link>
       </section>
