@@ -45,9 +45,11 @@ function markerIcon(maps: any, selected: boolean) {
 export function HistoricalCultureMap({
   entries,
   initialPeriod = "all",
+  availablePeriodKeys,
 }: {
   entries: CultureEntry[];
   initialPeriod?: EraKey;
+  availablePeriodKeys?: Exclude<HistoricalPeriodKey, "trasversale">[];
 }) {
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
@@ -63,6 +65,11 @@ export function HistoricalCultureMap({
     () => entries.filter(entry => entry.historicalPeriods.length > 0),
     [entries],
   );
+
+  const visiblePeriods = useMemo(() => {
+    if (!availablePeriodKeys) return HISTORICAL_PERIODS;
+    return HISTORICAL_PERIODS.filter(period => availablePeriodKeys.includes(period.key));
+  }, [availablePeriodKeys]);
 
   const selectedEntries = useMemo(
     () => selectedIds
@@ -355,7 +362,7 @@ export function HistoricalCultureMap({
             >
               Tutte ({periodCount("all")})
             </button>
-            {HISTORICAL_PERIODS.map(period => (
+            {visiblePeriods.map(period => (
               <button
                 key={period.key}
                 type="button"
