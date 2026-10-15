@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMapV2";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
@@ -135,35 +134,22 @@ export default async function MapPage() {
         <div className="kicker">Esplora</div>
         <h1>Mappa BIMARIS</h1>
         <p>
-          Monumenti, miti, operatori selezionati ed esperienze riuniti in un&apos;unica mappa. Filtra ciò che ti interessa, seleziona singolarmente le tappe e crea il tuo percorso personale.
+          Tutto il territorio in un unico strumento. Filtra ciò che ti interessa, scegli le singole tappe e crea il tuo percorso personale.
         </p>
       </section>
 
       <section className="section dark">
         <div className="section-head">
           <div>
-            <div className="kicker">Messina intorno a te</div>
-            <h2>Scopri il territorio sulla mappa.</h2>
+            <div className="kicker">Il tuo percorso</div>
+            <h2>Scegli cosa vuoi vedere.</h2>
           </div>
           <p>
-            Sono disponibili {culturePoints.length} luoghi culturali, {legendPoints.length} luoghi collegati a miti e leggende, {operatorPoints.length} operatori e {experiencePoints.length} esperienze. Tocca un marker e scegli “Aggiungi al mio percorso”: puoi combinare liberamente monumenti, miti e altre attrazioni e ottenere le indicazioni solo per le tappe selezionate.
+            Monumenti, miti, operatori ed esperienze sono riuniti sulla stessa mappa. Seleziona solo ciò che ti interessa e apri le indicazioni per le tappe scelte.
           </p>
         </div>
 
         <BimarisGoogleMap points={points} />
-      </section>
-
-      <section className="section sand">
-        <div className="section-head">
-          <div>
-            <div className="kicker">Messina nel tempo</div>
-            <h2>Vuoi scegliere i monumenti per epoca storica?</h2>
-          </div>
-          <p>
-            La mappa storica BIMARIS separa Medioevo, Rinascimento e Cinquecento, Seicento e Settecento, Ottocento e Novecento. Puoi quindi creare un percorso composto soltanto dai monumenti dell&apos;epoca che vuoi approfondire.
-          </p>
-        </div>
-        <Link className="button" href="/mappa/epoche">Apri la mappa storica</Link>
       </section>
     </>
   );
