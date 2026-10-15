@@ -6,8 +6,8 @@ const discoveryCategories = [
   { label: "Monumenti e cultura", href: "/cultura" },
   { label: "Miti e leggende", href: "/storie-miti-leggende" },
   { label: "Sapori e territori", href: "/sapori-territori" },
-  { label: "Mare e Stretto", href: "/mare-stretto" },
-  { label: "Natura e borghi", href: "/natura-borghi" },
+  { label: "Borghi", href: "/borghi" },
+  { label: "Esperienze", href: "/esperienze" },
 ];
 
 export default function Home() {
@@ -39,7 +39,7 @@ export default function Home() {
       <section className="section sand" id="scopri">
         <div className="section-head">
           <div><div className="kicker">Scopri BIMARIS</div><h2>Da dove vuoi iniziare?</h2></div>
-          <p>Scegli ciò che ti interessa e scopri Messina attraverso i suoi luoghi, le sue storie, i sapori, il mare e il territorio.</p>
+          <p>Scegli ciò che ti interessa: monumenti, storie, sapori, borghi oppure esperienze da vivere sul territorio.</p>
         </div>
 
         <div className="category-grid">
