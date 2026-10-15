@@ -57,8 +57,8 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
     </section>
 
     <section className="section sand">
-      <div className="section-head"><div><div className="kicker">Continua a esplorare</div><h2>Inseriscilo nel tuo percorso.</h2></div><p>Il borgo è collegato alla mappa BIMARIS, dove puoi combinarlo anche con monumenti, miti, sapori ed esperienze del territorio.</p></div>
-      <div className="actions"><Link className="button" href="/mappa">Vai alla mappa BIMARIS</Link><Link className="button secondary" href="/borghi">Tutti i borghi</Link></div>
+      <div className="section-head"><div><div className="kicker">Continua a esplorare</div><h2>Inseriscilo nel tuo percorso.</h2></div><p>Aprendo la mappa dal borgo, BIMARIS mostra anche le sue singole attrazioni senza affollare la mappa generale. Puoi combinarle con monumenti, miti, sapori ed esperienze del territorio.</p></div>
+      <div className="actions"><Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora {village.name} sulla mappa</Link><Link className="button secondary" href="/borghi">Tutti i borghi</Link></div>
     </section>
   </>;
 }
