@@ -28,10 +28,14 @@ export default async function VillagesPage() {
         </div>
 
         {villages.length > 0 ? (
-          <div className="cards">
+          <div className="cards village-cards">
             {villages.map(village => (
-              <article className="card" key={village.id}>
-                {village.imageUrl && <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />}
+              <article className="card village-card" key={village.id}>
+                {village.imageUrl && (
+                  <div className="village-card-media">
+                    <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
+                  </div>
+                )}
                 <div className="card-body">
                   <div className="kicker">{village.territory?.name ?? "Territorio messinese"}</div>
                   <h3>{village.name}</h3>
