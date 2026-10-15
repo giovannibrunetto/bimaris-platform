@@ -47,7 +47,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         {points.length > 0 && <VillageRouteBuilder villageName={village.name} points={points} />}
       </article>
 
-      <aside className="detail-panel">
+      <aside className="detail-panel" style={{ alignSelf: "start", height: "fit-content" }}>
         <div className="kicker">Organizza la visita</div>
         <h3>{village.name}</h3>
         {village.address && <p>{village.address}</p>}
