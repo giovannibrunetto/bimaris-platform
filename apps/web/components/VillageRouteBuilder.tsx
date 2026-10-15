@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { track } from "@/lib/analytics";
+import type { VillagePoint } from "@/data/villages";
 
-type Props = { villageName: string; points: string[] };
+type Props = { villageName: string; points: VillagePoint[] };
 type Mode = "walking" | "driving";
 
-function routeUrl(villageName: string, points: string[], mode: Mode) {
+function routeUrl(points: VillagePoint[], mode: Mode) {
   if (!points.length) return "";
-  const queries = points.map(point => `${point}, ${villageName}, Messina`);
+  const queries = points.map(point => point.googleMapsQuery);
   const params = new URLSearchParams({ api: "1", destination: queries[queries.length - 1], travelmode: mode });
   if (queries.length > 1) params.set("origin", queries[0]);
   if (queries.length > 2) params.set("waypoints", queries.slice(1, -1).join("|"));
@@ -19,7 +20,7 @@ export default function VillageRouteBuilder({ villageName, points }: Props) {
   const [selected, setSelected] = useState<number[]>([]);
   const [mode, setMode] = useState<Mode>("walking");
   const selectedPoints = useMemo(() => selected.map(index => points[index]).filter(Boolean), [points, selected]);
-  const url = routeUrl(villageName, selectedPoints, mode);
+  const url = routeUrl(selectedPoints, mode);
 
   const toggle = (index: number) => {
     setSelected(current => current.includes(index) ? current.filter(value => value !== index) : current.length < 10 ? [...current, index] : current);
@@ -34,13 +35,13 @@ export default function VillageRouteBuilder({ villageName, points }: Props) {
         const active = order >= 0;
         return <button
           type="button"
-          key={`${point}-${index}`}
+          key={point.id}
           onClick={() => toggle(index)}
           aria-pressed={active}
           style={{ display: "grid", gridTemplateColumns: "42px 1fr auto", gap: 14, alignItems: "center", width: "100%", textAlign: "left", padding: "14px 16px", border: active ? "1px solid #caa86a" : "1px solid #dfe4e8", borderRadius: 14, background: active ? "#f7f0e4" : "#fff", color: "#101820", cursor: "pointer" }}
         >
           <span style={{ width: 36, height: 36, borderRadius: "50%", display: "grid", placeItems: "center", background: active ? "#caa86a" : "#061624", color: active ? "#101820" : "#caa86a", fontWeight: 700 }}>{active ? order + 1 : index + 1}</span>
-          <span style={{ display: "grid", gap: 3 }}><strong>{point}</strong><small style={{ color: "#6e7680" }}>{active ? `Tappa ${order + 1} del tuo percorso` : "Seleziona questa tappa"}</small></span>
+          <span style={{ display: "grid", gap: 3 }}><strong>{point.name}</strong><small style={{ color: "#6e7680" }}>{active ? `Tappa ${order + 1} del tuo percorso` : "Seleziona questa tappa"}</small></span>
           <span aria-hidden="true" style={{ color: active ? "#101820" : "#8d6b34", fontSize: 20 }}>{active ? "✓" : "+"}</span>
         </button>;
       })}
