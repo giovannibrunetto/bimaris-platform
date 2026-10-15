@@ -1,5 +1,17 @@
 import { createPublicClient } from "@/lib/supabase/public";
 
+export type VillagePoint = {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  address?: string;
+  googleMapsQuery: string;
+  latitude?: number;
+  longitude?: number;
+  position: number;
+};
+
 export type Village = {
   id: string;
   slug: string;
@@ -38,6 +50,18 @@ type RawVillage = {
   territory: { slug: string; name: string } | null;
 };
 
+type RawVillagePoint = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  address: string | null;
+  google_maps_query: string;
+  latitude: number | null;
+  longitude: number | null;
+  position: number | null;
+};
+
 const select = "id,slug,name,excerpt,description,history,identity,things_to_see,address,google_maps_query,latitude,longitude,image_url,image_alt,featured,territory:territories(slug,name)";
 
 function mapVillage(row: RawVillage): Village {
@@ -61,6 +85,20 @@ function mapVillage(row: RawVillage): Village {
   };
 }
 
+function mapVillagePoint(row: RawVillagePoint): VillagePoint {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    description: row.description ?? undefined,
+    address: row.address ?? undefined,
+    googleMapsQuery: row.google_maps_query,
+    latitude: row.latitude ?? undefined,
+    longitude: row.longitude ?? undefined,
+    position: row.position ?? 0,
+  };
+}
+
 export async function getPublishedVillages(): Promise<Village[]> {
   const client = createPublicClient();
   if (!client) return [];
@@ -75,4 +113,18 @@ export async function getPublishedVillageBySlug(slug: string): Promise<Village |
   const { data, error } = await client.from("villages").select(select).eq("published", true).eq("slug", slug).maybeSingle();
   if (error) { console.error("BIMARIS village detail read failed", error.message); return null; }
   return data ? mapVillage(data as unknown as RawVillage) : null;
+}
+
+export async function getPublishedVillagePoints(villageId: string): Promise<VillagePoint[]> {
+  const client = createPublicClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("village_points")
+    .select("id,slug,name,description,address,google_maps_query,latitude,longitude,position")
+    .eq("published", true)
+    .eq("village_id", villageId)
+    .order("position")
+    .order("name");
+  if (error) { console.error("BIMARIS village points read failed", error.message); return []; }
+  return (data as unknown as RawVillagePoint[]).map(mapVillagePoint);
 }
