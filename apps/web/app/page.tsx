@@ -50,35 +50,52 @@ export default function Home() {
           ))}
         </div>
 
-        <Link
-          href="/itinerari"
-          style={{
-            marginTop: 34,
-            padding: "24px 0",
-            display: "flex",
-            alignItems: "end",
-            justifyContent: "space-between",
-            gap: 24,
-            borderTop: "1px solid rgba(16,24,32,.16)",
-            borderBottom: "1px solid rgba(16,24,32,.16)",
-          }}
-        >
-          <div>
-            <div className="kicker">Percorsi BIMARIS</div>
-            <h3 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(25px, 3vw, 34px)", fontWeight: 500, margin: "7px 0 5px" }}>Lasciati guidare da un itinerario</h3>
-            <p style={{ color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
-          </div>
-          <strong style={{ color: "#8d6b34", whiteSpace: "nowrap" }}>Scopri i percorsi →</strong>
-        </Link>
+        <div style={{ clear: "both", width: "100%", paddingTop: 34 }}>
+          <Link
+            href="/itinerari"
+            style={{
+              padding: "24px 0",
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 1fr) auto",
+              alignItems: "end",
+              gap: 24,
+              borderTop: "1px solid rgba(16,24,32,.16)",
+              borderBottom: "1px solid rgba(16,24,32,.16)",
+            }}
+          >
+            <div>
+              <div className="kicker">Percorsi BIMARIS</div>
+              <h3 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(25px, 3vw, 34px)", fontWeight: 500, margin: "7px 0 5px" }}>Lasciati guidare da un itinerario</h3>
+              <p style={{ color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
+            </div>
+            <strong style={{ color: "#8d6b34", whiteSpace: "nowrap" }}>Scopri i percorsi →</strong>
+          </Link>
+        </div>
 
-        <Link href="/mappa" className="map-shell" style={{ display: "block", marginTop: 34, color: "white" }}>
-          <div className="map-label" style={{ color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
-            <div className="kicker">Esplora</div>
-            <h3 style={{ color: "white" }}>Apri la mappa di BIMARIS</h3>
-            <p style={{ color: "rgba(255,255,255,.88)", lineHeight: 1.5 }}>Scopri le aree e i punti di interesse del territorio messinese.</p>
-            <strong style={{ display: "inline-block", marginTop: 8, color: "#e2c58d" }}>Apri la mappa →</strong>
-          </div>
-        </Link>
+        <div style={{ clear: "both", width: "100%", paddingTop: 34 }}>
+          <Link
+            href="/mappa"
+            style={{
+              minHeight: 300,
+              width: "100%",
+              borderRadius: 26,
+              padding: 30,
+              display: "flex",
+              alignItems: "flex-end",
+              color: "white",
+              overflow: "hidden",
+              background: "radial-gradient(circle at 35% 45%, rgba(202,168,106,.26), transparent 12%), radial-gradient(circle at 67% 32%, rgba(202,168,106,.22), transparent 11%), linear-gradient(145deg,#17394a,#071821)",
+              border: "1px solid rgba(255,255,255,.16)",
+            }}
+          >
+            <div style={{ maxWidth: 520, color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
+              <div className="kicker">Esplora</div>
+              <h3 style={{ color: "white", fontFamily: "Georgia, serif", fontSize: "clamp(30px, 4vw, 42px)", margin: "6px 0 8px" }}>Apri la mappa di BIMARIS</h3>
+              <p style={{ color: "rgba(255,255,255,.9)", lineHeight: 1.5, margin: 0 }}>Scopri le aree e i punti di interesse del territorio messinese.</p>
+              <strong style={{ display: "inline-block", marginTop: 14, color: "#e2c58d" }}>Apri la mappa →</strong>
+            </div>
+          </Link>
+        </div>
       </section>
     </>
   );
