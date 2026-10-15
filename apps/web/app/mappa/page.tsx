@@ -12,11 +12,10 @@ function uniqueFilters(filters: MapFilterKey[]) {
 
 function experienceFilters(category: string): MapFilterKey[] {
   const thematic: Record<string, MapFilterKey | undefined> = {
-    cultura: "cultura",
-    mangiare: "sapori",
-    natura: "natura",
+    degustazioni: "sapori",
     mare: "mare",
-    "shopping-artigianato": "artigianato",
+    "trekking-natura": "natura",
+    "artigianato-laboratori": "artigianato",
   };
 
   return uniqueFilters(["attrazioni", ...(thematic[category] ? [thematic[category] as MapFilterKey] : [])]);
@@ -24,12 +23,12 @@ function experienceFilters(category: string): MapFilterKey[] {
 
 function categoryDisplayName(category: string) {
   const names: Record<string, string> = {
-    cultura: "Cultura",
-    esperienze: "Attrazioni",
-    mangiare: "Sapori",
-    natura: "Natura",
+    degustazioni: "Degustazioni",
     mare: "Mare",
-    "shopping-artigianato": "Artigianato",
+    avventura: "Avventura",
+    "trekking-natura": "Trekking e natura",
+    "visite-guidate": "Visite guidate",
+    "artigianato-laboratori": "Artigianato e laboratori",
   };
   return names[category] ?? "Esperienza";
 }
@@ -42,7 +41,6 @@ function operatorFilters(category?: string): MapFilterKey[] {
   if (/mare|barca|naut|diving|subac|kayak|vela|pesca/.test(value)) filters.push("mare");
   if (/natura|trek|escursion|outdoor|ambient|parco|bike|cicl/.test(value)) filters.push("natura");
   if (/artig|ceramic|bottega|shopping|laboratorio/.test(value)) filters.push("artigianato");
-  if (/cultur|muse|stor|teatr|guida turistic/.test(value)) filters.push("cultura");
 
   return uniqueFilters(filters);
 }
