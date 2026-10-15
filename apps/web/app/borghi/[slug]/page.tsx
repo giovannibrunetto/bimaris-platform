@@ -51,17 +51,19 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         <div className="kicker">Organizza la visita</div>
         <h3>{village.name}</h3>
         {village.address && <p>{village.address}</p>}
-        <p style={{ color: "#6e7680", lineHeight: 1.55 }}>Scegli i luoghi nella sezione “Cosa vedere” per creare un itinerario personalizzato all'interno del borgo.</p>
-        <a className="button" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Apri il borgo in Google Maps</a>
-      </aside>
-    </section>
+        <p style={{ color: "#6e7680", lineHeight: 1.55 }}>Scegli i luoghi nella sezione “Cosa vedere” per creare il tuo itinerario nel borgo.</p>
+        <a className="button" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi il borgo con Google Maps</a>
 
-    <section className="section sand">
-      <div className="section-head"><div><div className="kicker">Continua a esplorare</div><h2>Inseriscilo nel tuo percorso.</h2></div><p>Aprendo la mappa dal borgo, BIMARIS mostra anche le sue singole attrazioni senza affollare la mappa generale. Puoi combinarle con monumenti, miti, sapori ed esperienze del territorio.</p></div>
-      <div className="actions">
-        <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora {village.name} sulla mappa</Link>
-        <Link className="button" href="/borghi" style={{ background: "#061624", color: "#fff", borderColor: "#061624" }}>Tutti i borghi</Link>
-      </div>
+        <div style={{ borderTop: "1px solid #dfe4e8", marginTop: 30, paddingTop: 26 }}>
+          <div className="kicker">Continua a esplorare</div>
+          <h3 style={{ marginTop: 8, marginBottom: 10 }}>Inseriscilo nel tuo percorso</h3>
+          <p style={{ color: "#6e7680", lineHeight: 1.55, marginTop: 0 }}>Esplora {village.name} sulla mappa BIMARIS e combinalo con monumenti, miti, sapori ed esperienze del territorio.</p>
+          <div className="actions" style={{ marginTop: 20 }}>
+            <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora {village.name} sulla mappa</Link>
+            <Link className="button ghost" href="/borghi">Tutti i borghi</Link>
+          </div>
+        </div>
+      </aside>
     </section>
   </>;
 }
