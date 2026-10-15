@@ -31,7 +31,7 @@ export default function Home() {
       <section className="section">
         <div className="section-head">
           <div><div className="kicker">Sei un operatore del territorio?</div><h2>BIMARIS sta costruendo la propria rete.</h2></div>
-          <p>Stiamo selezionando operatori, produttori ed esperienze capaci di rappresentare Messina con qualità, autenticità e forte legame con il territorio.</p>
+          <p>Stiamo selezionando le realtà, i produttori e le esperienze che meglio raccontano Messina e il suo territorio, attraverso qualità, autenticità e identità locale.</p>
         </div>
         <Link className="button" href="/operatori/candidatura">Presenta la tua candidatura</Link>
       </section>
