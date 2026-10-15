@@ -1,3 +1,4 @@
+import type { Experience } from "@/lib/types";
 import { createPublicClient } from "@/lib/supabase/public";
 
 export type PublishedOperator = {
@@ -127,4 +128,10 @@ export async function getPublishedOperatorBySlug(slug: string): Promise<Publishe
   }
 
   return data ? mapOperator(data as unknown as RawOperator) : null;
+}
+
+export async function getPublishedExperiencesByOperatorSlug(slug: string): Promise<Experience[]> {
+  const { getPublishedExperiences } = await import("@/data/live");
+  const experiences = await getPublishedExperiences();
+  return experiences.filter(experience => experience.operatorSlug === slug);
 }
