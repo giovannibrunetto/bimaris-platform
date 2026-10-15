@@ -3,7 +3,7 @@ import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/com
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedStories } from "@/data/stories";
-import { getPublishedVillages } from "@/data/villages";
+import { getPublishedVillagePoints, getPublishedVillages } from "@/data/villages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,15 +22,11 @@ function categoryDisplayName(category: string) {
   return names[category] ?? "Esperienza";
 }
 
-function villageThings(thingsToSee?: string) {
-  if (!thingsToSee) return [];
-  return thingsToSee.split(";").map(item => item.trim().replace(/\.$/, "")).filter(Boolean);
-}
-
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ borgo?: string }> }) {
   const { borgo } = await searchParams;
   const [cultureEntries, stories, operators, experiences, villages] = await Promise.all([getPublishedCultureEntries(), getPublishedStories(), getPublishedOperators(), getPublishedExperiences(), getPublishedVillages()]);
   const activeVillage = borgo ? villages.find(village => village.slug === borgo) : undefined;
+  const activeVillagePoints = activeVillage ? await getPublishedVillagePoints(activeVillage.id) : [];
 
   const culturePoints: BimarisMapPoint[] = cultureEntries.map(entry => ({ id: `culture-${entry.id}`, kind: "culture", title: entry.title, address: entry.address, googleMapsQuery: entry.googleMapsQuery, latitude: entry.latitude, longitude: entry.longitude, filterCategories: ["cultura"], categoryLabel: entry.category, links: [{ label: "Apri la scheda culturale", href: `/cultura/${entry.slug}` }] }));
 
@@ -44,11 +40,14 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
 
   const villagePoints: BimarisMapPoint[] = villages.map(village => ({ id: `village-${village.id}`, kind: "culture", title: village.name, address: village.address, googleMapsQuery: village.googleMapsQuery, latitude: village.latitude, longitude: village.longitude, filterCategories: ["borghi"], categoryLabel: "Borgo", links: [{ label: "Apri la scheda del borgo", href: `/borghi/${village.slug}` }] }));
 
-  const villagePoiPoints: BimarisMapPoint[] = activeVillage ? villageThings(activeVillage.thingsToSee).map((point, index) => ({
-    id: `village-poi-${activeVillage.id}-${index}`,
+  const villagePoiPoints: BimarisMapPoint[] = activeVillage ? activeVillagePoints.map(point => ({
+    id: `village-poi-${point.id}`,
     kind: "culture",
-    title: point,
-    googleMapsQuery: `${point}, ${activeVillage.name}, Messina`,
+    title: point.name,
+    address: point.address,
+    googleMapsQuery: point.googleMapsQuery,
+    latitude: point.latitude,
+    longitude: point.longitude,
     filterCategories: ["borghi"],
     categoryLabel: `Da vedere a ${activeVillage.name}`,
     links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }],
