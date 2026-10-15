@@ -13,10 +13,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: `${village.name} | Borghi | BIMARIS`, description: village.excerpt, openGraph: village.imageUrl ? { images: [village.imageUrl] } : undefined };
 }
 
+function getVillagePoints(thingsToSee?: string) {
+  if (!thingsToSee) return [];
+  return thingsToSee.split(";").map((item) => item.trim().replace(/\.$/, "")).filter(Boolean);
+}
+
 export default async function VillagePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const village = await getPublishedVillageBySlug(slug);
   if (!village) notFound();
+  const points = getVillagePoints(village.thingsToSee);
 
   return <>
     <section
@@ -37,7 +43,24 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         <p style={{ fontSize: 18, lineHeight: 1.75, color: "#4d5962" }}>{village.description}</p>
         {village.identity && <><h3>Perché è unico</h3><p>{village.identity}</p></>}
         {village.history && <><h3>Storia</h3><p>{village.history}</p></>}
-        {village.thingsToSee && <><h3>Cosa vedere</h3><p>{village.thingsToSee}</p></>}
+        {points.length > 0 && <>
+          <h3>Cosa vedere</h3>
+          <div className="village-poi-list">
+            {points.map((point, index) => (
+              <a
+                className="village-poi"
+                key={`${point}-${index}`}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${point}, ${village.name}, Messina`)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="village-poi-number">{index + 1}</span>
+                <span><strong>{point}</strong><small>Visualizza sulla mappa</small></span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </>}
       </article>
 
       <aside className="detail-panel">
