@@ -5,13 +5,12 @@ export type TerritorySlug =
   | "isole-eolie";
 
 export type CategorySlug =
-  | "mangiare"
-  | "esperienze"
+  | "degustazioni"
   | "mare"
-  | "natura"
-  | "cultura"
-  | "shopping-artigianato"
-  | "famiglia";
+  | "avventura"
+  | "trekking-natura"
+  | "visite-guidate"
+  | "artigianato-laboratori";
 
 export type HistoricalPeriodKey =
   | "medioevo"
