@@ -49,7 +49,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
   const el = useRef<HTMLDivElement | null>(null); const map = useRef<any>(null); const info = useRef<any>(null); const markers = useRef<any[]>([]); const cache = useRef(new Map<string, { lat: number; lng: number }>());
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading"); const [filter, setFilter] = useState<Filter>("all"); const [selected, setSelected] = useState<string[]>([]); const [mode, setMode] = useState<Mode>("walking");
   const selectedPoints = useMemo(() => selected.map(k => points.find(p => keyOf(p) === k)).filter(Boolean) as BimarisMapPoint[], [points, selected]); const routeUrl = mapsRouteUrl(selectedPoints, mode);
-  const available = FILTERS.filter(f => f.key === "all" || f.key === "borghi" || points.some(p => p.filterCategories.includes(f.key as MapFilterKey)));
+  const available = FILTERS;
   const count = (f: Filter) => f === "all" ? points.length : points.filter(p => p.filterCategories.includes(f)).length;
   const toggle = (point: BimarisMapPoint) => { const key = keyOf(point); setSelected(current => current.includes(key) ? current.filter(v => v !== key) : current.length < 10 ? [...current, key] : current); info.current?.close(); };
 
