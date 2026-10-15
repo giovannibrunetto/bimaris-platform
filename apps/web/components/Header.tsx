@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { useRef } from "react";
 
+const primaryLinks = [
+  { href: "/cultura", label: "Cultura" },
+  { href: "/storie-miti-leggende", label: "Miti e leggende" },
+  { href: "/itinerari", label: "Percorsi" },
+  { href: "/mappa", label: "Mappa" },
+];
+
 export function Header() {
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
 
@@ -17,20 +24,18 @@ export function Header() {
       <Link className="brand brand-image" href="/" aria-label="BIMARIS — Messina da Vivere" onClick={closeMobileMenu} />
 
       <nav className="nav" aria-label="Principale">
-        <Link href="/cultura">Cultura</Link>
-        <Link href="/storie-miti-leggende">Miti e leggende</Link>
-        <Link href="/itinerari">Itinerari</Link>
-        <Link href="/mappa">Mappa</Link>
-        <Link href="/contatti">Contatti</Link>
+        {primaryLinks.map(link => (
+          <Link href={link.href} key={link.href}>{link.label}</Link>
+        ))}
       </nav>
 
       <details className="mobile-menu" ref={mobileMenuRef}>
         <summary aria-label="Apri menu di navigazione">Menu</summary>
         <nav className="mobile-nav" aria-label="Navigazione mobile">
-          <Link href="/cultura" onClick={closeMobileMenu}>Cultura</Link>
-          <Link href="/storie-miti-leggende" onClick={closeMobileMenu}>Miti e leggende</Link>
-          <Link href="/itinerari" onClick={closeMobileMenu}>Itinerari</Link>
-          <Link href="/mappa" onClick={closeMobileMenu}>Mappa</Link>
+          {primaryLinks.map(link => (
+            <Link href={link.href} key={link.href} onClick={closeMobileMenu}>{link.label}</Link>
+          ))}
+          <Link href="/operatori/candidatura" onClick={closeMobileMenu}>Sei un operatore?</Link>
           <Link href="/contatti" onClick={closeMobileMenu}>Contatti</Link>
         </nav>
       </details>
