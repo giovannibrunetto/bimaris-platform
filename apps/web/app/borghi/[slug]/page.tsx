@@ -37,7 +37,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
       </div>
     </section>
 
-    <section className="section detail-grid">
+    <section className="section detail-grid" style={{ alignItems: "start" }}>
       <article>
         <div className="kicker">Il borgo</div>
         <h2 style={{ fontFamily: "Georgia,serif", fontSize: 42, marginTop: 8 }}>Identità e territorio</h2>
@@ -47,7 +47,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         {points.length > 0 && <VillageRouteBuilder villageName={village.name} points={points} />}
       </article>
 
-      <aside className="detail-panel" style={{ alignSelf: "start", height: "fit-content" }}>
+      <aside className="detail-panel" style={{ alignSelf: "start", height: "auto", minHeight: 0 }}>
         <div className="kicker">Organizza la visita</div>
         <h3>{village.name}</h3>
         {village.address && <p>{village.address}</p>}
