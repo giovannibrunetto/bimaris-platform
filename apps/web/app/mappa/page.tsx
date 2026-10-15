@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMapV2";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedOperators } from "@/data/operators";
@@ -21,8 +22,15 @@ function categoryDisplayName(category: string) {
   return names[category] ?? "Esperienza";
 }
 
-export default async function MapPage() {
+function villageThings(thingsToSee?: string) {
+  if (!thingsToSee) return [];
+  return thingsToSee.split(";").map(item => item.trim().replace(/\.$/, "")).filter(Boolean);
+}
+
+export default async function MapPage({ searchParams }: { searchParams: Promise<{ borgo?: string }> }) {
+  const { borgo } = await searchParams;
   const [cultureEntries, stories, operators, experiences, villages] = await Promise.all([getPublishedCultureEntries(), getPublishedStories(), getPublishedOperators(), getPublishedExperiences(), getPublishedVillages()]);
+  const activeVillage = borgo ? villages.find(village => village.slug === borgo) : undefined;
 
   const culturePoints: BimarisMapPoint[] = cultureEntries.map(entry => ({ id: `culture-${entry.id}`, kind: "culture", title: entry.title, address: entry.address, googleMapsQuery: entry.googleMapsQuery, latitude: entry.latitude, longitude: entry.longitude, filterCategories: ["cultura"], categoryLabel: entry.category, links: [{ label: "Apri la scheda culturale", href: `/cultura/${entry.slug}` }] }));
 
@@ -36,12 +44,23 @@ export default async function MapPage() {
 
   const villagePoints: BimarisMapPoint[] = villages.map(village => ({ id: `village-${village.id}`, kind: "culture", title: village.name, address: village.address, googleMapsQuery: village.googleMapsQuery, latitude: village.latitude, longitude: village.longitude, filterCategories: ["borghi"], categoryLabel: "Borgo", links: [{ label: "Apri la scheda del borgo", href: `/borghi/${village.slug}` }] }));
 
-  const points = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints, ...villagePoints];
+  const villagePoiPoints: BimarisMapPoint[] = activeVillage ? villageThings(activeVillage.thingsToSee).map((point, index) => ({
+    id: `village-poi-${activeVillage.id}-${index}`,
+    kind: "culture",
+    title: point,
+    googleMapsQuery: `${point}, ${activeVillage.name}, Messina`,
+    filterCategories: ["borghi"],
+    categoryLabel: `Da vedere a ${activeVillage.name}`,
+    links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }],
+  })) : [];
+
+  const points = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints, ...villagePoints, ...villagePoiPoints];
 
   return <>
     <section className="page-hero"><div className="kicker">Esplora</div><h1>Mappa BIMARIS</h1><p>La rappresentazione geografica di BIMARIS. Esplora sulla mappa le stesse sezioni da cui puoi iniziare la scoperta del territorio.</p></section>
     <section className="section dark">
-      <div className="section-head"><div><div className="kicker">Da dove vuoi iniziare?</div><h2>Scegli cosa vuoi scoprire.</h2></div><p>Monumenti e cultura, miti e leggende, sapori e territori, borghi ed esperienze sono organizzati anche geograficamente. Puoi filtrare la mappa e combinare le singole tappe nel tuo percorso.</p></div>
+      <div className="section-head"><div><div className="kicker">Da dove vuoi iniziare?</div><h2>{activeVillage ? `Esplora ${activeVillage.name}.` : "Scegli cosa vuoi scoprire."}</h2></div><p>{activeVillage ? `Sulla mappa sono state aggiunte le singole tappe da vedere a ${activeVillage.name}. Puoi selezionarle insieme agli altri punti BIMARIS e costruire il tuo percorso.` : "Monumenti e cultura, miti e leggende, sapori e territori, borghi ed esperienze sono organizzati anche geograficamente. Puoi filtrare la mappa e combinare le singole tappe nel tuo percorso."}</p></div>
+      {activeVillage && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#d6c29b", fontWeight: 700 }}>Contesto borgo attivo: {activeVillage.name}</span><Link className="button secondary" href="/mappa">Mostra la mappa generale</Link></div>}
       <BimarisGoogleMap points={points} />
     </section>
   </>;
