@@ -45,18 +45,18 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         {village.history && <><h3>Storia</h3><p>{village.history}</p></>}
         {points.length > 0 && <>
           <h3>Cosa vedere</h3>
-          <div className="village-poi-list">
+          <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
             {points.map((point, index) => (
               <a
-                className="village-poi"
                 key={`${point}-${index}`}
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${point}, ${village.name}, Messina`)}`}
                 target="_blank"
                 rel="noreferrer"
+                style={{ display: "grid", gridTemplateColumns: "42px 1fr auto", gap: 14, alignItems: "center", padding: "14px 16px", border: "1px solid #dfe4e8", borderRadius: 14, background: "#fff" }}
               >
-                <span className="village-poi-number">{index + 1}</span>
-                <span><strong>{point}</strong><small>Visualizza sulla mappa</small></span>
-                <span aria-hidden="true">↗</span>
+                <span style={{ width: 36, height: 36, borderRadius: "50%", display: "grid", placeItems: "center", background: "#061624", color: "#caa86a", fontWeight: 700 }}>{index + 1}</span>
+                <span style={{ display: "grid", gap: 3 }}><strong>{point}</strong><small style={{ color: "#6e7680" }}>Visualizza sulla mappa</small></span>
+                <span aria-hidden="true" style={{ color: "#8d6b34", fontSize: 18 }}>↗</span>
               </a>
             ))}
           </div>
