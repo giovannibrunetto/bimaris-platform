@@ -50,11 +50,11 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         <a className="button" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi il borgo con Google Maps</a>
 
         <div style={{ borderTop: "1px solid #dfe4e8", marginTop: 30, paddingTop: 26 }}>
-          <div className="kicker">Continua a esplorare</div>
-          <h3 style={{ marginTop: 8, marginBottom: 10 }}>Inseriscilo nel tuo percorso</h3>
-          <p style={{ color: "#6e7680", lineHeight: 1.55, marginTop: 0 }}>Esplora {village.name} sulla mappa BIMARIS e combinalo con monumenti, miti, sapori ed esperienze del territorio.</p>
+          <div className="kicker">Esplora il territorio</div>
+          <h3 style={{ marginTop: 8, marginBottom: 10 }}>Continua il viaggio da {village.name}</h3>
+          <p style={{ color: "#6e7680", lineHeight: 1.55, marginTop: 0 }}>Apri la mappa BIMARIS per scoprire e combinare altri luoghi, sapori ed esperienze del territorio.</p>
           <div className="actions" style={{ marginTop: 20 }}>
-            <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora {village.name} sulla mappa</Link>
+            <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora sulla mappa BIMARIS</Link>
             <Link className="button ghost" href="/borghi">Tutti i borghi</Link>
           </div>
         </div>
