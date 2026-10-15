@@ -41,7 +41,7 @@ export default function VillageRouteBuilder({ villageName, points }: Props) {
           style={{ display: "grid", gridTemplateColumns: "42px 1fr auto", gap: 14, alignItems: "center", width: "100%", textAlign: "left", padding: "14px 16px", border: active ? "1px solid #caa86a" : "1px solid #dfe4e8", borderRadius: 14, background: active ? "#f7f0e4" : "#fff", color: "#101820", cursor: "pointer" }}
         >
           <span style={{ width: 36, height: 36, borderRadius: "50%", display: "grid", placeItems: "center", background: active ? "#caa86a" : "#061624", color: active ? "#101820" : "#caa86a", fontWeight: 700 }}>{active ? order + 1 : index + 1}</span>
-          <span style={{ display: "grid", gap: 3 }}><strong>{point.name}</strong><small style={{ color: "#6e7680" }}>{active ? `Tappa ${order + 1} del tuo percorso` : "Seleziona questa tappa"}</small></span>
+          <span style={{ display: "grid", gap: 3 }}><strong>{point.name}</strong><small style={{ color: "#6e7680" }}>{active ? `Tappa ${order + 1} del tuo itinerario` : "Seleziona questa tappa"}</small></span>
           <span aria-hidden="true" style={{ color: active ? "#101820" : "#8d6b34", fontSize: 20 }}>{active ? "✓" : "+"}</span>
         </button>;
       })}
@@ -49,7 +49,7 @@ export default function VillageRouteBuilder({ villageName, points }: Props) {
 
     {selectedPoints.length > 0 && <div style={{ marginTop: 18, padding: 18, borderRadius: 16, background: "#061624", color: "#fff" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <div><strong style={{ fontFamily: "Georgia, serif", fontSize: 20 }}>Il mio percorso a {villageName}</strong><div style={{ marginTop: 4, color: "#c4cdd3", fontSize: 13 }}>{selectedPoints.length} {selectedPoints.length === 1 ? "tappa selezionata" : "tappe selezionate"}</div></div>
+        <div><strong style={{ fontFamily: "Georgia, serif", fontSize: 20 }}>Il mio itinerario a {villageName}</strong><div style={{ marginTop: 4, color: "#c4cdd3", fontSize: 13 }}>{selectedPoints.length} {selectedPoints.length === 1 ? "tappa selezionata" : "tappe selezionate"}</div></div>
         <button type="button" onClick={() => setSelected([])} style={{ border: 0, background: "transparent", color: "#d6c29b", fontWeight: 700, cursor: "pointer" }}>Svuota</button>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
@@ -57,7 +57,7 @@ export default function VillageRouteBuilder({ villageName, points }: Props) {
         <button type="button" onClick={() => setMode("driving")} aria-pressed={mode === "driving"} style={{ border: mode === "driving" ? "1px solid #caa86a" : "1px solid rgba(255,255,255,.25)", borderRadius: 999, padding: "8px 12px", background: mode === "driving" ? "#caa86a" : "transparent", color: mode === "driving" ? "#101820" : "#fff", fontWeight: 700, cursor: "pointer" }}>In auto</button>
         <a className="button" href={url} target="_blank" rel="noreferrer" onClick={() => track("village_custom_route_open_google", { village: villageName, stops: selectedPoints.length, travel_mode: mode })}>Indicazioni per le tappe selezionate</a>
       </div>
-      <div style={{ marginTop: 10, color: "#9eabb4", fontSize: 11 }}>Puoi scegliere fino a 10 tappe. Il percorso segue l'ordine di selezione.</div>
+      <div style={{ marginTop: 10, color: "#9eabb4", fontSize: 11 }}>Puoi scegliere fino a 10 tappe. L'itinerario segue l'ordine di selezione.</div>
     </div>}
   </>;
 }
