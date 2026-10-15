@@ -50,21 +50,33 @@ export default function Home() {
           ))}
         </div>
 
-        <Link href="/itinerari" className="discovery-link">
+        <Link
+          href="/itinerari"
+          style={{
+            marginTop: 34,
+            padding: "24px 0",
+            display: "flex",
+            alignItems: "end",
+            justifyContent: "space-between",
+            gap: 24,
+            borderTop: "1px solid rgba(16,24,32,.16)",
+            borderBottom: "1px solid rgba(16,24,32,.16)",
+          }}
+        >
           <div>
             <div className="kicker">Percorsi BIMARIS</div>
-            <h3>Lasciati guidare da un itinerario</h3>
-            <p>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
+            <h3 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(25px, 3vw, 34px)", fontWeight: 500, margin: "7px 0 5px" }}>Lasciati guidare da un itinerario</h3>
+            <p style={{ color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
           </div>
-          <span>Scopri i percorsi →</span>
+          <strong style={{ color: "#8d6b34", whiteSpace: "nowrap" }}>Scopri i percorsi →</strong>
         </Link>
 
-        <Link href="/mappa" className="map-shell home-map-shell">
-          <div className="map-label">
+        <Link href="/mappa" className="map-shell" style={{ display: "block", marginTop: 34, color: "white" }}>
+          <div className="map-label" style={{ color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
             <div className="kicker">Esplora</div>
-            <h3>Apri la mappa di BIMARIS</h3>
-            <p>Scopri le aree e i punti di interesse del territorio messinese.</p>
-            <span className="map-action">Apri la mappa →</span>
+            <h3 style={{ color: "white" }}>Apri la mappa di BIMARIS</h3>
+            <p style={{ color: "rgba(255,255,255,.88)", lineHeight: 1.5 }}>Scopri le aree e i punti di interesse del territorio messinese.</p>
+            <strong style={{ display: "inline-block", marginTop: 8, color: "#e2c58d" }}>Apri la mappa →</strong>
           </div>
         </Link>
       </section>
