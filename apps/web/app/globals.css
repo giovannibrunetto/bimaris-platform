@@ -170,3 +170,13 @@ main { min-height: 70vh; }
   .map-period-watch .map-filter-orb { grid-template-columns: 1fr; padding: 0 4px; }
   .map-period-watch .map-filter-orb strong { grid-column: 1; font-size: 11px; overflow-wrap: anywhere; }
 }
+
+/* Fixed two-column layout: wheel positions are defined by the grid, not offsets. */
+.map-mobile-filter-grid { display: none; }
+@media (max-width: 620px) {
+  .map-mobile-filter-grid { position: absolute; top: 8px; left: 8px; right: 8px; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 14px; align-items: start; pointer-events: none; }
+  .map-mobile-filter-grid > .map-filter-watch { position: relative; top: auto; left: auto; right: auto; transform: none; width: 100%; min-width: 0; max-width: 100%; margin: 0; box-sizing: border-box; pointer-events: auto; }
+  .map-mobile-filter-grid > .map-filter-watch:not(.map-period-watch) { order: 0; }
+  .map-mobile-filter-grid > .map-period-watch { order: 1; }
+  .map-mobile-filter-grid .map-filter-orb { max-width: 100%; }
+}
