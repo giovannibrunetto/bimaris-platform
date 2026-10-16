@@ -15,7 +15,7 @@ export default async function StoriesPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero discovery-page-hero">
         <div className="kicker">Messina da raccontare</div>
         <h1>Storia, miti e leggende</h1>
         <p>
@@ -23,7 +23,7 @@ export default async function StoriesPage() {
         </p>
       </section>
 
-      <section className="section">
+      <section className="section discovery-page-first">
         <div className="section-head">
           <div>
             <div className="kicker">Tra racconto e territorio</div>
