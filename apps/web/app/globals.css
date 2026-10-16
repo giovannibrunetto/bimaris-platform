@@ -193,3 +193,11 @@ main { min-height: 70vh; }
   .map-mobile-filter-grid.category-only { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); justify-items: stretch; }
   .map-mobile-filter-grid.category-only > .map-filter-watch:not(.map-period-watch) { width: 100%; max-width: 100%; }
 }
+
+/* Give the interactive map more horizontal room and a balanced aspect on phones. */
+@media (max-width: 620px) {
+  .section:has(.bimaris-map-card) { padding-left: 10px; padding-right: 10px; }
+  .bimaris-map-card { padding: 8px !important; border-radius: 18px !important; }
+  .bimaris-map-card > div:nth-child(2) { border-radius: 15px !important; }
+  .bimaris-map-canvas { height: clamp(360px, 105vw, 470px) !important; }
+}
