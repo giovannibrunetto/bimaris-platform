@@ -157,3 +157,12 @@ main { min-height: 70vh; }
   .map-filter-orb[aria-pressed="true"] { background: rgba(6,22,36,.72); color: #fff; box-shadow: inset 0 0 0 1px rgba(202,168,106,.7); }
   .map-filter-orb[aria-pressed="true"] strong { color: #fff; }
 }
+
+/* Paired BIMARIS map filters: categories left, historical periods right */
+.map-period-desktop { top: 65px; }
+@media (max-width: 620px) {
+  .map-filter-watch:not(.map-period-watch) { left: 4px; transform: none; width: calc(50% - 8px); }
+  .map-period-watch { left: auto; right: 4px; transform: none; width: calc(50% - 8px); }
+  .map-period-watch .map-filter-orb { grid-template-columns: 1fr; padding: 0 4px; }
+  .map-period-watch .map-filter-orb strong { grid-column: 1; font-size: 11px; overflow-wrap: anywhere; }
+}
