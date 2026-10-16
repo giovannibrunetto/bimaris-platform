@@ -190,6 +190,6 @@ main { min-height: 70vh; }
 
 /* Keep the single category wheel centered until monuments activates the historical wheel. */
 @media (max-width: 620px) {
-  .map-mobile-filter-grid.category-only { grid-template-columns: minmax(0, 1fr); justify-items: center; }
-  .map-mobile-filter-grid.category-only > .map-filter-watch:not(.map-period-watch) { width: min(70vw, 250px); max-width: 100%; }
+  .map-mobile-filter-grid.category-only { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); justify-items: stretch; }
+  .map-mobile-filter-grid.category-only > .map-filter-watch:not(.map-period-watch) { width: 100%; max-width: 100%; }
 }
