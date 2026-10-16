@@ -5,7 +5,7 @@
     left: 8px;
     right: auto;
     transform: none;
-    width: min(46vw, 168px);
+    width: min(41vw, 150px);
     height: 138px;
     padding: 46px 0;
     border-radius: 999px;
@@ -23,8 +23,11 @@
     flex: 0 0 46px;
     width: 100%;
     min-height: 46px;
-    padding: 0 13px;
-    grid-template-columns: 1fr auto;
+    padding: 0 11px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
     color: #fff;
     text-align: left;
     border: 0;
@@ -39,7 +42,7 @@
   }
 
   .map-filter-orb strong {
-    justify-self: start;
+    flex: 0 0 auto;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: -.01em;
@@ -47,6 +50,7 @@
   }
 
   .map-filter-orb span {
+    flex: 0 0 auto;
     font-size: 8px;
     font-weight: 800;
     opacity: .82;
