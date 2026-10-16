@@ -180,3 +180,10 @@ main { min-height: 70vh; }
   .map-mobile-filter-grid > .map-period-watch { order: 1; }
   .map-mobile-filter-grid .map-filter-orb { max-width: 100%; }
 }
+
+/* Center the labels and counters within both mobile filter wheels. */
+@media (max-width: 620px) {
+  .map-mobile-filter-grid .map-filter-orb { display: flex; justify-content: center; align-items: center; gap: 6px; text-align: center; }
+  .map-mobile-filter-grid .map-filter-orb strong { grid-column: auto; justify-self: auto; text-align: center; }
+  .map-mobile-filter-grid .map-filter-orb span { grid-column: auto; flex: 0 0 auto; }
+}
