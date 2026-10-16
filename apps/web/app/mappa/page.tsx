@@ -9,50 +9,23 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function uniqueFilters(filters: MapFilterKey[]) { return Array.from(new Set(filters)); }
-
-function operatorFilters(category?: string): MapFilterKey[] {
-  const filters: MapFilterKey[] = ["operatori"];
-  const value = (category ?? "").toLowerCase();
-  if (/ristor|enotec|cantin|vino|vinicol|degust|gastronom|produtt|caseific|salum|pastic|panific|agritur|food|sapori/.test(value)) filters.push("sapori-territori");
-  return uniqueFilters(filters);
-}
-
-function categoryDisplayName(category: string) {
-  const names: Record<string, string> = { degustazioni: "Degustazioni", mare: "Mare", avventura: "Avventura", "trekking-natura": "Trekking e natura", "visite-guidate": "Visite guidate", "artigianato-laboratori": "Artigianato e laboratori" };
-  return names[category] ?? "Esperienza";
-}
+function operatorFilters(category?: string): MapFilterKey[] { const filters: MapFilterKey[] = ["operatori"]; const value = (category ?? "").toLowerCase(); if (/ristor|enotec|cantin|vino|vinicol|degust|gastronom|produtt|caseific|salum|pastic|panific|agritur|food|sapori/.test(value)) filters.push("sapori-territori"); return uniqueFilters(filters); }
+function categoryDisplayName(category: string) { const names: Record<string, string> = { degustazioni: "Degustazioni", mare: "Mare", avventura: "Avventura", "trekking-natura": "Trekking e natura", "visite-guidate": "Visite guidate", "artigianato-laboratori": "Artigianato e laboratori" }; return names[category] ?? "Esperienza"; }
+function villagePoiType(name: string) { const value = name.toLowerCase(); if (/chiesa|duomo|basilio|salvatore/.test(value)) return "Chiesa"; if (/museo|manos/.test(value)) return "Museo"; if (/castello|torre/.test(value)) return "Castello e fortificazione"; if (/tempio|archeolog|argimusco/.test(value)) return "Area archeologica e paesaggistica"; if (/bosco|malabotta/.test(value)) return "Natura"; if (/porta/.test(value)) return "Porta storica"; if (/monumento/.test(value)) return "Monumento"; return "Luogo da vedere"; }
 
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ borgo?: string }> }) {
   const { borgo } = await searchParams;
   const [cultureEntries, stories, operators, experiences, villages] = await Promise.all([getPublishedCultureEntries(), getPublishedStories(), getPublishedOperators(), getPublishedExperiences(), getPublishedVillages()]);
   const activeVillage = borgo ? villages.find(village => village.slug === borgo) : undefined;
   const activeVillagePoints = activeVillage ? await getPublishedVillagePoints(activeVillage.id) : [];
-
   const culturePoints: BimarisMapPoint[] = cultureEntries.map(entry => ({ id: `culture-${entry.id}`, kind: "culture", title: entry.title, address: entry.address, googleMapsQuery: entry.googleMapsQuery, latitude: entry.latitude, longitude: entry.longitude, filterCategories: ["cultura"], categoryLabel: entry.category, links: [{ label: "Apri la scheda culturale", href: `/cultura/${entry.slug}` }] }));
-
   const legendPointsByQuery = new Map<string, BimarisMapPoint>();
   stories.forEach(story => { story.places.forEach(place => { const key = place.googleMapsQuery.trim().toLowerCase(); const existing = legendPointsByQuery.get(key); const storyLink = { label: story.title, href: `/storie-miti-leggende/${story.slug}` }; if (existing) { if (!existing.links.some(link => link.href === storyLink.href)) existing.links.push(storyLink); return; } legendPointsByQuery.set(key, { id: `legend-${story.slug}-${place.position}`, kind: "legend", title: place.label ?? place.name, address: place.address, googleMapsQuery: place.googleMapsQuery, latitude: place.latitude, longitude: place.longitude, filterCategories: ["miti-leggende"], categoryLabel: "Miti e leggende", links: [storyLink] }); }); });
   const legendPoints = Array.from(legendPointsByQuery.values());
-
   const operatorPoints: BimarisMapPoint[] = operators.map(operator => ({ id: `operator-${operator.id}`, kind: "operator", title: operator.name, address: operator.address, googleMapsQuery: operator.googleMapsQuery, latitude: operator.latitude, longitude: operator.longitude, filterCategories: operatorFilters(operator.category), categoryLabel: operator.category, links: [{ label: "Apri la scheda operatore", href: `/operatori/${operator.slug}` }] }));
-
   const experiencePoints: BimarisMapPoint[] = experiences.filter(experience => Boolean(experience.googleMapsQuery)).map(experience => ({ id: `experience-${experience.id}`, kind: "experience", title: experience.name, address: experience.meetingPoint, googleMapsQuery: experience.googleMapsQuery as string, latitude: experience.latitude, longitude: experience.longitude, filterCategories: ["esperienze"], categoryLabel: categoryDisplayName(experience.category), links: [{ label: "Apri l'esperienza", href: `/esperienze/${experience.slug}` }] }));
-
-  const villagePoints: BimarisMapPoint[] = villages.map(village => ({ id: `village-${village.id}`, kind: "culture", title: village.name, address: village.address, googleMapsQuery: village.googleMapsQuery, latitude: village.latitude, longitude: village.longitude, filterCategories: ["borghi"], categoryLabel: "Borgo", links: [{ label: "Apri la scheda del borgo", href: `/borghi/${village.slug}` }] }));
-
-  const villagePoiPoints: BimarisMapPoint[] = activeVillage ? activeVillagePoints.map(point => ({
-    id: `village-poi-${point.id}`,
-    kind: "culture",
-    title: point.name,
-    address: point.address,
-    googleMapsQuery: point.googleMapsQuery,
-    latitude: point.latitude,
-    longitude: point.longitude,
-    filterCategories: ["borghi"],
-    categoryLabel: `Da vedere a ${activeVillage.name}`,
-    links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }],
-  })) : [];
-
+  const villagePoints: BimarisMapPoint[] = villages.map(village => ({ id: `village-${village.id}`, kind: "village", title: village.name, address: village.address, googleMapsQuery: village.googleMapsQuery, latitude: village.latitude, longitude: village.longitude, filterCategories: ["borghi"], links: [{ label: "Apri la scheda del borgo", href: `/borghi/${village.slug}` }] }));
+  const villagePoiPoints: BimarisMapPoint[] = activeVillage ? activeVillagePoints.map(point => ({ id: `village-poi-${point.id}`, kind: "village", title: point.name, address: point.address, googleMapsQuery: point.googleMapsQuery, latitude: point.latitude, longitude: point.longitude, filterCategories: ["borghi"], categoryLabel: villagePoiType(point.name), links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }] })) : [];
   const points = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints, ...villagePoints, ...villagePoiPoints];
 
   return <>
