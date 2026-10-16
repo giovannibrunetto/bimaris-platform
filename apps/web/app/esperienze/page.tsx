@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExperienceExplorer } from "@/components/ExperienceExplorer";
 import { getPublishedExperiences } from "@/data/live";
+import type { CategorySlug } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   description: "Esperienze selezionate a Messina e provincia: degustazioni, mare, avventura, trekking, visite guidate e laboratori scelti da BIMARIS.",
 };
 
-const experienceCategories = [
+const experienceCategories: Array<{ slug: CategorySlug; title: string; text: string }> = [
   { slug: "degustazioni", title: "Degustazioni", text: "Cantine, produttori e incontri dedicati ai sapori del territorio." },
   { slug: "mare", title: "Mare", text: "Navigazioni, attività nello Stretto e modi autentici di vivere il mare." },
   { slug: "avventura", title: "Avventura", text: "Rafting e attività dinamiche per scoprire il territorio in modo diverso." },
@@ -22,7 +23,7 @@ const experienceCategories = [
 
 export default async function ExperiencesPage() {
   const experiences = await getPublishedExperiences();
-  const availableCategories = new Set(experiences.map(experience => experience.category));
+  const availableCategories = new Set<CategorySlug>(experiences.map(experience => experience.category));
 
   return (
     <>
