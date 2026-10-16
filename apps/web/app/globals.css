@@ -247,3 +247,14 @@ main { min-height: 70vh; }
   .bimaris-map-card > div:first-child { padding-bottom: 8px !important; }
   .bimaris-map-card .map-card-eyebrow { font-size: 10px !important; letter-spacing: .12em !important; }
 }
+
+@media (max-width: 620px) {
+.discovery-page-hero { padding: 22px 5vw 20px !important; }
+.discovery-page-hero h1 { font-family: Georgia, serif; font-weight: 500; letter-spacing: -.025em; font-size: clamp(34px, 9vw, 44px) !important; line-height: 1.12; margin: 8px 0 10px !important; }
+.discovery-page-hero p { max-width: 42ch; font-size: 14px; line-height: 1.5; }
+.discovery-page-first { padding-top: 22px !important; padding-bottom: 34px !important; }
+.discovery-page-first .section-head { margin-bottom: 16px !important; }
+.discovery-page-first .section-head h2 { font-size: clamp(27px, 7.5vw, 36px) !important; line-height: 1.15; margin: 5px 0 8px; }
+.discovery-page-first .section-head p { font-size: 13px; line-height: 1.45; }
+.discovery-page-first .cards { gap: 14px; }
+}
