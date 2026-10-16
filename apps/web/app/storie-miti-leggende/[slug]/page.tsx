@@ -86,7 +86,9 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           {story.places.length > 0 ? (
             <ul className="list">
               {story.places.map(place => {
-                const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.googleMapsQuery)}`;
+                const hasCoordinates = Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
+                const destination = hasCoordinates ? `${place.latitude},${place.longitude}` : place.googleMapsQuery;
+                const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 
                 return (
                   <li key={`${place.position}-${place.googleMapsQuery}`}>
