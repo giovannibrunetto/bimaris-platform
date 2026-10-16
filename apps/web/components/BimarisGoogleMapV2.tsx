@@ -11,14 +11,14 @@ export type MapFilterKey = "cultura" | "miti-leggende" | "sapori-territori" | "b
 type Filter = "all" | MapFilterKey;
 type Mode = "walking" | "driving";
 
-const FILTERS: Array<{ key: Filter; label: string }> = [
-  { key: "all", label: "Tutto" },
-  { key: "cultura", label: "Monumenti e cultura" },
-  { key: "miti-leggende", label: "Miti e leggende" },
-  { key: "sapori-territori", label: "Sapori e territori" },
-  { key: "borghi", label: "Borghi" },
-  { key: "esperienze", label: "Esperienze" },
-  { key: "operatori", label: "Operatori" },
+const FILTERS: Array<{ key: Filter; label: string; shortLabel: string }> = [
+  { key: "all", label: "Tutto", shortLabel: "Tutto" },
+  { key: "cultura", label: "Monumenti e cultura", shortLabel: "Monumenti" },
+  { key: "miti-leggende", label: "Miti e leggende", shortLabel: "Miti" },
+  { key: "sapori-territori", label: "Sapori e territori", shortLabel: "Sapori" },
+  { key: "borghi", label: "Borghi", shortLabel: "Borghi" },
+  { key: "esperienze", label: "Esperienze", shortLabel: "Esperienze" },
+  { key: "operatori", label: "Operatori", shortLabel: "Operatori" },
 ];
 
 export type BimarisMapPoint = {
@@ -57,6 +57,7 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
   const selectedPoints = useMemo(() => selected.map(k => points.find(p => keyOf(p) === k)).filter(Boolean) as BimarisMapPoint[], [points, selected]); const routeUrl = mapsRouteUrl(selectedPoints, mode);
   const available = FILTERS;
   const count = (f: Filter) => f === "all" ? points.length : points.filter(p => p.filterCategories.includes(f)).length;
+  const chooseFilter = (value: Filter) => { setFilter(value); track("filter_used", { section: "map", filter: "category", value }); };
   const toggle = (point: BimarisMapPoint) => { const key = keyOf(point); setSelected(current => current.includes(key) ? current.filter(v => v !== key) : current.length < 10 ? [...current, key] : current); info.current?.close(); };
 
   useEffect(() => {
@@ -83,8 +84,11 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
       {status === "loading" && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", pointerEvents: "none" }}><div className="detail-panel">Caricamento della mappa…</div></div>}
       {status === "error" && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 24 }}><div className="detail-panel"><h3>Mappa temporaneamente non disponibile</h3></div></div>}
       {status === "ready" && <>
-        <div aria-label="Filtra i punti BIMARIS per categoria" style={{ position: "absolute", left: 12, right: 12, top: 12, zIndex: 3, display: "flex", gap: 7, overflowX: "auto", padding: "4px 2px 8px", scrollbarWidth: "none" }}>
-          {available.map(f => <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => { setFilter(f.key); track("filter_used", { section: "map", filter: "category", value: f.key }); }} style={{ flex: "0 0 auto", border: filter === f.key ? "1px solid #caa86a" : "1px solid rgba(3,17,26,.12)", borderRadius: 999, padding: "9px 13px", background: filter === f.key ? "#061624" : "rgba(255,255,255,.96)", color: filter === f.key ? "#fff" : "#101820", fontWeight: 700, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap", boxShadow: "0 4px 14px rgba(7,24,35,.10)" }}>{f.label} <span style={{ opacity: .72 }}>({count(f.key)})</span></button>)}
+        <div className="map-filter-desktop" aria-label="Filtra i punti BIMARIS per categoria">
+          {available.map(f => <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => chooseFilter(f.key)}>{f.label} <span>({count(f.key)})</span></button>)}
+        </div>
+        <div className="map-filter-honeycomb" aria-label="Filtra i punti BIMARIS per categoria">
+          {available.map((f, index) => <button key={f.key} className={`map-filter-hex map-filter-hex-${index + 1}`} type="button" aria-pressed={filter === f.key} onClick={() => chooseFilter(f.key)}><strong>{f.shortLabel}</strong><span>{count(f.key)}</span></button>)}
         </div>
         {selectedPoints.length > 0 && <div style={{ position: "absolute", left: 12, right: 12, bottom: 12, zIndex: 4, background: "rgba(6,22,36,.96)", color: "#fff", border: "1px solid rgba(202,168,106,.45)", borderRadius: 18, padding: 14, boxShadow: "0 14px 38px rgba(7,24,35,.3)", maxHeight: "45%", overflowY: "auto", backdropFilter: "blur(10px)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}><div><strong style={{ fontFamily: "Georgia, serif", fontSize: 18 }}>Il mio percorso</strong><div style={{ fontSize: 12, color: "#c4cdd3" }}>{selectedPoints.length} {selectedPoints.length === 1 ? "tappa" : "tappe"}</div></div><button type="button" onClick={() => setSelected([])} style={{ border: 0, background: "transparent", color: "#d6c29b", fontWeight: 700, cursor: "pointer" }}>Svuota</button></div>
