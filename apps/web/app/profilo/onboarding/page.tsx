@@ -8,7 +8,7 @@ const interests = [
   ["cultura", "Cultura e monumenti", "Chiese, architettura, musei e luoghi storici"],
   ["miti-leggende", "Miti e leggende", "Storie, personaggi e immaginario dello Stretto"],
   ["borghi", "Borghi", "Paesi, centri storici e territori da scoprire"],
-  ["sapori-vino", "Sapori e vino", "Prodotti tipici, cantine, produttori e degustazioni"],
+  ["sapori", "Sapori e vino", "Prodotti tipici, cantine, produttori e degustazioni"],
   ["mare", "Mare", "Stretto, costa, barca e attività sul mare"],
   ["natura-trekking", "Natura e trekking", "Sentieri, panorami e attività all'aperto"],
   ["esperienze", "Esperienze", "Attività selezionate da vivere sul territorio"],
