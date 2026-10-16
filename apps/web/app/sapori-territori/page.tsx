@@ -16,14 +16,14 @@ export default async function SaporiTerritoriPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero discovery-page-hero">
         <div className="kicker">Sapori e territori</div>
         <h1>Un territorio si conosce anche attraverso ciò che produce.</h1>
         <p>Vini, formaggi, salumi, prodotti da forno e specialità locali raccontati nel luogo in cui nascono. BIMARIS collega ogni prodotto ai produttori selezionati e, quando disponibili, alle esperienze per assaggiarlo e conoscerlo dal vivo.</p>
       </section>
 
       {territories.length > 0 && (
-        <section className="section">
+        <section className="section discovery-page-first">
           <div className="section-head">
             <div><div className="kicker">Da dove nasce</div><h2>Esplora per territorio</h2></div>
             <p>Ogni area ha prodotti, tradizioni e identità gastronomiche proprie.</p>
