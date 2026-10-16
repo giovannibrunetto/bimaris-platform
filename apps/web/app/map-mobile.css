@@ -38,13 +38,14 @@
     outline: 0;
     background: transparent;
     box-shadow: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,.72), 0 0 3px rgba(0,0,0,.4);
+    text-shadow: 0 1px 2px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.82), 0 0 9px rgba(0,0,0,.48);
+    -webkit-text-stroke: .35px rgba(6,22,36,.9);
     scroll-snap-stop: always;
   }
 
   .map-filter-orb strong {
     flex: 0 0 auto;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 900;
     letter-spacing: 0;
     white-space: nowrap;
@@ -52,7 +53,7 @@
 
   .map-filter-orb span {
     flex: 0 0 auto;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 900;
     opacity: 1;
   }
@@ -64,6 +65,7 @@
     background: rgba(6,22,36,.54);
     box-shadow: none;
     text-shadow: 0 1px 2px rgba(0,0,0,.38);
+    -webkit-text-stroke: 0;
   }
 
   .map-filter-orb[aria-current="true"] strong,
