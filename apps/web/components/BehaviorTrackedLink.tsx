@@ -6,6 +6,8 @@ import { track } from "@/lib/analytics";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import type { AnalyticsEventName } from "@/lib/types";
 
+type AnalyticsData = Record<string, string | number | boolean | null>;
+
 type Props = {
   href: string;
   children: ReactNode;
@@ -13,7 +15,7 @@ type Props = {
   target?: string;
   rel?: string;
   analyticsEvent?: AnalyticsEventName;
-  analyticsData?: Record<string, unknown>;
+  analyticsData?: AnalyticsData;
   behaviorEvent: string;
   contentType: string;
   contentId: string;
