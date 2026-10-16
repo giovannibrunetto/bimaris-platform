@@ -201,3 +201,15 @@ main { min-height: 70vh; }
   .bimaris-map-card > div:nth-child(2) { border-radius: 15px !important; }
   .bimaris-map-canvas { height: clamp(360px, 105vw, 470px) !important; }
 }
+
+/* Map landing page: compact, map-first layout on small screens. */
+@media (max-width: 620px) {
+  .map-page-hero { padding: 26px 5vw 20px; }
+  .map-page-hero h1 { font-size: clamp(36px, 10vw, 48px); line-height: 1.08; margin: 8px 0 10px; }
+  .map-page-hero p { font-size: 14px; line-height: 1.45; margin: 0; }
+  .map-page-section { padding-top: 18px; padding-bottom: 32px; }
+  .map-page-section .section-head { margin-bottom: 16px; }
+  .map-page-section .section-head h2 { font-size: clamp(28px, 8vw, 38px); line-height: 1.13; margin: 7px 0 10px; }
+  .map-page-section .section-head p { font-size: 13px; line-height: 1.45; margin: 0; }
+  .map-page-section .bimaris-map-card > div:first-child strong { font-size: 18px !important; }
+}
