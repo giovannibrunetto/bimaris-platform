@@ -64,11 +64,11 @@ export default function Home() {
             }}
           >
             <div>
-              <div className="kicker">Percorsi BIMARIS</div>
-              <h3 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(25px, 3vw, 34px)", fontWeight: 500, margin: "7px 0 5px" }}>Lasciati guidare da un itinerario</h3>
-              <p style={{ color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>Percorsi già costruiti per scoprire luoghi, storie e identità del territorio.</p>
+              <div className="kicker">Vuoi lasciarti guidare?</div>
+              <h3 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(25px, 3vw, 34px)", fontWeight: 500, margin: "7px 0 5px" }}>Scegli un itinerario BIMARIS</h3>
+              <p style={{ color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>Segui percorsi già costruiti, con tappe e tempi suggeriti, per scoprire luoghi, storie e identità del territorio.</p>
             </div>
-            <strong style={{ color: "#8d6b34", whiteSpace: "nowrap" }}>Scopri i percorsi →</strong>
+            <strong style={{ color: "#8d6b34", whiteSpace: "nowrap" }}>Scopri gli itinerari →</strong>
           </Link>
         </div>
 
@@ -88,11 +88,11 @@ export default function Home() {
               border: "1px solid rgba(255,255,255,.16)",
             }}
           >
-            <div style={{ maxWidth: 520, color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
-              <div className="kicker">Esplora</div>
-              <h3 style={{ color: "white", fontFamily: "Georgia, serif", fontSize: "clamp(30px, 4vw, 42px)", margin: "6px 0 8px" }}>Apri la mappa di BIMARIS</h3>
-              <p style={{ color: "rgba(255,255,255,.9)", lineHeight: 1.5, margin: 0 }}>Scopri le aree e i punti di interesse del territorio messinese.</p>
-              <strong style={{ display: "inline-block", marginTop: 14, color: "#e2c58d" }}>Apri la mappa →</strong>
+            <div style={{ maxWidth: 560, color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
+              <div className="kicker">Vuoi esplorare liberamente?</div>
+              <h3 style={{ color: "white", fontFamily: "Georgia, serif", fontSize: "clamp(30px, 4vw, 42px)", margin: "6px 0 8px" }}>Esplora la mappa BIMARIS</h3>
+              <p style={{ color: "rgba(255,255,255,.9)", lineHeight: 1.5, margin: 0 }}>Scopri i punti di interesse, scegli quelli che vuoi visitare e costruisci il tuo percorso sul territorio.</p>
+              <strong style={{ display: "inline-block", marginTop: 14, color: "#e2c58d" }}>Esplora la mappa →</strong>
             </div>
           </Link>
         </div>
