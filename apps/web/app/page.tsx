@@ -76,22 +76,28 @@ export default function Home() {
           <Link
             href="/mappa"
             style={{
-              minHeight: 300,
+              minHeight: "clamp(360px, 58vw, 680px)",
               width: "100%",
               borderRadius: 26,
-              padding: 30,
+              padding: "clamp(22px, 4vw, 34px)",
               display: "flex",
               alignItems: "flex-end",
+              position: "relative",
+              isolation: "isolate",
               color: "white",
               overflow: "hidden",
-              background: "radial-gradient(circle at 35% 45%, rgba(202,168,106,.26), transparent 12%), radial-gradient(circle at 67% 32%, rgba(202,168,106,.22), transparent 11%), linear-gradient(145deg,#17394a,#071821)",
+              backgroundColor: "#071821",
+              backgroundImage: "linear-gradient(180deg, rgba(4,16,24,.04) 28%, rgba(4,16,24,.35) 58%, rgba(4,16,24,.88) 100%), url('/bimaris-map-tech.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center center",
+              backgroundRepeat: "no-repeat",
               border: "1px solid rgba(255,255,255,.16)",
             }}
           >
-            <div style={{ maxWidth: 560, color: "white", textShadow: "0 2px 14px rgba(0,0,0,.65)" }}>
+            <div style={{ maxWidth: 560, color: "white", position: "relative", zIndex: 1, textShadow: "0 2px 14px rgba(0,0,0,.75)" }}>
               <div className="kicker">Vuoi esplorare liberamente?</div>
               <h3 style={{ color: "white", fontFamily: "Georgia, serif", fontSize: "clamp(30px, 4vw, 42px)", margin: "6px 0 8px" }}>Esplora la mappa BIMARIS</h3>
-              <p style={{ color: "rgba(255,255,255,.9)", lineHeight: 1.5, margin: 0 }}>Scopri i punti di interesse, scegli quelli che vuoi visitare e costruisci il tuo percorso sul territorio.</p>
+              <p style={{ color: "rgba(255,255,255,.94)", lineHeight: 1.5, margin: 0 }}>Scopri i punti di interesse, scegli quelli che vuoi visitare e costruisci il tuo percorso sul territorio.</p>
               <strong style={{ display: "inline-block", marginTop: 14, color: "#e2c58d" }}>Esplora la mappa →</strong>
             </div>
           </Link>
