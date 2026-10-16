@@ -213,3 +213,15 @@ main { min-height: 70vh; }
   .map-page-section .section-head p { font-size: 13px; line-height: 1.45; margin: 0; }
   .map-page-section .bimaris-map-card > div:first-child strong { font-size: 18px !important; }
 }
+
+/* Shared mobile spacing for interior pages (home has its own hero). */
+@media (max-width: 620px) {
+  .page-hero:not(.map-page-hero) { padding: 30px 5vw 24px; }
+  .page-hero:not(.map-page-hero) h1 { font-size: clamp(36px, 9.5vw, 48px); line-height: 1.1; margin: 8px 0 10px; overflow-wrap: anywhere; }
+  .page-hero:not(.map-page-hero) p { font-size: 14px; line-height: 1.5; margin: 0; }
+  .page-hero:not(.map-page-hero) .actions { margin-top: 16px; }
+  .page-hero + .section { padding-top: 26px; }
+  .section:not(.map-page-section) .section-head { margin-bottom: 20px; }
+  .section:not(.map-page-section) .section-head h2 { font-size: clamp(28px, 8vw, 40px); line-height: 1.15; margin: 7px 0 10px; }
+  .section:not(.map-page-section) .section-head p { font-size: 14px; line-height: 1.5; margin: 0; }
+}
