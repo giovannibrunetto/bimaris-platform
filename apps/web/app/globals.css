@@ -161,8 +161,12 @@ main { min-height: 70vh; }
 /* Paired BIMARIS map filters: categories left, historical periods right */
 .map-period-desktop { top: 65px; }
 @media (max-width: 620px) {
-  .map-filter-watch:not(.map-period-watch) { left: 4px; transform: none; width: calc(50% - 8px); }
-  .map-period-watch { left: auto; right: 4px; transform: none; width: calc(50% - 8px); }
+  .map-filter-watch:not(.map-period-watch) { left: 3%; transform: none; width: 43%; box-sizing: border-box; padding-left: 3px; padding-right: 3px; }
+  .map-period-watch { left: auto; right: 3%; transform: none; width: 43%; box-sizing: border-box; padding-left: 3px; padding-right: 3px; }
+  .map-filter-watch .map-filter-orb { box-sizing: border-box; min-width: 0; padding-left: 3px; padding-right: 3px; }
+  .map-filter-watch .map-filter-orb strong { min-width: 0; font-size: 12px; overflow-wrap: anywhere; }
+  .map-filter-watch .map-filter-orb span { font-size: 9px; }
+  .map-period-watch .map-filter-orb strong { font-size: 11px; }
   .map-period-watch .map-filter-orb { grid-template-columns: 1fr; padding: 0 4px; }
   .map-period-watch .map-filter-orb strong { grid-column: 1; font-size: 11px; overflow-wrap: anywhere; }
 }
