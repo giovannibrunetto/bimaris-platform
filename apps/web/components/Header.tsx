@@ -27,6 +27,7 @@ export function Header() {
         {primaryLinks.map(link => (
           <Link href={link.href} key={link.href}>{link.label}</Link>
         ))}
+        <Link href="/accedi">Accedi</Link>
       </nav>
 
       <details className="mobile-menu" ref={mobileMenuRef}>
@@ -35,6 +36,7 @@ export function Header() {
           {primaryLinks.map(link => (
             <Link href={link.href} key={link.href} onClick={closeMobileMenu}>{link.label}</Link>
           ))}
+          <Link href="/accedi" onClick={closeMobileMenu}>Accedi / Il tuo BIMARIS</Link>
           <Link href="/operatori/candidatura" onClick={closeMobileMenu}>Sei un operatore?</Link>
           <Link href="/contatti" onClick={closeMobileMenu}>Contatti</Link>
         </nav>
