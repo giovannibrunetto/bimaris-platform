@@ -27,7 +27,7 @@ export default async function ExperiencesPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero discovery-page-hero">
         <div className="kicker">Vivi il territorio</div>
         <h1>Esperienze BIMARIS</h1>
         <p>
@@ -35,7 +35,7 @@ export default async function ExperiencesPage() {
         </p>
       </section>
 
-      <section className="section sand">
+      <section className="section sand discovery-page-first">
         <div className="section-head">
           <div>
             <div className="kicker">Cosa vuoi fare?</div>
