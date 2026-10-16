@@ -26,7 +26,9 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
 
   if (!entry) notFound();
 
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(entry.googleMapsQuery)}`;
+  const hasCoordinates = Number.isFinite(entry.latitude) && Number.isFinite(entry.longitude);
+  const destination = hasCoordinates ? `${entry.latitude},${entry.longitude}` : entry.googleMapsQuery;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
   const periodLabel = historicalPeriodLabel(entry.primaryHistoricalPeriod);
 
   return (
