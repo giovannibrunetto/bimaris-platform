@@ -7,12 +7,19 @@ import type { VillagePoint } from "@/data/villages";
 type Props = { villageName: string; points: VillagePoint[] };
 type Mode = "walking" | "driving";
 
+function pointLocation(point: VillagePoint) {
+  if (typeof point.latitude === "number" && typeof point.longitude === "number") {
+    return `${point.latitude},${point.longitude}`;
+  }
+  return point.googleMapsQuery;
+}
+
 function routeUrl(points: VillagePoint[], mode: Mode) {
   if (!points.length) return "";
-  const queries = points.map(point => point.googleMapsQuery);
-  const params = new URLSearchParams({ api: "1", destination: queries[queries.length - 1], travelmode: mode });
-  if (queries.length > 1) params.set("origin", queries[0]);
-  if (queries.length > 2) params.set("waypoints", queries.slice(1, -1).join("|"));
+  const locations = points.map(pointLocation);
+  const params = new URLSearchParams({ api: "1", destination: locations[locations.length - 1], travelmode: mode });
+  if (locations.length > 1) params.set("origin", locations[0]);
+  if (locations.length > 2) params.set("waypoints", locations.slice(1, -1).join("|"));
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
