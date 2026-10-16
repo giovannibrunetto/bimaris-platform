@@ -237,3 +237,13 @@ main { min-height: 70vh; }
   .map-page-intro h1 { font-size: clamp(36px, 10vw, 48px); margin: 8px 0 10px; }
   .map-page-intro p { font-size: 14px; line-height: 1.45; }
 }
+
+/* Refined editorial typography for the map introduction. */
+.map-page-intro h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 500; letter-spacing: -.025em; }
+.map-page-intro p { max-width: 590px; }
+@media (max-width: 620px) {
+  .map-page-intro h1 { font-size: clamp(37px, 10vw, 46px); line-height: 1.1; letter-spacing: -.035em; margin: 8px 0 12px; }
+  .map-page-intro p { font-size: 14px; line-height: 1.55; color: #bfc7cd; max-width: 35ch; }
+  .bimaris-map-card > div:first-child { padding-bottom: 8px !important; }
+  .bimaris-map-card .map-card-eyebrow { font-size: 10px !important; letter-spacing: .12em !important; }
+}
