@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { track } from "@/lib/analytics";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-import type { Experience } from "@/lib/types";
+import type { AnalyticsEventName, Experience } from "@/lib/types";
 
 function externalUrl(value?: string) {
   if (!value) return undefined;
@@ -59,7 +59,7 @@ export function ExperienceDetailActions({ experience }: { experience: Experience
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(experience.googleMapsQuery)}`
     : undefined;
 
-  const signal = (analyticsEvent: string, behaviorEvent: string, weight: number, extra: Record<string, unknown> = {}) => {
+  const signal = (analyticsEvent: AnalyticsEventName, behaviorEvent: string, weight: number, extra: Record<string, unknown> = {}) => {
     track(analyticsEvent, { experience_id: experience.id, ...extra });
     void recordIntent(experience, behaviorEvent, weight);
   };
