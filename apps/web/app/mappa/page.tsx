@@ -50,9 +50,12 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       : "Monumenti e cultura, miti e leggende, sapori e territori, borghi ed esperienze sono organizzati anche geograficamente. Puoi filtrare la mappa e combinare le singole tappe nel tuo percorso.";
 
   return <>
-    <section className="page-hero map-page-hero"><div className="kicker">Esplora</div><h1>Mappa BIMARIS</h1><p>La rappresentazione geografica di BIMARIS. Esplora sulla mappa le stesse sezioni da cui puoi iniziare la scoperta del territorio.</p></section>
-    <section className="section dark map-page-section">
-      <div className="section-head"><div><div className="kicker">Da dove vuoi iniziare?</div><h2>{contextTitle}</h2></div><p>{contextText}</p></div>
+    <section className="section dark map-page-section map-page-unified">
+      <header className="map-page-intro">
+        <div className="kicker">Esplora il territorio</div>
+        <h1>Mappa BIMARIS</h1>
+        <p>{activeStory || activeVillage ? contextText : "Scopri Messina e il suo territorio: filtra monumenti, borghi, miti ed esperienze e crea il tuo percorso personalizzato."}</p>
+      </header>
       {activeStory && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#d6c29b", fontWeight: 700 }}>Leggenda attiva: {activeStory.title}</span>{expandedStoryContext ? <Link className="button secondary" href={`/mappa?storia=${encodeURIComponent(activeStory.slug)}`}>Mostra solo i punti della leggenda</Link> : <Link className="button secondary" href={`/mappa?storia=${encodeURIComponent(activeStory.slug)}&espandi=1`}>Integra con gli altri punti BIMARIS</Link>}<Link className="button secondary" href={`/storie-miti-leggende/${activeStory.slug}`}>Torna alla leggenda</Link></div>}
       {!activeStory && activeVillage && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#d6c29b", fontWeight: 700 }}>Contesto borgo attivo: {activeVillage.name}</span><Link className="button secondary" href="/mappa">Mostra la mappa generale</Link></div>}
       <BimarisGoogleMap points={points} />
