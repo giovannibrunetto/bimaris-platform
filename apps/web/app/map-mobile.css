@@ -5,49 +5,60 @@
     left: 8px;
     right: auto;
     transform: none;
-    width: min(48vw, 176px);
+    width: min(46vw, 168px);
     height: 126px;
-    padding: 36px 0;
-    border-radius: 0;
+    padding: 42px 0;
+    border-radius: 999px;
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    mask-image: linear-gradient(to bottom, transparent 0, #000 20%, #000 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20%, #000 80%, transparent 100%);
+    scrollbar-width: none;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
   }
 
+  .map-filter-watch::-webkit-scrollbar { display: none; }
+
   .map-filter-orb {
+    flex: 0 0 42px;
+    width: 100%;
     min-height: 42px;
-    padding: 0 7px;
+    padding: 0 13px;
     grid-template-columns: 1fr auto;
     color: #fff;
     text-align: left;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
     text-shadow:
       0 2px 3px rgba(0,0,0,.98),
-      0 0 8px rgba(0,0,0,.98),
-      0 0 14px rgba(0,0,0,.78);
+      0 0 7px rgba(0,0,0,.95),
+      0 0 12px rgba(0,0,0,.75);
   }
 
   .map-filter-orb strong {
     justify-self: start;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 800;
     letter-spacing: -.01em;
     white-space: nowrap;
   }
 
   .map-filter-orb span {
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
-    opacity: .9;
+    opacity: .82;
   }
 
-  .map-filter-orb[aria-pressed="true"] {
-    background: rgba(6,22,36,.58);
-    box-shadow: inset 0 0 0 1px rgba(202,168,106,.85), 0 2px 9px rgba(0,0,0,.2);
+  .map-filter-orb[aria-current="true"] {
+    border-radius: 999px;
+    background: rgba(6,22,36,.70);
+    box-shadow: inset 0 0 0 1px rgba(202,168,106,.92), 0 3px 10px rgba(0,0,0,.28);
   }
 
-  .map-filter-orb[aria-pressed="true"] strong {
+  .map-filter-orb[aria-current="true"] strong {
+    font-size: 14px;
     color: #fff;
   }
 }
