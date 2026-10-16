@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 5px;
+    gap: 9px;
     color: #fff;
     text-align: left;
     border: 0;
@@ -51,7 +51,7 @@
 
   .map-filter-orb span {
     flex: 0 0 auto;
-    font-size: 8px;
+    font-size: 13px;
     font-weight: 800;
     opacity: .82;
   }
@@ -62,7 +62,8 @@
     box-shadow: inset 0 0 0 1px rgba(202,168,106,.92), 0 3px 10px rgba(0,0,0,.28);
   }
 
-  .map-filter-orb[aria-current="true"] strong {
+  .map-filter-orb[aria-current="true"] strong,
+  .map-filter-orb[aria-current="true"] span {
     font-size: 14px;
     color: #fff;
   }
