@@ -6,7 +6,7 @@ import { track } from "@/lib/analytics";
 declare global { interface Window { google?: any } }
 
 const CENTER = { lat: 38.1938, lng: 15.5540 };
-type Kind = "culture" | "legend" | "operator" | "experience";
+type Kind = "culture" | "legend" | "operator" | "experience" | "village";
 export type MapFilterKey = "cultura" | "miti-leggende" | "sapori-territori" | "borghi" | "esperienze" | "operatori";
 type Filter = "all" | MapFilterKey;
 type Mode = "walking" | "driving";
@@ -28,20 +28,26 @@ export type BimarisMapPoint = {
 };
 
 const keyOf = (point: BimarisMapPoint) => `${point.kind}:${point.id}`;
-const colorOf = (kind: Kind) => kind === "culture" ? "#caa86a" : kind === "operator" ? "#244b3b" : kind === "experience" ? "#8a5a35" : "#376070";
-const letterOf = (kind: Kind) => kind === "culture" ? "C" : kind === "operator" ? "O" : kind === "experience" ? "E" : "M";
-const kindLabel = (kind: Kind) => kind === "culture" ? "Monumento" : kind === "operator" ? "Operatore BIMARIS" : kind === "experience" ? "Esperienza BIMARIS" : "Miti e leggende";
+const colorOf = (kind: Kind) => kind === "culture" ? "#caa86a" : kind === "village" ? "#7b6847" : kind === "operator" ? "#244b3b" : kind === "experience" ? "#8a5a35" : "#376070";
+const letterOf = (kind: Kind) => kind === "culture" ? "C" : kind === "village" ? "B" : kind === "operator" ? "O" : kind === "experience" ? "E" : "M";
+const kindLabel = (kind: Kind) => kind === "culture" ? "Monumento e cultura" : kind === "village" ? "Borgo" : kind === "operator" ? "Operatore BIMARIS" : kind === "experience" ? "Esperienza BIMARIS" : "Miti e leggende";
 
 function markerIcon(maps: any, kind: Kind, selected: boolean) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="52" viewBox="0 0 40 52"><path d="M20 1C9.5 1 1 9.5 1 20c0 14 19 31 19 31s19-17 19-31C39 9.5 30.5 1 20 1Z" fill="${colorOf(kind)}" stroke="${selected ? "#101820" : "#fff"}" stroke-width="${selected ? 4 : 2}"/><circle cx="20" cy="20" r="9" fill="rgba(3,17,26,.3)"/></svg>`;
   return { url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`, scaledSize: new maps.Size(40, 52), anchor: new maps.Point(20, 51), labelOrigin: new maps.Point(20, 20) };
 }
 
+function pointLocation(point: BimarisMapPoint) {
+  if (Number.isFinite(point.latitude) && Number.isFinite(point.longitude)) return `${point.latitude},${point.longitude}`;
+  return point.googleMapsQuery;
+}
+
 function mapsRouteUrl(points: BimarisMapPoint[], mode: Mode) {
   if (!points.length) return "";
-  const params = new URLSearchParams({ api: "1", destination: points[points.length - 1].googleMapsQuery, travelmode: mode });
-  if (points.length > 1) params.set("origin", points[0].googleMapsQuery);
-  if (points.length > 2) params.set("waypoints", points.slice(1, -1).map(p => p.googleMapsQuery).join("|"));
+  const locations = points.map(pointLocation);
+  const params = new URLSearchParams({ api: "1", destination: locations[locations.length - 1], travelmode: mode });
+  if (locations.length > 1) params.set("origin", locations[0]);
+  if (locations.length > 2) params.set("waypoints", locations.slice(1, -1).join("|"));
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -88,5 +94,6 @@ export function BimarisGoogleMap({ points }: { points: BimarisMapPoint[] }) {
         </div>}
       </>}
     </div>
+    <div style={{ padding: "10px 7px 2px", color: "#aeb9c0", fontSize: 11 }}>B = borgo o luogo del borgo · C = cultura · M = miti e leggende · E = esperienza · O = operatore</div>
   </div>;
 }
