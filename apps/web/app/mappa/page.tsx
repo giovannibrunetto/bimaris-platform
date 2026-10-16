@@ -54,7 +54,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       <header className="map-page-intro">
         <div className="kicker">Esplora il territorio</div>
         <h1>Mappa BIMARIS</h1>
-        <p>{activeStory || activeVillage ? contextText : "Scopri Messina e il suo territorio: filtra monumenti, borghi, miti ed esperienze e crea il tuo percorso personalizzato."}</p>
+        <p>{activeStory || activeVillage ? contextText : "Monumenti, borghi, storie ed esperienze: scegli cosa scoprire e crea il tuo itinerario."}</p>
       </header>
       {activeStory && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#d6c29b", fontWeight: 700 }}>Leggenda attiva: {activeStory.title}</span>{expandedStoryContext ? <Link className="button secondary" href={`/mappa?storia=${encodeURIComponent(activeStory.slug)}`}>Mostra solo i punti della leggenda</Link> : <Link className="button secondary" href={`/mappa?storia=${encodeURIComponent(activeStory.slug)}&espandi=1`}>Integra con gli altri punti BIMARIS</Link>}<Link className="button secondary" href={`/storie-miti-leggende/${activeStory.slug}`}>Torna alla leggenda</Link></div>}
       {!activeStory && activeVillage && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#d6c29b", fontWeight: 700 }}>Contesto borgo attivo: {activeVillage.name}</span><Link className="button secondary" href="/mappa">Mostra la mappa generale</Link></div>}
