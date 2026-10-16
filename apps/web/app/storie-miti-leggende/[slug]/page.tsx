@@ -109,7 +109,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           )}
 
           <div className="actions" style={{ marginTop: 22 }}>
-            <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
+            {story.places.length > 0 && <Link className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`}>Mostra i punti sulla mappa BIMARIS</Link>}
             <Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link>
           </div>
         </aside>
