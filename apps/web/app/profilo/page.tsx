@@ -48,13 +48,13 @@ export default async function ProfiloPage({ searchParams }: { searchParams: Prom
   const scoreFor = (key:string) => Number(interestScores.get(key) ?? 0);
 
   const candidates: Recommendation[] = [
-    ...culture.map(item => ({ key:`culture:${item.id}`, href:`/cultura/${item.slug}`, title:item.title, copy:item.excerpt, kind:"Cultura", score:scoreFor("cultura"), featured:item.featured })),
+    ...culture.map(item => ({ key:`culture:${item.id}`, href:`/cultura/${item.slug}`, title:item.title, copy:item.excerpt, kind:"Cultura", score:scoreFor("cultura"), featured:Boolean(item.featured) })),
     ...stories.map(item => ({ key:`story:${item.id}`, href:`/storie-miti-leggende/${item.slug}`, title:item.title, copy:item.excerpt, kind:"Miti e leggende", score:scoreFor("miti-leggende"), featured:Boolean(item.featured) })),
-    ...villages.map(item => ({ key:`village:${item.id}`, href:`/borghi/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Borghi", score:scoreFor("borghi"), featured:item.featured })),
-    ...products.map(item => ({ key:`product:${item.id}`, href:`/sapori-territori/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Sapori e territori", score:scoreFor("sapori"), featured:item.featured })),
+    ...villages.map(item => ({ key:`village:${item.id}`, href:`/borghi/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Borghi", score:scoreFor("borghi"), featured:Boolean(item.featured) })),
+    ...products.map(item => ({ key:`product:${item.id}`, href:`/sapori-territori/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Sapori e territori", score:scoreFor("sapori"), featured:Boolean(item.featured) })),
     ...experiences.map(item => {
       const interestKey = experienceInterest(item.category);
-      return { key:`experience:${item.id}`, href:`/esperienze/${item.slug}`, title:item.name, copy:item.excerpt, kind:item.categoryName, score:Math.max(scoreFor(interestKey), scoreFor("esperienze") * 0.8), featured:item.featured };
+      return { key:`experience:${item.id}`, href:`/esperienze/${item.slug}`, title:item.name, copy:item.excerpt, kind:item.categoryName, score:Math.max(scoreFor(interestKey), scoreFor("esperienze") * 0.8), featured:Boolean(item.featured) };
     }),
   ].filter(item => item.score > 0);
 
