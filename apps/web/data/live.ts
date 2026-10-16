@@ -68,6 +68,13 @@ type RawCultureEntry = {
   } | null;
 };
 
+export type ExperienceFoodProduct = {
+  slug: string;
+  name: string;
+  excerpt?: string;
+  territoryName?: string;
+};
+
 function formatDuration(minutes: number | null) {
   if (!minutes) return undefined;
   if (minutes < 60) return `${minutes} min`;
@@ -214,6 +221,29 @@ export async function getPublishedExperienceBySlug(slug: string): Promise<Experi
   }
 
   return data ? mapExperience(data as unknown as RawExperience) : null;
+}
+
+export async function getPublishedFoodProductsByExperienceId(experienceId: string): Promise<ExperienceFoodProduct[]> {
+  const client = createPublicClient();
+  if (!client) return [];
+
+  const { data, error } = await client
+    .from("food_product_experiences")
+    .select("product:food_products(slug,name,excerpt,published,territory:territories(name))")
+    .eq("experience_id", experienceId);
+
+  if (error) {
+    console.error("BIMARIS experience food products read failed", error.message);
+    return [];
+  }
+
+  type Row = { product: { slug: string; name: string; excerpt: string | null; published: boolean | null; territory: { name: string } | null } | null };
+  return (data as unknown as Row[]).flatMap(row => row.product?.published ? [{
+    slug: row.product.slug,
+    name: row.product.name,
+    excerpt: row.product.excerpt ?? undefined,
+    territoryName: row.product.territory?.name ?? undefined,
+  }] : []);
 }
 
 export async function getPublishedCultureEntries(): Promise<CultureEntry[]> {
