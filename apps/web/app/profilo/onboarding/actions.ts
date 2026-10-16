@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 
-const allowedInterests = new Set(["cultura","miti-leggende","borghi","sapori-vino","mare","natura-trekking","esperienze"]);
+const allowedInterests = new Set(["cultura","miti-leggende","borghi","sapori","mare","natura-trekking","esperienze"]);
 const allowedCompanions = new Set(["solo","coppia","famiglia","amici"]);
 const allowedTimes = new Set(["2-3-ore","mezza-giornata","giornata","piu-giorni"]);
 const allowedPaces = new Set(["rilassato","equilibrato","intenso"]);
