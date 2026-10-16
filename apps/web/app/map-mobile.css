@@ -1,5 +1,5 @@
 @media (max-width: 620px) {
-  /* Compact Apple Watch-style wheel: lateral, transparent, three visible rows. */
+  /* Compact Apple Watch-style wheel: lateral, three visible rows. */
   .map-filter-watch {
     top: 10px;
     left: 8px;
@@ -9,15 +9,15 @@
     height: 138px;
     padding: 46px 0;
     border: 0;
-    border-radius: 0;
+    border-radius: 34px;
     outline: 0;
     box-shadow: none;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: linear-gradient(90deg, rgba(6,22,36,.25) 0%, rgba(6,22,36,.18) 64%, rgba(6,22,36,0) 100%);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
     scrollbar-width: none;
-    mask-image: none;
-    -webkit-mask-image: none;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
   }
 
   .map-filter-watch::-webkit-scrollbar { display: none; }
@@ -38,8 +38,8 @@
     outline: 0;
     background: transparent;
     box-shadow: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,.95), 0 0 5px rgba(0,0,0,.82), 0 0 9px rgba(0,0,0,.48);
-    -webkit-text-stroke: .35px rgba(6,22,36,.9);
+    text-shadow: 0 1px 2px rgba(0,0,0,.8), 0 0 4px rgba(0,0,0,.5);
+    -webkit-text-stroke: .25px rgba(6,22,36,.8);
     scroll-snap-stop: always;
   }
 
@@ -62,9 +62,9 @@
     border: 0;
     outline: 0;
     border-radius: 999px;
-    background: rgba(6,22,36,.54);
+    background: rgba(6,22,36,.58);
     box-shadow: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,.38);
+    text-shadow: 0 1px 2px rgba(0,0,0,.32);
     -webkit-text-stroke: 0;
   }
 
