@@ -225,3 +225,15 @@ main { min-height: 70vh; }
   .section:not(.map-page-section) .section-head h2 { font-size: clamp(28px, 8vw, 40px); line-height: 1.15; margin: 7px 0 10px; }
   .section:not(.map-page-section) .section-head p { font-size: 14px; line-height: 1.5; margin: 0; }
 }
+
+/* A single visual surface for the map landing page, rather than stacked panels. */
+.map-page-unified { background: radial-gradient(ellipse at 85% 0%, rgba(202,168,106,.10), transparent 42%), #071821; }
+.map-page-intro { max-width: 900px; margin: 0 0 28px; }
+.map-page-intro h1 { font-family: Georgia, serif; font-size: clamp(42px, 6vw, 70px); line-height: 1.08; margin: 10px 0 14px; font-weight: 600; }
+.map-page-intro p { color: #c4cdd3; font-size: 16px; line-height: 1.55; max-width: 720px; margin: 0; }
+@media (max-width: 620px) {
+  .map-page-unified { padding-top: 24px; }
+  .map-page-intro { margin-bottom: 18px; }
+  .map-page-intro h1 { font-size: clamp(36px, 10vw, 48px); margin: 8px 0 10px; }
+  .map-page-intro p { font-size: 14px; line-height: 1.45; }
+}
