@@ -12,16 +12,17 @@ export const metadata: Metadata = {
 };
 
 const experienceCategories = [
-  { title: "Degustazioni", text: "Cantine, prodotti locali e incontri dedicati ai sapori del territorio." },
-  { title: "Mare", text: "Navigazioni, attività nello Stretto e modi autentici di vivere il mare." },
-  { title: "Avventura", text: "Rafting e attività dinamiche per scoprire il territorio in modo diverso." },
-  { title: "Trekking e natura", text: "Escursioni, sentieri e attività all'aperto tra monti e paesaggi messinesi." },
-  { title: "Visite guidate", text: "Esperienze accompagnate per conoscere luoghi, storia e patrimonio locale." },
-  { title: "Artigianato e laboratori", text: "Botteghe, lavorazioni e attività pratiche legate ai saperi del territorio." },
+  { slug: "degustazioni", title: "Degustazioni", text: "Cantine, produttori e incontri dedicati ai sapori del territorio." },
+  { slug: "mare", title: "Mare", text: "Navigazioni, attività nello Stretto e modi autentici di vivere il mare." },
+  { slug: "avventura", title: "Avventura", text: "Rafting e attività dinamiche per scoprire il territorio in modo diverso." },
+  { slug: "trekking-natura", title: "Trekking e natura", text: "Escursioni, sentieri e attività all'aperto tra monti e paesaggi messinesi." },
+  { slug: "visite-guidate", title: "Visite guidate", text: "Esperienze accompagnate per conoscere luoghi, storia e patrimonio locale." },
+  { slug: "artigianato-laboratori", title: "Artigianato e laboratori", text: "Botteghe, lavorazioni e attività pratiche legate ai saperi del territorio." },
 ];
 
 export default async function ExperiencesPage() {
   const experiences = await getPublishedExperiences();
+  const availableCategories = new Set(experiences.map(experience => experience.category));
 
   return (
     <>
@@ -29,7 +30,7 @@ export default async function ExperiencesPage() {
         <div className="kicker">Vivi il territorio</div>
         <h1>Esperienze BIMARIS</h1>
         <p>
-          Attività selezionate per vivere Messina e il suo territorio attraverso operatori verificati, esperienze autentiche e un forte legame con i luoghi.
+          Non un elenco di attività, ma una selezione di modi autentici per vivere Messina e il suo territorio: mare, sapori, natura, cultura e saperi locali.
         </p>
       </section>
 
@@ -37,43 +38,45 @@ export default async function ExperiencesPage() {
         <div className="section-head">
           <div>
             <div className="kicker">Cosa vuoi fare?</div>
-            <h2>Scegli la tua esperienza.</h2>
+            <h2>Scegli come vivere il territorio.</h2>
           </div>
-          <p>Dal vino allo Stretto, dai sentieri alle attività più dinamiche: scegli il tipo di esperienza che vuoi vivere.</p>
+          <p>Le categorie definiscono il tipo di esperienza. Le singole proposte compariranno solo dopo la selezione degli operatori BIMARIS.</p>
         </div>
 
         <div className="cards">
           {experienceCategories.map(category => (
-            <article className="card" key={category.title}>
+            <article className="card" key={category.slug}>
               <div className="card-body">
+                <div className="kicker">{availableCategories.has(category.slug) ? "Esperienze disponibili" : "Categoria BIMARIS"}</div>
                 <h3>{category.title}</h3>
                 <p>{category.text}</p>
+                {availableCategories.has(category.slug) && <a className="text-link" href="#esperienze-disponibili">Vedi le proposte →</a>}
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" id="esperienze-disponibili">
         <div className="section-head">
           <div>
             <div className="kicker">Selezione BIMARIS</div>
-            <h2>Esperienze disponibili.</h2>
+            <h2>{experiences.length > 0 ? "Esperienze disponibili." : "La selezione delle esperienze."}</h2>
           </div>
-          <p>Quando le esperienze vengono pubblicate puoi filtrarle per categoria e territorio e aprire la proposta dell'operatore che la realizza.</p>
+          <p>{experiences.length > 0 ? "Filtra le proposte per categoria e territorio e scopri l'operatore che le realizza." : "Ogni esperienza sarà pubblicata solo dopo la verifica della realtà che la propone e della sua coerenza con il territorio."}</p>
         </div>
 
         {experiences.length > 0 ? (
           <ExperienceExplorer experiences={experiences} />
         ) : (
           <div className="detail-panel">
-            <div className="kicker">Selezione in corso</div>
-            <h3>Le prime esperienze saranno pubblicate dopo la verifica degli operatori.</h3>
+            <div className="kicker">Prima della pubblicazione</div>
+            <h3>Stiamo costruendo la rete di esperienze BIMARIS.</h3>
             <p>
-              Preferiamo partire con poche proposte realmente selezionate piuttosto che riempire BIMARIS con attività non ancora verificate.
+              Le attività non vengono inserite automaticamente: selezioniamo operatori, produttori e realtà locali in base a qualità, autenticità e legame con Messina e il suo territorio.
             </p>
             <div className="actions">
-              <Link className="button" href="/operatori/candidatura">Sei un operatore? Candidati</Link>
+              <Link className="button" href="/operatori/candidatura">Presenta la tua candidatura</Link>
             </div>
           </div>
         )}
