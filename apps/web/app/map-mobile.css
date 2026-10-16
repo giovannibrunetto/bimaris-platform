@@ -6,8 +6,8 @@
     right: auto;
     transform: none;
     width: min(46vw, 168px);
-    height: 126px;
-    padding: 42px 0;
+    height: 138px;
+    padding: 46px 0;
     border-radius: 999px;
     background: transparent;
     backdrop-filter: none;
@@ -20,9 +20,9 @@
   .map-filter-watch::-webkit-scrollbar { display: none; }
 
   .map-filter-orb {
-    flex: 0 0 42px;
+    flex: 0 0 46px;
     width: 100%;
-    min-height: 42px;
+    min-height: 46px;
     padding: 0 13px;
     grid-template-columns: 1fr auto;
     color: #fff;
@@ -35,6 +35,7 @@
       0 2px 3px rgba(0,0,0,.98),
       0 0 7px rgba(0,0,0,.95),
       0 0 12px rgba(0,0,0,.75);
+    scroll-snap-stop: always;
   }
 
   .map-filter-orb strong {
