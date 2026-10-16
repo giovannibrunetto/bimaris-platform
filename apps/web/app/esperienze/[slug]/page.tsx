@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExperienceDetailActions } from "@/components/ExperienceDetailActions";
-import { getPublishedExperienceBySlug } from "@/data/live";
+import { getPublishedExperienceBySlug, getPublishedFoodProductsByExperienceId } from "@/data/live";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -24,6 +24,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
   const experience = await getPublishedExperienceBySlug(slug);
 
   if (!experience) notFound();
+  const products = await getPublishedFoodProductsByExperienceId(experience.id);
 
   return (
     <>
@@ -72,6 +73,27 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
           <ExperienceDetailActions experience={experience} />
         </aside>
       </section>
+
+      {products.length > 0 && (
+        <section className="section sand">
+          <div className="section-head">
+            <div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div>
+            <p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p>
+          </div>
+          <div className="cards">
+            {products.map(product => (
+              <article className="card" key={product.slug}>
+                <div className="card-body">
+                  <div className="kicker">{product.territoryName ?? "Sapori e territori"}</div>
+                  <h3>{product.name}</h3>
+                  {product.excerpt && <p>{product.excerpt}</p>}
+                  <Link className="text-link" href={`/sapori-territori/${product.slug}`}>Scopri il prodotto →</Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
