@@ -4,7 +4,7 @@ import { createUserServerClient } from "@/lib/supabase/user-server";
 
 export const dynamic = "force-dynamic";
 
-const labels: Record<string,string> = {"cultura":"Cultura e monumenti","miti-leggende":"Miti e leggende","borghi":"Borghi","sapori-vino":"Sapori e vino","mare":"Mare","natura-trekking":"Natura e trekking","esperienze":"Esperienze"};
+const labels: Record<string,string> = {"cultura":"Cultura e monumenti","miti-leggende":"Miti e leggende","borghi":"Borghi","sapori":"Sapori e vino","mare":"Mare","natura-trekking":"Natura e trekking","esperienze":"Esperienze"};
 
 export default async function ProfiloPage({ searchParams }: { searchParams: Promise<{ onboarding?: string }> }) {
   const supabase = await createUserServerClient();
