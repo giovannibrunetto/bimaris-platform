@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BehaviorTrackedLink } from "@/components/BehaviorTrackedLink";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { getPublishedExperiencesByOperatorSlug, getPublishedOperatorBySlug } from "@/data/operators";
 
@@ -42,6 +43,7 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
   const instagram = externalUrl(operator.instagram);
   const whatsapp = whatsappUrl(operator.whatsapp);
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(operator.googleMapsQuery)}`;
+  const attribution = { operatorId: operator.slug, operatorName: operator.name, sourceType: "operator", sourceId: operator.slug };
 
   return (
     <>
@@ -80,15 +82,15 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
 
           <ul className="list">
             {operator.address && <li><strong>Indirizzo</strong><br />{operator.address}</li>}
-            {operator.phone && <li><strong>Telefono</strong><br /><a className="text-link" href={`tel:${operator.phone}`}>{operator.phone}</a></li>}
-            {operator.email && <li><strong>Email</strong><br /><a className="text-link" href={`mailto:${operator.email}`}>{operator.email}</a></li>}
+            {operator.phone && <li><strong>Telefono</strong><br /><BehaviorTrackedLink className="text-link" href={`tel:${operator.phone}`} behaviorEvent="contact_intent" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={3} actionType="phone" {...attribution}>{operator.phone}</BehaviorTrackedLink></li>}
+            {operator.email && <li><strong>Email</strong><br /><BehaviorTrackedLink className="text-link" href={`mailto:${operator.email}`} behaviorEvent="contact_intent" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={3} actionType="email" {...attribution}>{operator.email}</BehaviorTrackedLink></li>}
           </ul>
 
           <div className="actions" style={{ marginTop: 22 }}>
-            <a className="button" href={directions} target="_blank" rel="noreferrer">Indicazioni</a>
-            {whatsapp && <a className="button ghost" href={whatsapp} target="_blank" rel="noreferrer">WhatsApp</a>}
-            {website && <a className="button ghost" href={website} target="_blank" rel="noreferrer">Sito web</a>}
-            {instagram && <a className="button ghost" href={instagram} target="_blank" rel="noreferrer">Instagram</a>}
+            <BehaviorTrackedLink className="button" href={directions} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" behaviorEvent="directions_open" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={2} actionType="directions" {...attribution}>Indicazioni</BehaviorTrackedLink>
+            {whatsapp && <BehaviorTrackedLink className="button ghost" href={whatsapp} target="_blank" rel="noreferrer" external analyticsEvent="whatsapp_click" behaviorEvent="contact_intent" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={3} actionType="whatsapp" {...attribution}>WhatsApp</BehaviorTrackedLink>}
+            {website && <BehaviorTrackedLink className="button ghost" href={website} target="_blank" rel="noreferrer" external analyticsEvent="website_click" behaviorEvent="operator_site_open" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={2} actionType="website" {...attribution}>Sito web</BehaviorTrackedLink>}
+            {instagram && <BehaviorTrackedLink className="button ghost" href={instagram} target="_blank" rel="noreferrer" external analyticsEvent="instagram_click" behaviorEvent="operator_social_open" contentType="operator" contentId={operator.slug} interestKey="esperienze" weight={1.5} actionType="instagram" {...attribution}>Instagram</BehaviorTrackedLink>}
           </div>
         </aside>
       </section>
