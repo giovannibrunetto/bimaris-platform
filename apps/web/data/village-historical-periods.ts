@@ -34,15 +34,17 @@ export const villagePointHistoricalPeriods: Record<string, Record<string, Histor
   },
 
   // Città Metropolitana di Messina: San Francesco XIII c.; Sant'Antonio from 1538;
-  // San Giorgio XVII c.; Palazzo Salvo-Risicato XVIII c.; Teatro XVIII-XIX c.
+  // San Giorgio XVII c.; Teatro XVIII-XIX c. MANOS is a civic archaeological/territorial museum
+  // spanning geological, prehistoric, historical and artistic collections, so it is classified as cross-period.
   // https://agora.comune.messina.it/it/node/33
+  // https://www.comunedinovaradisicilia.me.it/patrimonio-culturale.html
   "novara-di-sicilia": {
     "duomo-santa-maria-assunta": ["rinascimento-cinquecento"],
     "chiesa-san-francesco": ["medioevo"],
     "chiesa-sant-antonio-abate": ["rinascimento-cinquecento", "seicento-settecento"],
     "chiesa-san-giorgio": ["seicento-settecento"],
     "teatro-riccardo-casalaina": ["seicento-settecento", "ottocento"],
-    "museo-manos": ["seicento-settecento"],
+    "museo-manos": ["trasversale"],
   },
 
   // Comune di San Marco d'Alunzio / Diocesi di Patti: Tempio d'Ercole IV c. a.C.; Norman castle from 1061;
@@ -60,7 +62,8 @@ export const villagePointHistoricalPeriods: Record<string, Record<string, Histor
 
   // Comune di Savoca: Porta XII c.; Pentefur refounded by Normans c.1070 with later phases;
   // San Nicolò XIII c. with XVIII c. remodelling; Cappuccini 1603-1614 / crypt early XVIII c.;
-  // Palazzo Trimarchi built late XVII/early XVIII c.
+  // Palazzo Trimarchi was built between the late XVII and early XVIII c. and restored in 1773;
+  // the Bar Vitelli identity/location is also tied to the 1971 filming of The Godfather.
   // https://www.comune.savoca.me.it/savoca/zf/index.php/musei-monumenti/index/dettaglio-museo/museo/21
   // https://www.comune.savoca.me.it/savoca/zf/index.php/musei-monumenti/index/dettaglio-museo/museo/7
   // https://www.comune.savoca.me.it/savoca/zf/index.php/musei-monumenti/index/dettaglio-museo/museo/2
@@ -72,7 +75,7 @@ export const villagePointHistoricalPeriods: Record<string, Record<string, Histor
     "chiesa-madre": ["medioevo", "rinascimento-cinquecento", "seicento-settecento"],
     "chiesa-san-nicolo": ["medioevo", "seicento-settecento"],
     "convento-cappuccini": ["seicento-settecento"],
-    "bar-vitelli": ["seicento-settecento"],
+    "bar-vitelli": ["seicento-settecento", "novecento"],
   },
 };
 
