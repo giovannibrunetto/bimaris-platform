@@ -24,7 +24,7 @@ function interestForCategory(category: string) {
   return "esperienze";
 }
 
-async function recordIntent(experience: Experience, eventType: string, weight: number) {
+async function recordIntent(experience: Experience, eventType: string, weight: number, actionType: string) {
   const supabase = createBrowserSupabaseClient();
   if (!supabase) return;
 
@@ -37,6 +37,11 @@ async function recordIntent(experience: Experience, eventType: string, weight: n
     p_content_id: experience.slug,
     p_interest_key: interestForCategory(experience.category),
     p_weight: weight,
+    p_operator_id: experience.operatorSlug ?? experience.operatorName ?? null,
+    p_operator_name: experience.operatorName ?? null,
+    p_source_type: "experience",
+    p_source_id: experience.slug,
+    p_action_type: actionType,
   });
 }
 
@@ -59,35 +64,35 @@ export function ExperienceDetailActions({ experience }: { experience: Experience
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(experience.googleMapsQuery)}`
     : undefined;
 
-  const signal = (analyticsEvent: AnalyticsEventName, behaviorEvent: string, weight: number, extra: Record<string, unknown> = {}) => {
+  const signal = (analyticsEvent: AnalyticsEventName, behaviorEvent: string, weight: number, actionType: string, extra: Record<string, unknown> = {}) => {
     track(analyticsEvent, { experience_id: experience.id, ...extra });
-    void recordIntent(experience, behaviorEvent, weight);
+    void recordIntent(experience, behaviorEvent, weight, actionType);
   };
 
   return (
     <div className="actions" style={{ marginTop: 22 }}>
       {experience.bookable && booking && (
-        <a className="button" href={booking} target="_blank" rel="noreferrer" onClick={() => signal("booking_click", "booking_intent", 4, { operator: experience.operatorName })}>
+        <a className="button" href={booking} target="_blank" rel="noreferrer" onClick={() => signal("booking_click", "booking_intent", 4, "booking", { operator: experience.operatorName })}>
           Prenota
         </a>
       )}
       {whatsapp && (
-        <a className="button" href={whatsapp} target="_blank" rel="noreferrer" onClick={() => signal("whatsapp_click", "contact_intent", 3, { operator: experience.operatorName })}>
+        <a className="button" href={whatsapp} target="_blank" rel="noreferrer" onClick={() => signal("whatsapp_click", "contact_intent", 3, "whatsapp", { operator: experience.operatorName })}>
           WhatsApp
         </a>
       )}
       {directions && (
-        <a className="button ghost" href={directions} target="_blank" rel="noreferrer" onClick={() => signal("directions_click", "directions_open", 2)}>
+        <a className="button ghost" href={directions} target="_blank" rel="noreferrer" onClick={() => signal("directions_click", "directions_open", 2, "directions")}>
           Indicazioni
         </a>
       )}
       {website && (
-        <a className="button ghost" href={website} target="_blank" rel="noreferrer" onClick={() => signal("website_click", "operator_site_open", 2, { operator: experience.operatorName })}>
+        <a className="button ghost" href={website} target="_blank" rel="noreferrer" onClick={() => signal("website_click", "operator_site_open", 2, "website", { operator: experience.operatorName })}>
           Sito operatore
         </a>
       )}
       {instagram && (
-        <a className="button ghost" href={instagram} target="_blank" rel="noreferrer" onClick={() => signal("instagram_click", "operator_social_open", 1.5, { operator: experience.operatorName })}>
+        <a className="button ghost" href={instagram} target="_blank" rel="noreferrer" onClick={() => signal("instagram_click", "operator_social_open", 1.5, "instagram", { operator: experience.operatorName })}>
           Instagram
         </a>
       )}
