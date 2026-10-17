@@ -13,10 +13,12 @@ function externalUrl(value?: string) {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
-function whatsappUrl(value?: string) {
+function whatsappUrl(value?: string, message?: string) {
   if (!value) return undefined;
   const digits = value.replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}` : undefined;
+  if (!digits) return undefined;
+  const text = message ? `?text=${encodeURIComponent(message)}` : "";
+  return `https://wa.me/${digits}${text}`;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -41,7 +43,8 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
 
   const website = externalUrl(operator.website);
   const instagram = externalUrl(operator.instagram);
-  const whatsapp = whatsappUrl(operator.whatsapp);
+  const whatsappMessage = `Buongiorno, vi contatto tramite BIMARIS. Ho visto la vostra realtà sulla piattaforma e vorrei ricevere maggiori informazioni.`;
+  const whatsapp = whatsappUrl(operator.whatsapp, whatsappMessage);
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(operator.googleMapsQuery)}`;
   const attribution = { operatorId: operator.slug, operatorName: operator.name, sourceType: "operator", sourceId: operator.slug };
 
