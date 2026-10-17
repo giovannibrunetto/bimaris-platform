@@ -4,6 +4,18 @@ import type { HistoricalPeriodKey } from "@/lib/types";
  * Key: village slug, then village point slug. Add periods only after verification.
  */
 export const villagePointHistoricalPeriods: Record<string, Record<string, HistoricalPeriodKey[]>> = {
+  // Castanea delle Furie: San Giovanni Battista was erected in 1500, preserves XVII-XVIII c. elements
+  // and was restored after the 1908 earthquake; SS. Rosario parish dates to 1628 and preserves XVII-XVIII c. works.
+  // The Monumento ai Caduti point is tied to twentieth-century war memory and its current commemorative installation.
+  // Museo "I Ferri d'u Misteri" is a contemporary museum, so it is not assigned a historical period here.
+  // https://www.casaliditramontana.it/villaggi-messina-nord/castanea-delle-furie/
+  // https://comune.messina.it/it/news/messina-nel-nome-dellonore-omaggio-scultoreo-a-giovanni-denaro-il-15-maggio-a-castanea-delle-furie
+  "castanea-delle-furie": {
+    "chiesa-san-giovanni-battista": ["rinascimento-cinquecento", "seicento-settecento", "novecento"],
+    "chiesa-santissimo-rosario": ["seicento-settecento", "novecento"],
+    "monumento-ai-caduti": ["novecento"],
+  },
+
   // Comune di Castroreale: Candelora late XIV c.; municipal/regional sources document the medieval castle.
   // https://www.comune.castroreale.me.it/vivere-il-comune/luoghi/chiesa-della-candelora/
   // https://www2.regione.sicilia.it/beniculturali/dirbenicult/bca/ptpr/documentazione%20tecnica%20messina/ALLEGATI/h.3%20-%20Paesaggi%20Locali%20-%20Centri%20e%20Nuclei%20storici/BookCSNS_9_08.pdf
