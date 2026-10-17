@@ -21,7 +21,20 @@ export async function GET(request: Request) {
       },
     });
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(safeNext, url.origin));
+    if (!error) {
+      // Preserve explicit destinations, but make the default BIMARIS login role-aware.
+      // Operator memberships are protected by RLS, so this only detects memberships
+      // belonging to the authenticated user.
+      if (safeNext === "/profilo") {
+        const { data: membership } = await supabase
+          .from("operator_memberships")
+          .select("operator_id")
+          .limit(1)
+          .maybeSingle();
+        if (membership) return NextResponse.redirect(new URL("/area-operatore", url.origin));
+      }
+      return NextResponse.redirect(new URL(safeNext, url.origin));
+    }
   }
 
   return NextResponse.redirect(new URL("/accedi?errore=accesso", url.origin));
