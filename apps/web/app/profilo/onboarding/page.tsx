@@ -17,13 +17,14 @@ const interests = [
 export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ errore?: string }> }) {
   const supabase = await createUserServerClient();
   if (!supabase) redirect("/accedi");
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/accedi");
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+  const userId = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : null;
+  if (claimsError || !userId) redirect("/accedi");
 
   const [{ data: profile }, { data: selected }, { data: newsletter }] = await Promise.all([
-    supabase.from("user_profiles").select("display_name,travel_companion,typical_time_available,preferred_pace").eq("user_id", user.id).maybeSingle(),
-    supabase.from("user_interests").select("interest_key").eq("user_id", user.id),
-    supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id", user.id).maybeSingle(),
+    supabase.from("user_profiles").select("display_name,travel_companion,typical_time_available,preferred_pace").eq("user_id", userId).maybeSingle(),
+    supabase.from("user_interests").select("interest_key").eq("user_id", userId),
+    supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id", userId).maybeSingle(),
   ]);
   const selectedKeys = new Set((selected ?? []).map(item => item.interest_key));
   const { errore } = await searchParams;
