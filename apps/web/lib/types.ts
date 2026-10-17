@@ -13,6 +13,7 @@ export type CategorySlug =
   | "artigianato-laboratori";
 
 export type HistoricalPeriodKey =
+  | "antichita"
   | "medioevo"
   | "rinascimento-cinquecento"
   | "seicento-settecento"
