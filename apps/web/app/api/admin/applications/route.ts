@@ -18,38 +18,64 @@ function operatorAccessRedirect(request: NextRequest) {
   return new URL("/area-operatore", request.nextUrl.origin).toString();
 }
 
-async function ensureOperatorAccount(supabase: NonNullable<ReturnType<typeof createServiceClient>>, applicationId: string, slug: string, request: NextRequest) {
-  const { data: application, error: applicationError } = await supabase.from("operator_applications").select("email,business_name").eq("id", applicationId).single();
+type ServiceClient = NonNullable<ReturnType<typeof createServiceClient>>;
+
+async function findUserByEmail(supabase: ServiceClient, email: string) {
+  const perPage = 200;
+  for (let page = 1; page <= 50; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+    const user = data.users.find((item) => item.email?.toLowerCase() === email);
+    if (user) return user;
+    if (data.users.length < perPage) return null;
+  }
+  throw new Error("Limite ricerca utenti Supabase raggiunto");
+}
+
+async function linkOperatorMembership(supabase: ServiceClient, operatorId: string, userId: string) {
+  const { error } = await supabase.from("operator_memberships").upsert(
+    { operator_id: operatorId, user_id: userId, role: "owner" },
+    { onConflict: "operator_id,user_id" }
+  );
+  if (error) throw error;
+}
+
+async function sendOperatorAccess(supabase: ServiceClient, applicationId: string, operatorId: string, request: NextRequest) {
+  const { data: application, error: applicationError } = await supabase
+    .from("operator_applications")
+    .select("email,business_name")
+    .eq("id", applicationId)
+    .single();
   if (applicationError) throw applicationError;
   const email = application?.email?.trim().toLowerCase();
   if (!email) return "account-required" as const;
 
-  const { data: operator, error: operatorError } = await supabase.from("operators").select("id").eq("slug", slug).single();
-  if (operatorError) throw operatorError;
-
-  const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  if (usersError) throw usersError;
-  let user = usersData.users.find((item) => item.email?.toLowerCase() === email);
-  let invited = false;
-
+  let user = await findUserByEmail(supabase, email);
   if (!user) {
     const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
       redirectTo: operatorAccessRedirect(request),
-      data: {
-        bimaris_operator: true,
-        operator_slug: slug,
-        business_name: application?.business_name ?? undefined,
-      },
+      data: { bimaris_operator: true, business_name: application?.business_name ?? undefined },
     });
     if (inviteError) throw inviteError;
     user = inviteData.user;
-    invited = true;
+    if (!user) return "account-required" as const;
+    await linkOperatorMembership(supabase, operatorId, user.id);
+    return "invited" as const;
   }
 
-  if (!user) return "account-required" as const;
-  const { error: membershipError } = await supabase.from("operator_memberships").upsert({ operator_id: operator.id, user_id: user.id, role: "owner" }, { onConflict: "operator_id,user_id" });
-  if (membershipError) throw membershipError;
-  return invited ? "invited" as const : "linked" as const;
+  await linkOperatorMembership(supabase, operatorId, user.id);
+  const { error: otpError } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: operatorAccessRedirect(request), shouldCreateUser: false },
+  });
+  if (otpError) throw otpError;
+  return "access-sent" as const;
+}
+
+async function ensureOperatorAccount(supabase: ServiceClient, applicationId: string, slug: string, request: NextRequest) {
+  const { data: operator, error: operatorError } = await supabase.from("operators").select("id").eq("slug", slug).single();
+  if (operatorError) throw operatorError;
+  return sendOperatorAccess(supabase, applicationId, operator.id, request);
 }
 
 export async function POST(request: NextRequest) {
@@ -81,9 +107,23 @@ export async function POST(request: NextRequest) {
       if (!slug) return back(request, "invalid-slug");
       const { error } = await supabase.rpc("accept_operator_application", { p_application_id: applicationId, p_slug: slug, p_why_selected: notes, p_publish: action === "accept_publish" });
       if (error) throw error;
-      const access = await ensureOperatorAccount(supabase, applicationId, slug, request);
       const base = action === "accept_publish" ? "published" : "accepted";
-      return back(request, access === "invited" ? `${base}-access-invited` : access === "linked" ? `${base}-access-linked` : `${base}-account-required`);
+      try {
+        const access = await ensureOperatorAccount(supabase, applicationId, slug, request);
+        return back(request, access === "invited" ? `${base}-access-invited` : access === "access-sent" ? `${base}-access-sent` : `${base}-account-required`);
+      } catch (accessError) {
+        console.error("BIMARIS operator approved but access email failed", accessError);
+        return back(request, `${base}-access-email-failed`);
+      }
+    }
+    if (action === "send_operator_access" && operatorId && applicationId) {
+      try {
+        const access = await sendOperatorAccess(supabase, applicationId, operatorId, request);
+        return back(request, access === "invited" ? "access-invited" : access === "access-sent" ? "access-sent" : "account-required");
+      } catch (accessError) {
+        console.error("BIMARIS operator access resend failed", accessError);
+        return back(request, "access-email-failed");
+      }
     }
     if (action === "publish_operator" && operatorId) {
       const { error } = await supabase.from("operators").update({ published: true, selection_status: "selected", updated_at: new Date().toISOString() }).eq("id", operatorId);
