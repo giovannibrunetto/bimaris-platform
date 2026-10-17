@@ -7,6 +7,12 @@ export const HISTORICAL_PERIODS: Array<{
   shortDescription: string;
 }> = [
   {
+    key: "antichita",
+    label: "Antichità",
+    range: "Età greca e romana",
+    shortDescription: "Siti e testimonianze archeologiche che raccontano le radici greche e romane del territorio messinese.",
+  },
+  {
     key: "medioevo",
     label: "Medioevo",
     range: "XI–XV secolo",
