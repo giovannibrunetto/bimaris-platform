@@ -2,10 +2,6 @@ import type { HistoricalPeriodKey } from "@/lib/types";
 
 /** Historical attribution belongs to documented village points of interest.
  * Key: village slug, then village point slug. Add periods only after verification.
- *
- * The current HistoricalPeriodKey taxonomy starts at the Middle Ages. Ancient sites
- * (for example the Tempio d'Ercole at San Marco d'Alunzio, IV century BC) stay
- * intentionally unclassified until the shared taxonomy includes antiquity.
  */
 export const villagePointHistoricalPeriods: Record<string, Record<string, HistoricalPeriodKey[]>> = {
   // Comune di Castroreale: Candelora late XIV c.; municipal/regional sources document the medieval castle.
@@ -37,11 +33,13 @@ export const villagePointHistoricalPeriods: Record<string, Record<string, Histor
     "museo-manos": ["seicento-settecento"],
   },
 
-  // Comune di San Marco d'Alunzio / Diocesi di Patti: Norman castle from 1061;
+  // Comune di San Marco d'Alunzio / Diocesi di Patti: Tempio d'Ercole IV c. a.C.; Norman castle from 1061;
   // Aracoeli XVI c.; Madre built from late XVI c.; SS. Salvatore XII c.
+  // https://www.comune.sanmarcodalunzio.me.it/vivere-il-comune/luoghi/tempio-d-ercole/
   // https://www.comune.sanmarcodalunzio.me.it/vivere-il-comune/luoghi/ruderi-castello-normanno/
   // https://www.diocesipatti.it/museo-di-san-marco-dalunzio/
   "san-marco-d-alunzio": {
+    "tempio-ercole": ["antichita"],
     "castello-normanno": ["medioevo"],
     "chiesa-madre-san-nicolo": ["rinascimento-cinquecento", "seicento-settecento", "ottocento"],
     "chiesa-maria-santissima-ara-coeli": ["rinascimento-cinquecento", "seicento-settecento"],
