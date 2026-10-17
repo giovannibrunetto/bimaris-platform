@@ -21,7 +21,7 @@ export default function AccediPage() {
     setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/profilo` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setLoading(false);
     setMessage(error ? "Non è stato possibile inviare il link. Riprova." : "Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
