@@ -14,23 +14,42 @@ function back(request: NextRequest, state: string) {
   return NextResponse.redirect(new URL(`/admin?state=${encodeURIComponent(state)}`, request.url), 303);
 }
 
-async function linkExistingOperatorAccount(supabase: NonNullable<ReturnType<typeof createServiceClient>>, applicationId: string, slug: string) {
-  const { data: application, error: applicationError } = await supabase.from("operator_applications").select("email").eq("id", applicationId).single();
+function operatorAccessRedirect(request: NextRequest) {
+  return new URL("/area-operatore", request.nextUrl.origin).toString();
+}
+
+async function ensureOperatorAccount(supabase: NonNullable<ReturnType<typeof createServiceClient>>, applicationId: string, slug: string, request: NextRequest) {
+  const { data: application, error: applicationError } = await supabase.from("operator_applications").select("email,business_name").eq("id", applicationId).single();
   if (applicationError) throw applicationError;
   const email = application?.email?.trim().toLowerCase();
-  if (!email) return false;
+  if (!email) return "account-required" as const;
 
   const { data: operator, error: operatorError } = await supabase.from("operators").select("id").eq("slug", slug).single();
   if (operatorError) throw operatorError;
 
   const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (usersError) throw usersError;
-  const user = usersData.users.find((item) => item.email?.toLowerCase() === email);
-  if (!user) return false;
+  let user = usersData.users.find((item) => item.email?.toLowerCase() === email);
+  let invited = false;
 
+  if (!user) {
+    const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
+      redirectTo: operatorAccessRedirect(request),
+      data: {
+        bimaris_operator: true,
+        operator_slug: slug,
+        business_name: application?.business_name ?? undefined,
+      },
+    });
+    if (inviteError) throw inviteError;
+    user = inviteData.user;
+    invited = true;
+  }
+
+  if (!user) return "account-required" as const;
   const { error: membershipError } = await supabase.from("operator_memberships").upsert({ operator_id: operator.id, user_id: user.id, role: "owner" }, { onConflict: "operator_id,user_id" });
   if (membershipError) throw membershipError;
-  return true;
+  return invited ? "invited" as const : "linked" as const;
 }
 
 export async function POST(request: NextRequest) {
@@ -62,9 +81,9 @@ export async function POST(request: NextRequest) {
       if (!slug) return back(request, "invalid-slug");
       const { error } = await supabase.rpc("accept_operator_application", { p_application_id: applicationId, p_slug: slug, p_why_selected: notes, p_publish: action === "accept_publish" });
       if (error) throw error;
-      const linked = await linkExistingOperatorAccount(supabase, applicationId, slug);
+      const access = await ensureOperatorAccount(supabase, applicationId, slug, request);
       const base = action === "accept_publish" ? "published" : "accepted";
-      return back(request, linked ? `${base}-access-linked` : `${base}-account-required`);
+      return back(request, access === "invited" ? `${base}-access-invited` : access === "linked" ? `${base}-access-linked` : `${base}-account-required`);
     }
     if (action === "publish_operator" && operatorId) {
       const { error } = await supabase.from("operators").update({ published: true, selection_status: "selected", updated_at: new Date().toISOString() }).eq("id", operatorId);
