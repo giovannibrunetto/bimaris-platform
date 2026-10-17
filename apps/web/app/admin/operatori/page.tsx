@@ -6,6 +6,7 @@ import AdminBarChart from "@/components/AdminBarChart";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+const ANALYTICS_WINDOW_MS=30*24*60*60*1000;
 
 type Application = { id:string; business_name:string; contact_name:string; email:string; phone:string|null; whatsapp:string|null; category:string|null; location:string|null; address:string|null; website:string|null; instagram:string|null; description:string; status:string; review_notes:string|null; operator_id:string|null; created_at:string };
 type Operator = { id:string; slug:string; name:string; category:string|null; published:boolean; selection_status:string };
@@ -14,7 +15,7 @@ type OperatorMetric = { slug:string; name:string; total:number; whatsapp:number;
 
 function formatDate(value:string){return new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(new Date(value));}
 function statusLabel(value:string){return ({new:"Nuova",reviewing:"In valutazione",accepted:"Accettata",rejected:"Rifiutata"} as Record<string,string>)[value]??value;}
-function stateMessage(state?:string){const messages:Record<string,string>={reviewing:"Candidatura messa in valutazione.",rejected:"Candidatura rifiutata.",accepted:"Candidatura approvata.",published:"Operatore pubblicato.",unpublished:"Operatore nascosto.","invalid-slug":"Slug non valido.","action-error":"Operazione non riuscita. Riprova."};return state?(messages[state]??state):null;}
+function stateMessage(state?:string){const messages:Record<string,string>={reviewing:"Candidatura messa in valutazione.",rejected:"Candidatura rifiutata.",accepted:"Candidatura approvata.",published:"Operatore pubblicato.",unpublished:"Operatore nascosto.","accepted-access-linked":"Candidatura approvata e account operatore collegato.","published-access-linked":"Operatore pubblicato e account collegato.","accepted-account-required":"Candidatura approvata. L'operatore deve creare o accedere al proprio account BIMARIS prima del collegamento.","published-account-required":"Operatore pubblicato. L'operatore deve creare o accedere al proprio account BIMARIS prima del collegamento.","invalid-slug":"Slug non valido.","action-error":"Operazione non riuscita. Riprova."};return state?(messages[state]??state):null;}
 function countBy<T>(rows:T[],get:(row:T)=>string){return Object.entries(rows.reduce<Record<string,number>>((a,row)=>{const k=get(row)||"Non indicata";a[k]=(a[k]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));}
 function textProperty(properties:Record<string,unknown>|null,key:string){const value=properties?.[key];return typeof value==="string"?value:null;}
 function actionFromEvent(event:AnalyticsEvent){return textProperty(event.properties,"action_type")??({whatsapp_click:"whatsapp",phone_click:"phone",directions_click:"directions",website_click:"website",instagram_click:"instagram",booking_click:"booking"} as Record<string,string>)[event.event_name]??null;}
@@ -22,7 +23,8 @@ function actionFromEvent(event:AnalyticsEvent){return textProperty(event.propert
 export default async function AdminOperatorsPage({searchParams}:{searchParams:Promise<{state?:string}>}){
  if(!(await isAdminAuthenticated())) redirect("/admin/login");
  const supabase=createServiceClient(); if(!supabase) throw new Error("Supabase service client non configurato");
- const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
+ const {data:latestEvent}=await supabase.from("analytics_events").select("created_at").order("created_at",{ascending:false}).limit(1).maybeSingle();
+ const analyticsAnchor=latestEvent?.created_at?new Date(latestEvent.created_at):new Date(0); const since=new Date(analyticsAnchor.getTime()-ANALYTICS_WINDOW_MS).toISOString();
  const [{data:applicationsData},{data:operatorsData},{data:analyticsData}]=await Promise.all([
   supabase.from("operator_applications").select("id,business_name,contact_name,email,phone,whatsapp,category,location,address,website,instagram,description,status,review_notes,operator_id,created_at").order("created_at",{ascending:false}).limit(100),
   supabase.from("operators").select("id,slug,name,category,published,selection_status").order("created_at",{ascending:false}).limit(100),
