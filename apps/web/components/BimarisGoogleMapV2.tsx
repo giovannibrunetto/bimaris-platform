@@ -10,7 +10,7 @@ type Kind = "culture" | "legend" | "operator" | "experience" | "village" | "vill
 export type MapFilterKey = "cultura" | "miti-leggende" | "sapori-territori" | "borghi" | "esperienze" | "operatori";
 type Filter = "all" | MapFilterKey;
 type Mode = "walking" | "driving";
-const PERIODS = [{ key: "all", label: "Tutte le epoche" }, { key: "medioevo", label: "Medioevo" }, { key: "rinascimento-cinquecento", label: "Rinascimento e Cinquecento" }, { key: "seicento-settecento", label: "Seicento e Settecento" }, { key: "ottocento", label: "Ottocento" }, { key: "novecento", label: "Novecento" }, { key: "trasversale", label: "Più epoche" }] as const;
+const PERIODS = [{ key: "all", label: "Tutte le epoche" }, { key: "antichita", label: "Antichità" }, { key: "medioevo", label: "Medioevo" }, { key: "rinascimento-cinquecento", label: "Rinascimento e Cinquecento" }, { key: "seicento-settecento", label: "Seicento e Settecento" }, { key: "ottocento", label: "Ottocento" }, { key: "novecento", label: "Novecento" }, { key: "trasversale", label: "Più epoche" }] as const;
 const FILTER_ROW = 46;
 
 const FILTERS: Array<{ key: Filter; label: string; shortLabel: string }> = [
