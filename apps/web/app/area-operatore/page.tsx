@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+const ANALYTICS_WINDOW_MS=30*24*60*60*1000;
 
 type Operator = { id:string; slug:string; name:string; category:string|null; published:boolean; selection_status:string };
 type Membership = { role:string; operator_id:string; operators:Operator|Operator[]|null };
@@ -18,7 +19,9 @@ export default async function OperatorAreaPage(){
  const {data:membershipsData}=await userClient.from("operator_memberships").select("role,operator_id,operators(id,slug,name,category,published,selection_status)").eq("user_id",userId);
  const memberships=(membershipsData??[]) as Membership[];
  const rows=memberships.map(row=>({role:row.role,operator_id:row.operator_id,operator:relatedOperator(row.operators)})).filter(row=>row.operator!==null) as {role:string;operator_id:string;operator:Operator}[];
- const slugs=rows.map(row=>row.operator.slug); const service=createServiceClient(); const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
+ const slugs=rows.map(row=>row.operator.slug); const service=createServiceClient();
+ const {data:latestEvent}=service?await service.from("analytics_events").select("created_at").order("created_at",{ascending:false}).limit(1).maybeSingle():{data:null};
+ const analyticsAnchor=latestEvent?.created_at?new Date(latestEvent.created_at):new Date(0); const since=new Date(analyticsAnchor.getTime()-ANALYTICS_WINDOW_MS).toISOString();
  const {data:events}=service&&slugs.length?await service.from("analytics_events").select("event_name,properties").gte("created_at",since).in("event_name",["whatsapp_click","phone_click","directions_click","website_click","instagram_click","booking_click"]).limit(5000):{data:[]};
  const metrics=new Map<string,Metric>(slugs.map(slug=>[slug,{total:0,whatsapp:0,phone:0,directions:0,website:0,instagram:0,booking:0}]));
  for(const event of events??[]){const properties=event.properties as Record<string,unknown>|null;const slug=textProperty(properties,"operator_id");const metric=slug?metrics.get(slug):undefined;if(!metric)continue;const action=textProperty(properties,"action_type")??({whatsapp_click:"whatsapp",phone_click:"phone",directions_click:"directions",website_click:"website",instagram_click:"instagram",booking_click:"booking"} as Record<string,string>)[event.event_name];if(action&&action in metric)(metric as unknown as Record<string,number>)[action]++;metric.total++;}
