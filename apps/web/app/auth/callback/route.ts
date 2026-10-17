@@ -5,8 +5,8 @@ import { createServerClient } from "@supabase/ssr";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") || "/profilo";
-  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/profilo";
+  const next = url.searchParams.get("next");
+  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -21,7 +21,23 @@ export async function GET(request: Request) {
       },
     });
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(safeNext, url.origin));
+    if (!error) {
+      if (safeNext) return NextResponse.redirect(new URL(safeNext, url.origin));
+
+      const { data: claimsData } = await supabase.auth.getClaims();
+      const userId = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : null;
+      if (userId) {
+        const { data: membership } = await supabase
+          .from("operator_memberships")
+          .select("operator_id")
+          .eq("user_id", userId)
+          .limit(1)
+          .maybeSingle();
+        if (membership) return NextResponse.redirect(new URL("/area-operatore", url.origin));
+      }
+
+      return NextResponse.redirect(new URL("/profilo", url.origin));
+    }
   }
 
   return NextResponse.redirect(new URL("/accedi?errore=accesso", url.origin));
