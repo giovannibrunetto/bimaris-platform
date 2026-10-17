@@ -10,10 +10,12 @@ function externalUrl(value?: string) {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
-function whatsappUrl(value?: string) {
+function whatsappUrl(value?: string, message?: string) {
   if (!value) return undefined;
   const digits = value.replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}` : undefined;
+  if (!digits) return undefined;
+  const text = message ? `?text=${encodeURIComponent(message)}` : "";
+  return `https://wa.me/${digits}${text}`;
 }
 
 function interestForCategory(category: string) {
@@ -57,7 +59,8 @@ export function ExperienceDetailActions({ experience }: { experience: Experience
   }, [experience]);
 
   const booking = externalUrl(experience.bookingUrl);
-  const whatsapp = whatsappUrl(experience.operatorWhatsapp);
+  const whatsappMessage = `Buongiorno, vi contatto tramite BIMARIS. Sono interessato all'esperienza “${experience.name}” e vorrei ricevere maggiori informazioni.`;
+  const whatsapp = whatsappUrl(experience.operatorWhatsapp, whatsappMessage);
   const website = externalUrl(experience.operatorWebsite);
   const instagram = externalUrl(experience.operatorInstagram);
   const directions = experience.googleMapsQuery
