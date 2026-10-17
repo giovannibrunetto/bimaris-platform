@@ -16,12 +16,14 @@ export const villagePointHistoricalPeriods: Record<string, Record<string, Histor
     "monumento-ai-caduti": ["novecento"],
   },
 
-  // Comune di Castroreale: Candelora late XIV c.; municipal/regional sources document the medieval castle.
+  // Comune di Castroreale: Candelora late XIV c.; the Duomo was begun in the XV c. and enlarged in later centuries;
+  // municipal/regional sources document the medieval castle.
   // https://www.comune.castroreale.me.it/vivere-il-comune/luoghi/chiesa-della-candelora/
+  // https://www.istitutoitalianocastelli-sicilia.org/visita-castroreale-6-settembre-2026-comunicazione/
   // https://www2.regione.sicilia.it/beniculturali/dirbenicult/bca/ptpr/documentazione%20tecnica%20messina/ALLEGATI/h.3%20-%20Paesaggi%20Locali%20-%20Centri%20e%20Nuclei%20storici/BookCSNS_9_08.pdf
   castroreale: {
     "torre-federico-ii": ["medioevo"],
-    "duomo-santa-maria-assunta": ["rinascimento-cinquecento", "seicento-settecento"],
+    "duomo-santa-maria-assunta": ["medioevo", "rinascimento-cinquecento", "seicento-settecento"],
     "chiesa-della-candelora": ["medioevo", "rinascimento-cinquecento", "seicento-settecento"],
   },
 
