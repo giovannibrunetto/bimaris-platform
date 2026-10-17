@@ -22,9 +22,14 @@ type Props = {
   interestKey: string;
   weight?: number;
   external?: boolean;
+  operatorId?: string;
+  operatorName?: string;
+  sourceType?: string;
+  sourceId?: string;
+  actionType?: string;
 };
 
-export function BehaviorTrackedLink({ href, children, className, target, rel, analyticsEvent, analyticsData = {}, behaviorEvent, contentType, contentId, interestKey, weight = 1, external = false }: Props) {
+export function BehaviorTrackedLink({ href, children, className, target, rel, analyticsEvent, analyticsData = {}, behaviorEvent, contentType, contentId, interestKey, weight = 1, external = false, operatorId, operatorName, sourceType, sourceId, actionType }: Props) {
   const handleClick = () => {
     if (analyticsEvent) track(analyticsEvent, analyticsData);
     const supabase = createBrowserSupabaseClient();
@@ -38,6 +43,11 @@ export function BehaviorTrackedLink({ href, children, className, target, rel, an
         p_content_id: contentId,
         p_interest_key: interestKey,
         p_weight: weight,
+        p_operator_id: operatorId ?? null,
+        p_operator_name: operatorName ?? null,
+        p_source_type: sourceType ?? contentType,
+        p_source_id: sourceId ?? contentId,
+        p_action_type: actionType ?? behaviorEvent,
       });
     })();
   };
