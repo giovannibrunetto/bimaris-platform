@@ -31,7 +31,21 @@ type Props = {
 
 export function BehaviorTrackedLink({ href, children, className, target, rel, analyticsEvent, analyticsData = {}, behaviorEvent, contentType, contentId, interestKey, weight = 1, external = false, operatorId, operatorName, sourceType, sourceId, actionType }: Props) {
   const handleClick = () => {
-    if (analyticsEvent) track(analyticsEvent, analyticsData);
+    const resolvedSourceType = sourceType ?? contentType;
+    const resolvedSourceId = sourceId ?? contentId;
+    const resolvedActionType = actionType ?? behaviorEvent;
+
+    if (analyticsEvent) {
+      track(analyticsEvent, {
+        ...analyticsData,
+        operator_id: operatorId ?? null,
+        operator_name: operatorName ?? null,
+        source_type: resolvedSourceType,
+        source_id: resolvedSourceId,
+        action_type: resolvedActionType,
+      });
+    }
+
     const supabase = createBrowserSupabaseClient();
     if (!supabase) return;
     void (async () => {
@@ -45,9 +59,9 @@ export function BehaviorTrackedLink({ href, children, className, target, rel, an
         p_weight: weight,
         p_operator_id: operatorId ?? null,
         p_operator_name: operatorName ?? null,
-        p_source_type: sourceType ?? contentType,
-        p_source_id: sourceId ?? contentId,
-        p_action_type: actionType ?? behaviorEvent,
+        p_source_type: resolvedSourceType,
+        p_source_id: resolvedSourceId,
+        p_action_type: resolvedActionType,
       });
     })();
   };
