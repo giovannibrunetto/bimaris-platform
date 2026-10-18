@@ -7,6 +7,10 @@ function text(value: FormDataEntryValue | null, max: number) { return typeof val
 function slugify(value: string) { return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 120); }
 function numberValue(value: string) { if (!value) return null; const parsed = Number(value.replace(",", ".")); return Number.isFinite(parsed) ? parsed : null; }
 function back(request: NextRequest, state: string) { return NextResponse.redirect(new URL(`/admin/esperienze?state=${encodeURIComponent(state)}`, request.url), 303); }
+const reviewSectionFields=["basics","description","details","media","location"] as const;
+const reviewSectionLabels:Record<(typeof reviewSectionFields)[number],string>={basics:"Informazioni principali",description:"Descrizione",details:"Durata, prezzo e dettagli",media:"Fotografie",location:"Luogo e punto di incontro"};
+function reviewSections(form:FormData){return Object.fromEntries(reviewSectionFields.map(key=>[key,text(form.get(`review_${key}`),1000)]).filter(([,value])=>Boolean(value)));}
+function reviewSummary(sections:Record<string,string>,general:string){const lines=Object.entries(sections).map(([key,value])=>`${reviewSectionLabels[key as keyof typeof reviewSectionLabels]}: ${value}`);if(general)lines.push(`Nota generale: ${general}`);return lines.join("\n\n");}
 
 export async function POST(request: NextRequest) {
   if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
@@ -24,17 +28,18 @@ export async function POST(request: NextRequest) {
     }
     if(!experienceId)return back(request,"invalid-data");
     if(action==="approve"||action==="request-changes"){
-      const reviewNotes=text(form.get("review_notes"),2000); if(action==="request-changes"&&!reviewNotes)return back(request,"review-note-required");
+      const generalNote=text(form.get("review_notes"),2000); const sections=reviewSections(form); const reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
+      if(action==="request-changes"&&!reviewNotes)return back(request,"review-note-required");
       const {data:experience,error:readError}=await supabase.from("experiences").select("name,review_status,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
       if(readError||!experience||experience.review_status!=="pending")return back(request,"invalid-review-state");
       const operator=experience.operator as unknown as {name:string|null;published:boolean;selection_status:string;email:string|null}|null;
       if(action==="approve"){
         if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");
-        const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,reviewed_at:new Date().toISOString(),published:true,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
+        const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},reviewed_at:new Date().toISOString(),published:true,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
         if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
         return back(request,"approved");
       }
-      const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
+      const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
       if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
       return back(request,"changes-requested");
     }
