@@ -3,13 +3,15 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
+const PREVIEW_HOST = "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app";
 
 function safePath(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 }
 
-function publicUrl(path: string) {
-  return new URL(path, PUBLIC_SITE_URL);
+function publicUrl(path: string, requestUrl: URL) {
+  const origin = requestUrl.hostname === PREVIEW_HOST ? requestUrl.origin : PUBLIC_SITE_URL;
+  return new URL(path, origin);
 }
 
 export async function GET(request: Request) {
@@ -20,7 +22,7 @@ export async function GET(request: Request) {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    return NextResponse.redirect(publicUrl("/accedi?errore=accesso"));
+    return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
   }
 
   const cookieStore = await cookies();
@@ -41,7 +43,7 @@ export async function GET(request: Request) {
       // If the browser already owns a valid session (for example after a
       // repeated redirect), do not turn a successful login into an error.
       const { data: existing } = await supabase.auth.getUser();
-      if (!existing.user) return NextResponse.redirect(publicUrl("/accedi?errore=accesso"));
+      if (!existing.user) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
     }
   }
 
@@ -50,9 +52,9 @@ export async function GET(request: Request) {
   // already present and must be honoured.
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id ?? null;
-  if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso"));
+  if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
 
-  if (next) return NextResponse.redirect(publicUrl(next));
+  if (next) return NextResponse.redirect(publicUrl(next, url));
 
   const { data: membership } = await supabase
     .from("operator_memberships")
@@ -61,6 +63,6 @@ export async function GET(request: Request) {
     .limit(1)
     .maybeSingle();
 
-  if (membership) return NextResponse.redirect(publicUrl("/area-operatore"));
-  return NextResponse.redirect(publicUrl("/profilo"));
+  if (membership) return NextResponse.redirect(publicUrl("/area-operatore", url));
+  return NextResponse.redirect(publicUrl("/profilo", url));
 }
