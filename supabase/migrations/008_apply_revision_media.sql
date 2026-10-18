@@ -16,6 +16,8 @@ declare
  v_duration_minutes integer;
  v_price_from numeric;
  v_now timestamptz := now();
+ v_cover_path text;
+ v_cover_alt text;
 begin
  select * into v_revision from public.experience_revisions where id=p_revision_id for update;
  if not found or v_revision.status <> 'pending' then raise exception using errcode='P0001',message='invalid-review-state'; end if;
@@ -39,7 +41,13 @@ begin
  insert into public.experience_media(experience_id,storage_path,alt_text,sort_order,is_cover)
  select v_revision.experience_id,m.storage_path,m.alt_text,m.sort_order,m.is_cover
  from public.experience_revision_media m where m.revision_id=v_revision.id order by m.sort_order;
- update public.experiences set name=v_name,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,updated_at=v_now where id=v_revision.experience_id;
+ select m.storage_path,m.alt_text into v_cover_path,v_cover_alt
+ from public.experience_revision_media m where m.revision_id=v_revision.id
+ order by m.is_cover desc,m.sort_order asc limit 1;
+ update public.experiences set name=v_name,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,
+ image_url=case when v_cover_path is null then null else
+ 'https://vhvccwvcqdhiovpopsze.supabase.co/storage/v1/object/public/experience-media/'||v_cover_path end,
+ image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
  update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
  return query select v_revision.experience_id,v_name;
 end;
