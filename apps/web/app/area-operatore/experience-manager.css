@@ -5,3 +5,20 @@
 .experience-thumb .experience-secondary{width:auto;min-width:36px;padding:8px 10px;font-size:.8rem;line-height:1.25;white-space:normal}
 .experience-thumb button:first-child{background:#e3b45c;color:#20170b;border-color:#e3b45c!important;font-weight:700}
 @media(max-width:650px){.experience-thumb{min-width:0}.experience-thumb .experience-secondary{width:auto}}
+
+/* Galleria editoriale: foto leggibili, copertina evidente, controlli compatti. */
+.experience-thumbs{grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:16px}
+.experience-thumb-card{min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.2);border-radius:17px;background:rgba(255,255,255,.055);transition:border-color .2s,box-shadow .2s}
+.experience-thumb-card.is-cover{border-color:#e3b45c;box-shadow:0 0 0 1px rgba(227,180,92,.3)}
+.experience-thumb-card__photo{position:relative;aspect-ratio:4/3;overflow:hidden;background:#30291f}
+.experience-thumb-card__photo img{width:100%;height:100%;object-fit:cover;display:block}
+.experience-thumb-card__badge{position:absolute;top:10px;left:10px;padding:7px 11px;border-radius:999px;background:#e3b45c;color:#21180d;font-size:.78rem;font-weight:800}
+.experience-thumb-card__toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px}
+.experience-thumb-card__toolbar button{cursor:pointer;font:inherit}
+.experience-thumb-card__cover{border:0;border-radius:9px;background:rgba(227,180,92,.16);color:#f3ca79;font-size:.8rem!important;font-weight:700!important;padding:9px 10px;min-height:38px}
+.experience-thumb-card__cover:disabled{background:transparent;color:rgba(255,255,255,.7);cursor:default}
+.experience-thumb-card__tools{display:flex;gap:3px;align-items:center}
+.experience-thumb-card__tools button{display:grid;place-items:center;width:34px;height:38px;border:0;border-radius:8px;background:transparent;color:#fff;font-size:1.1rem}
+.experience-thumb-card__tools button:hover:not(:disabled){background:rgba(255,255,255,.13)}
+.experience-thumb-card__tools button:disabled{opacity:.25;cursor:default}
+@media(max-width:650px){.experience-thumbs{grid-template-columns:1fr;max-width:440px}.experience-thumb-card__photo{aspect-ratio:16/10}}
