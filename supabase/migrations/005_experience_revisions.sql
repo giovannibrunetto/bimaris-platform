@@ -37,14 +37,16 @@ using (
   )
 );
 
-create policy "operator members create own experience revisions"
+create policy "operator owners create own experience revisions"
 on public.experience_revisions for insert
 to authenticated
 with check (
-  exists (
+  status = 'draft'
+  and exists (
     select 1 from public.operator_memberships membership
     where membership.operator_id = experience_revisions.operator_id
       and membership.user_id = auth.uid()
+      and membership.role in ('owner','manager')
   )
   and exists (
     select 1 from public.experiences experience
@@ -55,7 +57,7 @@ with check (
   )
 );
 
-create policy "operator members update editable experience revisions"
+create policy "operator owners update editable experience revisions"
 on public.experience_revisions for update
 to authenticated
 using (
@@ -64,14 +66,16 @@ using (
     select 1 from public.operator_memberships membership
     where membership.operator_id = experience_revisions.operator_id
       and membership.user_id = auth.uid()
+      and membership.role in ('owner','manager')
   )
 )
 with check (
-  status in ('draft','pending','rejected')
+  status in ('draft','pending')
   and exists (
     select 1 from public.operator_memberships membership
     where membership.operator_id = experience_revisions.operator_id
       and membership.user_id = auth.uid()
+      and membership.role in ('owner','manager')
   )
 );
 
