@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
+const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
+
 export default function AccediPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -21,7 +23,7 @@ export default function AccediPage() {
     setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${PUBLIC_SITE_URL}/auth/callback` },
     });
     setLoading(false);
     setMessage(error ? "Non è stato possibile inviare il link. Riprova." : "Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
