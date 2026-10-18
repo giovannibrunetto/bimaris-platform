@@ -9,17 +9,14 @@ const reviewSectionFields=["basics","description","details"] as const;
 const reviewSectionLabels:Record<(typeof reviewSectionFields)[number],string>={basics:"Informazioni principali",description:"Descrizione",details:"Durata e prezzo"};
 function reviewSections(form:FormData){return Object.fromEntries(reviewSectionFields.map(key=>[key,text(form.get(`review_${key}`),1000)]).filter(([,value])=>Boolean(value)));}
 function reviewSummary(sections:Record<string,string>,general:string){const lines=Object.entries(sections).map(([key,value])=>`${reviewSectionLabels[key as keyof typeof reviewSectionLabels]}: ${value}`);if(general)lines.push(`Nota generale: ${general}`);return lines.join("\n\n");}
-
-type RevisionContent={name?:unknown;excerpt?:unknown;description?:unknown;duration_minutes?:unknown;price_from?:unknown};
-function nullableText(value:unknown,max:number){return typeof value==="string"?(value.trim().slice(0,max)||null):null;}
-function nullableNumber(value:unknown){if(value===null||value===undefined||value==="")return null;const n=Number(value);return Number.isFinite(n)?n:null;}
+function rpcState(error:{message?:string}|null){const message=error?.message??"";if(message.includes("invalid-review-state"))return "invalid-review-state";if(message.includes("invalid-source-state"))return "invalid-source-state";if(message.includes("invalid-data"))return "invalid-data";return "action-error";}
 
 export async function POST(request:NextRequest){
  if(!(await isAdminAuthenticated()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
  const form=await request.formData(); const action=text(form.get("action"),40); const revisionId=text(form.get("revision_id"),80); const supabase=createServiceClient();
  if(!supabase||!revisionId)return back(request,"invalid-data");
  try{
-  const {data:revision,error:readError}=await supabase.from("experience_revisions").select("id,experience_id,status,content,operator:operators(name,email,published,selection_status),experience:experiences(name,published,review_status)").eq("id",revisionId).maybeSingle();
+  const {data:revision,error:readError}=await supabase.from("experience_revisions").select("id,experience_id,status,operator:operators(name,email,published,selection_status),experience:experiences(name,published,review_status)").eq("id",revisionId).maybeSingle();
   if(readError||!revision||revision.status!=="pending")return back(request,"invalid-review-state");
   const operator=revision.operator as unknown as {name:string|null;email:string|null;published:boolean;selection_status:string}|null;
   const experience=revision.experience as unknown as {name:string;published:boolean;review_status:string}|null;
@@ -32,10 +29,9 @@ export async function POST(request:NextRequest){
    return back(request,"changes-requested");
   }
   if(action==="approve-apply"){
-   const content=(revision.content??{}) as RevisionContent; const name=nullableText(content.name,200); if(!name)return back(request,"invalid-data");
-   const update={name,excerpt:nullableText(content.excerpt,300),description:nullableText(content.description,5000),duration_minutes:nullableNumber(content.duration_minutes),price_from:nullableNumber(content.price_from),updated_at:new Date().toISOString()};
-   const {error:applyError}=await supabase.from("experiences").update(update).eq("id",revision.experience_id).eq("published",true).eq("review_status","approved"); if(applyError)throw applyError;
-   const now=new Date().toISOString(); const {error:revisionError}=await supabase.from("experience_revisions").update({status:"applied",review_notes:general||null,review_sections:{},reviewed_at:now,applied_at:now,updated_at:now}).eq("id",revisionId).eq("status","pending"); if(revisionError)throw revisionError;
+   const {data:applied,error:applyError}=await supabase.rpc("admin_apply_experience_revision",{p_revision_id:revisionId,p_review_notes:general||null});
+   if(applyError)return back(request,rpcState(applyError));
+   const result=Array.isArray(applied)?applied[0]:applied; const name=typeof result?.experience_name==="string"?result.experience_name:experience.name;
    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:general||null});
    return back(request,"approved-applied");
   }
