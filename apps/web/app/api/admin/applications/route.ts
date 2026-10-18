@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
 
+const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
+
 function text(value: FormDataEntryValue | null, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
@@ -14,8 +16,8 @@ function back(request: NextRequest, state: string) {
   return NextResponse.redirect(new URL(`/admin?state=${encodeURIComponent(state)}`, request.url), 303);
 }
 
-function operatorAccessRedirect(request: NextRequest) {
-  return new URL("/area-operatore", request.nextUrl.origin).toString();
+function operatorAccessRedirect() {
+  return `${PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent("/area-operatore")}`;
 }
 
 type ServiceClient = NonNullable<ReturnType<typeof createServiceClient>>;
@@ -53,7 +55,7 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
   let user = await findUserByEmail(supabase, email);
   if (!user) {
     const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
-      redirectTo: operatorAccessRedirect(request),
+      redirectTo: operatorAccessRedirect(),
       data: { bimaris_operator: true, business_name: application?.business_name ?? undefined },
     });
     if (inviteError) throw inviteError;
@@ -66,7 +68,7 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
   await linkOperatorMembership(supabase, operatorId, user.id);
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: operatorAccessRedirect(request), shouldCreateUser: false },
+    options: { emailRedirectTo: operatorAccessRedirect(), shouldCreateUser: false },
   });
   if (otpError) throw otpError;
   return "access-sent" as const;
