@@ -1,1 +1,0 @@
--- No schema change. Reserved to keep migration history explicit after consolidating validation.
