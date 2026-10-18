@@ -22,14 +22,12 @@ export default function ExperienceMediaStep({items,coverKey,optimizing,onFiles,o
    <strong>{optimizing?"Ottimizzo le fotografie…":"+ Aggiungi fotografie"}</strong>
    <span>JPG, PNG, WebP o AVIF · massimo 6 immagini · fino a 20 MB in origine · ottimizzazione automatica</span>
   </label>
-  {items.length>0&&<div className="experience-thumbs">{items.map((item,index)=><div className="experience-thumb" key={item.key}>
-   <img src={item.url} alt={`Foto ${index+1}`}/>
-   <div style={{display:"flex",gap:6,flexWrap:"wrap",paddingTop:6}}>
-    <button type="button" className="experience-secondary" onClick={()=>onCover(item.key)}>{coverKey===item.key?"✓ Copertina":"Copertina"}</button>
-    <button type="button" className="experience-secondary" disabled={index===0} onClick={()=>onMove(item.key,-1)} aria-label="Sposta foto a sinistra">←</button>
-    <button type="button" className="experience-secondary" disabled={index===items.length-1} onClick={()=>onMove(item.key,1)} aria-label="Sposta foto a destra">→</button>
-    <button type="button" className="experience-secondary" onClick={()=>onRemove(item)}>Rimuovi</button>
+  {items.length>0&&<div className="experience-thumbs">{items.map((item,index)=>{const selected=coverKey===item.key;return <div className={`experience-thumb-card${selected?" is-cover":""}`} key={item.key}>
+   <div className="experience-thumb-card__photo"><img src={item.url} alt={`Foto ${index+1}`}/>{selected&&<span className="experience-thumb-card__badge">★ Copertina</span>}</div>
+   <div className="experience-thumb-card__toolbar">
+    <button type="button" className="experience-thumb-card__cover" disabled={selected} onClick={()=>onCover(item.key)}>{selected?"Foto principale":"Scegli copertina"}</button>
+    <div className="experience-thumb-card__tools"><button type="button" disabled={index===0} onClick={()=>onMove(item.key,-1)} aria-label="Sposta foto a sinistra" title="Sposta a sinistra">←</button><button type="button" disabled={index===items.length-1} onClick={()=>onMove(item.key,1)} aria-label="Sposta foto a destra" title="Sposta a destra">→</button><button type="button" onClick={()=>onRemove(item)} aria-label="Rimuovi fotografia" title="Rimuovi fotografia">×</button></div>
    </div>
-  </div>)}</div>}
+  </div>})}</div>}
  </div>;
 }
