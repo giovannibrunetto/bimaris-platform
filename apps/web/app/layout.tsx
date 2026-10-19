@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./brand.css";
 import "./map-mobile.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
@@ -22,11 +21,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="it">
       <body>
-        <Header />
+        <SiteHeader />
         <AnalyticsTracker />
         <AnalyticsClickTracker />
         <main>{children}</main>
-        <Footer />
+        <SiteFooter />
         <ConsentBanner />
       </body>
     </html>
