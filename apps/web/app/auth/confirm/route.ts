@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
@@ -8,6 +7,8 @@ const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
 function safePath(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 }
+
+type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -21,13 +22,15 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/accedi?errore=accesso", PUBLIC_SITE_URL));
   }
 
-  const cookieStore = await cookies();
+  // Keep the auth cookies produced by verifyOtp and attach them explicitly to
+  // the final redirect response. This is important for magic-link requests,
+  // because the browser must receive the new session before /area-operatore
+  // performs its server-side authentication check.
+  const cookiesToSet: CookieToSet[] = [];
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
-      getAll() { return cookieStore.getAll(); },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-      },
+      getAll() { return []; },
+      setAll(values) { cookiesToSet.push(...(values as CookieToSet[])); },
     },
   });
 
@@ -46,16 +49,20 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/accedi?errore=accesso", PUBLIC_SITE_URL));
   }
 
-  if (next) {
-    return NextResponse.redirect(new URL(next, PUBLIC_SITE_URL));
+  let destination = next;
+  if (!destination) {
+    const { data: membership } = await supabase
+      .from("operator_memberships")
+      .select("operator_id")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+    destination = membership ? "/area-operatore" : "/profilo";
   }
 
-  const { data: membership } = await supabase
-    .from("operator_memberships")
-    .select("operator_id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
-
-  return NextResponse.redirect(new URL(membership ? "/area-operatore" : "/profilo", PUBLIC_SITE_URL));
+  const response = NextResponse.redirect(new URL(destination, PUBLIC_SITE_URL));
+  for (const { name, value, options } of cookiesToSet) {
+    response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2]);
+  }
+  return response;
 }
