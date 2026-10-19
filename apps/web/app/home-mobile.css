@@ -1,5 +1,25 @@
 /* True smartphone layout for BIMARIS home and global site chrome. */
 @media (max-width: 760px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body > main,
+  .site-header,
+  .footer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  img,
+  video,
+  iframe {
+    max-width: 100%;
+  }
+
   .site-header {
     height: 64px;
     padding: 0 16px;
@@ -40,10 +60,14 @@
   }
 
   .brand-hero {
+    width: 100%;
+    max-width: 100%;
     padding-bottom: 28px;
+    overflow: hidden;
   }
 
   .brand-hero-visual {
+    width: 100%;
     height: auto;
     min-height: 0;
     overflow: hidden;
@@ -60,6 +84,7 @@
 
   .brand-hero-copy {
     width: calc(100% - 28px);
+    max-width: calc(100% - 28px);
     margin: -18px auto 0;
     padding: 22px 20px 24px;
     border-radius: 20px;
@@ -78,13 +103,14 @@
 
   .brand-hero-copy .actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
     margin-top: 20px;
   }
 
   .brand-hero-copy .button {
     width: 100%;
+    min-width: 0;
     min-height: 48px;
     display: flex;
     align-items: center;
@@ -94,7 +120,10 @@
   }
 
   .section {
+    width: 100%;
+    max-width: 100%;
     padding: 48px 18px;
+    overflow: hidden;
   }
 
   .section-head {
@@ -103,12 +132,15 @@
   }
 
   .section-head h2 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
     font-size: clamp(30px, 9vw, 42px);
     line-height: 1.05;
     margin: 8px 0 14px;
   }
 
   .section-head p {
+    max-width: 100%;
     font-size: 15px;
     line-height: 1.55;
     margin: 0;
@@ -118,7 +150,17 @@
   .territory-grid,
   .itinerary-grid,
   .cards {
-    grid-template-columns: 1fr !important;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .category,
+  .card,
+  .territory-grid > *,
+  .itinerary-grid > * {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .category {
@@ -132,6 +174,47 @@
     max-width: 100%;
     text-align: center;
   }
+
+  .footer {
+    padding: 30px 18px 26px;
+    overflow: hidden;
+  }
+
+  .footer-brand {
+    display: block;
+    width: min(210px, 70vw);
+    max-width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .footer-brand-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 26px;
+  }
+
+  .footer-links a {
+    display: block;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .footer .muted {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
 }
 
 @media (max-width: 390px) {
@@ -141,6 +224,11 @@
   }
 
   .section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .footer {
     padding-left: 16px;
     padding-right: 16px;
   }
