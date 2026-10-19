@@ -13,18 +13,10 @@ const discoveryCategories = [
 export default function Home() {
   return (
     <>
-      <section className="brand-hero">
+      <section className="brand-hero brand-hero-compact">
         <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
         <div className="brand-hero-visual">
           <img src="/brand/bimaris-main.jpeg" alt="BIMARIS — Messina da Vivere" />
-        </div>
-        <div className="brand-hero-copy">
-          <div className="kicker">Tra due mari. Un territorio da vivere.</div>
-          <p>BIMARIS racconta Messina attraverso luoghi, storie, sapori, paesaggi e identità capaci di esprimere il territorio oltre i percorsi più scontati.</p>
-          <div className="actions">
-            <a className="button" href="#visitatori">Scopri Messina</a>
-            <Link className="button secondary" href="/mappa">Esplora la mappa</Link>
-          </div>
         </div>
       </section>
 
