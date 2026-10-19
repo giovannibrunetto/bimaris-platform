@@ -68,18 +68,20 @@ export default async function ProfiloPage({ searchParams }: { searchParams: Prom
       .profile-page .profile-recommendation-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(260px,.9fr); gap:36px; align-items:end; }
       .profile-page .profile-recommendation-head h2 { margin-bottom:0; }
       .profile-page .profile-recommendation-head p { margin:0; max-width:620px; line-height:1.65; }
-      .profile-page .profile-recommendation-grid { margin-top:28px; }
-      .profile-page .profile-recommendation-card { min-width:0; overflow:hidden; }
+      .profile-page .profile-recommendation-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:28px; }
+      .profile-page .profile-recommendation-card { min-width:0; overflow:hidden; padding:22px; }
       .profile-page .profile-recommendation-card h3,
       .profile-page .profile-recommendation-card p { overflow-wrap:anywhere; }
-      @media (max-width: 700px) {
+      @media (max-width: 960px) {
         .profile-page { padding-left:16px !important; padding-right:16px !important; }
         .profile-page .profile-recommendations { padding:34px 18px !important; margin-left:0; margin-right:0; }
-        .profile-page .profile-recommendation-head { grid-template-columns:1fr; gap:14px; align-items:start; }
-        .profile-page .profile-recommendation-head h2 { font-size:clamp(2.15rem,12vw,3.35rem); line-height:.98; max-width:100%; }
-        .profile-page .profile-recommendation-head p { width:100%; font-size:.98rem; }
-        .profile-page .profile-recommendation-grid { grid-template-columns:1fr !important; gap:14px; margin-top:24px; }
-        .profile-page .profile-recommendation-card { padding:18px !important; border-radius:18px; }
+        .profile-page .profile-recommendation-head { display:flex !important; flex-direction:column !important; gap:14px !important; align-items:stretch !important; }
+        .profile-page .profile-recommendation-head > div,
+        .profile-page .profile-recommendation-head > p { width:100% !important; max-width:none !important; }
+        .profile-page .profile-recommendation-head h2 { font-size:clamp(2.15rem,8vw,3.35rem) !important; line-height:1 !important; max-width:none !important; }
+        .profile-page .profile-recommendation-head p { font-size:1rem; }
+        .profile-page .profile-recommendation-grid { display:grid !important; grid-template-columns:1fr !important; gap:14px !important; margin-top:24px; }
+        .profile-page .profile-recommendation-card { width:100% !important; padding:18px !important; border-radius:18px; }
         .profile-page .profile-recommendation-card h3 { font-size:1.45rem; line-height:1.12; margin-top:6px; }
         .profile-page .profile-recommendation-card p { line-height:1.55; }
       }
