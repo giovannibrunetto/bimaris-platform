@@ -2,29 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
-
-export const metadata: Metadata = { title:"Amministrazione BIMARIS", robots:{index:false,follow:false,noarchive:true,nocache:true} };
+export const metadata:Metadata={title:"Amministrazione BIMARIS",robots:{index:false,follow:false,noarchive:true,nocache:true}};
 const badge=(n:number)=>n>0?<span aria-label={`${n} novità pendenti`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:21,height:21,padding:"0 6px",marginLeft:6,borderRadius:999,background:"#8f2f24",color:"#fff",fontSize:12,fontWeight:800,lineHeight:1}}>{n}</span>:null;
-
-export default async function AdminLayout({children}:Readonly<{children:React.ReactNode}>){
- const authenticated=await isAdminAuthenticated();
- let applicationsPending=0, operatorExperiencePending=0;
- if(authenticated){
-  const db=createServiceClient();
-  if(db){
-   const [{count:apps},{count:revisions},{count:experienceReviews}]=await Promise.all([
-    db.from("operator_applications").select("id",{count:"exact",head:true}).in("status",["new","reviewing"]),
-    db.from("experience_revisions").select("id",{count:"exact",head:true}).eq("status","pending"),
-    db.from("experiences").select("id",{count:"exact",head:true}).in("review_status",["pending","submitted"]),
-   ]);
-   applicationsPending=apps??0;
-   operatorExperiencePending=(revisions??0)+(experienceReviews??0);
-  }
- }
- return <>{authenticated&&<nav aria-label="Amministrazione BIMARIS" style={{padding:"14px 6vw",display:"flex",gap:18,flexWrap:"wrap",borderBottom:"1px solid rgba(3,17,26,.10)",background:"#f7f2e8"}}>
-  <Link className="text-link" href="/admin">Dashboard</Link>
-  <Link className="text-link" href="/admin/candidature">Candidature{badge(applicationsPending)}</Link>
-  <Link className="text-link" href="/admin/operatori#operatori-esperienze">Operatori ed Esperienze{badge(operatorExperiencePending)}</Link>
-  <Link className="text-link" href="/admin/itinerari">Itinerari</Link>
- </nav>}{children}</>;
-}
+export default async function AdminLayout({children}:Readonly<{children:React.ReactNode}>){const authenticated=await isAdminAuthenticated();let applicationsPending=0,operatorExperiencePending=0;if(authenticated){const db=createServiceClient();if(db){const [{count:apps},{count:revisions},{count:experienceReviews}]=await Promise.all([db.from("operator_applications").select("id",{count:"exact",head:true}).in("status",["new","reviewing"]),db.from("experience_revisions").select("id",{count:"exact",head:true}).eq("status","pending"),db.from("experiences").select("id",{count:"exact",head:true}).in("review_status",["pending","submitted"])]);applicationsPending=apps??0;operatorExperiencePending=(revisions??0)+(experienceReviews??0)}}return <>{authenticated&&<nav aria-label="Amministrazione BIMARIS" style={{padding:"14px 6vw",display:"flex",gap:18,flexWrap:"wrap",borderBottom:"1px solid rgba(3,17,26,.10)",background:"#f7f2e8"}}><Link className="text-link" href="/admin">Dashboard</Link><Link className="text-link" href="/admin/candidature">Candidature{badge(applicationsPending)}</Link><Link className="text-link" href="/admin/operatori">Operatori ed Esperienze{badge(operatorExperiencePending)}</Link><Link className="text-link" href="/admin/itinerari">Itinerari</Link></nav>}{children}</>}
