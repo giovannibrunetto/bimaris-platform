@@ -66,9 +66,9 @@ export default function Home() {
             <Link className="home-journey-path home-journey-free" href="/mappa">
               <span className="home-journey-number">02</span>
               <div className="home-journey-path-copy">
-                <span className="home-journey-label">Esplora liberamente</span>
-                <h3>Costruisci la tua Messina</h3>
-                <p>Apri la mappa BIMARIS, scegli ciò che ti incuriosisce e crea un percorso personale attraverso il territorio.</p>
+                <span className="home-journey-label">Muoviti liberamente</span>
+                <h3>Esplora la mappa BIMARIS</h3>
+                <p>Scegli ciò che ti incuriosisce e crea il tuo percorso tra luoghi, storie ed esperienze del territorio.</p>
                 <span className="home-journey-action">Apri la mappa <b>→</b></span>
               </div>
             </Link>
