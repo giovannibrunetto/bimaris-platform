@@ -1,0 +1,20 @@
+/* Final mobile vertical balance for the personal access gateway. */
+@media (max-width: 700px) {
+  .personal-access-shell {
+    padding-top: 20px;
+  }
+
+  .personal-access-brand {
+    margin-bottom: 0;
+  }
+
+  .personal-access-content {
+    margin-top: clamp(78px, 11dvh, 118px);
+  }
+}
+
+@media (max-width: 700px) and (max-height: 760px) {
+  .personal-access-content {
+    margin-top: 54px;
+  }
+}
