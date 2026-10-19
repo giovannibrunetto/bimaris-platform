@@ -42,26 +42,34 @@ export default function Home() {
             </Link>
           ))}
         </div>
+      </section>
 
-        <div className="home-discovery-choice">
-          <div className="home-discovery-heading">
-            <div className="kicker">Come vuoi scoprire Messina?</div>
-            <h3>Scegli il tuo modo di esplorare.</h3>
+      <section className="home-journey" aria-labelledby="home-journey-title">
+        <div className="home-journey-inner">
+          <div className="home-journey-intro">
+            <div className="kicker">Il tuo viaggio comincia qui</div>
+            <h2 id="home-journey-title">Entra nel mondo BIMARIS.</h2>
+            <p>Non esiste un solo modo di conoscere Messina. Lasciati accompagnare da un racconto già costruito oppure scegli tu cosa vedere, tappa dopo tappa.</p>
           </div>
-          <div className="home-explore-grid">
-            <Link className="home-explore-card home-itinerary-card" href="/itinerari">
-              <div className="kicker">Lasciati guidare</div>
-              <h4>Itinerari BIMARIS</h4>
-              <p>Percorsi già costruiti, con tappe e tempi suggeriti, per scoprire luoghi, storie e identità del territorio.</p>
-              <strong>Scopri gli itinerari →</strong>
+
+          <div className="home-journey-paths">
+            <Link className="home-journey-path home-journey-guided" href="/itinerari">
+              <span className="home-journey-number">01</span>
+              <div className="home-journey-path-copy">
+                <span className="home-journey-label">Lasciati guidare</span>
+                <h3>Segui un itinerario BIMARIS</h3>
+                <p>Percorsi pensati per farti incontrare monumenti, storie, luoghi e identità in un racconto coerente del territorio.</p>
+                <span className="home-journey-action">Scopri gli itinerari <b>→</b></span>
+              </div>
             </Link>
 
-            <Link className="home-explore-card home-map-card" href="/mappa">
-              <div>
-                <div className="kicker">Esplora liberamente</div>
-                <h4>Mappa BIMARIS</h4>
-                <p>Scegli i punti di interesse che vuoi visitare e costruisci liberamente il tuo percorso sul territorio.</p>
-                <strong>Esplora la mappa →</strong>
+            <Link className="home-journey-path home-journey-free" href="/mappa">
+              <span className="home-journey-number">02</span>
+              <div className="home-journey-path-copy">
+                <span className="home-journey-label">Esplora liberamente</span>
+                <h3>Costruisci la tua Messina</h3>
+                <p>Apri la mappa BIMARIS, scegli ciò che ti incuriosisce e crea un percorso personale attraverso il territorio.</p>
+                <span className="home-journey-action">Apri la mappa <b>→</b></span>
               </div>
             </Link>
           </div>
