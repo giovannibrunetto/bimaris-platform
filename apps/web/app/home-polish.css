@@ -8,6 +8,10 @@
   .brand-hero-copy { margin-top:-64px; padding:25px 30px 28px; }
   .brand-hero-copy p { font-size:17px; line-height:1.55; }
 
+  .brand-hero-compact { padding-bottom:0; }
+  .brand-hero-compact .brand-hero-visual { height:clamp(285px,31vw,390px); }
+  .brand-hero-compact .brand-hero-visual img { object-position:center 48%; }
+
   /* Operators are a distinct call-to-action chapter, not an extension of the footer. */
   .home-operators {
     position:relative;
@@ -36,6 +40,7 @@
 @media (min-width: 761px) and (max-width: 980px) {
   .brand-hero-visual { height:390px; }
   .brand-hero-copy { margin-top:-54px; }
+  .brand-hero-compact .brand-hero-visual { height:300px; }
 }
 
 @media (max-width: 760px) {
@@ -46,6 +51,10 @@
   .brand-hero-copy p { font-size:14px; line-height:1.45; margin-top:8px; }
   .brand-hero-copy .actions { margin-top:15px; }
   .brand-hero-copy .button { min-height:44px; }
+
+  .brand-hero-compact { padding-bottom:0; }
+  .brand-hero-compact .brand-hero-visual { height:clamp(185px,49vw,235px); }
+  .brand-hero-compact .brand-hero-visual img { object-position:center 49%; }
 
   .home-operators {
     position:relative;
@@ -105,5 +114,6 @@
 
 @media (max-width:390px) {
   .brand-hero-visual { height:215px; }
+  .brand-hero-compact .brand-hero-visual { height:180px; }
   .home-operators::before { left:16px; }
 }
