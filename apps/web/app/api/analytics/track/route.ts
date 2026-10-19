@@ -9,10 +9,15 @@ const allowedEvents = new Set([
   "booking_click", "share_click", "operator_application_started", "operator_application_submitted",
 ]);
 
+// BIMARIS è ancora in fase di sviluppo. Il tracciamento resta predisposto ma non
+// registra eventi finché non viene esplicitamente attivato al lancio pubblico.
+const analyticsEnabled = process.env.BIMARIS_ANALYTICS_ENABLED === "true";
+
 export async function POST(request: NextRequest) {
   let body: any;
   try { body = await request.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
   if (!body?.event || !allowedEvents.has(body.event)) return NextResponse.json({ ok: false, error: "invalid_event" }, { status: 400 });
+  if (!analyticsEnabled) return NextResponse.json({ ok: true, persisted: false, analytics: "paused" });
   const supabase = createServiceClient();
   if (!supabase) return NextResponse.json({ ok: true, persisted: false });
   const userClient = await createUserServerClient();
