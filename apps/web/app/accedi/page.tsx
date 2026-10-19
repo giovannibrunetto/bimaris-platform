@@ -1,46 +1,15 @@
 "use client";
-
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-
-export default function AccediPage() {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function sendMagicLink(event: FormEvent) {
-    event.preventDefault();
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) { setMessage("Accesso non disponibile in questo momento."); return; }
-    setLoading(true); setMessage("");
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
-    setLoading(false);
-    setMessage(error ? "Non è stato possibile inviare il link. Riprova." : "Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
-  }
-
-  return (
-    <div className="container" style={{ padding: "56px 20px 80px", maxWidth: 760 }}>
-      <div className="kicker">Il tuo BIMARIS</div>
-      <h1 style={{ marginBottom: 12 }}>Accedi e costruisci la tua Messina</h1>
-      <p style={{ maxWidth: 620, marginBottom: 30 }}>Salva luoghi ed esperienze e, nel tempo, ricevi suggerimenti più vicini ai tuoi interessi.</p>
-
-      <div className="card" style={{ padding: 26, display: "grid", gap: 18 }}>
-        <form onSubmit={sendMagicLink} style={{ display: "grid", gap: 12 }}>
-          <label htmlFor="email"><strong>Email</strong></label>
-          <input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="nome@email.it" style={{ minHeight: 48, borderRadius: 12, border: "1px solid rgba(0,0,0,.18)", padding: "0 14px", font: "inherit" }} />
-          <button className="button" type="submit" disabled={loading}>{loading ? "Invio…" : "Ricevi il link di accesso"}</button>
-        </form>
-        {message && <p role="status" style={{ margin: 0 }}>{message}</p>}
-        <p style={{ margin: 0, fontSize: 14, opacity: .72 }}>Accedendo accetti le condizioni d'uso e confermi di aver letto l'informativa privacy. L'iscrizione alla newsletter resta separata e facoltativa.</p>
-      </div>
-
-      <div className="card" style={{ padding: 24, marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
-        <div><div className="kicker">Sei un operatore BIMARIS?</div><h2 style={{ margin: "6px 0 5px", fontSize: 24 }}>Area Operatore</h2><p style={{ margin: 0, opacity: .76 }}>Accedi al pannello della tua attività per gestire profilo ed esperienze.</p></div>
-        <Link className="button ghost" href="/area-operatore">Accedi come operatore →</Link>
-      </div>
-
-      <p style={{ marginTop: 22 }}><Link href="/">← Torna a BIMARIS</Link></p>
-    </div>
-  );
+export default function AccediPage(){
+ const [email,setEmail]=useState("");const [message,setMessage]=useState("");const [loading,setLoading]=useState(false);const [showLogin,setShowLogin]=useState(false);
+ async function sendMagicLink(event:FormEvent){event.preventDefault();const supabase=createBrowserSupabaseClient();if(!supabase){setMessage("Accesso non disponibile in questo momento.");return;}setLoading(true);setMessage("");const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:`${window.location.origin}/auth/callback`}});setLoading(false);setMessage(error?"Non è stato possibile inviare il link. Riprova.":"Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");}
+ const card={padding:28,display:"flex",flexDirection:"column" as const,gap:16,minHeight:310};
+ return <div className="container" style={{padding:"56px 20px 80px",maxWidth:1120}}><div className="kicker">Entra in BIMARIS</div><h1 style={{marginBottom:12}}>Come vuoi usare BIMARIS?</h1><p style={{maxWidth:720,marginBottom:32}}>Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati.</p>
+ <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:22,alignItems:"stretch"}}>
+  <section className="card" style={card}><div><div className="kicker">Per te</div><h2 style={{fontSize:30,margin:"7px 0 10px"}}>Utente</h2><p style={{margin:0,opacity:.78}}>Salva luoghi ed esperienze, costruisci il tuo BIMARIS e ricevi suggerimenti più vicini ai tuoi interessi.</p></div><div style={{marginTop:"auto",display:"grid",gap:10}}><button className="button" type="button" onClick={()=>setShowLogin(v=>!v)}>Accedi come utente</button><button className="button ghost" type="button" onClick={()=>setShowLogin(true)}>Registrati</button></div>
+  {showLogin&&<form onSubmit={sendMagicLink} style={{display:"grid",gap:10,paddingTop:8,borderTop:"1px solid rgba(0,0,0,.10)"}}><label htmlFor="email"><strong>Email</strong></label><input id="email" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.it" style={{minHeight:48,borderRadius:12,border:"1px solid rgba(0,0,0,.18)",padding:"0 14px",font:"inherit"}}/><button className="button" type="submit" disabled={loading}>{loading?"Invio…":"Ricevi il link di accesso"}</button>{message&&<p role="status" style={{margin:0}}>{message}</p>}<p style={{margin:0,fontSize:13,opacity:.68}}>Se è il tuo primo accesso, BIMARIS creerà il tuo account tramite il link ricevuto via email.</p></form>}</section>
+  <section className="card" style={card}><div><div className="kicker">Per le attività del territorio</div><h2 style={{fontSize:30,margin:"7px 0 10px"}}>Operatore</h2><p style={{margin:0,opacity:.78}}>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div><div style={{marginTop:"auto",display:"grid",gap:10}}><Link className="button" href="/area-operatore" style={{textAlign:"center"}}>Accedi come operatore</Link><Link className="button ghost" href="/operatori/candidatura" style={{textAlign:"center"}}>Registrati e proponi la tua esperienza</Link></div><p style={{margin:0,fontSize:13,opacity:.68}}>Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p></section>
+ </div><p style={{marginTop:24}}><Link href="/">← Torna a BIMARIS</Link></p></div>;
 }
