@@ -63,11 +63,31 @@ export default async function ProfiloPage({ searchParams }: { searchParams: Prom
     .filter((item,index,array) => index === array.findIndex(other => other.href === item.href))
     .slice(0,6);
 
-  return <div className="container" style={{ padding: "48px 20px 80px" }}>
+  return <div className="container profile-page" style={{ padding: "48px 20px 80px" }}>
+    <style>{`
+      .profile-page .profile-recommendation-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(260px,.9fr); gap:36px; align-items:end; }
+      .profile-page .profile-recommendation-head h2 { margin-bottom:0; }
+      .profile-page .profile-recommendation-head p { margin:0; max-width:620px; line-height:1.65; }
+      .profile-page .profile-recommendation-grid { margin-top:28px; }
+      .profile-page .profile-recommendation-card { min-width:0; overflow:hidden; }
+      .profile-page .profile-recommendation-card h3,
+      .profile-page .profile-recommendation-card p { overflow-wrap:anywhere; }
+      @media (max-width: 700px) {
+        .profile-page { padding-left:16px !important; padding-right:16px !important; }
+        .profile-page .profile-recommendations { padding:34px 18px !important; margin-left:0; margin-right:0; }
+        .profile-page .profile-recommendation-head { grid-template-columns:1fr; gap:14px; align-items:start; }
+        .profile-page .profile-recommendation-head h2 { font-size:clamp(2.15rem,12vw,3.35rem); line-height:.98; max-width:100%; }
+        .profile-page .profile-recommendation-head p { width:100%; font-size:.98rem; }
+        .profile-page .profile-recommendation-grid { grid-template-columns:1fr !important; gap:14px; margin-top:24px; }
+        .profile-page .profile-recommendation-card { padding:18px !important; border-radius:18px; }
+        .profile-page .profile-recommendation-card h3 { font-size:1.45rem; line-height:1.12; margin-top:6px; }
+        .profile-page .profile-recommendation-card p { line-height:1.55; }
+      }
+    `}</style>
     <div className="kicker">Il tuo BIMARIS</div><h1>{profile?.display_name ? `Ciao, ${profile.display_name}` : "Il tuo profilo"}</h1><p style={{ maxWidth: 720 }}>Qui raccogli ciò che vuoi scoprire e ciò che hai salvato. I suggerimenti BIMARIS diventano progressivamente più pertinenti in base alle preferenze che hai scelto e a come utilizzi la piattaforma.</p>
     {onboarding === "completato" ? <div className="detail-panel" style={{ marginTop: 22, padding: 16 }}>Profilo personalizzato. BIMARIS userà queste preferenze per rendere progressivamente più pertinenti i suggerimenti.</div> : null}
     <section className="section" style={{ paddingTop: 28 }}><div className="section-head"><div><div className="kicker">Preferenze</div><h2>I tuoi interessi</h2></div><Link className="text-link" href="/profilo/onboarding">{profile?.onboarding_completed ? "Modifica preferenze →" : "Personalizza BIMARIS →"}</Link></div>{ranked.length ? <div style={{ display:"flex",flexWrap:"wrap",gap:10 }}>{ranked.map(item => <span className="button" key={item.interest_key} style={{cursor:"default"}}>{labels[item.interest_key] ?? item.interest_key}</span>)}</div> : <div className="detail-panel"><h3>Rendiamo BIMARIS più vicino ai tuoi interessi</h3><p>Rispondi a tre domande rapide e scegli ciò che vuoi scoprire.</p><Link className="button" href="/profilo/onboarding">Inizia</Link></div>}</section>
-    <section className="section sand"><div className="section-head"><div><div className="kicker">Per te</div><h2>Scelti in base ai tuoi interessi</h2></div><p>Luoghi, storie, borghi, sapori ed esperienze ordinati in base alle tue preferenze e, progressivamente, a ciò che esplori su BIMARIS.</p></div>{recommendations.length ? <div className="card-grid">{recommendations.map(item => <article className="card" key={item.key}><div className="kicker">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><Link className="text-link" href={item.href}>Scopri →</Link></article>)}</div> : <div className="detail-panel"><h3>I suggerimenti si costruiscono con te</h3><p>Completa le preferenze e continua a esplorare BIMARIS: qui compariranno contenuti specifici più vicini ai tuoi interessi.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
+    <section className="section sand profile-recommendations"><div className="section-head profile-recommendation-head"><div><div className="kicker">Per te</div><h2>Scelti in base ai tuoi interessi</h2></div><p>Luoghi, storie, borghi, sapori ed esperienze ordinati in base alle tue preferenze e, progressivamente, a ciò che esplori su BIMARIS.</p></div>{recommendations.length ? <div className="card-grid profile-recommendation-grid">{recommendations.map(item => <article className="card profile-recommendation-card" key={item.key}><div className="kicker">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><Link className="text-link" href={item.href}>Scopri →</Link></article>)}</div> : <div className="detail-panel"><h3>I suggerimenti si costruiscono con te</h3><p>Completa le preferenze e continua a esplorare BIMARIS: qui compariranno contenuti specifici più vicini ai tuoi interessi.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
     <section className="section"><div className="section-head"><div><div className="kicker">Comunicazioni</div><h2>Newsletter</h2></div></div><p>{newsletter?.subscribed ? (newsletter.personalized ? "Newsletter attiva con contenuti personalizzati in base ai tuoi interessi." : "Newsletter BIMARIS attiva.") : "Newsletter non attiva. La scelta resta facoltativa e separata dal tuo account."}</p><Link className="text-link" href="/profilo/onboarding">Gestisci preferenze →</Link></section>
     <section className="section sand"><div className="section-head"><div><div className="kicker">Salvati</div><h2>La tua raccolta</h2></div></div>{saved?.length ? <p>Hai {saved.length} elementi salvati.</p> : <p>Non hai ancora salvato nulla. Esplora la mappa, i luoghi e le esperienze e costruisci la tua raccolta.</p>}<Link className="button" href="/mappa">Esplora la mappa</Link></section>
   </div>;
