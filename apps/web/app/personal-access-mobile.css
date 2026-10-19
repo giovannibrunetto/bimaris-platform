@@ -6,6 +6,9 @@
 
   .personal-access-brand {
     margin-bottom: 0;
+    gap: 10px;
+    transform: scale(.72);
+    transform-origin: top left;
   }
 
   .personal-access-content {
