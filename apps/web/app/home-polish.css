@@ -70,6 +70,39 @@
   .home-operator-copy p { color:#51473d; }
 }
 
+/* Keep the footer as a compact closing band rather than another full page section. */
+.footer {
+  padding:22px clamp(22px,5vw,64px) 18px;
+  gap:14px;
+}
+.footer-brand {
+  width:172px;
+  height:54px;
+}
+.footer-links {
+  gap:8px 18px;
+  line-height:1.25;
+}
+.footer .muted {
+  margin:2px 0 0;
+  font-size:12px;
+}
+
+@media (max-width:760px) {
+  .footer {
+    padding:18px 18px 16px;
+    gap:12px;
+  }
+  .footer-brand {
+    width:158px;
+    height:50px;
+  }
+  .footer-links {
+    gap:8px 14px;
+    font-size:12px;
+  }
+}
+
 @media (max-width:390px) {
   .brand-hero-visual { height:215px; }
   .home-operators::before { left:16px; }
