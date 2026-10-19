@@ -48,7 +48,7 @@ export default function Home() {
         <div className="home-journey-inner">
           <div className="home-journey-intro">
             <div className="kicker">Il tuo viaggio comincia qui</div>
-            <h2 id="home-journey-title">Entra nel mondo BIMARIS.</h2>
+            <h2 id="home-journey-title">Scopri il mondo BIMARIS.</h2>
             <p>Non esiste un solo modo di conoscere Messina. Lasciati accompagnare da un racconto già costruito oppure scegli tu cosa vedere, tappa dopo tappa.</p>
           </div>
 
@@ -80,11 +80,11 @@ export default function Home() {
         <div className="home-operator-inner">
           <div>
             <div className="kicker">Sei un operatore del territorio?</div>
-            <h2>Entra nella rete BIMARIS.</h2>
+            <h2>Costruiamo insieme il racconto di Messina.</h2>
           </div>
           <div className="home-operator-copy">
-            <p>Stiamo selezionando realtà, produttori ed esperienze che raccontano Messina attraverso qualità, autenticità e identità locale.</p>
-            <Link className="button" href="/operatori/candidatura">Presenta la tua candidatura</Link>
+            <p>BIMARIS vuole creare una rete di operatori, produttori e realtà del territorio che condividono qualità, autenticità e identità locale.</p>
+            <Link className="button" href="/operatori/candidatura">Scopri come partecipare</Link>
           </div>
         </div>
       </section>
