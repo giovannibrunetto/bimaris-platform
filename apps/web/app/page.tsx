@@ -43,22 +43,28 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="home-explore-grid">
-          <Link className="home-explore-card home-itinerary-card" href="/itinerari">
-            <div className="kicker">Vuoi lasciarti guidare?</div>
-            <h3>Scegli un itinerario BIMARIS</h3>
-            <p>Segui percorsi già costruiti, con tappe e tempi suggeriti, per scoprire luoghi, storie e identità del territorio.</p>
-            <strong>Scopri gli itinerari →</strong>
-          </Link>
+        <div className="home-discovery-choice">
+          <div className="home-discovery-heading">
+            <div className="kicker">Come vuoi scoprire Messina?</div>
+            <h3>Scegli il tuo modo di esplorare.</h3>
+          </div>
+          <div className="home-explore-grid">
+            <Link className="home-explore-card home-itinerary-card" href="/itinerari">
+              <div className="kicker">Lasciati guidare</div>
+              <h4>Itinerari BIMARIS</h4>
+              <p>Percorsi già costruiti, con tappe e tempi suggeriti, per scoprire luoghi, storie e identità del territorio.</p>
+              <strong>Scopri gli itinerari →</strong>
+            </Link>
 
-          <Link className="home-explore-card home-map-card" href="/mappa">
-            <div>
-              <div className="kicker">Vuoi esplorare liberamente?</div>
-              <h3>Esplora la mappa BIMARIS</h3>
-              <p>Scopri i punti di interesse, scegli quelli che vuoi visitare e costruisci il tuo percorso sul territorio.</p>
-              <strong>Esplora la mappa →</strong>
-            </div>
-          </Link>
+            <Link className="home-explore-card home-map-card" href="/mappa">
+              <div>
+                <div className="kicker">Esplora liberamente</div>
+                <h4>Mappa BIMARIS</h4>
+                <p>Scegli i punti di interesse che vuoi visitare e costruisci liberamente il tuo percorso sul territorio.</p>
+                <strong>Esplora la mappa →</strong>
+              </div>
+            </Link>
+          </div>
         </div>
       </section>
 
