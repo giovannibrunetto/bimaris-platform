@@ -3,6 +3,7 @@ import "./globals.css";
 import "./brand.css";
 import "./map-mobile.css";
 import "./personal-access-mobile.css";
+import "./home-mobile.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
