@@ -113,14 +113,30 @@ body.personal-access-active main { min-height:100dvh; }
 
 @media (max-width:700px){
  body.personal-access-active { overflow:auto; }
- .personal-access-shell { padding:22px 18px max(24px,env(safe-area-inset-bottom)); }
- .personal-access-brand { transform:scale(.92); transform-origin:left top; }
- .personal-access-content { margin:auto 0; padding:28px 0 18px; }
- .personal-access-content h1 { font-size:clamp(42px,12vw,58px); }
- .personal-access-intro { font-size:15px; line-height:1.48; margin-bottom:20px; }
- .personal-access-panel { padding:17px; border-radius:20px; }
- .personal-google,.personal-email-button { min-height:50px; }
- .personal-divider { margin:14px 0; }
- .personal-access-back { margin-top:16px; }
- .personal-access-bg::after { width:92vw; right:-40vw; bottom:-8vw; }
+ .personal-access { min-height:100dvh; }
+ .personal-access-shell { min-height:100dvh; padding:20px 18px max(22px,env(safe-area-inset-bottom)); display:block; }
+ .personal-access-brand { transform:none; margin-bottom:clamp(34px,7dvh,64px); }
+ .personal-access-mark { width:46px; height:46px; font-size:25px; }
+ .personal-access-brand strong { font-size:17px; }
+ .personal-access-brand span { font-size:9px; }
+ .personal-access-content { margin:0; padding:0; width:100%; }
+ .personal-access-content h1 { margin:8px 0 13px; font-size:clamp(40px,11.3vw,54px); line-height:1; }
+ .personal-access-intro { font-size:14px; line-height:1.45; margin-bottom:18px; max-width:96%; }
+ .personal-access-panel { padding:16px; border-radius:20px; }
+ .personal-google,.personal-email-button { min-height:48px; }
+ .personal-divider { margin:13px 0; }
+ .personal-email-form { gap:7px; }
+ .personal-email-form input { min-height:46px; }
+ .personal-access-note { margin-top:11px; }
+ .personal-access-back { margin:15px 0 0; padding-bottom:10px; }
+ .personal-access-bg::after { width:88vw; right:-38vw; bottom:-18vw; }
+}
+
+@media (max-width:700px) and (max-height:760px){
+ .personal-access-brand { margin-bottom:24px; }
+ .personal-access-content h1 { font-size:39px; }
+ .personal-access-intro { margin-bottom:14px; }
+ .personal-access-panel { padding:14px; }
+ .personal-google,.personal-email-button { min-height:44px; }
+ .personal-email-form input { min-height:43px; }
 }
