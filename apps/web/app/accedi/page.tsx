@@ -36,7 +36,7 @@ export default function AccediPage(){
   event.preventDefault();const supabase=createBrowserSupabaseClient();
   if(!supabase){setOperatorMessage("Accesso non disponibile in questo momento.");return;}
   setOperatorLoading(true);setOperatorMessage("");
-  const callback=`${window.location.origin}/auth/callback?next=${encodeURIComponent("/area-operatore")}`;
+  const callback=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
   const {error}=await supabase.auth.signInWithOtp({email:operatorEmail,options:{emailRedirectTo:callback,shouldCreateUser:false}});
   setOperatorLoading(false);
   setOperatorMessage(error?"Non risulta un accesso operatore attivo per questa email. Verifica l'indirizzo oppure contatta BIMARIS.":"Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
