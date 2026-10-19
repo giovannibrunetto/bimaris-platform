@@ -63,10 +63,6 @@ export default function ExperienceManager({operatorId,experiences}:{operatorId:s
   const {error:clearError}=await supabase.from("experience_revision_media").update({is_cover:false}).eq("revision_id",id);
   if(clearError)return clearError.message;
   for(let i=0;i<persisted.length;i++){
-   const {error}=await supabase.from("experience_revision_media").update({sort_order:i+10}).eq("id",persisted[i].id).eq("revision_id",id);
-   if(error)return error.message;
-  }
-  for(let i=0;i<persisted.length;i++){
    const {error}=await supabase.from("experience_revision_media").update({sort_order:i,alt_text:`${draft.name} - foto ${i+1}`}).eq("id",persisted[i].id).eq("revision_id",id);
    if(error)return error.message;
   }
