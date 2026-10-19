@@ -5,7 +5,13 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
 
 function safePath(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
+  if(!value)return null;
+  if(value.startsWith("/")&&!value.startsWith("//"))return value;
+  try{
+    const url=new URL(value);
+    if(url.hostname==="bimarisnet.it"||url.hostname==="www.bimarisnet.it")return `${url.pathname}${url.search}${url.hash}`;
+  }catch{}
+  return null;
 }
 function esc(value:string){return value.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c));}
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
