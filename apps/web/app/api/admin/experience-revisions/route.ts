@@ -20,7 +20,7 @@ export async function POST(request:NextRequest){
   if(readError||!revision||revision.status!=="pending")return back(request,"invalid-review-state");
   const operator=revision.operator as unknown as {name:string|null;email:string|null;published:boolean;selection_status:string}|null;
   const experience=revision.experience as unknown as {name:string;published:boolean;review_status:string}|null;
-  if(!experience||!experience.published||experience.review_status!=="approved"||!operator?.published||operator.selection_status!=="selected")return back(request,"invalid-source-state");
+  if(!experience||experience.review_status!=="approved"||!operator?.published||operator.selection_status!=="selected")return back(request,"invalid-source-state");
   const general=text(form.get("review_notes"),2000); const sections=reviewSections(form); const summary=reviewSummary(sections,general);
   if(action==="request-changes"){
    if(!summary)return back(request,"review-note-required");
