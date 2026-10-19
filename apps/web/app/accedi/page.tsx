@@ -12,17 +12,9 @@ export default function AccediPage() {
   async function sendMagicLink(event: FormEvent) {
     event.preventDefault();
     const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      setMessage("Accesso non disponibile in questo momento.");
-      return;
-    }
-
-    setLoading(true);
-    setMessage("");
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    });
+    if (!supabase) { setMessage("Accesso non disponibile in questo momento."); return; }
+    setLoading(true); setMessage("");
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
     setLoading(false);
     setMessage(error ? "Non è stato possibile inviare il link. Riprova." : "Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
   }
@@ -41,6 +33,11 @@ export default function AccediPage() {
         </form>
         {message && <p role="status" style={{ margin: 0 }}>{message}</p>}
         <p style={{ margin: 0, fontSize: 14, opacity: .72 }}>Accedendo accetti le condizioni d'uso e confermi di aver letto l'informativa privacy. L'iscrizione alla newsletter resta separata e facoltativa.</p>
+      </div>
+
+      <div className="card" style={{ padding: 24, marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
+        <div><div className="kicker">Sei un operatore BIMARIS?</div><h2 style={{ margin: "6px 0 5px", fontSize: 24 }}>Area Operatore</h2><p style={{ margin: 0, opacity: .76 }}>Accedi al pannello della tua attività per gestire profilo ed esperienze.</p></div>
+        <Link className="button ghost" href="/area-operatore">Accedi come operatore →</Link>
       </div>
 
       <p style={{ marginTop: 22 }}><Link href="/">← Torna a BIMARIS</Link></p>
