@@ -1,15 +1,18 @@
 "use client";
 import Link from "next/link";
-import { FormEvent,useState } from "react";
+import { FormEvent,useEffect,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-
-const inputStyle={minHeight:48,borderRadius:12,border:"1px solid rgba(0,0,0,.18)",padding:"0 14px",font:"inherit"};
 
 export default function AccessoUtentePage(){
  const [email,setEmail]=useState("");
  const [message,setMessage]=useState("");
  const [loading,setLoading]=useState(false);
  const [googleLoading,setGoogleLoading]=useState(false);
+
+ useEffect(()=>{
+  document.body.classList.add("personal-access-active");
+  return()=>document.body.classList.remove("personal-access-active");
+ },[]);
 
  async function signInWithGoogle(){
   const supabase=createBrowserSupabaseClient();
@@ -30,21 +33,36 @@ export default function AccessoUtentePage(){
   setMessage(error?"Non è stato possibile inviare il link. Riprova.":"Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
  }
 
- return <div className="container" style={{padding:"56px 20px 80px",maxWidth:720}}>
-  <div className="kicker">Accesso personale</div>
-  <h1 style={{marginBottom:12}}>Entra nel tuo BIMARIS</h1>
-  <p style={{maxWidth:620,marginBottom:28}}>Accedi oppure crea gratuitamente il tuo account personale. Potrai salvare luoghi ed esperienze e personalizzare BIMARIS in base ai tuoi interessi.</p>
-  <section className="card" style={{padding:28,display:"grid",gap:16}}>
-   <button className="button" type="button" onClick={signInWithGoogle} disabled={googleLoading} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><span aria-hidden="true" style={{width:20,height:20,borderRadius:"50%",background:"#fff",color:"#4285f4",display:"inline-flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontFamily:"Arial,sans-serif"}}>G</span>{googleLoading?"Connessione a Google…":"Continua con Google"}</button>
-   <div style={{textAlign:"center",opacity:.6,fontSize:13}}>oppure</div>
-   <form onSubmit={sendMagicLink} style={{display:"grid",gap:10}}>
-    <label htmlFor="user-email"><strong>Email</strong></label>
-    <input id="user-email" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.it" style={inputStyle}/>
-    <button className="button" type="submit" disabled={loading}>{loading?"Invio…":"Ricevi il link di accesso"}</button>
-    {message&&<p role="status" style={{margin:0}}>{message}</p>}
-   </form>
-   <p style={{margin:0,fontSize:13,opacity:.68}}>Se è il tuo primo accesso, BIMARIS creerà automaticamente il tuo account.</p>
+ return <main className="personal-access">
+  <div className="personal-access-bg" aria-hidden="true"/>
+  <div className="personal-access-shade" aria-hidden="true"/>
+  <section className="personal-access-shell">
+   <div className="personal-access-brand">
+    <div className="personal-access-mark">B</div>
+    <div><strong>BIMARIS</strong><span>Messina da vivere</span></div>
+   </div>
+
+   <div className="personal-access-content">
+    <div className="kicker">Il tuo BIMARIS</div>
+    <h1>Messina,<br/>come vuoi viverla tu.</h1>
+    <p className="personal-access-intro">Entra nel tuo spazio personale per salvare luoghi ed esperienze e lasciare che BIMARIS impari ciò che ti interessa.</p>
+
+    <div className="personal-access-panel">
+     <button className="personal-google" type="button" onClick={signInWithGoogle} disabled={googleLoading}>
+      <span aria-hidden="true" className="google-mark">G</span>
+      {googleLoading?"Connessione a Google…":"Continua con Google"}
+     </button>
+     <div className="personal-divider"><span>oppure con email</span></div>
+     <form onSubmit={sendMagicLink} className="personal-email-form">
+      <label htmlFor="user-email">Email</label>
+      <input id="user-email" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.it"/>
+      <button className="personal-email-button" type="submit" disabled={loading}>{loading?"Invio…":"Ricevi il link di accesso"}</button>
+     </form>
+     {message&&<p role="status" className="personal-access-message">{message}</p>}
+     <p className="personal-access-note">Al primo accesso il tuo account personale viene creato automaticamente.</p>
+    </div>
+    <Link className="personal-access-back" href="/accedi">← Scegli un altro tipo di accesso</Link>
+   </div>
   </section>
-  <p style={{marginTop:24}}><Link href="/accedi">← Scegli un altro tipo di accesso</Link></p>
- </div>;
+ </main>;
 }
