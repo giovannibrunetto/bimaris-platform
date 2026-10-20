@@ -12,7 +12,7 @@ export const revalidate = 0;
 function externalUrl(value?: string) { if (!value) return undefined; return /^https?:\/\//i.test(value) ? value : `https://${value}`; }
 function whatsappUrl(value?: string, message?: string) { if (!value) return undefined; const digits=value.replace(/\D/g,""); if(!digits)return undefined; return `https://wa.me/${digits}${message?`?text=${encodeURIComponent(message)}`:""}`; }
 
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const operator=await getPublishedOperatorBySlug(slug);if(!operator)return{};return{title:`${operator.name} | Operatori BIMARIS`,description:operator.description,openGraph:operator.imageUrl?{images:[operator.imageUrl]}:undefined};}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const [operator,experiences]=await Promise.all([getPublishedOperatorBySlug(slug),getPublishedExperiencesByOperatorSlug(slug)]);if(!operator)return{};const imageUrl=operator.imageUrl??experiences.find(e=>e.imageUrl)?.imageUrl;return{title:`${operator.name} | Operatori BIMARIS`,description:operator.description,openGraph:imageUrl?{images:[imageUrl]}:undefined};}
 
 export default async function OperatorDetailPage({params}:{params:Promise<{slug:string}>}){
  const {slug}=await params; const [operator,experiences]=await Promise.all([getPublishedOperatorBySlug(slug),getPublishedExperiencesByOperatorSlug(slug)]); if(!operator)notFound();
@@ -20,11 +20,12 @@ export default async function OperatorDetailPage({params}:{params:Promise<{slug:
  const website=externalUrl(operator.website); const instagram=externalUrl(operator.instagram); const whatsapp=whatsappUrl(operator.whatsapp,`Buongiorno, vi contatto tramite BIMARIS. Ho visto la vostra realtà sulla piattaforma e vorrei ricevere maggiori informazioni.`); const directions=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(operator.googleMapsQuery)}`;
  const attribution={operatorId:operator.slug,operatorName:operator.name,sourceType:"operator",sourceId:operator.slug}; const analyticsBase={operator_id:operator.slug,operator_name:operator.name,source_type:"operator",source_id:operator.slug};
  const cardStyle={border:"1px solid rgba(202,168,106,.25)",borderRadius:22,background:"#fff",boxShadow:"0 16px 45px rgba(5,25,38,.06)"} as const;
+ const experienceCover=experiences.find(experience=>experience.imageUrl); const heroImage=operator.imageUrl??experienceCover?.imageUrl; const heroAlt=operator.imageAlt??experienceCover?.imageAlt??operator.name;
  return <>
-  <section style={{position:"relative",overflow:"hidden",minHeight:"clamp(430px,62vw,650px)",display:"flex",alignItems:"flex-end",background:"#061624",color:"#fff"}}>
-   {operator.imageUrl&&<img src={operator.imageUrl} alt={operator.imageAlt??operator.name} decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:.72}}/>}
+  <section style={{position:"relative",overflow:"hidden",minHeight:heroImage?"clamp(430px,62vw,650px)":"clamp(300px,42vw,430px)",display:"flex",alignItems:"flex-end",background:"#061624",color:"#fff"}}>
+   {heroImage&&<img src={heroImage} alt={heroAlt} decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:.72}}/>}
    <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(3,12,18,.12) 5%,rgba(3,12,18,.36) 48%,rgba(3,12,18,.92) 100%)"}}/>
-   <div className="container" style={{position:"relative",zIndex:1,width:"100%",maxWidth:1120,padding:"clamp(90px,14vw,150px) 20px clamp(46px,7vw,76px)"}}>
+   <div className="container" style={{position:"relative",zIndex:1,width:"100%",maxWidth:1120,padding:"clamp(70px,12vw,130px) 20px clamp(42px,7vw,70px)"}}>
     <div className="kicker" style={{color:"#e8c57f"}}>{operator.category??"Operatore selezionato"} · BIMARIS</div>
     <h1 style={{fontFamily:"Georgia,serif",fontSize:"clamp(46px,8vw,82px)",lineHeight:.98,margin:"12px 0 18px",maxWidth:850,color:"#fff"}}>{operator.name}</h1>
     <p style={{maxWidth:720,fontSize:"clamp(17px,2.2vw,21px)",lineHeight:1.65,color:"rgba(255,255,255,.9)",margin:0}}>{operator.description}</p>
