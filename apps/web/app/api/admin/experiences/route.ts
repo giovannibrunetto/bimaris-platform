@@ -35,13 +35,15 @@ export async function POST(request:NextRequest){
   if(action==="approve"||action==="request-changes"){
    const generalNote=text(form.get("review_notes"),2000),sections=reviewSections(form),reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
    if(action==="request-changes"&&(Object.keys(sections).length===0||!reviewNotes))return back(request,"review-target-required");
-   const {data:experience,error:readError}=await supabase.from("experiences").select("name,excerpt,description,duration_minutes,price_from,bookable,meeting_point,review_status,review_snapshot,draft_step,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
+   const {data:experience,error:readError}=await supabase.from("experiences").select("name,excerpt,description,duration_minutes,price_from,bookable,meeting_point,review_status,review_snapshot,draft_step,operator_id,operator:operators(id,name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
    const allowed=action==="request-changes"?["pending","rejected"]:["pending"];
    if(readError||!experience||!allowed.includes(experience.review_status))return back(request,"invalid-review-state");
-   const operator=experience.operator as unknown as {name:string|null;published:boolean;selection_status:string;email:string|null}|null;
+   const operator=experience.operator as unknown as {id:string;name:string|null;published:boolean;selection_status:string;email:string|null}|null;
    if(action==="approve"){
-    if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");
-    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:new Date().toISOString(),published:true,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
+    if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
+    const now=new Date().toISOString();
+    if(!operator.published){const {error:operatorPublishError}=await supabase.from("operators").update({published:true,updated_at:now}).eq("id",operator.id).eq("selection_status","selected");if(operatorPublishError)throw operatorPublishError;}
+    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:true,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});return back(request,"approved");
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
