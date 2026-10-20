@@ -10,7 +10,7 @@ type Guide={label:string;note:string};
 function guidesForStep(experience:Experience,step:number):Guide[]{
  const sections=experience.review_sections??{};
  const guides:Guide[]=[];
- if(step===0&&sections.basics?.trim())guides.push({label:"Informazioni principali",note:sections.basics.trim()});
+ if(step===0&&sections.basics?.trim())guides.push({label:"Testo breve / titolo",note:sections.basics.trim()});
  if(step===1&&sections.description?.trim())guides.push({label:"Descrizione",note:sections.description.trim()});
  if(step===2&&sections.details?.trim())guides.push({label:"Durata, prezzo e dettagli",note:sections.details.trim()});
  if(step===2&&sections.location?.trim())guides.push({label:"Luogo e punto di incontro",note:sections.location.trim()});
@@ -54,5 +54,5 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
  if(!target||!experience)return null;
  const guides=guidesForStep(experience,step);
  if(!guides.length)return null;
- return createPortal(<aside aria-label="Correzioni richieste da BIMARIS" style={{margin:"0 0 24px",padding:"18px 20px",border:"1px solid rgba(153,91,42,.3)",borderRadius:18,background:"rgba(153,91,42,.08)"}}><div className="eyebrow">Revisione BIMARIS · Da correggere</div><h4 style={{margin:"6px 0 10px",fontSize:"1.1rem"}}>Prima di continuare, aggiorna questa sezione</h4><div style={{display:"grid",gap:12}}>{guides.map(guide=><div key={guide.label}><strong>{guide.label}</strong><p style={{margin:"5px 0 0",whiteSpace:"pre-wrap",lineHeight:1.55}}>{guide.note}</p></div>)}</div></aside>,target);
+ return createPortal(<aside aria-label="Correzioni richieste da BIMARIS" style={{margin:"0 0 20px",padding:"14px 16px",border:"1px solid rgba(153,91,42,.3)",borderRadius:16,background:"rgba(153,91,42,.08)"}}><div className="eyebrow">Correzione richiesta da BIMARIS</div><div style={{display:"grid",gap:10,marginTop:8}}>{guides.map(guide=><div key={guide.label}><strong>{guide.label}</strong><p style={{margin:"4px 0 0",whiteSpace:"pre-wrap",lineHeight:1.45}}>{guide.note}</p></div>)}</div></aside>,target);
 }
