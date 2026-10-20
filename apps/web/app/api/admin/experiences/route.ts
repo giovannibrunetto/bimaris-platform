@@ -12,7 +12,8 @@ const reviewSectionLabels:Record<(typeof reviewSectionFields)[number],string>={b
 const reviewSectionSteps:Record<(typeof reviewSectionFields)[number],number>={basics:0,description:1,details:2,media:3,location:2};
 function reviewSections(form:FormData){return Object.fromEntries(reviewSectionFields.map(key=>[key,text(form.get(`review_${key}`),1000)]).filter(([,value])=>Boolean(value)));}
 function reviewSummary(sections:Record<string,string>,general:string){const lines=Object.entries(sections).map(([key,value])=>`${reviewSectionLabels[key as keyof typeof reviewSectionLabels]}: ${value}`);if(general)lines.push(`Nota generale: ${general}`);return lines.join("\n\n");}
-function requestedStep(sections:Record<string,string>,fallback:number){const key=reviewSectionFields.find(section=>Boolean(sections[section]));return key?reviewSectionSteps[key]:fallback;}
+function inferredSection(note:string):(typeof reviewSectionFields)[number]|null{const n=note.toLocaleLowerCase("it");if(/foto|fotograf|immagin|copertina|galleria/.test(n))return "media";if(/descrizion|racconto|testo lungo/.test(n))return "description";if(/durata|prezzo|costo|dettagl/.test(n))return "details";if(/luogo|incontro|indirizzo|mappa|posizion/.test(n))return "location";if(/testo breve|titolo|nome|informazion/.test(n))return "basics";return null;}
+function requestedStep(sections:Record<string,string>,note:string,fallback:number){const explicit=reviewSectionFields.find(section=>Boolean(sections[section]));const key=explicit??inferredSection(note);return key?reviewSectionSteps[key]:fallback;}
 
 export async function POST(request: NextRequest) {
   if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
         return back(request,"approved");
       }
-      const targetStep=requestedStep(sections,Number.isFinite(experience.draft_step)?experience.draft_step:0);
+      const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
       const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
       if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
       return back(request,"changes-requested");
