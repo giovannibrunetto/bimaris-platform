@@ -15,6 +15,7 @@ function reviewSections(form:FormData){const result:Record<string,string>={};for
 function reviewSummary(sections:Record<string,string>,general:string){const labels=Object.keys(sections).map(key=>reviewSectionLabels[key as ReviewSection]).filter(Boolean);return general||(labels.length?`Correggere: ${labels.join(", ")}`:"");}
 function inferredSection(note:string):ReviewSection|null{const n=note.toLocaleLowerCase("it");if(/foto|fotograf|immagin|copertina|galleria/.test(n))return "media";if(/descrizion|racconto|testo lungo/.test(n))return "description";if(/durata|prezzo|costo|dettagl/.test(n))return "details";if(/luogo|incontro|indirizzo|mappa|posizion/.test(n))return "location";if(/testo breve|titolo|nome|informazion/.test(n))return "basics";return null;}
 function requestedStep(sections:Record<string,string>,note:string,fallback:number){const explicit=reviewSectionFields.find(section=>Boolean(sections[section]));const key=explicit??inferredSection(note);return key?reviewSectionSteps[key]:fallback;}
+function correctionSnapshot(experience:Record<string,unknown>,sections:Record<string,string>){const snapshot:Record<string,unknown>={};if(sections.basics){snapshot.name=experience.name??null;snapshot.excerpt=experience.excerpt??null;}if(sections.description)snapshot.description=experience.description??null;if(sections.details){snapshot.duration_minutes=experience.duration_minutes??null;snapshot.price_from=experience.price_from??null;snapshot.bookable=experience.bookable??false;}if(sections.location)snapshot.meeting_point=experience.meeting_point??null;return snapshot;}
 
 export async function POST(request:NextRequest){
  if(!(await isAdminAuthenticated()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
@@ -34,17 +35,19 @@ export async function POST(request:NextRequest){
   if(action==="approve"||action==="request-changes"){
    const generalNote=text(form.get("review_notes"),2000),sections=reviewSections(form),reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
    if(action==="request-changes"&&(Object.keys(sections).length===0||!reviewNotes))return back(request,"review-target-required");
-   const {data:experience,error:readError}=await supabase.from("experiences").select("name,review_status,draft_step,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
+   const {data:experience,error:readError}=await supabase.from("experiences").select("name,excerpt,description,duration_minutes,price_from,bookable,meeting_point,review_status,review_snapshot,draft_step,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
    const allowed=action==="request-changes"?["pending","rejected"]:["pending"];
    if(readError||!experience||!allowed.includes(experience.review_status))return back(request,"invalid-review-state");
    const operator=experience.operator as unknown as {name:string|null;published:boolean;selection_status:string;email:string|null}|null;
    if(action==="approve"){
     if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");
-    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},reviewed_at:new Date().toISOString(),published:true,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
+    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:new Date().toISOString(),published:true,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});return back(request,"approved");
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
-   const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).in("review_status",["pending","rejected"]);if(error)throw error;
+   const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
+   const snapshot=experience.review_status==="rejected"&&Object.keys(existingSnapshot as object).length?existingSnapshot:correctionSnapshot(experience as unknown as Record<string,unknown>,sections);
+   const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,review_snapshot:snapshot,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).in("review_status",["pending","rejected"]);if(error)throw error;
    if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});return back(request,"changes-requested");
   }
   if(action==="publish"){
