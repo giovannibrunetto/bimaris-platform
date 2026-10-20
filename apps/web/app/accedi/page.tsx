@@ -15,8 +15,11 @@ export default function AccediPage(){
   event.preventDefault();const supabase=createBrowserSupabaseClient();
   if(!supabase){setOperatorMessage("Accesso non disponibile in questo momento.");return;}
   setOperatorLoading(true);setOperatorMessage("");
-  const callback=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
-  const {error}=await supabase.auth.signInWithOtp({email:operatorEmail,options:{emailRedirectTo:callback,shouldCreateUser:false}});
+  // Il template email di Supabase porta il token a /auth/confirm. Usiamo quindi
+  // direttamente quella destinazione invece del callback PKCE: evita che browser
+  // mobili, cambio app email/browser e cookie temporanei facciano perdere il flusso.
+  const confirmUrl=`${window.location.origin}/auth/confirm?next=${encodeURIComponent("/area-operatore")}`;
+  const {error}=await supabase.auth.signInWithOtp({email:operatorEmail,options:{emailRedirectTo:confirmUrl,shouldCreateUser:false}});
   setOperatorLoading(false);
   setOperatorMessage(error?"Non risulta un accesso operatore attivo per questa email. Verifica l'indirizzo oppure contatta BIMARIS.":"Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
  }
