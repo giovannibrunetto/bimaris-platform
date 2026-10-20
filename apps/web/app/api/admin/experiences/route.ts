@@ -9,8 +9,10 @@ function numberValue(value: string) { if (!value) return null; const parsed = Nu
 function back(request: NextRequest, state: string) { return NextResponse.redirect(new URL(`/admin/esperienze?state=${encodeURIComponent(state)}`, request.url), 303); }
 const reviewSectionFields=["basics","description","details","media","location"] as const;
 const reviewSectionLabels:Record<(typeof reviewSectionFields)[number],string>={basics:"Informazioni principali",description:"Descrizione",details:"Durata, prezzo e dettagli",media:"Fotografie",location:"Luogo e punto di incontro"};
+const reviewSectionSteps:Record<(typeof reviewSectionFields)[number],number>={basics:0,description:1,details:2,media:3,location:2};
 function reviewSections(form:FormData){return Object.fromEntries(reviewSectionFields.map(key=>[key,text(form.get(`review_${key}`),1000)]).filter(([,value])=>Boolean(value)));}
 function reviewSummary(sections:Record<string,string>,general:string){const lines=Object.entries(sections).map(([key,value])=>`${reviewSectionLabels[key as keyof typeof reviewSectionLabels]}: ${value}`);if(general)lines.push(`Nota generale: ${general}`);return lines.join("\n\n");}
+function requestedStep(sections:Record<string,string>,fallback:number){const key=reviewSectionFields.find(section=>Boolean(sections[section]));return key?reviewSectionSteps[key]:fallback;}
 
 export async function POST(request: NextRequest) {
   if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
     if(action==="approve"||action==="request-changes"){
       const generalNote=text(form.get("review_notes"),2000); const sections=reviewSections(form); const reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
       if(action==="request-changes"&&!reviewNotes)return back(request,"review-note-required");
-      const {data:experience,error:readError}=await supabase.from("experiences").select("name,review_status,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
+      const {data:experience,error:readError}=await supabase.from("experiences").select("name,review_status,draft_step,operator:operators(name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
       if(readError||!experience||experience.review_status!=="pending")return back(request,"invalid-review-state");
       const operator=experience.operator as unknown as {name:string|null;published:boolean;selection_status:string;email:string|null}|null;
       if(action==="approve"){
@@ -39,7 +41,8 @@ export async function POST(request: NextRequest) {
         if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
         return back(request,"approved");
       }
-      const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
+      const targetStep=requestedStep(sections,Number.isFinite(experience.draft_step)?experience.draft_step:0);
+      const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).eq("review_status","pending"); if(error)throw error;
       if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
       return back(request,"changes-requested");
     }
