@@ -38,8 +38,7 @@ export default function AccessoUtentePage(){
   <div className="personal-access-shade" aria-hidden="true"/>
   <section className="personal-access-shell">
    <div className="personal-access-brand">
-    <div className="personal-access-mark">B</div>
-    <div><strong>BIMARIS</strong><span>Messina da vivere</span></div>
+    <img src="/brand/bimaris-main.jpeg" alt="BIMARIS — Messina da vivere"/>
    </div>
 
    <div className="personal-access-content">
