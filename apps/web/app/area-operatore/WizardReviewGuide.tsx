@@ -24,76 +24,9 @@ function guidesForStep(experience:Experience,step:number):Guide[]{
  return guides;
 }
 
-function correctionStepLabel(experience:Experience){
- const sections=experience.review_sections??{};
- if(sections.name||sections.excerpt||sections.basics)return "Step 1 — Identità";
- if(sections.description)return "Step 2 — Il racconto";
- if(sections.details||sections.location)return "Step 3 — Dettagli";
- if(sections.media)return "Step 4 — Immagini";
- return null;
-}
-
 function normalized(value:string|null|undefined){return (value??"").trim().toLocaleLowerCase("it-IT");}
-
-function currentStep(root:Element){
- const text=root.querySelector(".experience-step__number")?.textContent??"";
- const match=text.match(/0?([1-5])/);
- return match?Math.max(0,Number(match[1])-1):0;
-}
-
-function experienceFromWizard(wizard:Element,rejected:Experience[]){
- const values=Array.from(wizard.querySelectorAll("input,textarea")).map(node=>normalized((node as HTMLInputElement|HTMLTextAreaElement).value)).filter(Boolean);
- const exact=rejected.find(e=>values.includes(normalized(e.name))||values.includes(normalized(e.description))||values.includes(normalized(e.excerpt)));
- if(exact)return exact;
- return rejected.length===1?rejected[0]:null;
-}
-
-function syncCorrectionStepLabels(rejected:Experience[]){
- const activeIds=new Set(rejected.map(e=>e.id));
- for(const old of Array.from(document.querySelectorAll<HTMLElement>("[data-bimaris-correction-step]"))){
-  const id=old.dataset.bimarisCorrectionStep;
-  if(!id||!activeIds.has(id))old.remove();
- }
- for(const experience of rejected){
-  const stepLabel=correctionStepLabel(experience);
-  if(!stepLabel)continue;
-  const card=Array.from(document.querySelectorAll(".experience-card")).find(node=>normalized(node.querySelector("h3")?.textContent)===normalized(experience.name));
-  if(!card)continue;
-  const existing=card.querySelector<HTMLElement>(`[data-bimaris-correction-step="${experience.id}"]`);
-  const text=`Modifica richiesta · ${stepLabel}`;
-  if(existing){
-   if(existing.textContent!==text)existing.textContent=text;
-   continue;
-  }
-  const marker=document.createElement("p");
-  marker.setAttribute("data-bimaris-correction-step",experience.id);
-  marker.style.margin="4px 0 8px";
-  marker.style.fontSize="0.84rem";
-  marker.style.fontWeight="700";
-  marker.style.color="#7d5b28";
-  marker.textContent=text;
-  const note=Array.from(card.querySelectorAll("p")).find(node=>normalized(node.textContent).startsWith("nota bimaris:"));
-  if(note)card.insertBefore(marker,note);else card.querySelector("h3")?.insertAdjacentElement("afterend",marker);
- }
-}
-
-function blockPrematureSubmission(rejected:Experience[]){
- const names=rejected.map(e=>normalized(e.name));
- for(const button of Array.from(document.querySelectorAll("button"))){
-  if(normalized(button.textContent)!=="invia a bimaris")continue;
-  let node:HTMLElement|null=button.parentElement;
-  let matched=false;
-  for(let depth=0;node&&depth<5;depth++,node=node.parentElement){
-   const text=normalized(node.textContent);
-   if(names.some(name=>name&&text.includes(name))&&text.includes("da correggere")){matched=true;break;}
-  }
-  if(matched){
-   button.disabled=true;
-   button.setAttribute("aria-disabled","true");
-   button.title="Prima applica e salva le correzioni richieste da BIMARIS.";
-  }
- }
-}
+function currentStep(root:Element){const text=root.querySelector(".experience-step__number")?.textContent??"";const match=text.match(/0?([1-5])/);return match?Math.max(0,Number(match[1])-1):0;}
+function experienceFromWizard(wizard:Element,rejected:Experience[]){const values=Array.from(wizard.querySelectorAll("input,textarea")).map(node=>normalized((node as HTMLInputElement|HTMLTextAreaElement).value)).filter(Boolean);const exact=rejected.find(e=>values.includes(normalized(e.name))||values.includes(normalized(e.description))||values.includes(normalized(e.excerpt)));return exact??(rejected.length===1?rejected[0]:null);}
 
 export default function WizardReviewGuide({experiences}:{experiences:Experience[]}){
  const rejected=experiences.filter(e=>e.review_status==="rejected");
@@ -103,29 +36,17 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
  const [step,setStep]=useState(0);
 
  useEffect(()=>{
-  let scheduled=false;
   function sync(){
-   blockPrematureSubmission(rejected);
-   syncCorrectionStepLabels(rejected);
    const wizard=document.querySelector(".experience-wizard");
    const stepNode=wizard?.querySelector(".experience-step")??null;
    if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);return;}
-   if(!activeId.current){
-    const match=experienceFromWizard(wizard,rejected);
-    if(match)activeId.current=match.id;
-   }
+   if(!activeId.current){const match=experienceFromWizard(wizard,rejected);if(match)activeId.current=match.id;}
    const active=rejected.find(e=>e.id===activeId.current)??null;
    setTarget(stepNode);setExperience(active);setStep(currentStep(wizard));
   }
-  function scheduleSync(){
-   if(scheduled)return;
-   scheduled=true;
-   window.requestAnimationFrame(()=>{scheduled=false;sync();});
-  }
   sync();
-  const observer=new MutationObserver(scheduleSync);observer.observe(document.body,{childList:true,subtree:true});
-  document.addEventListener("input",scheduleSync,true);
-  return()=>{observer.disconnect();document.removeEventListener("input",scheduleSync,true);};
+  const interval=window.setInterval(sync,350);
+  return()=>window.clearInterval(interval);
  },[experiences]);
 
  if(!target||!experience)return null;
