@@ -1,6 +1,7 @@
 "use client";
 
 import type { ExperienceMediaItem } from "@/lib/experience-media";
+import "./experience-cover-preview.css";
 
 type Props={items:ExperienceMediaItem[];coverKey:string|null;optimizing:boolean;experienceName?:string;excerpt?:string;duration?:string;price?:string;categoryName?:string;territoryName?:string;onFiles:(files:File[])=>void;onCover:(key:string)=>void;onMove:(key:string,delta:number)=>void;onRemove:(item:ExperienceMediaItem)=>void;};
 
