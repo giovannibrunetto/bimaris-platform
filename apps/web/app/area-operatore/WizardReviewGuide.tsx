@@ -7,14 +7,20 @@ type ReviewSections={basics?:string;description?:string;details?:string;media?:s
 type Experience={id:string;name:string;excerpt?:string|null;description?:string|null;review_status:string;review_notes:string|null;review_sections:ReviewSections|null};
 type Guide={label:string;note:string};
 
+function correctionNote(experience:Experience,label:string,sectionNote:string){
+ const note=sectionNote.trim();
+ const general=(experience.review_notes??"").trim();
+ return note.toLocaleLowerCase("it-IT")===label.toLocaleLowerCase("it-IT")&&general?general:note;
+}
+
 function guidesForStep(experience:Experience,step:number):Guide[]{
  const sections=experience.review_sections??{};
  const guides:Guide[]=[];
- if(step===0&&sections.basics?.trim())guides.push({label:"Testo breve / titolo",note:sections.basics.trim()});
- if(step===1&&sections.description?.trim())guides.push({label:"Descrizione",note:sections.description.trim()});
- if(step===2&&sections.details?.trim())guides.push({label:"Durata, prezzo e dettagli",note:sections.details.trim()});
- if(step===2&&sections.location?.trim())guides.push({label:"Luogo e punto di incontro",note:sections.location.trim()});
- if(step===3&&sections.media?.trim())guides.push({label:"Fotografie",note:sections.media.trim()});
+ if(step===0&&sections.basics?.trim())guides.push({label:"Testo breve / titolo",note:correctionNote(experience,"Informazioni principali",sections.basics)});
+ if(step===1&&sections.description?.trim())guides.push({label:"Descrizione",note:correctionNote(experience,"Descrizione",sections.description)});
+ if(step===2&&sections.details?.trim())guides.push({label:"Durata, prezzo e dettagli",note:correctionNote(experience,"Durata / prezzo / dettagli",sections.details)});
+ if(step===2&&sections.location?.trim())guides.push({label:"Luogo e punto di incontro",note:correctionNote(experience,"Luogo / punto di incontro",sections.location)});
+ if(step===3&&sections.media?.trim())guides.push({label:"Fotografie",note:correctionNote(experience,"Fotografie / copertina",sections.media)});
  return guides;
 }
 
