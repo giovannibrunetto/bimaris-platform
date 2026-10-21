@@ -30,6 +30,8 @@ type RawExperience = {
     whatsapp: string | null;
     website: string | null;
     instagram: string | null;
+    published: boolean | null;
+    selection_status: string | null;
   } | null;
 };
 
@@ -102,8 +104,9 @@ function isHistoricalPeriodKey(value: string): value is HistoricalPeriodKey {
 function mapExperience(row: RawExperience): Experience | null {
   const territorySlug = row.territory?.slug;
   const categorySlug = row.category?.slug;
+  const operatorIsPublic = row.operator?.published === true && row.operator?.selection_status === "selected";
 
-  if (!territorySlug || !categorySlug || !isTerritorySlug(territorySlug) || !isCategorySlug(categorySlug)) {
+  if (!territorySlug || !categorySlug || !isTerritorySlug(territorySlug) || !isCategorySlug(categorySlug) || !operatorIsPublic) {
     return null;
   }
 
@@ -180,7 +183,7 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
   };
 }
 
-const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators!experiences_operator_id_fkey(slug,name,why_selected,whatsapp,website,instagram)";
+const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators!experiences_operator_id_fkey(slug,name,why_selected,whatsapp,website,instagram,published,selection_status)";
 const cultureSelect = "id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,primary_historical_period,historical_periods,historical_period_note,historical_sort_year,place:places(name,address,google_maps_query,latitude,longitude)";
 
 export async function getPublishedExperiences(): Promise<Experience[]> {
@@ -191,6 +194,7 @@ export async function getPublishedExperiences(): Promise<Experience[]> {
     .from("experiences")
     .select(experienceSelect)
     .eq("published", true)
+    .eq("review_status", "approved")
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -212,6 +216,7 @@ export async function getPublishedExperienceBySlug(slug: string): Promise<Experi
     .from("experiences")
     .select(experienceSelect)
     .eq("published", true)
+    .eq("review_status", "approved")
     .eq("slug", slug)
     .maybeSingle();
 
