@@ -11,8 +11,6 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  // The dashboard only needs counters. Ask PostgREST for exact counts without
-  // downloading every matching row: this keeps the admin fast as data grows.
   const [appsRes, opsRes, expsRes, revsRes, opRevsRes, itinsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
@@ -33,13 +31,14 @@ export default async function AdminPage() {
   const onlineExperiences = exps.filter((x: any) => x.published).length;
 
   const card = (href: string, title: string, n: number, text: string) => (
-    <Link className="category" href={href} style={{ display: "block", border: n > 0 ? "2px solid #8f2f24" : undefined }}>
+    <Link className="category" href={href} aria-label={`Apri ${title}`} style={{ display: "block", cursor: "pointer", position: "relative", border: n > 0 ? "2px solid #8f2f24" : undefined }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "center" }}>
         <strong style={{ fontSize: 20 }}>{title}</strong>
         {n > 0 && <span style={{ display: "inline-flex", minWidth: 30, height: 30, padding: "0 8px", alignItems: "center", justifyContent: "center", borderRadius: 999, background: "#8f2f24", color: "white", fontWeight: 800 }}>{n}</span>}
       </div>
       <span style={{ display: "block", fontSize: 15, margin: "10px 0 7px" }}>{n > 0 ? `${n} elementi richiedono attenzione` : "Nessuna novità pendente"}</span>
       <small className="muted">{text}</small>
+      <span style={{ display: "block", marginTop: 14, fontSize: 13, fontWeight: 800 }}>Apri sezione →</span>
     </Link>
   );
 
@@ -56,7 +55,7 @@ export default async function AdminPage() {
         <div className="kicker">Area privata · Amministrazione</div>
         <h1 style={{ fontFamily: "Georgia,serif", fontWeight: 500, fontSize: "clamp(38px,7vw,64px)", lineHeight: 1, letterSpacing: "-.02em", margin: "10px 0 12px", color: "#fff" }}>Dashboard BIMARIS</h1>
         <p style={{ maxWidth: 650, margin: 0, color: "#c8d1d6", fontSize: "clamp(14px,2vw,17px)", lineHeight: 1.55 }}>Il centro operativo di BIMARIS. Le attività che richiedono attenzione sono raccolte qui.</p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 22 }}><Link className="button" href="/" style={{ padding: "11px 18px" }}>Apri il sito</Link><form method="post" action="/api/admin/logout"><button className="button secondary" style={{ padding: "10px 18px" }}>Esci</button></form></div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 22 }}><Link className="button" href="/" style={{ padding: "11px 18px" }}>Apri il sito</Link><form method="post" action="/api/admin/logout"><button type="submit" style={{ padding: "10px 18px", borderRadius: 999, border: "1px solid #caa86a", background: "#fff", color: "#17110d", fontWeight: 800, cursor: "pointer" }}>Esci</button></form></div>
       </div>
     </section>
     <section style={{ background: "var(--sand)", padding: "clamp(34px,6vw,64px) 6vw" }}>
