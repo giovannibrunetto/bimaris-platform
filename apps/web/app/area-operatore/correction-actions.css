@@ -1,0 +1,13 @@
+.experience-card:has(> p > strong) .experience-card__actions .experience-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #a87532;
+  color: #fff;
+  border-color: #8c602a;
+  font-weight: 700;
+}
+
+.experience-card:has(> p > strong) .experience-card__actions .button {
+  display: none;
+}
