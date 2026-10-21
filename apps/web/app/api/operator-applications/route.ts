@@ -1,3 +1,4 @@
+import { checkApiRateLimit } from "@/lib/api-rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 
@@ -59,6 +60,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "missing_fields" }, { status: 400 });
   }
 
+  const rateLimit = await checkApiRateLimit(request, "operator_application");
+  if (rateLimit === "limited") return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429, headers: { "Retry-After": "900" } });
+  if (rateLimit === "unavailable") return NextResponse.json({ ok: false, error: "rate_limit_unavailable" }, { status: 503 });
   const supabase = createServiceClient();
   if (!supabase) return NextResponse.json({ ok: false, error: "service_unavailable" }, { status: 503 });
 
