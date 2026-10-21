@@ -17,7 +17,10 @@ function back(request: NextRequest, state: string) {
 }
 
 function operatorAccessRedirect() {
-  return `${PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent("/area-operatore")}`;
+  const siteUrl = process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : PUBLIC_SITE_URL;
+  return `${siteUrl}/auth/callback?next=${encodeURIComponent("/area-operatore")}`;
 }
 
 type ServiceClient = NonNullable<ReturnType<typeof createServiceClient>>;
