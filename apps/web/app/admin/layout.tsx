@@ -3,6 +3,7 @@ import Link from "next/link";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
 import RevisionHistoryLabels from "./RevisionHistoryLabels";
+import "./admin-experience-create.css";
 export const metadata:Metadata={title:"Amministrazione BIMARIS",robots:{index:false,follow:false,noarchive:true,nocache:true}};
 const badge=(n:number)=>n>0?<span aria-label={`${n} novità pendenti`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:18,height:18,padding:"0 5px",marginLeft:5,borderRadius:999,background:"#8f2f24",color:"#fff",fontSize:10,fontWeight:800,lineHeight:1}}>{n}</span>:null;
 const navLink={display:"inline-flex",alignItems:"center",flex:"0 0 auto",height:38,padding:"0 2px",fontSize:14,fontWeight:700,lineHeight:1,whiteSpace:"nowrap"} as const;
