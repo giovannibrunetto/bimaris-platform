@@ -1,3 +1,4 @@
+import { checkApiRateLimit } from "@/lib/api-rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminSession, isAdminConfigured, verifyAdminPassword } from "@/lib/admin-auth";
 
@@ -12,6 +13,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "invalid_origin" }, { status: 403 });
     }
   }
+  const rateLimit = await checkApiRateLimit(request, "admin_login");
+  if (rateLimit === "limited") return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429, headers: { "Retry-After": "900" } });
+  if (rateLimit === "unavailable") return NextResponse.json({ ok: false, error: "rate_limit_unavailable" }, { status: 503 });
   const form = await request.formData();
   const password = String(form.get("password") ?? "");
 
