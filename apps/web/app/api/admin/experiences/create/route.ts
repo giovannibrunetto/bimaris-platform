@@ -6,7 +6,7 @@ function text(v:FormDataEntryValue|null,max:number){return typeof v==="string"?v
 function slugify(v:string){return v.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,100)}
 function num(v:string){if(!v)return null;const n=Number(v.replace(",","."));return Number.isFinite(n)?n:null}
 function back(req:NextRequest,state:string){return NextResponse.redirect(new URL(`/admin/esperienze/nuova?state=${encodeURIComponent(state)}`,req.url),303)}
-function jsonMode(req:NextRequest){return req.headers.get("accept")?.includes("application/json")===true}
+function jsonMode(req:NextRequest){return req.headers.get("sec-fetch-dest")!=="document"}
 function fail(req:NextRequest,state:string,status=400){return jsonMode(req)?NextResponse.json({ok:false,error:state},{status}):back(req,state)}
 
 export async function POST(request:NextRequest){
