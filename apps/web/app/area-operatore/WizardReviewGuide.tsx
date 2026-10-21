@@ -4,7 +4,7 @@ import {useEffect,useRef,useState} from "react";
 import {createPortal} from "react-dom";
 
 type ReviewSections={basics?:string;description?:string;details?:string;media?:string;location?:string};
-type Experience={id:string;name:string;review_status:string;review_notes:string|null;review_sections:ReviewSections|null};
+type Experience={id:string;name:string;excerpt?:string|null;description?:string|null;review_status:string;review_notes:string|null;review_sections:ReviewSections|null};
 type Guide={label:string;note:string};
 
 function guidesForStep(experience:Experience,step:number):Guide[]{
@@ -18,10 +18,37 @@ function guidesForStep(experience:Experience,step:number):Guide[]{
  return guides;
 }
 
+function normalized(value:string|null|undefined){return (value??"").trim().toLocaleLowerCase("it-IT");}
+
 function currentStep(root:Element){
  const text=root.querySelector(".experience-step__number")?.textContent??"";
  const match=text.match(/0?([1-5])/);
  return match?Math.max(0,Number(match[1])-1):0;
+}
+
+function experienceFromWizard(wizard:Element,rejected:Experience[]){
+ const values=Array.from(wizard.querySelectorAll("input,textarea")).map(node=>normalized((node as HTMLInputElement|HTMLTextAreaElement).value)).filter(Boolean);
+ const exact=rejected.find(e=>values.includes(normalized(e.name))||values.includes(normalized(e.description))||values.includes(normalized(e.excerpt)));
+ if(exact)return exact;
+ return rejected.length===1?rejected[0]:null;
+}
+
+function blockPrematureSubmission(rejected:Experience[]){
+ const names=rejected.map(e=>normalized(e.name));
+ for(const button of Array.from(document.querySelectorAll("button"))){
+  if(normalized(button.textContent)!=="invia a bimaris")continue;
+  let node:HTMLElement|null=button.parentElement;
+  let matched=false;
+  for(let depth=0;node&&depth<5;depth++,node=node.parentElement){
+   const text=normalized(node.textContent);
+   if(names.some(name=>name&&text.includes(name))&&text.includes("da correggere")){matched=true;break;}
+  }
+  if(matched){
+   button.disabled=true;
+   button.setAttribute("aria-disabled","true");
+   button.title="Prima applica e salva le correzioni richieste da BIMARIS.";
+  }
+ }
 }
 
 export default function WizardReviewGuide({experiences}:{experiences:Experience[]}){
@@ -33,13 +60,12 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
 
  useEffect(()=>{
   function sync(){
+   blockPrematureSubmission(rejected);
    const wizard=document.querySelector(".experience-wizard");
    const stepNode=wizard?.querySelector(".experience-step")??null;
    if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);return;}
    if(!activeId.current){
-    const nameInput=wizard.querySelector("input") as HTMLInputElement|null;
-    const value=nameInput?.value.trim().toLocaleLowerCase("it-IT")??"";
-    const match=rejected.find(e=>e.name.trim().toLocaleLowerCase("it-IT")===value);
+    const match=experienceFromWizard(wizard,rejected);
     if(match)activeId.current=match.id;
    }
    const active=rejected.find(e=>e.id===activeId.current)??null;
