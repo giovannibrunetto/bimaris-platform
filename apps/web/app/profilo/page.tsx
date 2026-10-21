@@ -9,88 +9,37 @@ import { getPublishedFoodProducts } from "@/data/food-products";
 export const dynamic = "force-dynamic";
 
 const labels: Record<string,string> = {"cultura":"Cultura e monumenti","miti-leggende":"Miti e leggende","borghi":"Borghi","sapori":"Sapori e vino","mare":"Mare","natura-trekking":"Natura e trekking","avventura":"Avventura","esperienze":"Esperienze"};
-
 type Recommendation = { key:string; href:string; title:string; copy:string; kind:string; score:number; featured:boolean };
+function experienceInterest(category:string){if(category==="degustazioni")return "sapori";if(category==="mare")return "mare";if(category==="avventura")return "avventura";if(category==="trekking-natura")return "natura-trekking";return "esperienze";}
 
-function experienceInterest(category: string) {
-  if (category === "degustazioni") return "sapori";
-  if (category === "mare") return "mare";
-  if (category === "avventura") return "avventura";
-  if (category === "trekking-natura") return "natura-trekking";
-  return "esperienze";
-}
-
-export default async function ProfiloPage({ searchParams }: { searchParams: Promise<{ onboarding?: string }> }) {
-  const supabase = await createUserServerClient();
-  if (!supabase) redirect("/accedi");
-  const { data: claimsData } = await supabase.auth.getClaims();
-  const userId = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : null;
-  if (!userId) redirect("/accedi");
-
-  const [{ data: profile }, { data: interests }, { data: saved }, { data: newsletter }, culture, stories, villages, products, experiences] = await Promise.all([
-    supabase.from("user_profiles").select("*").eq("user_id", userId).maybeSingle(),
-    supabase.from("user_interests").select("*").eq("user_id", userId),
-    supabase.from("user_saved_items").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(12),
-    supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id", userId).maybeSingle(),
-    getPublishedCultureEntries(),
-    getPublishedStories(),
-    getPublishedVillages(),
-    getPublishedFoodProducts(),
-    getPublishedExperiences(),
-  ]);
-  const { onboarding } = await searchParams;
-
-  const ranked = [...(interests ?? [])]
-    .map(item => ({...item, score: Number(item.explicit_score ?? 0) * 2 + Number(item.behavioral_score ?? 0)}))
-    .filter(item => item.score > 0)
-    .sort((a,b) => b.score - a.score);
-  const interestScores = new Map(ranked.map(item => [item.interest_key, item.score]));
-  const scoreFor = (key:string) => Number(interestScores.get(key) ?? 0);
-
-  const candidates: Recommendation[] = [
-    ...culture.map(item => ({ key:`culture:${item.id}`, href:`/cultura/${item.slug}`, title:item.title, copy:item.excerpt, kind:"Cultura", score:scoreFor("cultura"), featured:Boolean(item.featured) })),
-    ...stories.map(item => ({ key:`story:${item.id}`, href:`/storie-miti-leggende/${item.slug}`, title:item.title, copy:item.excerpt, kind:"Miti e leggende", score:scoreFor("miti-leggende"), featured:Boolean(item.featured) })),
-    ...villages.map(item => ({ key:`village:${item.id}`, href:`/borghi/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Borghi", score:scoreFor("borghi"), featured:Boolean(item.featured) })),
-    ...products.map(item => ({ key:`product:${item.id}`, href:`/sapori-territori/${item.slug}`, title:item.name, copy:item.excerpt, kind:"Sapori e territori", score:scoreFor("sapori"), featured:Boolean(item.featured) })),
-    ...experiences.map(item => {
-      const interestKey = experienceInterest(item.category);
-      return { key:`experience:${item.id}`, href:`/esperienze/${item.slug}`, title:item.name, copy:item.excerpt, kind:item.categoryName, score:Math.max(scoreFor(interestKey), scoreFor("esperienze") * 0.8), featured:Boolean(item.featured) };
-    }),
-  ].filter(item => item.score > 0);
-
-  const recommendations = candidates
-    .sort((a,b) => (b.score + (b.featured ? 0.25 : 0)) - (a.score + (a.featured ? 0.25 : 0)))
-    .filter((item,index,array) => index === array.findIndex(other => other.href === item.href))
-    .slice(0,6);
-
-  return <div className="container profile-page" style={{ padding: "48px 20px 80px" }}>
-    <style>{`
-      .profile-page .profile-recommendation-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(260px,.9fr); gap:36px; align-items:end; }
-      .profile-page .profile-recommendation-head h2 { margin-bottom:0; }
-      .profile-page .profile-recommendation-head p { margin:0; max-width:620px; line-height:1.65; }
-      .profile-page .profile-recommendation-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:28px; }
-      .profile-page .profile-recommendation-card { min-width:0; overflow:hidden; padding:22px; }
-      .profile-page .profile-recommendation-card h3,
-      .profile-page .profile-recommendation-card p { overflow-wrap:anywhere; }
-      @media (max-width: 960px) {
-        .profile-page { padding-left:16px !important; padding-right:16px !important; }
-        .profile-page .profile-recommendations { padding:34px 18px !important; margin-left:0; margin-right:0; }
-        .profile-page .profile-recommendation-head { display:flex !important; flex-direction:column !important; gap:14px !important; align-items:stretch !important; }
-        .profile-page .profile-recommendation-head > div,
-        .profile-page .profile-recommendation-head > p { width:100% !important; max-width:none !important; }
-        .profile-page .profile-recommendation-head h2 { font-size:clamp(2.15rem,8vw,3.35rem) !important; line-height:1 !important; max-width:none !important; }
-        .profile-page .profile-recommendation-head p { font-size:1rem; }
-        .profile-page .profile-recommendation-grid { display:grid !important; grid-template-columns:1fr !important; gap:14px !important; margin-top:24px; }
-        .profile-page .profile-recommendation-card { width:100% !important; padding:18px !important; border-radius:18px; }
-        .profile-page .profile-recommendation-card h3 { font-size:1.45rem; line-height:1.12; margin-top:6px; }
-        .profile-page .profile-recommendation-card p { line-height:1.55; }
-      }
-    `}</style>
-    <div className="kicker">Il tuo BIMARIS</div><h1>{profile?.display_name ? `Ciao, ${profile.display_name}` : "Il tuo profilo"}</h1><p style={{ maxWidth: 720 }}>Qui raccogli ciò che vuoi scoprire e ciò che hai salvato. I suggerimenti BIMARIS diventano progressivamente più pertinenti in base alle preferenze che hai scelto e a come utilizzi la piattaforma.</p>
-    {onboarding === "completato" ? <div className="detail-panel" style={{ marginTop: 22, padding: 16 }}>Profilo personalizzato. BIMARIS userà queste preferenze per rendere progressivamente più pertinenti i suggerimenti.</div> : null}
-    <section className="section" style={{ paddingTop: 28 }}><div className="section-head"><div><div className="kicker">Preferenze</div><h2>I tuoi interessi</h2></div><Link className="text-link" href="/profilo/onboarding">{profile?.onboarding_completed ? "Modifica preferenze →" : "Personalizza BIMARIS →"}</Link></div>{ranked.length ? <div style={{ display:"flex",flexWrap:"wrap",gap:10 }}>{ranked.map(item => <span className="button" key={item.interest_key} style={{cursor:"default"}}>{labels[item.interest_key] ?? item.interest_key}</span>)}</div> : <div className="detail-panel"><h3>Rendiamo BIMARIS più vicino ai tuoi interessi</h3><p>Rispondi a tre domande rapide e scegli ciò che vuoi scoprire.</p><Link className="button" href="/profilo/onboarding">Inizia</Link></div>}</section>
-    <section className="section sand profile-recommendations"><div className="section-head profile-recommendation-head"><div><div className="kicker">Per te</div><h2>Scelti in base ai tuoi interessi</h2></div><p>Luoghi, storie, borghi, sapori ed esperienze ordinati in base alle tue preferenze e, progressivamente, a ciò che esplori su BIMARIS.</p></div>{recommendations.length ? <div className="card-grid profile-recommendation-grid">{recommendations.map(item => <article className="card profile-recommendation-card" key={item.key}><div className="kicker">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><Link className="text-link" href={item.href}>Scopri →</Link></article>)}</div> : <div className="detail-panel"><h3>I suggerimenti si costruiscono con te</h3><p>Completa le preferenze e continua a esplorare BIMARIS: qui compariranno contenuti specifici più vicini ai tuoi interessi.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
-    <section className="section"><div className="section-head"><div><div className="kicker">Comunicazioni</div><h2>Newsletter</h2></div></div><p>{newsletter?.subscribed ? (newsletter.personalized ? "Newsletter attiva con contenuti personalizzati in base ai tuoi interessi." : "Newsletter BIMARIS attiva.") : "Newsletter non attiva. La scelta resta facoltativa e separata dal tuo account."}</p><Link className="text-link" href="/profilo/onboarding">Gestisci preferenze →</Link></section>
-    <section className="section sand"><div className="section-head"><div><div className="kicker">Salvati</div><h2>La tua raccolta</h2></div></div>{saved?.length ? <p>Hai {saved.length} elementi salvati.</p> : <p>Non hai ancora salvato nulla. Esplora la mappa, i luoghi e le esperienze e costruisci la tua raccolta.</p>}<Link className="button" href="/mappa">Esplora la mappa</Link></section>
-  </div>;
+export default async function ProfiloPage({searchParams}:{searchParams:Promise<{onboarding?:string}>}){
+ const supabase=await createUserServerClient();if(!supabase)redirect("/accedi");
+ const {data:claimsData}=await supabase.auth.getClaims();const userId=typeof claimsData?.claims?.sub==="string"?claimsData.claims.sub:null;if(!userId)redirect("/accedi");
+ const [{data:profile},{data:interests},{data:saved},{data:newsletter},culture,stories,villages,products,experiences]=await Promise.all([
+  supabase.from("user_profiles").select("*").eq("user_id",userId).maybeSingle(),supabase.from("user_interests").select("*").eq("user_id",userId),supabase.from("user_saved_items").select("*").eq("user_id",userId).order("created_at",{ascending:false}).limit(12),supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id",userId).maybeSingle(),getPublishedCultureEntries(),getPublishedStories(),getPublishedVillages(),getPublishedFoodProducts(),getPublishedExperiences()
+ ]);
+ const {onboarding}=await searchParams;
+ const ranked=[...(interests??[])].map(item=>({...item,score:Number(item.explicit_score??0)*2+Number(item.behavioral_score??0)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
+ const interestScores=new Map(ranked.map(item=>[item.interest_key,item.score]));const scoreFor=(key:string)=>Number(interestScores.get(key)??0);
+ const candidates:Recommendation[]=[...culture.map(item=>({key:`culture:${item.id}`,href:`/cultura/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Cultura",score:scoreFor("cultura"),featured:Boolean(item.featured)})),...stories.map(item=>({key:`story:${item.id}`,href:`/storie-miti-leggende/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Miti e leggende",score:scoreFor("miti-leggende"),featured:Boolean(item.featured)})),...villages.map(item=>({key:`village:${item.id}`,href:`/borghi/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Borghi",score:scoreFor("borghi"),featured:Boolean(item.featured)})),...products.map(item=>({key:`product:${item.id}`,href:`/sapori-territori/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Sapori e territori",score:scoreFor("sapori"),featured:Boolean(item.featured)})),...experiences.map(item=>{const interestKey=experienceInterest(item.category);return{key:`experience:${item.id}`,href:`/esperienze/${item.slug}`,title:item.name,copy:item.excerpt,kind:item.categoryName,score:Math.max(scoreFor(interestKey),scoreFor("esperienze")*.8),featured:Boolean(item.featured)}})].filter(item=>item.score>0);
+ const recommendations=candidates.sort((a,b)=>(b.score+(b.featured?.25:0))-(a.score+(a.featured?.25:0))).filter((item,index,array)=>index===array.findIndex(other=>other.href===item.href)).slice(0,6);
+ return <main className="profile-page">
+  <style>{`
+   .profile-page{background:#f7f4ed;min-height:100vh;padding:42px 20px 76px}.profile-shell{max-width:1120px;margin:auto}.profile-hero{background:linear-gradient(135deg,#0c3448,#061624);color:#fff;border-radius:28px;padding:clamp(30px,5vw,54px);position:relative;overflow:hidden}.profile-hero:after{content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(202,168,106,.22);border-radius:50%;right:-120px;top:-170px;box-shadow:0 0 0 60px rgba(202,168,106,.035)}.profile-hero .kicker{color:#d6b879}.profile-hero h1{color:#fff;font-size:clamp(40px,6vw,64px);line-height:1;margin:10px 0 14px;position:relative;z-index:1}.profile-hero p{color:#dfe7eb;max-width:720px;line-height:1.65;margin:0;position:relative;z-index:1}.profile-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:20px;margin-top:20px}.profile-panel{background:#fff;border:1px solid rgba(12,52,72,.1);border-radius:22px;padding:26px;box-shadow:0 12px 34px rgba(6,22,36,.045)}.profile-panel h2{font-size:clamp(28px,3.2vw,40px);margin:6px 0 12px;line-height:1.05}.profile-panel p{line-height:1.6}.interest-head,.mini-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.interest-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.interest-tag{display:inline-flex;padding:9px 14px;border-radius:999px;background:#f5efe3;border:1px solid rgba(202,168,106,.28);font-weight:650}.profile-recommendations{margin-top:20px;background:#fff;border:1px solid rgba(12,52,72,.1);border-radius:24px;padding:clamp(26px,4vw,38px)}.recommendation-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(300px,1.1fr);gap:34px;align-items:end}.recommendation-head h2{font-size:clamp(32px,4vw,48px);line-height:1.02;margin:6px 0 0}.recommendation-head p{margin:0;line-height:1.65}.recommendation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}.recommendation-card{padding:20px;border-radius:18px;min-width:0}.empty-recommendations{margin-top:24px;padding:22px;border-radius:18px;background:#f7f4ed}.empty-recommendations h3{margin:0 0 6px}.empty-recommendations p{margin:0 0 16px}.profile-lower{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:20px}.profile-lower .profile-panel{display:flex;flex-direction:column;min-height:220px}.profile-lower .profile-panel .panel-action{margin-top:auto;padding-top:14px}.status-pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:7px 11px;border-radius:999px;background:#f4f1ea;width:max-content}.status-dot{width:7px;height:7px;border-radius:50%;background:#b29a6a}.profile-success{margin-top:16px;padding:14px 16px;border-radius:14px;background:#eef4ef;border:1px solid rgba(40,100,65,.15)}
+   @media(max-width:850px){.profile-page{padding:18px 14px 54px}.profile-hero{border-radius:20px;padding:30px 22px}.profile-grid,.profile-lower,.recommendation-head{grid-template-columns:1fr}.profile-grid,.profile-lower{gap:14px}.profile-panel{padding:21px}.interest-head{align-items:flex-start;flex-direction:column;gap:8px}.profile-recommendations{padding:24px 20px}.recommendation-head{gap:10px}.recommendation-head h2{font-size:clamp(30px,9vw,42px)}.recommendation-grid{grid-template-columns:1fr}.profile-lower .profile-panel{min-height:0}}
+  `}</style>
+  <div className="profile-shell">
+   <section className="profile-hero"><div className="kicker">Il tuo BIMARIS</div><h1>{profile?.display_name?`Ciao, ${profile.display_name}`:"Il tuo profilo"}</h1><p>Il tuo spazio personale per raccogliere ciò che vuoi scoprire, salvare i luoghi che ti interessano e ricevere suggerimenti sempre più vicini al tuo modo di vivere Messina.</p></section>
+   {onboarding==="completato"&&<div className="profile-success">Profilo personalizzato. BIMARIS userà queste preferenze per rendere progressivamente più pertinenti i suggerimenti.</div>}
+   <div className="profile-grid">
+    <section className="profile-panel"><div className="interest-head"><div><div className="kicker">Preferenze</div><h2>I tuoi interessi</h2></div><Link className="text-link" href="/profilo/onboarding">{profile?.onboarding_completed?"Modifica preferenze →":"Personalizza BIMARIS →"}</Link></div>{ranked.length?<div className="interest-tags">{ranked.map(item=><span className="interest-tag" key={item.interest_key}>{labels[item.interest_key]??item.interest_key}</span>)}</div>:<div><p>Rispondi a tre domande rapide e scegli ciò che vuoi scoprire.</p><Link className="button" href="/profilo/onboarding">Inizia</Link></div>}</section>
+    <section className="profile-panel"><div className="kicker">Il tuo profilo</div><h2>{profile?.onboarding_completed?"Personalizzato":"Da completare"}</h2><p>{profile?.onboarding_completed?"Le tue preferenze sono attive e contribuiscono a ordinare i contenuti che BIMARIS ti propone.":"Completa le preferenze per rendere più utili i suggerimenti e costruire il tuo BIMARIS."}</p><Link className="text-link" href="/profilo/onboarding">{profile?.onboarding_completed?"Aggiorna il profilo →":"Completa il profilo →"}</Link></section>
+   </div>
+   <section className="profile-recommendations"><div className="recommendation-head"><div><div className="kicker">Per te</div><h2>Scelti in base ai tuoi interessi</h2></div><p>Luoghi, storie, borghi, sapori ed esperienze ordinati in base alle tue preferenze e, progressivamente, a ciò che esplori su BIMARIS.</p></div>{recommendations.length?<div className="recommendation-grid">{recommendations.map(item=><article className="card recommendation-card" key={item.key}><div className="kicker">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><Link className="text-link" href={item.href}>Scopri →</Link></article>)}</div>:<div className="empty-recommendations"><h3>I suggerimenti si costruiscono con te</h3><p>Completa le preferenze e continua a esplorare BIMARIS: qui compariranno contenuti specifici più vicini ai tuoi interessi.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
+   <div className="profile-lower">
+    <section className="profile-panel"><div className="mini-head"><div><div className="kicker">Comunicazioni</div><h2>Newsletter</h2></div><span className="status-pill"><span className="status-dot"/>{newsletter?.subscribed?"Attiva":"Non attiva"}</span></div><p>{newsletter?.subscribed?(newsletter.personalized?"Ricevi contenuti personalizzati in base ai tuoi interessi.":"La newsletter BIMARIS è attiva."):"La scelta resta facoltativa e separata dal tuo account."}</p><div className="panel-action"><Link className="text-link" href="/profilo/onboarding">Gestisci preferenze →</Link></div></section>
+    <section className="profile-panel"><div className="mini-head"><div><div className="kicker">Salvati</div><h2>La tua raccolta</h2></div><span className="status-pill">{saved?.length??0} salvati</span></div><p>{saved?.length?`Hai ${saved.length} elementi nella tua raccolta personale.`:"Non hai ancora salvato nulla. Esplora luoghi ed esperienze e costruisci la tua raccolta."}</p><div className="panel-action"><Link className="button" href="/mappa">Esplora la mappa</Link></div></section>
+   </div>
+  </div>
+ </main>;
 }
