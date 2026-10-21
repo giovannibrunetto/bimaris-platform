@@ -42,11 +42,11 @@ export default async function AdminPage() {
     </Link>
   );
 
-  const metric = (label: string, value: number, attention = false) => (
-    <div style={{ minWidth: 0, padding: "18px 16px", borderRadius: 18, background: attention && value > 0 ? "#fff7f4" : "rgba(255,255,255,.72)", border: attention && value > 0 ? "1px solid rgba(143,47,36,.35)" : "1px solid rgba(16,24,32,.08)", boxShadow: "0 8px 24px rgba(7,24,35,.04)" }}>
+  const metric = (href: string, label: string, value: number, attention = false) => (
+    <Link href={href} aria-label={`Apri ${label}`} style={{ display: "block", minWidth: 0, padding: "18px 16px", borderRadius: 18, background: attention && value > 0 ? "#fff7f4" : "rgba(255,255,255,.72)", border: attention && value > 0 ? "1px solid rgba(143,47,36,.35)" : "1px solid rgba(16,24,32,.08)", boxShadow: "0 8px 24px rgba(7,24,35,.04)", textDecoration: "none", color: "inherit", cursor: "pointer" }}>
       <strong style={{ display: "block", fontFamily: "Georgia,serif", fontSize: 32, lineHeight: 1, color: attention && value > 0 ? "#8f2f24" : "#0b2638", marginBottom: 7 }}>{value}</strong>
       <span style={{ fontSize: 13, lineHeight: 1.25, color: "#59636b", fontWeight: 700 }}>{label}</span>
-    </div>
+    </Link>
   );
 
   return <>
@@ -61,7 +61,7 @@ export default async function AdminPage() {
     <section style={{ background: "var(--sand)", padding: "clamp(34px,6vw,64px) 6vw" }}>
       <div style={{ maxWidth: 1180, margin: "0 auto" }}>
         <div style={{ marginBottom: 24 }}><div className="kicker">Da gestire</div><h2 style={{ fontFamily: "Georgia,serif", fontWeight: 500, fontSize: "clamp(36px,6vw,54px)", margin: "7px 0 8px", lineHeight: 1 }}>Novità pendenti</h2><p style={{ maxWidth: 600, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>I contatori si aggiornano quando le relative pratiche vengono gestite.</p></div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10 }}>{metric("Candidature", pendingApps, true)}{metric("Operatori / Esperienze", pendingOperatorArea, true)}{metric("Operatori online", onlineOperators)}{metric("Esperienze online", onlineExperiences)}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10 }}>{metric("/admin/candidature", "Candidature", pendingApps, true)}{metric("/admin/operatori", "Operatori / Esperienze", pendingOperatorArea, true)}{metric("/admin/operatori", "Operatori online", onlineOperators)}{metric("/admin/esperienze", "Esperienze online", onlineExperiences)}</div>
       </div>
     </section>
     <section className="section"><div className="section-head"><div><div className="kicker">Gestione</div><h2>Sezioni amministrative</h2></div><p>Il badge rosso indica che ci sono elementi da esaminare.</p></div><div className="category-grid">{card("/admin/candidature", "Candidature", pendingApps, "Nuove candidature e candidature ancora in valutazione.")}{card("/admin/operatori", "Operatori ed Esperienze", pendingOperatorArea, `${onlineOperators} operatori online · ${exps.length} esperienze. Include modifiche ai profili, nuove esperienze e revisioni da approvare.`)}{card("/admin/itinerari", "Itinerari", 0, `${itins.filter((x: any) => x.published).length} itinerari online su ${itins.length}.`)}</div></section>
