@@ -180,7 +180,7 @@ function mapCultureEntry(row: RawCultureEntry): CultureEntry | null {
   };
 }
 
-const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators(slug,name,why_selected,whatsapp,website,instagram)";
+const experienceSelect = "id,slug,name,excerpt,description,duration_minutes,price_from,featured,bookable,why_selected,image_url,image_alt,meeting_point,google_maps_query,booking_url,booking_note,latitude,longitude,territory:territories(slug,name),category:categories(slug,name),operator:operators!experiences_operator_id_fkey(slug,name,why_selected,whatsapp,website,instagram)";
 const cultureSelect = "id,slug,title,excerpt,body,category,source_label,source_url,featured,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,primary_historical_period,historical_periods,historical_period_note,historical_sort_year,place:places(name,address,google_maps_query,latitude,longitude)";
 
 export async function getPublishedExperiences(): Promise<Experience[]> {
