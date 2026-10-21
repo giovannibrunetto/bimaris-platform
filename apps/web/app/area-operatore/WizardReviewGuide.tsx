@@ -3,7 +3,7 @@
 import {useEffect,useRef,useState} from "react";
 import {createPortal} from "react-dom";
 
-type ReviewSections={basics?:string;description?:string;details?:string;media?:string;location?:string};
+type ReviewSections={name?:string;excerpt?:string;basics?:string;description?:string;details?:string;media?:string;location?:string};
 type Experience={id:string;name:string;excerpt?:string|null;description?:string|null;review_status:string;review_notes:string|null;review_sections:ReviewSections|null};
 type Guide={label:string;note:string};
 
@@ -16,12 +16,21 @@ function correctionNote(experience:Experience,label:string,sectionNote:string){
 function guidesForStep(experience:Experience,step:number):Guide[]{
  const sections=experience.review_sections??{};
  const guides:Guide[]=[];
- if(step===0&&sections.basics?.trim())guides.push({label:"Testo breve / titolo",note:correctionNote(experience,"Informazioni principali",sections.basics)});
+ if(step===0&&(sections.name?.trim()||sections.excerpt?.trim()||sections.basics?.trim()))guides.push({label:"Identità",note:correctionNote(experience,"Informazioni principali",sections.name??sections.excerpt??sections.basics??"")});
  if(step===1&&sections.description?.trim())guides.push({label:"Descrizione",note:correctionNote(experience,"Descrizione",sections.description)});
  if(step===2&&sections.details?.trim())guides.push({label:"Durata, prezzo e dettagli",note:correctionNote(experience,"Durata / prezzo / dettagli",sections.details)});
  if(step===2&&sections.location?.trim())guides.push({label:"Luogo e punto di incontro",note:correctionNote(experience,"Luogo / punto di incontro",sections.location)});
  if(step===3&&sections.media?.trim())guides.push({label:"Fotografie",note:correctionNote(experience,"Fotografie / copertina",sections.media)});
  return guides;
+}
+
+function correctionStepLabel(experience:Experience){
+ const sections=experience.review_sections??{};
+ if(sections.name||sections.excerpt||sections.basics)return "Step 1 — Identità";
+ if(sections.description)return "Step 2 — Il racconto";
+ if(sections.details||sections.location)return "Step 3 — Dettagli";
+ if(sections.media)return "Step 4 — Immagini";
+ return null;
 }
 
 function normalized(value:string|null|undefined){return (value??"").trim().toLocaleLowerCase("it-IT");}
@@ -37,6 +46,24 @@ function experienceFromWizard(wizard:Element,rejected:Experience[]){
  const exact=rejected.find(e=>values.includes(normalized(e.name))||values.includes(normalized(e.description))||values.includes(normalized(e.excerpt)));
  if(exact)return exact;
  return rejected.length===1?rejected[0]:null;
+}
+
+function syncCorrectionStepLabels(rejected:Experience[]){
+ for(const old of Array.from(document.querySelectorAll("[data-bimaris-correction-step]")))old.remove();
+ for(const experience of rejected){
+  const stepLabel=correctionStepLabel(experience);
+  if(!stepLabel)continue;
+  const card=Array.from(document.querySelectorAll(".experience-card")).find(node=>normalized(node.querySelector("h3")?.textContent)===normalized(experience.name));
+  if(!card)continue;
+  const marker=document.createElement("p");
+  marker.setAttribute("data-bimaris-correction-step",experience.id);
+  marker.style.margin="4px 0 8px";
+  marker.style.fontSize="0.84rem";
+  marker.style.color="#7d5b28";
+  marker.innerHTML=`<strong>Modifica richiesta · ${stepLabel}</strong>`;
+  const note=Array.from(card.querySelectorAll("p")).find(node=>normalized(node.textContent).startsWith("nota bimaris:"));
+  if(note)card.insertBefore(marker,note);else card.querySelector("h3")?.insertAdjacentElement("afterend",marker);
+ }
 }
 
 function blockPrematureSubmission(rejected:Experience[]){
@@ -65,17 +92,22 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
  const [step,setStep]=useState(0);
 
  useEffect(()=>{
+  let syncing=false;
   function sync(){
+   if(syncing)return;
+   syncing=true;
    blockPrematureSubmission(rejected);
+   syncCorrectionStepLabels(rejected);
    const wizard=document.querySelector(".experience-wizard");
    const stepNode=wizard?.querySelector(".experience-step")??null;
-   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);return;}
+   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);syncing=false;return;}
    if(!activeId.current){
     const match=experienceFromWizard(wizard,rejected);
     if(match)activeId.current=match.id;
    }
    const active=rejected.find(e=>e.id===activeId.current)??null;
    setTarget(stepNode);setExperience(active);setStep(currentStep(wizard));
+   syncing=false;
   }
   sync();
   const observer=new MutationObserver(sync);observer.observe(document.body,{childList:true,subtree:true});
