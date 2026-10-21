@@ -1,0 +1,106 @@
+/* Admin · Crea un'esperienza
+   Rifinitura visiva del form amministrativo senza alterarne il flusso. */
+form.form:has(> input[name="action"][value="create"]) {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 30px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+  background: #fff;
+  border: 1px solid #dfd0c1;
+  border-radius: 22px;
+  box-shadow: 0 12px 32px rgba(57, 39, 21, .06);
+}
+
+form.form:has(> input[name="action"][value="create"]) label {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #5f4b37;
+}
+
+form.form:has(> input[name="action"][value="create"]) input:not([type="checkbox"]),
+form.form:has(> input[name="action"][value="create"]) select,
+form.form:has(> input[name="action"][value="create"]) textarea {
+  width: 100%;
+  margin-top: 7px;
+  min-height: 48px;
+  border: 1px solid #d9cbbb;
+  border-radius: 12px;
+  background: #fbf9f6;
+  color: #241b14;
+  box-shadow: none;
+}
+
+form.form:has(> input[name="action"][value="create"]) input:focus,
+form.form:has(> input[name="action"][value="create"]) select:focus,
+form.form:has(> input[name="action"][value="create"]) textarea:focus {
+  outline: 2px solid rgba(185, 128, 55, .22);
+  border-color: #b98037;
+}
+
+form.form:has(> input[name="action"][value="create"]) textarea {
+  min-height: 116px;
+  resize: vertical;
+}
+
+form.form:has(> input[name="action"][value="create"]) .wide {
+  grid-column: 1 / -1;
+}
+
+form.form:has(> input[name="action"][value="create"]) .privacy-check {
+  min-height: 48px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2d6ca;
+  border-radius: 12px;
+  background: #faf7f2;
+  font-size: 13px;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+form.form:has(> input[name="action"][value="create"]) .privacy-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #a87532;
+}
+
+form.form:has(> input[name="action"][value="create"]) .wide:last-child {
+  margin-top: 4px;
+  padding-top: 18px;
+  border-top: 1px solid #eadfd4;
+  display: flex;
+  justify-content: flex-end;
+}
+
+form.form:has(> input[name="action"][value="create"]) .wide:last-child .button {
+  min-width: 190px;
+}
+
+@media (max-width: 760px) {
+  form.form:has(> input[name="action"][value="create"]) {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  form.form:has(> input[name="action"][value="create"]) .wide {
+    grid-column: auto;
+  }
+
+  form.form:has(> input[name="action"][value="create"]) .wide:last-child {
+    display: block;
+  }
+
+  form.form:has(> input[name="action"][value="create"]) .wide:last-child .button {
+    width: 100%;
+  }
+}
