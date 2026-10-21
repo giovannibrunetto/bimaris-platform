@@ -6,28 +6,50 @@ type Props={
  items:ExperienceMediaItem[];
  coverKey:string|null;
  optimizing:boolean;
+ experienceName:string;
+ excerpt:string;
+ duration:string;
+ price:string;
+ categoryName:string;
+ territoryName:string;
  onFiles:(files:File[])=>void;
  onCover:(key:string)=>void;
  onMove:(key:string,delta:number)=>void;
  onRemove:(item:ExperienceMediaItem)=>void;
 };
 
-export default function ExperienceMediaStep({items,coverKey,optimizing,onFiles,onCover,onMove,onRemove}:Props){
+export default function ExperienceMediaStep({items,coverKey,optimizing,experienceName,excerpt,duration,price,categoryName,territoryName,onFiles,onCover,onMove,onRemove}:Props){
+ const cover=items.find(item=>item.key===coverKey)??items[0]??null;
  return <div className="experience-step">
   <div className="experience-step__number">04 · Le immagini</div>
   <h3>Prima ancora di leggerla, devono desiderare di viverla.</h3>
-  <p className="experience-step__lead">Gestisci fino a 6 fotografie in un unico ordine. Puoi scegliere la copertina, spostare liberamente immagini già salvate e nuove, oppure rimuoverle prima del salvataggio.</p>
+  <p className="experience-step__lead">Scegli la fotografia che rappresenterà la tua esperienza e guarda subito l'effetto che avrà su chi la scopre in BIMARIS.</p>
+
+  <div className="experience-cover-section">
+   <div className="experience-cover-section__head"><div><span>Foto di copertina</span><strong>Così apparirà la tua esperienza</strong></div><small>Puoi cambiarla in qualsiasi momento scegliendo una foto dalla galleria.</small></div>
+   <div className="experience-cover-card">
+    <div className="experience-cover-card__image">{cover?<img src={cover.url} alt={`Copertina di ${experienceName||"esperienza"}`}/>:<span>La foto di copertina apparirà qui</span>}</div>
+    <div className="experience-cover-card__copy">
+     <div className="experience-cover-card__meta">{[categoryName,territoryName].filter(Boolean).join(" · ")||"Esperienza BIMARIS"}</div>
+     <h4>{experienceName||"La tua esperienza"}</h4>
+     {excerpt&&<p>{excerpt}</p>}
+     {(duration||price)&&<strong>{duration?`${duration} min`:""}{duration&&price?" · ":""}{price?`da € ${price}`:""}</strong>}
+    </div>
+   </div>
+  </div>
+
   <label className="experience-upload">
    <input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple disabled={optimizing||items.length>=6} onChange={e=>{const files=Array.from(e.target.files??[]);if(files.length)onFiles(files);e.currentTarget.value="";}}/>
    <strong>{optimizing?"Ottimizzo le fotografie…":"+ Aggiungi fotografie"}</strong>
    <span>JPG, PNG, WebP o AVIF · massimo 6 immagini · fino a 20 MB in origine · ottimizzazione automatica</span>
   </label>
-  {items.length>0&&<div className="experience-thumbs">{items.map((item,index)=>{const selected=coverKey===item.key;return <div className={`experience-thumb-card${selected?" is-cover":""}`} key={item.key}>
+
+  {items.length>0&&<><div className="experience-gallery-heading"><strong>Galleria dell'esperienza</strong><span>Riordina le immagini o scegline una come nuova copertina.</span></div><div className="experience-thumbs">{items.map((item,index)=>{const selected=cover?.key===item.key;return <div className={`experience-thumb-card${selected?" is-cover":""}`} key={item.key}>
    <div className="experience-thumb-card__photo"><img src={item.url} alt={`Foto ${index+1}`}/>{selected&&<span className="experience-thumb-card__badge">★ Copertina</span>}</div>
    <div className="experience-thumb-card__toolbar">
-    <button type="button" className="experience-thumb-card__cover" disabled={selected} onClick={()=>onCover(item.key)}>{selected?"Foto principale":"Scegli copertina"}</button>
+    <button type="button" className="experience-thumb-card__cover" disabled={selected} onClick={()=>onCover(item.key)}>{selected?"Foto principale":"Usa come copertina"}</button>
     <div className="experience-thumb-card__tools"><button type="button" disabled={index===0} onClick={()=>onMove(item.key,-1)} aria-label="Sposta foto a sinistra" title="Sposta a sinistra">←</button><button type="button" disabled={index===items.length-1} onClick={()=>onMove(item.key,1)} aria-label="Sposta foto a destra" title="Sposta a destra">→</button><button type="button" onClick={()=>onRemove(item)} aria-label="Rimuovi fotografia" title="Rimuovi fotografia">×</button></div>
    </div>
-  </div>})}</div>}
+  </div>})}</div></>}
  </div>;
 }
