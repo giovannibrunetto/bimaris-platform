@@ -49,18 +49,29 @@ function experienceFromWizard(wizard:Element,rejected:Experience[]){
 }
 
 function syncCorrectionStepLabels(rejected:Experience[]){
- for(const old of Array.from(document.querySelectorAll("[data-bimaris-correction-step]")))old.remove();
+ const activeIds=new Set(rejected.map(e=>e.id));
+ for(const old of Array.from(document.querySelectorAll<HTMLElement>("[data-bimaris-correction-step]"))){
+  const id=old.dataset.bimarisCorrectionStep;
+  if(!id||!activeIds.has(id))old.remove();
+ }
  for(const experience of rejected){
   const stepLabel=correctionStepLabel(experience);
   if(!stepLabel)continue;
   const card=Array.from(document.querySelectorAll(".experience-card")).find(node=>normalized(node.querySelector("h3")?.textContent)===normalized(experience.name));
   if(!card)continue;
+  const existing=card.querySelector<HTMLElement>(`[data-bimaris-correction-step="${experience.id}"]`);
+  const text=`Modifica richiesta · ${stepLabel}`;
+  if(existing){
+   if(existing.textContent!==text)existing.textContent=text;
+   continue;
+  }
   const marker=document.createElement("p");
   marker.setAttribute("data-bimaris-correction-step",experience.id);
   marker.style.margin="4px 0 8px";
   marker.style.fontSize="0.84rem";
+  marker.style.fontWeight="700";
   marker.style.color="#7d5b28";
-  marker.innerHTML=`<strong>Modifica richiesta · ${stepLabel}</strong>`;
+  marker.textContent=text;
   const note=Array.from(card.querySelectorAll("p")).find(node=>normalized(node.textContent).startsWith("nota bimaris:"));
   if(note)card.insertBefore(marker,note);else card.querySelector("h3")?.insertAdjacentElement("afterend",marker);
  }
@@ -92,27 +103,29 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
  const [step,setStep]=useState(0);
 
  useEffect(()=>{
-  let syncing=false;
+  let scheduled=false;
   function sync(){
-   if(syncing)return;
-   syncing=true;
    blockPrematureSubmission(rejected);
    syncCorrectionStepLabels(rejected);
    const wizard=document.querySelector(".experience-wizard");
    const stepNode=wizard?.querySelector(".experience-step")??null;
-   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);syncing=false;return;}
+   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);return;}
    if(!activeId.current){
     const match=experienceFromWizard(wizard,rejected);
     if(match)activeId.current=match.id;
    }
    const active=rejected.find(e=>e.id===activeId.current)??null;
    setTarget(stepNode);setExperience(active);setStep(currentStep(wizard));
-   syncing=false;
+  }
+  function scheduleSync(){
+   if(scheduled)return;
+   scheduled=true;
+   window.requestAnimationFrame(()=>{scheduled=false;sync();});
   }
   sync();
-  const observer=new MutationObserver(sync);observer.observe(document.body,{childList:true,subtree:true});
-  document.addEventListener("input",sync,true);
-  return()=>{observer.disconnect();document.removeEventListener("input",sync,true);};
+  const observer=new MutationObserver(scheduleSync);observer.observe(document.body,{childList:true,subtree:true});
+  document.addEventListener("input",scheduleSync,true);
+  return()=>{observer.disconnect();document.removeEventListener("input",scheduleSync,true);};
  },[experiences]);
 
  if(!target||!experience)return null;
