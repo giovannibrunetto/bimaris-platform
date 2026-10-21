@@ -14,8 +14,8 @@ export async function checkApiRateLimit(request: NextRequest, scope: Scope): Pro
   const db = createServiceClient();
   const secret = process.env.BIMARIS_ADMIN_PASSWORD;
   if (!db || !secret) return "unavailable";
-  // On Vercel, x-real-ip is supplied by the platform. Never use a user-supplied identity in the key.
-  const ip = request.headers.get("x-real-ip")?.trim();
+  // Prefer the forwarding header set by Vercel; avoid using form fields or cookies as identity.
+  const ip = (request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-real-ip"))?.split(",")[0]?.trim();
   if (!ip) return "unavailable";
   const actor = createHmac("sha256", secret).update(ip).digest("hex");
   const [max, seconds] = limits[scope];
