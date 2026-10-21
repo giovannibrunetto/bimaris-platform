@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import "./brand.css";
 import "./map-mobile.css";
@@ -24,12 +25,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="it">
       <body>
+        <Suspense fallback={null}>
         <SiteHeader />
         <AnalyticsTracker />
         <AnalyticsClickTracker />
         <main>{children}</main>
         <SiteFooter />
         <ConsentBanner />
+        </Suspense>
       </body>
     </html>
   );
