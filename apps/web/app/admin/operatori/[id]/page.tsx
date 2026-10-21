@@ -7,10 +7,11 @@ function fmt(v:string|null){return v?new Intl.DateTimeFormat("it-IT",{dateStyle:
 function val(v:unknown){return v===null||v===undefined||v===""?"—":String(v)}
 const inputStyle={width:"100%",padding:"11px 13px",border:"1px solid #d8cbbd",borderRadius:10,background:"#fff"};
 const panel={padding:24,margin:0,background:"#fff",border:"1px solid #d7c7b6",boxShadow:"0 6px 20px rgba(57,39,21,.06)"};
+function analyticsWindowStart(){return new Date(Date.now()-30*24*60*60*1000).toISOString();}
 export default async function Page({params,searchParams}:{params:Promise<{id:string}>,searchParams:Promise<{state?:string;tab?:string}>}){
  if(!(await isAdminAuthenticated()))redirect("/admin/login"); const {id}=await params; const q=await searchParams; const tab=["profilo","esperienze","attivita","amministrazione"].includes(q.tab??"")?q.tab!:"esperienze"; const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
  const {data:o}=await db.from("operators").select("*,territory:territories(name)").or(`id.eq.${id},slug.eq.${id}`).maybeSingle(); if(!o)notFound();
- const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
+ const since=analyticsWindowStart();
  const [{data:apps},{data:experiences},{data:members},{data:events},{data:revisions}]=await Promise.all([
   db.from("operator_applications").select("*").eq("operator_id",o.id).order("created_at",{ascending:false}),
   db.from("experiences").select("id,slug,name,published,review_status,featured,created_at").eq("operator_id",o.id).order("created_at",{ascending:false}),
