@@ -3,14 +3,22 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
-const PREVIEW_HOST = "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app";
+const ALLOWED_HOSTS = new Set([
+  "bimarisnet.it",
+  "www.bimarisnet.it",
+  "bimaris-platform.vercel.app",
+  "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app",
+]);
 
 function safePath(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 }
 
 function publicUrl(path: string, requestUrl: URL) {
-  const origin = requestUrl.hostname === PREVIEW_HOST ? requestUrl.origin : PUBLIC_SITE_URL;
+  // Keep the same host used to start OAuth so the freshly written Supabase
+  // session cookie is immediately available on the destination page.
+  // Falling back to the canonical public URL prevents redirects to unknown hosts.
+  const origin = ALLOWED_HOSTS.has(requestUrl.hostname) ? requestUrl.origin : PUBLIC_SITE_URL;
   return new URL(path, origin);
 }
 
