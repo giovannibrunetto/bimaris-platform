@@ -20,7 +20,7 @@ export async function saveOnboarding(formData: FormData) {
   const timeAvailable = String(formData.get("typical_time_available") ?? "");
   const preferredPace = String(formData.get("preferred_pace") ?? "");
   const newsletter = formData.get("newsletter") === "yes";
-  const personalized = newsletter && formData.get("personalized") === "yes";
+  const personalized = formData.get("personalized") === "yes";
 
   if (!interests.length || !allowedCompanions.has(travelCompanion) || !allowedTimes.has(timeAvailable) || !allowedPaces.has(preferredPace)) {
     redirect("/profilo/onboarding?errore=dati");
