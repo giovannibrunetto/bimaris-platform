@@ -11,6 +11,10 @@
   --wave: #1598d0;
 }
 
+html {
+  background: #0a0908;
+}
+
 body {
   background: #fffaf4;
   color: var(--ink);
