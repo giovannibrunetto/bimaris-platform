@@ -6,7 +6,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 export const dynamic="force-dynamic"; export const revalidate=0;
 function fmt(v:string){return new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(new Date(v));}
 function statusLabel(v:string){return ({new:"Nuova",reviewing:"In valutazione",accepted:"Accettata",rejected:"Rifiutata"} as Record<string,string>)[v]??v;}
-function modeLabel(v?:string|null){return ({physical:"Sede fisica",itinerant:"Attività itinerante / senza sede aperta al pubblico",both:"Sede fisica e attività itinerante"} as Record<string,string>)[v??""]??v??"—";}
+function modeLabel(v?:string|null){return ({fixed:"Sede fisica",physical:"Sede fisica",itinerant:"Attività itinerante / senza sede aperta al pubblico",both:"Sede fisica e attività itinerante"} as Record<string,string>)[v??""]??v??"—";}
 const fieldStyle={display:"grid",gap:6,fontSize:13,fontWeight:700,color:"#26343d"} as const;
 const inputStyle={width:"100%",minHeight:44,border:"1px solid #d8d3ca",borderRadius:10,padding:"0 12px",background:"#fff",color:"#101820"} as const;
 export default async function Page({params}:{params:Promise<{id:string}>}){
