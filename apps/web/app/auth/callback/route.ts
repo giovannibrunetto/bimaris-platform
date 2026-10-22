@@ -58,8 +58,23 @@ export async function GET(request: Request) {
   const userId = userData.user?.id ?? null;
   if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
 
-  if (next) return NextResponse.redirect(publicUrl(next, url));
   if (operatorIntent) return NextResponse.redirect(publicUrl("/area-operatore", url));
+
+  // A personal account that has never selected any interests has not completed
+  // onboarding yet. Route it there before honoring the normal /profilo target.
+  // Existing users keep going directly to their profile.
+  if (!next || next === "/profilo") {
+    const { count: interestCount } = await supabase
+      .from("user_interests")
+      .select("interest_key", { count: "exact", head: true })
+      .eq("user_id", userId);
+
+    if (!interestCount) {
+      return NextResponse.redirect(publicUrl("/profilo/onboarding", url));
+    }
+  }
+
+  if (next) return NextResponse.redirect(publicUrl(next, url));
 
   const { data: membership } = await supabase
     .from("operator_memberships")
