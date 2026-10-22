@@ -17,24 +17,24 @@ body {
 }
 
 .site-header {
-  height: 88px;
+  height: 64px;
   padding: 0 4vw;
   background: rgba(17, 15, 13, .95);
   border-bottom: 1px solid rgba(210, 160, 90, .28);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, .18);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .16);
 }
 
 .brand-image {
-  width: 218px;
-  height: 64px;
+  width: 172px;
+  height: 50px;
   flex: 0 0 auto;
   display: block;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid rgba(241, 202, 138, .35);
   background-image: url('/brand/bimaris-main.jpeg');
   background-size: cover;
   background-position: center 49%;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 6px 20px rgba(0,0,0,.22);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 4px 14px rgba(0,0,0,.2);
 }
 
 .nav {
@@ -268,12 +268,12 @@ body {
 
 @media (max-width: 950px) {
   .site-header {
-    height: 82px;
+    height: 60px;
   }
 
   .brand-image {
-    width: 202px;
-    height: 58px;
+    width: 158px;
+    height: 46px;
   }
 
   .brand-hero-copy {
@@ -283,13 +283,13 @@ body {
 
 @media (max-width: 620px) {
   .site-header {
-    height: 76px;
+    height: 58px;
     padding: 0 3.5vw;
   }
 
   .brand-image {
-    width: 174px;
-    height: 52px;
+    width: 146px;
+    height: 44px;
   }
 
   .brand-hero {
