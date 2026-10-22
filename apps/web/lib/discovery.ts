@@ -24,6 +24,16 @@ function spendingScore(price:number|null,spending?:DiscoverySpending){
  if(spending==="50-100")return price>=50&&price<=100?10:price<50?7:Math.max(0,10-(price-100)*.2);
  return price>=100?10:7;
 }
+function durationFitScore(duration:number|null,available?:number){
+ if(!available||!duration)return 6;
+ if(duration>available)return 0;
+ const ratio=duration/available;
+ // Il tempo scelto è disponibilità massima, non durata obbligatoria: premiamo un buon uso del tempo senza escludere attività brevi.
+ if(ratio>=.55)return 10;
+ if(ratio>=.3)return 8;
+ if(ratio>=.15)return 6;
+ return 4;
+}
 
 export async function discoverExperiences(query:DiscoveryQuery):Promise<DiscoveryResult[]>{
  const supabase=createPublicClient();if(!supabase||!query.intents.length)return[];
@@ -43,11 +53,14 @@ export async function discoverExperiences(query:DiscoveryQuery):Promise<Discover
   if(query.availableMinutes&&experience.duration_minutes&&experience.duration_minutes>query.availableMinutes)continue;
   const windows=(availabilityMap.get(experience.id)??[]).filter(slot=>(!slot.valid_from||slot.valid_from<=date)&&(!slot.valid_until||slot.valid_until>=date));if(!windows.length)continue;
   const current=windows.find(slot=>slot.start_time<=time&&slot.end_time>=time),later=windows.find(slot=>slot.start_time>time);if(!current&&!later)continue;
+  // Una preferenza basta per entrare tra i candidati; più atmosfere corrispondenti aumentano nettamente il ranking.
   const best=Math.max(0,Math.min(weights[0]??0,1)),extras=weights.slice(1).reduce((sum,w)=>sum+Math.max(0,Math.min(w,1)),0);
-  const intentScore=28*best+12*extras,audienceScore=20,durationScore=query.availableMinutes&&experience.duration_minutes?10*Math.min(1,query.availableMinutes/experience.duration_minutes):10,editorialScore=Math.max(0,Math.min(profile.editorial_weight,5));
+  const intentScore=30*best+14*extras,audienceScore=18,durationScore=durationFitScore(experience.duration_minutes,query.availableMinutes),editorialScore=Math.max(0,Math.min(profile.editorial_weight,5));
   const price=experience.price_from==null?null:Number(experience.price_from),priceScore=spendingScore(price,query.spending);
-  const score=Math.round((intentScore+audienceScore+durationScore+priceScore+editorialScore)*100)/100;
+  // A parità di qualità, ciò che è fruibile adesso precede ciò che sarà disponibile più tardi.
+  const availabilityScore=current?4:0;
+  const score=Math.round((intentScore+audienceScore+durationScore+priceScore+availabilityScore+editorialScore)*100)/100;
   results.push({id:experience.id,slug:experience.slug,name:experience.name,excerpt:experience.excerpt,durationMinutes:experience.duration_minutes,priceFrom:price,imageUrl:experience.image_url,environment:profile.environment,bookingRequirement:profile.booking_requirement,bookingNoticeHours:profile.booking_notice_hours,score,availability:current?"now":"today"});
  }
- return results.sort((a,b)=>b.score-a.score).slice(0,limit);
+ return results.sort((a,b)=>b.score-a.score||Number(b.availability==="now")-Number(a.availability==="now")||(a.durationMinutes??Infinity)-(b.durationMinutes??Infinity)).slice(0,limit);
 }
