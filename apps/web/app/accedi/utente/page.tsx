@@ -69,7 +69,7 @@ export default function AccessoUtentePage(){
   <style jsx global>{`
    .user-access-centered .personal-access-shade{background:radial-gradient(circle at 50% 38%,rgba(2,9,15,.08),rgba(2,9,15,.48) 72%,rgba(2,9,15,.7) 100%)}
    .user-access-centered .personal-access-shell{width:min(980px,100%);align-items:center;padding:28px 24px 38px;text-align:center}
-   .user-access-centered .personal-access-brand{width:clamp(190px,22vw,280px);height:92px;margin:0 auto 22px;display:flex;justify-content:center;overflow:hidden;border-radius:14px}
+   .user-access-centered .personal-access-brand{width:clamp(230px,27vw,340px);height:112px;margin:0 auto 22px;display:flex;justify-content:center;overflow:hidden;border-radius:14px}
    .user-access-centered .personal-access-brand img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
    .user-access-centered .personal-access-content{width:min(650px,100%);margin:auto;padding:10px 0 16px;text-align:center}
    .user-access-centered .personal-access-content h1{font-size:clamp(48px,6vw,76px);line-height:1.02;margin:10px auto 18px}
@@ -78,7 +78,7 @@ export default function AccessoUtentePage(){
    .user-access-centered .personal-access-back{margin-top:20px}
    @media(max-width:700px){
     .user-access-centered .personal-access-shell{display:flex;padding:18px 18px max(24px,env(safe-area-inset-bottom))}
-    .user-access-centered .personal-access-brand{width:180px;height:76px;margin:0 auto 24px}
+    .user-access-centered .personal-access-brand{width:210px;height:88px;margin:0 auto 24px}
     .user-access-centered .personal-access-content{margin:0 auto;padding:0}
     .user-access-centered .personal-access-content h1{font-size:clamp(40px,11vw,52px);line-height:1}
     .user-access-centered .personal-access-intro{max-width:96%;font-size:14px}
