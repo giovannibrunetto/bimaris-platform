@@ -2,21 +2,21 @@
   background:#0a0908;
   border-top:1px solid rgba(210,160,90,.22);
   color:#fff5e6;
-  padding:16px clamp(22px,5vw,64px) 13px;
+  padding:9px clamp(22px,5vw,64px) 8px;
   display:grid;
-  grid-template-columns:172px minmax(0,1fr);
+  grid-template-columns:132px minmax(0,1fr);
   grid-template-areas:
     "brand links"
     "brand copyright";
-  column-gap:30px;
-  row-gap:5px;
+  column-gap:24px;
+  row-gap:2px;
   align-items:center;
 }
 
 .brand {
   grid-area:brand;
-  width:172px;
-  height:54px;
+  width:132px;
+  height:42px;
   display:block;
 }
 
@@ -24,7 +24,7 @@
   width:100%;
   height:100%;
   display:block;
-  border-radius:10px;
+  border-radius:8px;
   border:1px solid rgba(241,202,138,.25);
   background-image:url('/brand/bimaris-main.jpeg');
   background-size:cover;
@@ -37,9 +37,9 @@
   flex-wrap:wrap;
   justify-content:flex-end;
   align-items:center;
-  gap:7px 18px;
-  font-size:13px;
-  line-height:1.25;
+  gap:5px 16px;
+  font-size:12px;
+  line-height:1.2;
 }
 
 .links a:hover { color:#f1ca8a; }
@@ -49,56 +49,56 @@
   margin:0;
   text-align:right;
   color:#8f969b;
-  font-size:11px;
-  line-height:1.25;
+  font-size:10px;
+  line-height:1.2;
 }
 
 @media (max-width:760px) {
   .footer {
-    padding:14px 16px 12px;
-    grid-template-columns:112px minmax(0,1fr);
+    padding:9px 14px 8px;
+    grid-template-columns:94px minmax(0,1fr);
     grid-template-areas:
       "brand links"
       "copyright copyright";
-    column-gap:14px;
-    row-gap:9px;
+    column-gap:12px;
+    row-gap:6px;
     align-items:center;
   }
 
   .brand {
-    width:112px;
-    height:42px;
+    width:94px;
+    height:35px;
   }
 
   .links {
     justify-content:flex-start;
     align-content:center;
-    gap:6px 10px;
-    font-size:10px;
-    line-height:1.2;
+    gap:5px 9px;
+    font-size:9px;
+    line-height:1.15;
   }
 
   .copyright {
     text-align:right;
-    font-size:9px;
+    font-size:8px;
   }
 }
 
 @media (max-width:390px) {
   .footer {
-    grid-template-columns:96px minmax(0,1fr);
-    column-gap:11px;
-    padding-left:14px;
-    padding-right:14px;
+    grid-template-columns:84px minmax(0,1fr);
+    column-gap:9px;
+    padding-left:12px;
+    padding-right:12px;
   }
 
   .brand {
-    width:96px;
-    height:38px;
+    width:84px;
+    height:32px;
   }
 
   .links {
-    gap:5px 8px;
-    font-size:9px;
+    gap:4px 7px;
+    font-size:8px;
   }
 }
