@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect,useRef } from "react";
 
-type Result={id:string;slug:string;name:string;excerpt:string|null;imageUrl:string|null;durationMinutes:number|null;priceFrom:number|null;bookingRequirement:string;availability:"now"|"later"};
+type Result={id:string;slug:string;name:string;excerpt:string|null;imageUrl:string|null;durationMinutes:number|null;priceFrom:number|null;bookingRequirement:string;availability:"now"|"today"};
 function durationLabel(minutes:number|null){if(!minutes)return null;if(minutes===60)return"1 ora";if(minutes<60)return`${minutes} min`;if(minutes%60===0)return`${minutes/60} ore`;return`${Math.floor(minutes/60)} h ${minutes%60} min`;}
 
 export default function DiscoveryResults({results}:{results:Result[]}){
