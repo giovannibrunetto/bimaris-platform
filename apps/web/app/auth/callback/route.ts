@@ -7,6 +7,7 @@ const ALLOWED_HOSTS = new Set([
   "bimarisnet.it",
   "www.bimarisnet.it",
   "bimaris-platform.vercel.app",
+  "bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app",
   "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app",
 ]);
 
