@@ -3,7 +3,10 @@ import Link from "next/link";
 import { FormEvent,useEffect,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
-const PUBLIC_SITE_URL="https://www.bimarisnet.it";
+function getAuthCallback(){
+ const origin=window.location.origin;
+ return `${origin}/auth/callback?next=${encodeURIComponent("/profilo")}`;
+}
 
 export default function AccessoUtentePage(){
  const [email,setEmail]=useState("");
@@ -20,7 +23,7 @@ export default function AccessoUtentePage(){
   const supabase=createBrowserSupabaseClient();
   if(!supabase){setMessage("Accesso non disponibile in questo momento.");return;}
   setGoogleLoading(true);setMessage("");
-  const callback=`${PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent("/profilo")}`;
+  const callback=getAuthCallback();
   const {error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:callback}});
   if(error){setGoogleLoading(false);setMessage("Accesso con Google non ancora disponibile. Riprova più tardi.");}
  }
@@ -30,7 +33,7 @@ export default function AccessoUtentePage(){
   const supabase=createBrowserSupabaseClient();
   if(!supabase){setMessage("Accesso non disponibile in questo momento.");return;}
   setLoading(true);setMessage("");
-  const callback=`${PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent("/profilo")}`;
+  const callback=getAuthCallback();
   const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:callback}});
   setLoading(false);
   setMessage(error?"Non è stato possibile inviare il link. Riprova.":"Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
