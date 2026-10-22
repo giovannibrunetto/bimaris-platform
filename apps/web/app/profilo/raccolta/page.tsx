@@ -24,11 +24,11 @@ export default async function RaccoltaPage(){
  const rows=(saved??[]) as SavedRow[];
  const cards:SavedCard[]=rows.map(row=>{
   const id=String(row.item_id);
-  if(["culture","cultura"].includes(row.item_type)){const x=culture.find(v=>String(v.id)===id);if(x)return{itemType:row.item_type,itemId:id,title:x.title,copy:x.excerpt,kind:"Cultura",href:`/cultura/${x.slug}`,createdAt:row.created_at};}
-  if(["story","storia","mito"].includes(row.item_type)){const x=stories.find(v=>String(v.id)===id);if(x)return{itemType:row.item_type,itemId:id,title:x.title,copy:x.excerpt,kind:"Miti e leggende",href:`/storie-miti-leggende/${x.slug}`,createdAt:row.created_at};}
-  if(["village","borgo"].includes(row.item_type)){const x=villages.find(v=>String(v.id)===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:"Borghi",href:`/borghi/${x.slug}`,createdAt:row.created_at};}
-  if(["product","prodotto","food_product"].includes(row.item_type)){const x=products.find(v=>String(v.id)===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:"Sapori e territori",href:`/sapori-territori/${x.slug}`,createdAt:row.created_at};}
-  if(["experience","esperienza"].includes(row.item_type)){const x=experiences.find(v=>String(v.id)===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:x.categoryName,href:`/esperienze/${x.slug}`,createdAt:row.created_at};}
+  if(["culture","cultura"].includes(row.item_type)){const x=culture.find(v=>String(v.id)===id||v.slug===id);if(x)return{itemType:row.item_type,itemId:id,title:x.title,copy:x.excerpt,kind:"Cultura",href:`/cultura/${x.slug}`,createdAt:row.created_at};}
+  if(["story","storia","mito"].includes(row.item_type)){const x=stories.find(v=>String(v.id)===id||v.slug===id);if(x)return{itemType:row.item_type,itemId:id,title:x.title,copy:x.excerpt,kind:"Miti e leggende",href:`/storie-miti-leggende/${x.slug}`,createdAt:row.created_at};}
+  if(["village","borgo"].includes(row.item_type)){const x=villages.find(v=>String(v.id)===id||v.slug===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:"Borghi",href:`/borghi/${x.slug}`,createdAt:row.created_at};}
+  if(["product","prodotto","food_product"].includes(row.item_type)){const x=products.find(v=>String(v.id)===id||v.slug===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:"Sapori e territori",href:`/sapori-territori/${x.slug}`,createdAt:row.created_at};}
+  if(["experience","esperienza"].includes(row.item_type)){const x=experiences.find(v=>String(v.id)===id||v.slug===id);if(x)return{itemType:row.item_type,itemId:id,title:x.name,copy:x.excerpt,kind:x.categoryName,href:`/esperienze/${x.slug}`,createdAt:row.created_at};}
   return{itemType:row.item_type,itemId:id,title:"Contenuto salvato",copy:"Questo contenuto non è al momento disponibile nella vetrina pubblica.",kind:"BIMARIS",href:"/profilo",createdAt:row.created_at};
  });
  return <main className="collection-page"><style>{`
