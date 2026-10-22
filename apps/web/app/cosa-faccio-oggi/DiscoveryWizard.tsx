@@ -24,7 +24,7 @@ export default function DiscoveryWizard({initialIntent,initialAudience,initialMi
  return <form method="get" className={`wizard ${visible?"visible":"leaving"}`}>
   {intent&&<input type="hidden" name="intent" value={intent}/>} {audience&&<input type="hidden" name="audience" value={audience}/>} {minutes&&<input type="hidden" name="minutes" value={minutes}/>} 
   {progress(Math.min(shownStep,3))}
-  {shownStep===1&&scene("01 · Segui l'istinto","Che cosa vuoi sentire oggi?","Scegli l'atmosfera. Al resto pensa BIMARIS.",cards(intents,x=>setIntent(x.key)))}
+  {shownStep===1&&scene("01 · Segui l'istinto","Che cosa vuoi vivere oggi?","Scegli l'atmosfera. Al resto pensa BIMARIS.",cards(intents,x=>setIntent(x.key)))}
   {shownStep===2&&scene("02 · Scegli con chi","Con chi vuoi viverla?","La stessa Messina cambia a seconda di chi hai accanto.",cards(audiences,x=>setAudience(x.key)),<button className="discovery-back" type="button" onClick={()=>resetFrom(1)}>← Torna all'atmosfera</button>)}
   {shownStep===3&&scene("03 · Dai valore al tempo","Quanto tempo hai?","Scegli il tempo che vuoi dedicare alla scoperta.",cards(durations,x=>setMinutes(x.value)),<button className="discovery-back" type="button" onClick={()=>resetFrom(2)}>← Torna alla compagnia</button>)}
   {shownStep===4&&scene("La scelta è pronta","Messina, come la vuoi vivere tu.","Abbiamo incrociato atmosfera, compagnia e tempo. Ora scopri le proposte più adatte.",<div><button className="discovery-submit" type="submit">Scopri cosa vivere <span>→</span></button><div><button className="discovery-back after" type="button" onClick={()=>resetFrom(3)}>← Cambia il tempo</button></div></div>)}
