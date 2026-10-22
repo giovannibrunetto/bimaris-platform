@@ -4,7 +4,7 @@ import CinematicOnboarding from "./CinematicOnboarding";
 
 export const dynamic = "force-dynamic";
 
-export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ errore?: string }> }) {
+export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ errore?: string; modifica?: string }> }) {
   const supabase = await createUserServerClient();
   if (!supabase) redirect("/accedi");
 
@@ -18,12 +18,13 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
     supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id", userId).maybeSingle(),
   ]);
 
-  const { errore } = await searchParams;
+  const { errore, modifica } = await searchParams;
 
   return <CinematicOnboarding
     profile={profile}
     selectedKeys={(selected ?? []).map(item => item.interest_key)}
     newsletter={newsletter}
     error={Boolean(errore)}
+    editMode={modifica === "preferenze"}
   />;
 }
