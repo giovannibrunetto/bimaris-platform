@@ -3,6 +3,7 @@ type Props = {
   selectedKeys: string[];
   newsletter: { subscribed?: boolean | null; personalized?: boolean | null } | null;
   error?: boolean;
+  editMode?: boolean;
 };
 
 const interests = [
@@ -15,7 +16,7 @@ const interests = [
   ["esperienze", "Esperienze", "Attività selezionate da vivere sul territorio", "07"],
 ] as const;
 
-export default function CinematicOnboarding({ profile, selectedKeys, newsletter, error }: Props) {
+export default function CinematicOnboarding({ profile, selectedKeys, newsletter, error, editMode = false }: Props) {
   const selected = new Set(selectedKeys);
 
   return <main className="cinema">
@@ -25,9 +26,9 @@ export default function CinematicOnboarding({ profile, selectedKeys, newsletter,
     `}</style>
     {error && <div className="error">Non siamo riusciti a salvare le preferenze. Riprova.</div>}
     <form className="wizard" action="/profilo/onboarding/salva" method="post">
-      <input className="wizard-step" type="radio" name="wizard_step" id="wiz0" defaultChecked />
+      <input className="wizard-step" type="radio" name="wizard_step" id="wiz0" defaultChecked={!editMode} />
       <input className="wizard-step" type="radio" name="wizard_step" id="wiz1" />
-      <input className="wizard-step" type="radio" name="wizard_step" id="wiz2" />
+      <input className="wizard-step" type="radio" name="wizard_step" id="wiz2" defaultChecked={editMode} />
       <input className="wizard-step" type="radio" name="wizard_step" id="wiz3" />
       <input className="wizard-step" type="radio" name="wizard_step" id="wiz4" />
       <input className="wizard-step" type="radio" name="wizard_step" id="wiz5" />
@@ -36,12 +37,12 @@ export default function CinematicOnboarding({ profile, selectedKeys, newsletter,
 
       <section className="scene hero s0"><div className="kicker">Il tuo BIMARIS · Inizia il viaggio</div><h1>Che Messina vuoi vivere?</h1><p className="intro">Non esiste un solo modo di scoprire Messina. Raccontaci cosa cerchi: BIMARIS costruirà intorno a te un'esperienza sempre più personale.</p><div className="controls"><label className="next" htmlFor="wiz1">Comincia →</label></div></section>
       <section className="scene s1"><span className="progress">01 / 06</span><div className="kicker">Prologo</div><h2>Prima di partire.</h2><p className="intro">Come vuoi che BIMARIS ti chiami? Puoi anche lasciare questo campo vuoto.</p><input className="name" name="display_name" defaultValue={profile?.display_name ?? ""} placeholder="Il tuo nome"/><div className="controls"><label className="back" htmlFor="wiz0">← Indietro</label><label className="next" htmlFor="wiz2">Continua →</label></div></section>
-      <section className="scene s2"><span className="progress">02 / 06</span><div className="kicker">Scena 01 · I tuoi interessi</div><h2>Cosa ti fa fermare?</h2><p className="intro">Scegli tutto ciò che ti incuriosisce.</p><div className="interest-grid">{interests.map(([value,title,description,index])=><label className="interest" key={value}><input type="checkbox" name="interests" value={value} defaultChecked={selected.has(value)}/><span className="idx">{index}</span><span><strong>{title}</strong><small>{description}</small></span></label>)}</div><div className="controls"><label className="back" htmlFor="wiz1">← Indietro</label><label className="next" htmlFor="wiz3">Continua →</label></div></section>
+      <section className="scene s2"><span className="progress">{editMode ? "PREFERENZE" : "02 / 06"}</span><div className="kicker">{editMode ? "Il tuo BIMARIS · Modifica" : "Scena 01 · I tuoi interessi"}</div><h2>{editMode ? "Cosa vuoi vivere adesso?" : "Cosa ti fa fermare?"}</h2><p className="intro">{editMode ? "Aggiorna i tuoi interessi. Le scelte già salvate sono evidenziate." : "Scegli tutto ciò che ti incuriosisce."}</p><div className="interest-grid">{interests.map(([value,title,description,index])=><label className="interest" key={value}><input type="checkbox" name="interests" value={value} defaultChecked={selected.has(value)}/><span className="idx">{index}</span><span><strong>{title}</strong><small>{description}</small></span></label>)}</div><div className="controls">{editMode ? <a className="back" href="/profilo">← Annulla</a> : <label className="back" htmlFor="wiz1">← Indietro</label>}<label className="next" htmlFor="wiz3">Continua →</label></div></section>
       <section className="scene s3"><span className="progress">03 / 06</span><div className="kicker">Scena 02 · Compagni di viaggio</div><h2>Con chi vivi Messina?</h2><p className="intro">Il modo in cui viaggi cambia ciò che vale la pena proporti.</p><div className="choices">{[["solo","Da solo"],["coppia","In coppia"],["famiglia","In famiglia"],["amici","Con amici"]].map(([v,l])=><label className="choice" key={v}><input required type="radio" name="travel_companion" value={v} defaultChecked={profile?.travel_companion===v}/>{l}</label>)}</div><div className="controls"><label className="back" htmlFor="wiz2">← Indietro</label><label className="next" htmlFor="wiz4">Continua →</label></div></section>
       <section className="scene s4"><span className="progress">04 / 06</span><div className="kicker">Scena 03 · Il tempo</div><h2>Quanto dura il tuo viaggio?</h2><p className="intro">BIMARIS adatterà percorsi e suggerimenti al tempo che hai davvero.</p><div className="choices">{[["2-3-ore","2–3 ore"],["mezza-giornata","Mezza giornata"],["giornata","Una giornata"],["piu-giorni","Più giorni"]].map(([v,l])=><label className="choice" key={v}><input required type="radio" name="typical_time_available" value={v} defaultChecked={profile?.typical_time_available===v}/>{l}</label>)}</div><div className="controls"><label className="back" htmlFor="wiz3">← Indietro</label><label className="next" htmlFor="wiz5">Continua →</label></div></section>
       <section className="scene s5"><span className="progress">05 / 06</span><div className="kicker">Scena 04 · Il ritmo</div><h2>Come vuoi attraversarla?</h2><p className="intro">Senza fretta, con equilibrio oppure cercando di vedere il più possibile.</p><div className="choices">{[["rilassato","Rilassato"],["equilibrato","Equilibrato"],["intenso","Il più possibile"]].map(([v,l])=><label className="choice" key={v}><input required type="radio" name="preferred_pace" value={v} defaultChecked={profile?.preferred_pace===v}/>{l}</label>)}</div><div className="controls"><label className="back" htmlFor="wiz4">← Indietro</label><label className="next" htmlFor="wiz6">Continua →</label></div></section>
       <section className="scene s6"><span className="progress">06 / 06</span><div className="kicker">Epilogo · Resta nel viaggio</div><h2>Messina può tornare da te.</h2><p className="intro">La newsletter è facoltativa e separata dal profilo.</p><div className="checks"><label className="check"><input type="checkbox" name="newsletter" value="yes" defaultChecked={newsletter?.subscribed ?? false}/>Desidero ricevere la newsletter BIMARIS.</label><label className="check"><input type="checkbox" name="personalized" value="yes" defaultChecked={newsletter?.personalized ?? false}/>Personalizza i contenuti in base ai miei interessi.</label></div><div className="controls"><label className="back" htmlFor="wiz5">← Indietro</label><label className="next" htmlFor="wiz7">Continua →</label></div></section>
-      <section className="scene finale s7"><div className="kicker">Il tuo BIMARIS</div><h2>Ora possiamo mostrarti una Messina più vicina a te.</h2><p className="intro">Le preferenze potranno essere modificate in qualsiasi momento dal profilo.</p><div className="controls"><label className="back" htmlFor="wiz6">← Indietro</label><button className="submit" type="submit">Salva e crea il mio BIMARIS</button></div></section>
+      <section className="scene finale s7"><div className="kicker">Il tuo BIMARIS</div><h2>Ora possiamo mostrarti una Messina più vicina a te.</h2><p className="intro">Le preferenze potranno essere modificate in qualsiasi momento dal profilo.</p><div className="controls"><label className="back" htmlFor="wiz6">← Indietro</label><button className="submit" type="submit">Salva le mie preferenze</button></div></section>
     </form>
   </main>;
 }
