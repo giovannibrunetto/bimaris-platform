@@ -3,7 +3,7 @@ import DiscoveryWizard from "./DiscoveryWizard";
 import { discoverExperiences, DISCOVERY_AUDIENCES, DISCOVERY_INTENTS, type DiscoveryAudience, type DiscoveryIntent } from "@/lib/discovery";
 
 export const dynamic="force-dynamic";export const revalidate=0;
-const durationOptions=[60,120,180,360] as const;
+const durationOptions=[60,120,180,360,720,2880] as const;
 function one(value:string|string[]|undefined){return Array.isArray(value)?value[0]:value;}
 function validIntent(value?:string):value is DiscoveryIntent{return !!value&&(DISCOVERY_INTENTS as readonly string[]).includes(value);}
 function validAudience(value?:string):value is DiscoveryAudience{return !!value&&(DISCOVERY_AUDIENCES as readonly string[]).includes(value);}
