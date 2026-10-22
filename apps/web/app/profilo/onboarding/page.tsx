@@ -19,12 +19,14 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   ]);
 
   const { errore, modifica } = await searchParams;
+  const selectedKeys = (selected ?? []).map(item => item.interest_key);
+  const editMode = modifica === "preferenze" || selectedKeys.length > 0;
 
   return <CinematicOnboarding
     profile={profile}
-    selectedKeys={(selected ?? []).map(item => item.interest_key)}
+    selectedKeys={selectedKeys}
     newsletter={newsletter}
     error={Boolean(errore)}
-    editMode={modifica === "preferenze"}
+    editMode={editMode}
   />;
 }
