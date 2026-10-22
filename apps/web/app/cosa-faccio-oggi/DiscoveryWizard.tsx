@@ -8,7 +8,7 @@ const intents:Array<{key:DiscoveryIntent;label:string;hint:string}>=[
  {key:"culture",label:"Cultura",hint:"Monumenti, arte e storia"},{key:"food-wine",label:"Sapori",hint:"Degustazioni e territorio"},{key:"nature",label:"Natura",hint:"Paesaggi e percorsi"},{key:"sea",label:"Mare",hint:"Lo Stretto e la costa"},{key:"adventure",label:"Avventura",hint:"Attività ed emozioni"},{key:"relax",label:"Relax",hint:"Rallenta e respira"},{key:"stories-places",label:"Storie e luoghi",hint:"Miti, borghi e identità"},
 ];
 const audiences:Array<{key:DiscoveryAudience;label:string;hint:string}>=[{key:"solo",label:"Da solo",hint:"Segui il tuo ritmo"},{key:"couple",label:"In coppia",hint:"Qualcosa da vivere in due"},{key:"friends",label:"Con amici",hint:"Condividi l'esperienza"},{key:"family",label:"In famiglia",hint:"Un momento da vivere insieme"}];
-const durations=[{value:60,label:"1 ora",hint:"Un assaggio di Messina"},{value:120,label:"2 ore",hint:"Entra nell'atmosfera"},{value:180,label:"3 ore",hint:"Vivi un pezzo di territorio"},{value:360,label:"Mezza giornata",hint:"Lasciati portare più lontano"}];
+const durations=[{value:60,label:"1 ora",hint:"Un assaggio di Messina"},{value:120,label:"2 ore",hint:"Entra nell'atmosfera"},{value:180,label:"3 ore",hint:"Vivi un pezzo di territorio"},{value:360,label:"Mezza giornata",hint:"Lasciati portare più lontano"},{value:720,label:"Una giornata",hint:"Vivi Messina senza fretta"},{value:2880,label:"Weekend",hint:"Due giorni per scoprire il territorio"}];
 type Props={initialIntent?:DiscoveryIntent;initialAudience?:DiscoveryAudience;initialMinutes?:number};
 
 export default function DiscoveryWizard({initialIntent,initialAudience,initialMinutes}:Props){
