@@ -11,18 +11,20 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, expsRes, revsRes, opRevsRes, itinsRes] = await Promise.all([
+  const [appsRes, opsRes, expsRes, revsRes, opRevsRes, itinsRes, eventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id,published,review_status"),
     db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("itineraries").select("published"),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending"),
   ]);
 
   const pendingApps = appsRes.count ?? 0;
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
+  const pendingEvents = eventsRes.count ?? 0;
   const exps = expsRes.data ?? [];
   const itins = itinsRes.data ?? [];
   const pendingExperiences = exps.filter((x: any) => x.review_status === "pending" || x.review_status === "submitted").length;
@@ -53,6 +55,7 @@ export default async function AdminPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
           {metric("/admin/candidature", "Candidature da gestire", pendingApps, true)}
           {metric("/admin/operatori", "Operatori / Esperienze da gestire", pendingOperatorArea, true)}
+          {metric("/admin/eventi", "Eventi da verificare", pendingEvents, true)}
           {metric("/admin/operatori", "Operatori online", onlineOperators)}
           {metric("/admin/esperienze", "Esperienze online", onlineExperiences)}
           {metric("/admin/itinerari", "Itinerari online", onlineItineraries)}
@@ -60,6 +63,7 @@ export default async function AdminPage() {
         <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 18, paddingTop: 16, borderTop: "1px solid rgba(16,24,32,.10)" }}>
           <Link className="text-link" href="/admin/candidature">Candidature →</Link>
           <Link className="text-link" href="/admin/operatori">Operatori ed Esperienze →</Link>
+          <Link className="text-link" href="/admin/eventi">Eventi →</Link>
           <Link className="text-link" href="/admin/itinerari">Itinerari →</Link>
         </div>
       </div>
