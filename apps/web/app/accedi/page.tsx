@@ -19,9 +19,15 @@ export default function AccediPage(){
   // authorization code, che deve essere scambiato dal callback server-side per
   // creare la sessione e scrivere i cookie sullo stesso host (staging incluso).
   const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
-  const {error}=await supabase.auth.signInWithOtp({email:operatorEmail,options:{emailRedirectTo:callbackUrl,shouldCreateUser:false}});
+  const {error}=await supabase.auth.signInWithOtp({email:operatorEmail.trim(),options:{emailRedirectTo:callbackUrl,shouldCreateUser:false}});
   setOperatorLoading(false);
-  setOperatorMessage(error?"Non risulta un accesso operatore attivo per questa email. Verifica l'indirizzo oppure contatta BIMARIS.":"Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
+  if(error){
+   console.error("Operator magic-link error",{message:error.message,status:error.status,code:error.code});
+   if(error.status===429){setOperatorMessage("Hai richiesto troppi link in poco tempo. Attendi qualche minuto e riprova.");return;}
+   setOperatorMessage("Non è stato possibile inviare il link di accesso. Verifica l'indirizzo email o riprova tra poco.");
+   return;
+  }
+  setOperatorMessage("Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
  }
 
  const card={padding:28,display:"flex",flexDirection:"column" as const,gap:16,minHeight:310};
