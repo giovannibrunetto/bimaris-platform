@@ -27,7 +27,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   // Supabase can drop custom query parameters from the final PKCE callback.
-  // Keep operator intent in the callback path as a fallback as well.
+  // Keep operator intent when available, but never rely on it for routing an
+  // already-enabled operator: membership is the authoritative signal.
   const next = safePath(url.searchParams.get("next"));
   const operatorIntent = url.searchParams.get("operator") === "1";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -59,7 +60,17 @@ export async function GET(request: Request) {
   const userId = userData.user?.id ?? null;
   if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
 
-  if (operatorIntent) return NextResponse.redirect(publicUrl("/area-operatore", url));
+  // Membership is authoritative. Check it before user onboarding/next routing,
+  // because PKCE email redirects may lose custom query parameters. This keeps an
+  // enabled operator on the operator path even when operator=1/next disappear.
+  const { data: membership } = await supabase
+    .from("operator_memberships")
+    .select("operator_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (membership || operatorIntent) return NextResponse.redirect(publicUrl("/area-operatore", url));
 
   // A personal account that has never selected any interests has not completed
   // onboarding yet. Route it there before honoring the normal /profilo target.
@@ -76,14 +87,5 @@ export async function GET(request: Request) {
   }
 
   if (next) return NextResponse.redirect(publicUrl(next, url));
-
-  const { data: membership } = await supabase
-    .from("operator_memberships")
-    .select("operator_id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
-
-  if (membership) return NextResponse.redirect(publicUrl("/area-operatore", url));
   return NextResponse.redirect(publicUrl("/profilo", url));
 }
