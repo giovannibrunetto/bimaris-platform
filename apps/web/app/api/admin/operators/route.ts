@@ -10,8 +10,12 @@ export async function POST(request:NextRequest){
  const form=await request.formData(); const id=text(form,"operator_id",80); const action=text(form,"action",40); if(!id)return back(request,id,"invalid");
  const db=createServiceClient(); if(!db)return back(request,id,"service-error");
  try{
-  if(action==="save"){
-   const payload={name:text(form,"name",200),category:text(form,"category",120)||null,address:text(form,"address",300)||null,phone:text(form,"phone",80)||null,whatsapp:text(form,"whatsapp",80)||null,email:text(form,"email",200)||null,website:text(form,"website",500)||null,instagram:text(form,"instagram",500)||null,description:text(form,"description",5000)||null,why_selected:text(form,"why_selected",3000)||null,premium:form.get("premium")==="on",updated_at:new Date().toISOString()};
+  if(action==="save_profile"){
+   const payload={name:text(form,"name",200),category:text(form,"category",120)||null,address:text(form,"address",300)||null,phone:text(form,"phone",80)||null,whatsapp:text(form,"whatsapp",80)||null,email:text(form,"email",200)||null,website:text(form,"website",500)||null,instagram:text(form,"instagram",500)||null,premium:form.get("premium")==="on",updated_at:new Date().toISOString()};
+   const {error}=await db.from("operators").update(payload).eq("id",id); if(error)throw error; return back(request,id,"saved");
+  }
+  if(action==="save_editorial"){
+   const payload={description:text(form,"description",5000)||null,updated_at:new Date().toISOString()};
    const {error}=await db.from("operators").update(payload).eq("id",id); if(error)throw error; return back(request,id,"saved");
   }
   if(action==="publish"||action==="unpublish"){
