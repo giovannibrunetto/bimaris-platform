@@ -28,7 +28,7 @@ export default function B2BNetwork({ operatorId, operatorName, canManage }: Prop
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
   const [message,setMessage]=useState("");
-  const labels=useMemo(()=>new Map(B2B_TAGS),[]);
+  const labels=useMemo<Map<string,string>>(()=>new Map(B2B_TAGS.map(([key,label])=>[key,label] as [string,string])),[]);
 
   async function load(){setLoading(true);const res=await fetch(`/api/operator/b2b-profile?operatorId=${operatorId}`,{cache:"no-store"});const json=await res.json();if(json.profile)setProfile(json.profile);setLoading(false);if(json.profile?.enabled)void loadMatches();}
   async function loadMatches(){const res=await fetch(`/api/operator/b2b-matches?operatorId=${operatorId}`,{cache:"no-store"});const json=await res.json();setMatches(json.matches??[]);}
