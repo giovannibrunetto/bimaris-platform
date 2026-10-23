@@ -7,6 +7,8 @@ export default function AreaOperatoreLayout({children}:{children:React.ReactNode
       <Link href="/area-operatore" style={{color:"#fff",textDecoration:"none",fontSize:13,fontWeight:800}}>Area operatore</Link>
       <span style={{color:"rgba(255,255,255,.35)"}}>·</span>
       <Link href="/area-operatore/calendario" style={{color:"#caa86a",textDecoration:"none",fontSize:13,fontWeight:800}}>Importa calendario</Link>
+      <span style={{color:"rgba(255,255,255,.35)"}}>·</span>
+      <Link href="/area-operatore/network-b2b" style={{color:"#caa86a",textDecoration:"none",fontSize:13,fontWeight:800}}>Network B2B</Link>
     </nav>
     {children}
   </>;
