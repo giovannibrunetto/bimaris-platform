@@ -11,13 +11,34 @@ export default function AccediPage(){
  const [operatorLoading,setOperatorLoading]=useState(false);
  const [showOperatorLogin,setShowOperatorLogin]=useState(false);
 
+ async function openOperatorAccess(){
+  const supabase=createBrowserSupabaseClient();
+  if(!supabase){setShowOperatorLogin(true);setOperatorMessage("Accesso non disponibile in questo momento.");return;}
+  setOperatorLoading(true);setOperatorMessage("");
+  const {data:{user}}=await supabase.auth.getUser();
+  if(user){
+   const {data:membership,error}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",user.id).limit(1).maybeSingle();
+   setOperatorLoading(false);
+   if(!error&&membership){window.location.assign("/area-operatore");return;}
+   setShowOperatorLogin(true);
+   setOperatorMessage("Questo account non è ancora associato a un'attività BIMARIS. Puoi usare un'altra email abilitata oppure proporre una nuova attività.");
+   return;
+  }
+  setOperatorLoading(false);setShowOperatorLogin(true);
+ }
+
  async function sendOperatorMagicLink(event:FormEvent){
   event.preventDefault();const supabase=createBrowserSupabaseClient();
   if(!supabase){setOperatorMessage("Accesso non disponibile in questo momento.");return;}
   setOperatorLoading(true);setOperatorMessage("");
-  // createBrowserClient usa il flusso PKCE: dopo il click Supabase restituisce un
-  // authorization code, che deve essere scambiato dal callback server-side per
-  // creare la sessione e scrivere i cookie sullo stesso host (staging incluso).
+  const {data:{user}}=await supabase.auth.getUser();
+  if(user){
+   const {data:membership,error:membershipError}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",user.id).limit(1).maybeSingle();
+   setOperatorLoading(false);
+   if(!membershipError&&membership){window.location.assign("/area-operatore");return;}
+   setOperatorMessage("Questo account non è ancora associato a un'attività BIMARIS. Esci dall'account se vuoi accedere con un'altra email operatore.");
+   return;
+  }
   const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
   const {error}=await supabase.auth.signInWithOtp({email:operatorEmail.trim(),options:{emailRedirectTo:callbackUrl,shouldCreateUser:false}});
   setOperatorLoading(false);
@@ -41,8 +62,8 @@ export default function AccediPage(){
    </section>
    <section className="card" style={card}>
     <div><div className="kicker">Per gli operatori</div><h2 style={{fontSize:30,margin:"7px 0 10px"}}>Operatore</h2><p style={{margin:0,opacity:.78}}>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
-    <div style={{marginTop:"auto",display:"grid",gap:10}}><button className="button" type="button" onClick={()=>setShowOperatorLogin(v=>!v)}>{showOperatorLogin?"Chiudi accesso operatore":"Accedi come operatore"}</button><Link className="button ghost" href="/operatori/candidatura" style={{textAlign:"center"}}>Registrati e proponi un'esperienza</Link></div>
-    {showOperatorLogin&&<form onSubmit={sendOperatorMagicLink} style={{display:"grid",gap:10,paddingTop:8,borderTop:"1px solid rgba(0,0,0,.10)"}}><label htmlFor="operator-email"><strong>Email associata all'attività</strong></label><input id="operator-email" type="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it" style={inputStyle}/><button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Invio…":"Ricevi il link per l'Area Operatore"}</button>{operatorMessage&&<p role="status" style={{margin:0}}>{operatorMessage}</p>}<p style={{margin:0,fontSize:13,opacity:.68}}>Usa l'indirizzo email abilitato da BIMARIS per la tua attività.</p></form>}
+    <div style={{marginTop:"auto",display:"grid",gap:10}}><button className="button" type="button" disabled={operatorLoading} onClick={()=>showOperatorLogin?setShowOperatorLogin(false):void openOperatorAccess()}>{operatorLoading?"Verifica accesso…":showOperatorLogin?"Chiudi accesso operatore":"Accedi come operatore"}</button><Link className="button ghost" href="/operatori/candidatura" style={{textAlign:"center"}}>Registrati e proponi un'esperienza</Link></div>
+    {showOperatorLogin&&<form onSubmit={sendOperatorMagicLink} style={{display:"grid",gap:10,paddingTop:8,borderTop:"1px solid rgba(0,0,0,.10)"}}><label htmlFor="operator-email"><strong>Email associata all'attività</strong></label><input id="operator-email" type="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it" style={inputStyle}/><button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>{operatorMessage&&<p role="status" style={{margin:0}}>{operatorMessage}</p>}<p style={{margin:0,fontSize:13,opacity:.68}}>Se sei già autenticato e il tuo account è abilitato come operatore, BIMARIS apre direttamente l'Area Operatore senza inviare un nuovo link.</p></form>}
     <p style={{margin:0,fontSize:13,opacity:.68}}>Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
   </div><p style={{marginTop:24}}><Link href="/">← Torna a BIMARIS</Link></p>
