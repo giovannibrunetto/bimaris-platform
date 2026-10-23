@@ -16,9 +16,6 @@ function safePath(value: string | null) {
 }
 
 function publicUrl(path: string, requestUrl: URL) {
-  // Keep the same host used to start OAuth so the freshly written Supabase
-  // session cookie is immediately available on the destination page.
-  // Falling back to the canonical public URL prevents redirects to unknown hosts.
   const origin = ALLOWED_HOSTS.has(requestUrl.hostname) ? requestUrl.origin : PUBLIC_SITE_URL;
   return new URL(path, origin);
 }
@@ -26,9 +23,6 @@ function publicUrl(path: string, requestUrl: URL) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  // Supabase can drop custom query parameters from the final PKCE callback.
-  // Keep operator intent when available, but never rely on it for routing an
-  // already-enabled operator: membership is the authoritative signal.
   const next = safePath(url.searchParams.get("next"));
   const operatorIntent = url.searchParams.get("operator") === "1";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -60,21 +54,22 @@ export async function GET(request: Request) {
   const userId = userData.user?.id ?? null;
   if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
 
-  // Membership is authoritative. Check it before user onboarding/next routing,
-  // because PKCE email redirects may lose custom query parameters. This keeps an
-  // enabled operator on the operator path even when operator=1/next disappear.
-  const { data: membership } = await supabase
-    .from("operator_memberships")
-    .select("operator_id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
+  // The selected entry point defines the application context. The same identity
+  // may be both a personal BIMARIS user and an operator without either role
+  // hijacking the other. Operator context still requires a real membership.
+  if (operatorIntent) {
+    const { data: membership } = await supabase
+      .from("operator_memberships")
+      .select("operator_id")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+    if (!membership) return NextResponse.redirect(publicUrl("/accedi?errore=operatore", url));
+    return NextResponse.redirect(publicUrl("/area-operatore", url));
+  }
 
-  if (membership || operatorIntent) return NextResponse.redirect(publicUrl("/area-operatore", url));
-
-  // A personal account that has never selected any interests has not completed
-  // onboarding yet. Route it there before honoring the normal /profilo target.
-  // Existing users keep going directly to their profile.
+  // Personal login never switches to operator context merely because this user
+  // also manages one or more operators.
   if (!next || next === "/profilo") {
     const { count: interestCount } = await supabase
       .from("user_interests")
