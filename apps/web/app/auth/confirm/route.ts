@@ -16,15 +16,14 @@ function safePath(value: string | null) {
 function esc(value:string){return value.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c));}
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
 
-// I client email e gli scanner di sicurezza possono aprire automaticamente i link.
-// Il GET non consuma quindi il token: mostra solo il pulsante di conferma.
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
   const next = safePath(url.searchParams.get("next"));
+  const operatorIntent=url.searchParams.get("operator")==="1";
   if(!tokenHash||!type)return NextResponse.redirect(new URL("/accedi?errore=accesso",PUBLIC_SITE_URL));
-  const html=`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accedi a BIMARIS</title></head><body style="margin:0;background:#f6f1e8;color:#1f1b16;font-family:Arial,sans-serif"><main style="max-width:520px;margin:12vh auto;padding:24px"><section style="background:white;border:1px solid #ded6c9;border-radius:18px;padding:32px;box-shadow:0 12px 35px rgba(0,0,0,.08)"><div style="font-size:13px;letter-spacing:.14em;font-weight:700;color:#725b38">BIMARIS</div><h1 style="font-size:30px;margin:10px 0 12px">Conferma l'accesso</h1><p style="line-height:1.55;color:#5f584f">Il link è valido. Premi il pulsante per entrare in BIMARIS.</p><form method="post" action="/auth/confirm"><input type="hidden" name="token_hash" value="${esc(tokenHash)}"><input type="hidden" name="type" value="${esc(type)}">${next?`<input type="hidden" name="next" value="${esc(next)}">`:""}<button type="submit" style="width:100%;margin-top:12px;padding:14px 18px;border:0;border-radius:12px;background:#3f3020;color:white;font-size:16px;font-weight:700;cursor:pointer">Entra in BIMARIS</button></form></section></main></body></html>`;
+  const html=`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accedi a BIMARIS</title></head><body style="margin:0;background:#f6f1e8;color:#1f1b16;font-family:Arial,sans-serif"><main style="max-width:520px;margin:12vh auto;padding:24px"><section style="background:white;border:1px solid #ded6c9;border-radius:18px;padding:32px;box-shadow:0 12px 35px rgba(0,0,0,.08)"><div style="font-size:13px;letter-spacing:.14em;font-weight:700;color:#725b38">BIMARIS</div><h1 style="font-size:30px;margin:10px 0 12px">Conferma l'accesso</h1><p style="line-height:1.55;color:#5f584f">Il link è valido. Premi il pulsante per entrare in BIMARIS.</p><form method="post" action="/auth/confirm"><input type="hidden" name="token_hash" value="${esc(tokenHash)}"><input type="hidden" name="type" value="${esc(type)}">${next?`<input type="hidden" name="next" value="${esc(next)}">`:""}${operatorIntent?`<input type="hidden" name="operator" value="1">`:""}<button type="submit" style="width:100%;margin-top:12px;padding:14px 18px;border:0;border-radius:12px;background:#3f3020;color:white;font-size:16px;font-weight:700;cursor:pointer">Entra in BIMARIS</button></form></section></main></body></html>`;
   return new NextResponse(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store"}});
 }
 
@@ -33,6 +32,7 @@ export async function POST(request: Request) {
   const tokenHash=typeof form.get("token_hash")==="string"?String(form.get("token_hash")):null;
   const type=(typeof form.get("type")==="string"?String(form.get("type")):null) as EmailOtpType|null;
   const requestedNext=safePath(typeof form.get("next")==="string"?String(form.get("next")):null);
+  const operatorIntent=form.get("operator")==="1";
   const supabaseUrl=process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY??process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if(!tokenHash||!type||!supabaseUrl||!supabaseKey)return NextResponse.redirect(new URL("/accedi?errore=accesso",PUBLIC_SITE_URL),303);
@@ -42,21 +42,12 @@ export async function POST(request: Request) {
   const {data:verified,error}=await supabase.auth.verifyOtp({token_hash:tokenHash,type});
   if(error||!verified.user)return NextResponse.redirect(new URL("/accedi?errore=link",PUBLIC_SITE_URL),303);
 
-  // Non usare getUser() qui: la sessione appena creata vive ancora nei cookie che
-  // stiamo per allegare alla risposta e su alcuni browser mobili non è ancora
-  // rileggibile durante la stessa request.
-  const userId=verified.user.id;
-  const {data:membership}=await supabase
-    .from("operator_memberships")
-    .select("operator_id")
-    .eq("user_id",userId)
-    .limit(1)
-    .maybeSingle();
+  let destination=requestedNext&&requestedNext!=="/accedi"?requestedNext:"/profilo";
+  if(operatorIntent){
+    const {data:membership}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",verified.user.id).limit(1).maybeSingle();
+    destination=membership?"/area-operatore":"/accedi?errore=operatore";
+  }
 
-  // Una membership operatore ha priorità anche se un vecchio magic link contiene
-  // un next generico (/accedi o /profilo). In questo modo l'owner entra sempre
-  // nella propria Area Operatore.
-  const destination=membership?"/area-operatore":(requestedNext&&requestedNext!=="/accedi"?requestedNext:"/profilo");
   const response=NextResponse.redirect(new URL(destination,PUBLIC_SITE_URL),303);
   for(const {name,value,options} of cookiesToSet)response.cookies.set(name,value,options as Parameters<typeof response.cookies.set>[2]);
   return response;
