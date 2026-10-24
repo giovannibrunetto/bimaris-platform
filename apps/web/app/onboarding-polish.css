@@ -1,0 +1,117 @@
+/* Onboarding layout refinements. Kept separate so the cinematic component remains focused on interaction. */
+
+@media (min-width: 701px) {
+  .cinema .scene.s1,
+  .cinema .scene.s3,
+  .cinema .scene.s4,
+  .cinema .scene.s5,
+  .cinema .scene.s6 {
+    justify-content: flex-start !important;
+    padding-top: clamp(150px, 19vh, 190px) !important;
+    padding-bottom: 46px !important;
+  }
+
+  .cinema .scene.s1 > *,
+  .cinema .scene.s3 > *,
+  .cinema .scene.s4 > *,
+  .cinema .scene.s5 > *,
+  .cinema .scene.s6 > * {
+    width: 100%;
+    max-width: 1120px;
+    box-sizing: border-box;
+  }
+
+  .cinema .scene.s1 h2,
+  .cinema .scene.s3 h2,
+  .cinema .scene.s4 h2,
+  .cinema .scene.s5 h2,
+  .cinema .scene.s6 h2 {
+    max-width: 900px;
+    margin-top: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .cinema .scene.s1 .intro,
+  .cinema .scene.s3 .intro,
+  .cinema .scene.s4 .intro,
+  .cinema .scene.s5 .intro,
+  .cinema .scene.s6 .intro {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .cinema .scene.s3 .choices,
+  .cinema .scene.s4 .choices {
+    margin-top: 30px !important;
+    gap: 14px !important;
+  }
+
+  .cinema .scene.s3 .choice,
+  .cinema .scene.s4 .choice {
+    min-height: 112px !important;
+    padding: 18px !important;
+    border-radius: 2px;
+  }
+
+  .cinema .scene.s5 .choices {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-width: 850px !important;
+    margin-top: 30px !important;
+    gap: 14px !important;
+  }
+
+  .cinema .scene.s5 .choice {
+    min-height: 112px !important;
+    padding: 18px !important;
+  }
+
+  .cinema .scene.s3 .controls,
+  .cinema .scene.s4 .controls,
+  .cinema .scene.s5 .controls,
+  .cinema .scene.s6 .controls,
+  .cinema .scene.s1 .controls {
+    margin-top: 22px !important;
+  }
+
+  .cinema .scene.s6 .checks {
+    max-width: 760px;
+    margin-top: 30px !important;
+    padding: 20px 22px;
+    border: 1px solid rgba(216,169,79,.18);
+    background: rgba(255,255,255,.025);
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 700px) {
+  .cinema .scene.s1,
+  .cinema .scene.s3,
+  .cinema .scene.s4,
+  .cinema .scene.s5,
+  .cinema .scene.s6 {
+    justify-content: flex-start !important;
+    padding-top: 112px !important;
+    padding-bottom: 24px !important;
+  }
+
+  .cinema .scene.s3 .choices,
+  .cinema .scene.s4 .choices,
+  .cinema .scene.s5 .choices {
+    margin-top: 22px !important;
+  }
+
+  .cinema .scene.s5 .choices {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cinema .scene.s5 .choice {
+    min-height: 72px !important;
+  }
+
+  .cinema .scene.s6 .checks {
+    margin-top: 22px !important;
+    padding: 16px;
+    border: 1px solid rgba(216,169,79,.18);
+    background: rgba(255,255,255,.025);
+  }
+}
