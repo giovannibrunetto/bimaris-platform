@@ -6,6 +6,7 @@ import "./map-mobile.css";
 import "./personal-access-mobile.css";
 import "./home-mobile.css";
 import "./home-polish.css";
+import "./onboarding-polish.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
