@@ -13,7 +13,7 @@ const paceLabels:Record<string,string>={rilassato:"Con calma",equilibrato:"Un po
 export default function ProfilePreferenceSummary({travelCompanion,typicalTime,preferredPace}:Props){
  const items=[
   {label:"Con chi",value:travelCompanion?companionLabels[travelCompanion]??travelCompanion:null},
-  {label:"Tempo",value:typicalTime?timeLabels[typicalTime]??timeLabels[typicalTime]:null},
+  {label:"Tempo",value:typicalTime?timeLabels[typicalTime]??typicalTime:null},
   {label:"Ritmo",value:preferredPace?paceLabels[preferredPace]??preferredPace:null},
  ].filter(item=>item.value);
  if(!items.length)return null;
