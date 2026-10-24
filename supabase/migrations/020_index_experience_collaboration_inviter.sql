@@ -1,0 +1,2 @@
+create index if not exists experience_operators_invited_by_operator_idx
+on public.experience_operators(invited_by_operator_id);
