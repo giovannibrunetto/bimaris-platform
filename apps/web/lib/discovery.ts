@@ -6,11 +6,13 @@ export const DISCOVERY_SPENDING = ["up-to-25","25-50","50-100","over-100","any"]
 export type DiscoveryIntent = (typeof DISCOVERY_INTENTS)[number];
 export type DiscoveryAudience = (typeof DISCOVERY_AUDIENCES)[number];
 export type DiscoverySpending = (typeof DISCOVERY_SPENDING)[number];
+export type WeatherConstraint = "rain"|"strong_wind"|"extreme_heat"|"rough_sea";
+export type WeatherSnapshot={rain?:boolean;strongWind?:boolean;extremeHeat?:boolean;roughSea?:boolean;provider?:string;observedAt?:Date};
 
-export type DiscoveryQuery = { intents: DiscoveryIntent[]; audience: DiscoveryAudience; spending?:DiscoverySpending; at?: Date; availableMinutes?: number; limit?: number };
-export type DiscoveryResult = { id:string;slug:string;name:string;excerpt:string|null;durationMinutes:number|null;priceFrom:number|null;imageUrl:string|null;environment:string;bookingRequirement:string;bookingNoticeHours:number;score:number;availability:"now"|"today" };
+export type DiscoveryQuery = { intents: DiscoveryIntent[]; audience: DiscoveryAudience; spending?:DiscoverySpending; at?: Date; availableMinutes?: number; limit?: number; weather?:WeatherSnapshot };
+export type DiscoveryResult = { id:string;slug:string;name:string;excerpt:string|null;durationMinutes:number|null;priceFrom:number|null;imageUrl:string|null;environment:string;bookingRequirement:string;bookingNoticeHours:number;score:number;availability:"now"|"today";weatherFit:"neutral"|"good"|"caution"|"blocked" };
 type ExperienceRow={id:string;slug:string;name:string;excerpt:string|null;duration_minutes:number|null;price_from:number|string|null;image_url:string|null;published:boolean;review_status:string};
-type ProfileRow={experience_id:string;audiences:string[];environment:string;booking_requirement:string;booking_notice_hours:number;discovery_active:boolean;editorial_weight:number};
+type ProfileRow={experience_id:string;audiences:string[];environment:string;booking_requirement:string;booking_notice_hours:number;booking_cutoff_day_offset:number;booking_cutoff_time:string|null;weather_dependency:"none"|"partial"|"required";weather_constraints:string[];discovery_active:boolean;editorial_weight:number};
 type IntentRow={experience_id:string;intent_key:string;weight:number|string};
 type AvailabilityRow={experience_id:string;day_of_week:number;start_time:string;end_time:string;valid_from:string|null;valid_until:string|null;active:boolean};
 
@@ -28,19 +30,41 @@ function durationFitScore(duration:number|null,available?:number){
  if(!available||!duration)return 6;
  if(duration>available)return 0;
  const ratio=duration/available;
- // Il tempo scelto è disponibilità massima, non durata obbligatoria: premiamo un buon uso del tempo senza escludere attività brevi.
  if(ratio>=.55)return 10;
  if(ratio>=.3)return 8;
  if(ratio>=.15)return 6;
  return 4;
 }
+function weatherSignal(snapshot:WeatherSnapshot|undefined,key:string){
+ if(!snapshot)return false;
+ if(key==="rain")return Boolean(snapshot.rain);
+ if(key==="strong_wind")return Boolean(snapshot.strongWind);
+ if(key==="extreme_heat")return Boolean(snapshot.extremeHeat);
+ if(key==="rough_sea")return Boolean(snapshot.roughSea);
+ return false;
+}
+function weatherCompatibility(profile:ProfileRow,snapshot?:WeatherSnapshot){
+ if(profile.weather_dependency==="none"||!snapshot)return {fit:"neutral" as const,score:0,blocked:false};
+ const conflicts=(profile.weather_constraints??[]).filter(key=>weatherSignal(snapshot,key));
+ if(!conflicts.length)return {fit:"good" as const,score:5,blocked:false};
+ if(profile.weather_dependency==="required")return {fit:"blocked" as const,score:0,blocked:true};
+ return {fit:"caution" as const,score:-8,blocked:false};
+}
+function bookingStillPossible(profile:ProfileRow,target:Date,now:Date){
+ if(profile.booking_requirement==="none")return true;
+ const days=Math.max(0,profile.booking_cutoff_day_offset??Math.ceil((profile.booking_notice_hours??0)/24));
+ if(days===0)return now.getTime()<=target.getTime();
+ const cutoff=new Date(target);cutoff.setDate(cutoff.getDate()-days);
+ const [h,m]=String(profile.booking_cutoff_time??"23:59").split(":").map(Number);cutoff.setHours(Number.isFinite(h)?h:23,Number.isFinite(m)?m:59,0,0);
+ return now.getTime()<=cutoff.getTime();
+}
 
 export async function discoverExperiences(query:DiscoveryQuery):Promise<DiscoveryResult[]>{
  const supabase=createPublicClient();if(!supabase||!query.intents.length)return[];
- const at=query.at??new Date(),day=isoDay(at),time=localTime(at),date=localDate(at),limit=Math.max(1,Math.min(query.limit??3,5));
+ const now=new Date(),at=query.at??now,day=isoDay(at),time=localTime(at),date=localDate(at),limit=Math.max(1,Math.min(query.limit??3,5));
  const [{data:experiences},{data:profiles},{data:intents},{data:availability}]=await Promise.all([
   supabase.from("experiences").select("id,slug,name,excerpt,duration_minutes,price_from,image_url,published,review_status").eq("published",true).eq("review_status","approved"),
-  supabase.from("experience_discovery_profiles").select("experience_id,audiences,environment,booking_requirement,booking_notice_hours,discovery_active,editorial_weight").eq("discovery_active",true),
+  supabase.from("experience_discovery_profiles").select("experience_id,audiences,environment,booking_requirement,booking_notice_hours,booking_cutoff_day_offset,booking_cutoff_time,weather_dependency,weather_constraints,discovery_active,editorial_weight").eq("discovery_active",true),
   supabase.from("experience_discovery_intents").select("experience_id,intent_key,weight").in("intent_key",query.intents),
   supabase.from("experience_availability").select("experience_id,day_of_week,start_time,end_time,valid_from,valid_until,active").eq("day_of_week",day).eq("active",true),
  ]);
@@ -53,14 +77,15 @@ export async function discoverExperiences(query:DiscoveryQuery):Promise<Discover
   if(query.availableMinutes&&experience.duration_minutes&&experience.duration_minutes>query.availableMinutes)continue;
   const windows=(availabilityMap.get(experience.id)??[]).filter(slot=>(!slot.valid_from||slot.valid_from<=date)&&(!slot.valid_until||slot.valid_until>=date));if(!windows.length)continue;
   const current=windows.find(slot=>slot.start_time<=time&&slot.end_time>=time),later=windows.find(slot=>slot.start_time>time);if(!current&&!later)continue;
-  // Una preferenza basta per entrare tra i candidati; più atmosfere corrispondenti aumentano nettamente il ranking.
+  const targetSlot=current??later!;const [slotH,slotM]=targetSlot.start_time.split(":").map(Number);const targetStart=new Date(at);targetStart.setHours(slotH,slotM,0,0);
+  if(!bookingStillPossible(profile,targetStart,now))continue;
+  const weather=weatherCompatibility(profile,query.weather);if(weather.blocked)continue;
   const best=Math.max(0,Math.min(weights[0]??0,1)),extras=weights.slice(1).reduce((sum,w)=>sum+Math.max(0,Math.min(w,1)),0);
   const intentScore=30*best+14*extras,audienceScore=18,durationScore=durationFitScore(experience.duration_minutes,query.availableMinutes),editorialScore=Math.max(0,Math.min(profile.editorial_weight,5));
   const price=experience.price_from==null?null:Number(experience.price_from),priceScore=spendingScore(price,query.spending);
-  // A parità di qualità, ciò che è fruibile adesso precede ciò che sarà disponibile più tardi.
   const availabilityScore=current?4:0;
-  const score=Math.round((intentScore+audienceScore+durationScore+priceScore+availabilityScore+editorialScore)*100)/100;
-  results.push({id:experience.id,slug:experience.slug,name:experience.name,excerpt:experience.excerpt,durationMinutes:experience.duration_minutes,priceFrom:price,imageUrl:experience.image_url,environment:profile.environment,bookingRequirement:profile.booking_requirement,bookingNoticeHours:profile.booking_notice_hours,score,availability:current?"now":"today"});
+  const score=Math.round((intentScore+audienceScore+durationScore+priceScore+availabilityScore+editorialScore+weather.score)*100)/100;
+  results.push({id:experience.id,slug:experience.slug,name:experience.name,excerpt:experience.excerpt,durationMinutes:experience.duration_minutes,priceFrom:price,imageUrl:experience.image_url,environment:profile.environment,bookingRequirement:profile.booking_requirement,bookingNoticeHours:profile.booking_notice_hours,score,availability:current?"now":"today",weatherFit:weather.fit});
  }
  return results.sort((a,b)=>b.score-a.score||Number(b.availability==="now")-Number(a.availability==="now")||(a.durationMinutes??Infinity)-(b.durationMinutes??Infinity)).slice(0,limit);
 }
