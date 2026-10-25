@@ -1,6 +1,6 @@
 /* Onboarding layout refinements. Kept separate so the cinematic component remains focused on interaction. */
 
-/* TEST PALETTE: keep the approved candidate visible without changing layout/cards. */
+/* Approved onboarding background. */
 .cinema .scene:not(.hero) {
   background: #081d20 !important;
 }
@@ -85,6 +85,45 @@
     border: 1px solid rgba(216,169,79,.18);
     background: rgba(255,255,255,.025);
     box-sizing: border-box;
+  }
+}
+
+/* Tablet: show all four single-choice cards at once instead of clipping the fourth off-screen. */
+@media (min-width: 701px) and (max-width: 1200px) {
+  .cinema .choice-scene .premium-shell {
+    width: min(1120px, calc(100% - 40px)) !important;
+    max-width: 1120px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: visible !important;
+    padding: 24px 0 8px !important;
+  }
+
+  .cinema .choice-scene .premium-rail {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    overflow: visible !important;
+    padding: 18px 0 8px !important;
+  }
+
+  .cinema .choice-scene .premium-card {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 160px !important;
+    padding: 22px 24px !important;
+  }
+
+  .cinema .choice-scene .premium-number {
+    margin-bottom: 24px !important;
+  }
+
+  .cinema .choice-scene .premium-card:hover {
+    transform: translateY(-4px) scale(1.015) !important;
+  }
+
+  .cinema .choice-scene .rail-hint {
+    display: none !important;
   }
 }
 
