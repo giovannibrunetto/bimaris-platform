@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/in-arrivo", "/operatori/candidatura", "/privacy", "/admin", "/auth"];
-const PUBLIC_API_PATHS = ["/api/operator-applications", "/api/admin", "/api/auth"];
-const PUBLIC_FILES = new Set(["/favicon.ico", "/robots.txt"]);
+const PUBLIC_PATHS = ["/in-arrivo", "/operatori/candidatura", "/privacy"];
+const PUBLIC_API_PATHS = ["/api/operator-applications"];
+const PUBLIC_FILES = new Set(["/robots.txt", "/favicon.ico"]);
 const allowed = (path: string, prefix: string) => path === prefix || path.startsWith(prefix + "/");
 
 export function proxy(request: NextRequest) {
@@ -30,7 +30,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (PUBLIC_PATHS.some(prefix => allowed(path, prefix))) return NextResponse.next();
-  return NextResponse.redirect(new URL("/in-arrivo", request.url));
+  return NextResponse.redirect(new URL("/", request.url));
 }
 
 export const config = { matcher: ["/((?!_next/static|_next/image).*)"] };
