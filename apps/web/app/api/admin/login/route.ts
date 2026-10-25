@@ -1,6 +1,6 @@
 import { checkApiRateLimit } from "@/lib/api-rate-limit";
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminSession, isAdminConfigured, verifyAdminPassword } from "@/lib/admin-auth";
+import { createAdminSession, isAdminConfigured, verifyAdminPassword, verifyAdminTotp, isAdminTotpEnabled } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
   if (rateLimit === "unavailable") return NextResponse.json({ ok: false, error: "rate_limit_unavailable" }, { status: 503 });
   const form = await request.formData();
   const password = String(form.get("password") ?? "");
+  const otp = String(form.get("otp") ?? "").trim();
 
   if (!isAdminConfigured()) {
     return NextResponse.redirect(new URL("/admin/login?error=not-configured", request.url), 303);
@@ -25,6 +26,10 @@ export async function POST(request: NextRequest) {
 
   if (!verifyAdminPassword(password)) {
     return NextResponse.redirect(new URL("/admin/login?error=invalid", request.url), 303);
+  }
+
+  if (isAdminTotpEnabled() && !verifyAdminTotp(otp)) {
+    return NextResponse.redirect(new URL("/admin/login?error=otp", request.url), 303);
   }
 
   await createAdminSession();
