@@ -88,20 +88,43 @@
   }
 }
 
-/* Compact landscape/tablet: keep the approved horizontal composition but fit all
-   four choices inside the available viewport. Palette is intentionally untouched. */
+/* Compact landscape/tablet: preserve the approved palette and create one stable,
+   centered composition across companion, time and pace scenes. */
 @media (min-width: 701px) and (max-width: 1500px) {
   .cinema .scene.choice-scene.s3,
   .cinema .scene.choice-scene.s4,
   .cinema .scene.choice-scene.s5 {
     overflow-x: hidden !important;
+    padding-top: clamp(112px, 14vh, 138px) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .cinema .scene.choice-scene > .scene-count,
+  .cinema .scene.choice-scene > .eyebrow,
+  .cinema .scene.choice-scene > h2,
+  .cinema .scene.choice-scene > .intro,
+  .cinema .scene.choice-scene > .controls {
+    width: min(1180px, calc(100vw - 112px)) !important;
+    max-width: 1180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .cinema .scene.choice-scene > h2 {
+    max-width: 1180px !important;
+  }
+
+  .cinema .scene.choice-scene > .intro {
+    max-width: 920px !important;
+    margin-top: 0 !important;
   }
 
   .cinema .scene.choice-scene > .premium-shell {
-    width: calc(100vw - 56px) !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: min(1180px, calc(100vw - 112px)) !important;
+    max-width: 1180px !important;
+    margin: 30px auto 0 !important;
     overflow: visible !important;
     padding: 0 !important;
   }
@@ -109,8 +132,8 @@
   .cinema .scene.choice-scene > .premium-shell > .premium-rail.choice-rail {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    grid-auto-flow: column !important;
-    gap: 12px !important;
+    grid-auto-flow: row !important;
+    gap: 14px !important;
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
@@ -118,13 +141,17 @@
     scroll-snap-type: none !important;
   }
 
+  .cinema .scene.choice-scene.s5 > .premium-shell > .premium-rail.choice-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
   .cinema .scene.choice-scene > .premium-shell > .premium-rail.choice-rail > .premium-card {
     box-sizing: border-box !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    min-height: 190px !important;
-    padding: 18px 18px !important;
+    min-height: 178px !important;
+    padding: 20px 20px !important;
     transform: none !important;
     scroll-snap-align: none !important;
   }
@@ -134,19 +161,24 @@
   }
 
   .cinema .scene.choice-scene .premium-number {
-    margin-bottom: 20px !important;
+    margin-bottom: 18px !important;
   }
 
   .cinema .scene.choice-scene .premium-card strong {
-    font-size: clamp(24px, 2.35vw, 32px) !important;
+    font-size: clamp(24px, 2.25vw, 31px) !important;
   }
 
   .cinema .scene.choice-scene .premium-card span {
-    font-size: clamp(14px, 1.3vw, 17px) !important;
+    font-size: clamp(14px, 1.2vw, 16px) !important;
+    line-height: 1.45 !important;
   }
 
   .cinema .scene.choice-scene .rail-hint {
     display: none !important;
+  }
+
+  .cinema .scene.choice-scene > .controls {
+    margin-top: 22px !important;
   }
 }
 
