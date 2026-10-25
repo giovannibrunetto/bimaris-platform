@@ -21,14 +21,6 @@
     box-sizing: border-box;
   }
 
-  /* The choice carousel must span the viewport, like Scene 01. */
-  .cinema .scene.s3 > .premium-shell,
-  .cinema .scene.s4 > .premium-shell,
-  .cinema .scene.s5 > .premium-shell {
-    width: 100vw !important;
-    max-width: none !important;
-  }
-
   .cinema .scene.s1 h2,
   .cinema .scene.s3 h2,
   .cinema .scene.s4 h2,
