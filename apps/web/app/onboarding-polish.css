@@ -88,30 +88,29 @@
   }
 }
 
-/* Medium/compact landscape layouts: switch the choice rail to 2x2 based on the
-   actual CSS viewport. Some tablets expose a desktop-like viewport above 1200px. */
+/* Compact landscape/tablet: keep the approved horizontal composition but fit all
+   four choices inside the available viewport. Palette is intentionally untouched. */
 @media (min-width: 701px) and (max-width: 1500px) {
   .cinema .scene.choice-scene.s3,
   .cinema .scene.choice-scene.s4,
   .cinema .scene.choice-scene.s5 {
-    overflow-y: auto !important;
     overflow-x: hidden !important;
-    padding-top: 92px !important;
   }
 
   .cinema .scene.choice-scene > .premium-shell {
-    width: min(1120px, calc(100% - 56px)) !important;
-    max-width: 1120px !important;
-    margin: 10px auto 0 !important;
+    width: calc(100vw - 56px) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
     overflow: visible !important;
     padding: 0 !important;
   }
 
   .cinema .scene.choice-scene > .premium-shell > .premium-rail.choice-rail {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row !important;
-    gap: 14px !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-flow: column !important;
+    gap: 12px !important;
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
@@ -124,8 +123,8 @@
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    min-height: 128px !important;
-    padding: 17px 20px !important;
+    min-height: 190px !important;
+    padding: 18px 18px !important;
     transform: none !important;
     scroll-snap-align: none !important;
   }
@@ -135,19 +134,19 @@
   }
 
   .cinema .scene.choice-scene .premium-number {
-    margin-bottom: 12px !important;
+    margin-bottom: 20px !important;
   }
 
   .cinema .scene.choice-scene .premium-card strong {
-    font-size: clamp(25px, 2.5vw, 32px) !important;
+    font-size: clamp(24px, 2.35vw, 32px) !important;
+  }
+
+  .cinema .scene.choice-scene .premium-card span {
+    font-size: clamp(14px, 1.3vw, 17px) !important;
   }
 
   .cinema .scene.choice-scene .rail-hint {
     display: none !important;
-  }
-
-  .cinema .scene.choice-scene > .controls {
-    margin-top: 14px !important;
   }
 }
 
