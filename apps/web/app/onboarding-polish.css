@@ -1,5 +1,10 @@
 /* Onboarding layout refinements. Kept separate so the cinematic component remains focused on interaction. */
 
+/* TEST PALETTE: keep the approved candidate visible without changing layout/cards. */
+.cinema .scene:not(.hero) {
+  background: #081d20 !important;
+}
+
 @media (min-width: 701px) {
   .cinema .scene.s1,
   .cinema .scene.s3,
