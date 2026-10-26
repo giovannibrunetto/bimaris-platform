@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
 const PUBLIC_PRELAUNCH_PATHS = new Set([
   "/",
@@ -12,16 +13,6 @@ const PUBLIC_PRELAUNCH_API_PATHS = new Set([
   "/api/operator-interest",
 ]);
 
-function isPrelaunchEnabled() {
-  const configured = process.env.BIMARIS_PRELAUNCH_MODE === "true";
-  const production = process.env.VERCEL_ENV === "production";
-  const explicitPreviewAudit =
-    process.env.VERCEL_ENV === "preview" &&
-    process.env.BIMARIS_PRELAUNCH_AUDIT === "true";
-
-  return configured && (production || explicitPreviewAudit);
-}
-
 export function proxy(request: NextRequest) {
   if (!isPrelaunchEnabled()) return NextResponse.next();
 
@@ -31,7 +22,6 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // During pre-launch, unknown/internal API routes must not be exposed as HTML redirects.
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
