@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 const teal="#032126", gold="#CAA86A", ivory="#F7F3EB";
 const field={display:"grid",gap:9,fontSize:14,fontWeight:700,color:"#24323b"} as const;
@@ -12,9 +12,65 @@ const categories=[
  ["hospitality","Ospitalità"],["food_beverage","Enogastronomia e ristorazione"],["producer","Produttori"],["experience","Esperienze e attività"],["guide","Guide e servizi turistici"],["artisan","Artigianato e produzioni locali"],["culture","Cultura e luoghi da vivere"],["other","Altro"]
 ] as const;
 
+type PlaceData={address:string;city:string;province:string;postalCode:string;countryCode:string;latitude:string;longitude:string;placeId:string;source:"google_places"|"manual"};
+const emptyPlace:PlaceData={address:"",city:"",province:"",postalCode:"",countryCode:"",latitude:"",longitude:"",placeId:"",source:"manual"};
+
+function PhysicalAddressField(){
+ const hostRef=useRef<HTMLDivElement>(null);
+ const [place,setPlace]=useState<PlaceData>(emptyPlace);
+ const [manual,setManual]=useState(false);
+ const [mapsError,setMapsError]=useState(false);
+
+ useEffect(()=>{
+  if(manual)return;
+  const apiKey=process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  if(!apiKey){setMapsError(true);setManual(true);return;}
+  let active=true;
+  const init=async()=>{
+   try{
+    const w=window as any;
+    if(!w.google?.maps?.importLibrary)throw new Error("maps_not_loaded");
+    const {PlaceAutocompleteElement}=await w.google.maps.importLibrary("places");
+    if(!active||!hostRef.current)return;
+    hostRef.current.replaceChildren();
+    const autocomplete=new PlaceAutocompleteElement();
+    autocomplete.placeholder="Cerca la sede su Google Maps";
+    autocomplete.style.width="100%";
+    autocomplete.addEventListener("gmp-select",async(event:any)=>{
+     try{
+      const selected=event.placePrediction.toPlace();
+      await selected.fetchFields({fields:["id","formattedAddress","location","addressComponents"]});
+      const components=selected.addressComponents||[];
+      const component=(type:string,short=false)=>{const c=components.find((item:any)=>item.types?.includes(type));return c?(short?c.shortText:c.longText)||"":""};
+      const city=component("locality")||component("postal_town")||component("administrative_area_level_3");
+      const lat=selected.location?.lat?.();
+      const lng=selected.location?.lng?.();
+      setPlace({address:selected.formattedAddress||"",city,province:component("administrative_area_level_2",true)||component("administrative_area_level_2"),postalCode:component("postal_code"),countryCode:component("country",true).toUpperCase(),latitude:Number.isFinite(lat)?String(lat):"",longitude:Number.isFinite(lng)?String(lng):"",placeId:selected.id||"",source:"google_places"});
+     }catch{setMapsError(true);}
+    });
+    hostRef.current.appendChild(autocomplete);
+   }catch{if(active){setMapsError(true);setManual(true);}}
+  };
+  const existing=document.querySelector<HTMLScriptElement>('script[data-bimaris-google-maps="true"]');
+  if((window as any).google?.maps?.importLibrary){void init();return()=>{active=false};}
+  if(existing){existing.addEventListener("load",init,{once:true});existing.addEventListener("error",()=>{if(active){setMapsError(true);setManual(true)}},{once:true});return()=>{active=false;existing.removeEventListener("load",init)};}
+  const script=document.createElement("script");
+  script.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly&loading=async`;
+  script.async=true;script.defer=true;script.dataset.bimarisGoogleMaps="true";
+  script.addEventListener("load",init,{once:true});script.addEventListener("error",()=>{if(active){setMapsError(true);setManual(true)}},{once:true});document.head.appendChild(script);
+  return()=>{active=false};
+ },[manual]);
+
+ const switchToManual=()=>{setManual(true);setPlace(emptyPlace)};
+ return <div style={{...field,gridColumn:"1 / -1"}}><span>Sede fisica dell’attività</span>{manual?<input required name="physical_address" maxLength={500} autoComplete="street-address" placeholder="Inserisci l’indirizzo completo" style={input} onChange={e=>setPlace({...emptyPlace,address:e.target.value,source:"manual"})}/>:<><div ref={hostRef} style={{minHeight:52}}/><input type="hidden" name="physical_address" value={place.address}/></>}
+ <input type="hidden" name="physical_city" value={place.city}/><input type="hidden" name="physical_province" value={place.province}/><input type="hidden" name="physical_postal_code" value={place.postalCode}/><input type="hidden" name="physical_country_code" value={place.countryCode}/><input type="hidden" name="physical_latitude" value={place.latitude}/><input type="hidden" name="physical_longitude" value={place.longitude}/><input type="hidden" name="google_place_id" value={place.placeId}/><input type="hidden" name="location_source" value={place.source}/>
+ {!manual&&<button type="button" onClick={switchToManual} style={{justifySelf:"start",border:0,background:"transparent",padding:0,color:teal,textDecoration:"underline",textUnderlineOffset:3,cursor:"pointer",fontSize:13}}>Non trovi la sede? Inserisci l’indirizzo manualmente</button>}
+ {mapsError&&!manual&&<span style={{fontSize:12,fontWeight:400,color:"#8a5a20"}}>Ricerca Google Maps non disponibile. Puoi inserire l’indirizzo manualmente.</span>}<span style={{fontSize:12,fontWeight:400,color:"#6e7680"}}>La sede fisica è distinta dal territorio in cui offri servizi o esperienze.</span></div>;
+}
+
 export default function OperatorInterestPage(){
  const [sent,setSent]=useState(false),[sending,setSending]=useState(false),[error,setError]=useState("");
- async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setError("");setSending(true);const form=new FormData(e.currentTarget);const payload=Object.fromEntries(form.entries());try{const res=await fetch("/api/operator-interest",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});if(!res.ok){const data=await res.json().catch(()=>({}));throw new Error(data.error||"submit_failed")}setSent(true)}catch(err:any){setError(err?.message==="rate_limited"?"Hai effettuato troppi tentativi. Riprova più tardi.":"Non è stato possibile registrare la manifestazione d’interesse. Controlla i dati e riprova.")}finally{setSending(false)}}
+ async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setError("");setSending(true);const form=new FormData(e.currentTarget);const payload=Object.fromEntries(form.entries());if(!String(payload.physical_address||"").trim()){setError("Seleziona una sede dai risultati Google Maps oppure inserisci l’indirizzo manualmente.");setSending(false);return}try{const res=await fetch("/api/operator-interest",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});if(!res.ok){const data=await res.json().catch(()=>({}));throw new Error(data.error||"submit_failed")}setSent(true)}catch(err:any){setError(err?.message==="rate_limited"?"Hai effettuato troppi tentativi. Riprova più tardi.":"Non è stato possibile registrare la manifestazione d’interesse. Controlla i dati e riprova.")}finally{setSending(false)}}
  const scrollToForm=()=>document.getElementById("manifestazione-interesse")?.scrollIntoView({behavior:"smooth",block:"start"});
  const scrollToBenefits=()=>document.getElementById("benefici")?.scrollIntoView({behavior:"smooth",block:"start"});
  return <>
@@ -26,8 +82,7 @@ export default function OperatorInterestPage(){
  <section id="manifestazione-interesse" style={{...scene,background:"#fff",scrollMarginTop:90}}><div style={{maxWidth:1040,margin:"0 auto"}}>{sent?<div className="detail-panel"><h2>Interesse registrato</h2><p>Grazie. Abbiamo registrato la tua manifestazione d’interesse. Nessun costo, nessun impegno: ti ricontatteremo quando il percorso dedicato agli operatori sarà disponibile.</p></div>:<div style={{background:ivory,border:"1px solid #e1d7c7",borderRadius:26,padding:"clamp(28px,5vw,54px)",boxShadow:"0 18px 50px rgba(7,24,35,.07)"}}><div style={{marginBottom:34}}><div className="eyebrow">Manifestazione d’interesse</div><h2 style={{margin:"8px 0 10px",fontFamily:"Georgia,serif",fontSize:"clamp(34px,4.5vw,48px)",color:teal}}>Parlaci della tua attività</h2><p style={{margin:0,color:"#6e7680",fontSize:16,lineHeight:1.6}}>Pochi dati per capire chi sei e cosa ti interessa di BIMARIS.</p></div><form onSubmit={submit} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:20}}>
  <label style={field}>Nome attività<input required name="business_name" maxLength={200} style={input}/></label>
  <label style={field}>Categoria<select required name="category_code" defaultValue="" style={input}><option value="" disabled>Seleziona una categoria</option>{categories.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
- <label style={{...field,gridColumn:"1 / -1"}}>Sede fisica dell’attività<input required name="physical_address" maxLength={500} autoComplete="street-address" placeholder="Cerca l’indirizzo o inseriscilo manualmente" style={input}/><span style={{fontSize:12,fontWeight:400,color:"#6e7680"}}>La sede fisica è distinta dal territorio in cui offri servizi o esperienze.</span></label>
- <input type="hidden" name="location_source" value="manual"/>
+ <PhysicalAddressField/>
  <label style={field}>Nome referente<input required name="contact_name" maxLength={200} autoComplete="name" style={input}/></label><label style={field}>Email<input required type="email" name="email" maxLength={320} autoComplete="email" style={input}/></label><label style={field}>Telefono <span style={{fontWeight:400}}>(facoltativo)</span><input name="phone" maxLength={80} autoComplete="tel" style={input}/></label><label style={{...field,gridColumn:"1 / -1"}}>Sito/social <span style={{fontWeight:400}}>(facoltativo)</span><input name="site_social" maxLength={500} inputMode="url" style={input}/></label>
  <fieldset style={{gridColumn:"1 / -1",border:"1px solid #d8cdbd",borderRadius:16,padding:20,margin:0,background:"#fff"}}><legend style={{padding:"0 8px",fontSize:14,fontWeight:800,color:"#24323b"}}>Cosa ti interessa di più di BIMARIS?</legend><div style={{display:"grid",gap:13}}><label><input required type="radio" name="interest" value="b2c"/> Raggiungere nuovi utenti</label><label><input required type="radio" name="interest" value="b2b"/> Collaborare con altri operatori</label><label><input required type="radio" name="interest" value="both"/> Entrambe</label></div></fieldset>
  <div aria-hidden="true" style={{position:"absolute",left:-10000,width:1,height:1,overflow:"hidden"}}><label>Website<input name="website_url" tabIndex={-1} autoComplete="off"/></label></div>
