@@ -1,19 +1,17 @@
 .operator-interest-page form {
   position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(202, 168, 106, .52) !important;
-  border-radius: 28px !important;
-  background: linear-gradient(145deg, #fbf8f1 0%, #f7f3eb 62%, #f3ecdf 100%) !important;
-  box-shadow: 0 24px 70px rgba(3, 33, 38, .10), 0 2px 8px rgba(3, 33, 38, .04) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible;
 }
 
 .operator-interest-page form::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #caa86a 22%, #caa86a 78%, transparent);
-  pointer-events: none;
+  content: none !important;
+  display: none !important;
 }
 
 .operator-interest-page form input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
@@ -40,7 +38,6 @@
   filter: drop-shadow(0 1px 0 rgba(255,255,255,.9));
 }
 
-/* Keep secondary copy readable without making the form feel heavy. */
 .operator-interest-page form small,
 .operator-interest-page form p {
   line-height: 1.5;
@@ -128,16 +125,11 @@
   accent-color: #032126;
 }
 
-/* Privacy is secondary in hierarchy, but never visually negligible. */
 .operator-interest-page form label:has(input[type="checkbox"]) {
   line-height: 1.5 !important;
 }
 
 @media (max-width: 760px) {
-  .operator-interest-page form {
-    border-radius: 22px !important;
-  }
-
   .operator-interest-page fieldset:has(input[name="interest"]) {
     padding: 19px 18px 20px !important;
   }
