@@ -13,6 +13,7 @@ import { PrelaunchHeader, PrelaunchFooter } from "@/components/PrelaunchChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
+import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
 export const metadata: Metadata = {
   title: "BIMARIS — Messina da Vivere",
@@ -23,10 +24,6 @@ export const metadata: Metadata = {
     images: ["/brand/bimaris-main.jpeg"],
   },
 };
-
-function isPrelaunchEnabled() {
-  return process.env.VERCEL_ENV === "production" && process.env.BIMARIS_PRELAUNCH_MODE === "true";
-}
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const prelaunch = isPrelaunchEnabled();
