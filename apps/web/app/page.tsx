@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PrelaunchHome } from "@/components/PrelaunchHome";
 
 export const revalidate = 300;
 
@@ -10,7 +11,13 @@ const discoveryCategories = [
   { label: "Esperienze", href: "/esperienze" },
 ];
 
+function isPrelaunchEnabled() {
+  return process.env.VERCEL_ENV === "production" && process.env.BIMARIS_PRELAUNCH_MODE === "true";
+}
+
 export default function Home() {
+  if (isPrelaunchEnabled()) return <PrelaunchHome />;
+
   return (
     <>
       <section className="brand-hero brand-hero-compact">
