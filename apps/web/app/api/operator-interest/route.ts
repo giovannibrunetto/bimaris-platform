@@ -11,24 +11,24 @@ export async function POST(request: NextRequest) {
   let body: any;
   try { body = await request.json(); } catch { return NextResponse.json({ok:false,error:"invalid_body"},{status:400}); }
 
-  // Honeypot: legitimate clients leave this field empty.
-  if (text(body.website_url, 200)) return NextResponse.json({ok:true});
+  // Honeypot: legitimate clients leave this field empty. Return a neutral success to bots.
+  if (text(body.website_url, 200)) return NextResponse.json({ok:true},{status:201});
 
   const payload = {
     business_name: text(body.business_name, 200),
+    category: text(body.category, 120),
+    location: text(body.location, 200),
     contact_name: text(body.contact_name, 200),
     email: email(body.email),
     phone: phone(body.phone),
-    category: text(body.category, 120) || null,
-    location: text(body.location, 200) || null,
+    site_social: text(body.site_social, 500) || null,
     interest: interests.has(body.interest) ? body.interest : "",
-    message: text(body.message, 1500) || null,
     privacy_consent: body.privacy_consent === true || body.privacy_consent === "yes",
     source: "public_prelaunch",
     status: "new",
   };
 
-  if (!payload.business_name || !payload.contact_name || !payload.email || !payload.interest || !payload.privacy_consent) {
+  if (!payload.business_name || !payload.category || !payload.location || !payload.contact_name || !payload.email || !payload.interest || !payload.privacy_consent) {
     return NextResponse.json({ok:false,error:"missing_fields"},{status:400});
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) return NextResponse.json({ok:false,error:"invalid_email"},{status:400});
