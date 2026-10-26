@@ -8,7 +8,12 @@ const locationSources = new Set(["google_places", "manual"]);
 const text = (value: unknown, max: number) => typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, max) : "";
 const email = (value: unknown) => text(value, 320).toLowerCase();
 const phone = (value: unknown) => { const raw=text(value,80); if(!raw)return null; const plus=raw.startsWith("+"); const digits=raw.replace(/\D/g,""); return digits ? `${plus?"+":""}${digits}` : null; };
-const numberOrNull = (value: unknown) => { const n = typeof value === "number" ? value : Number(value); return Number.isFinite(n) ? n : null; };
+const numberOrNull = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "string" && !value.trim()) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+};
 
 export async function POST(request: NextRequest) {
   let body: any;
