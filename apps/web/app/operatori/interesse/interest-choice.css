@@ -1,28 +1,85 @@
+.operator-interest-page form {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(202, 168, 106, .52) !important;
+  border-radius: 28px !important;
+  background: linear-gradient(145deg, #fbf8f1 0%, #f7f3eb 62%, #f3ecdf 100%) !important;
+  box-shadow: 0 24px 70px rgba(3, 33, 38, .10), 0 2px 8px rgba(3, 33, 38, .04) !important;
+}
+
+.operator-interest-page form::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #caa86a 22%, #caa86a 78%, transparent);
+  pointer-events: none;
+}
+
+.operator-interest-page form input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]),
+.operator-interest-page form select {
+  border: 1px solid rgba(3, 33, 38, .16) !important;
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.88) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.9), inset 0 1px 2px rgba(3,33,38,.02) !important;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.operator-interest-page form input:not([type="radio"]):not([type="checkbox"]):not([type="hidden"]):focus,
+.operator-interest-page form select:focus {
+  border-color: #caa86a !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(202,168,106,.14) !important;
+  outline: none !important;
+}
+
+.operator-interest-page form gmp-place-autocomplete {
+  --gmp-mat-color-primary: #032126;
+  width: 100%;
+  border-radius: 14px;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.9));
+}
+
 .operator-interest-page fieldset:has(input[name="interest"]) {
   padding: 22px 24px 24px !important;
-  border-radius: 18px !important;
+  border: 1px solid rgba(202,168,106,.48) !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.56) !important;
+}
+
+.operator-interest-page fieldset:has(input[name="interest"]) legend {
+  padding: 0 10px;
+  color: #032126;
+  font-weight: 800;
 }
 
 .operator-interest-page fieldset:has(input[name="interest"]) > div {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px !important;
-  margin-top: 2px;
+  gap: 12px !important;
+  margin-top: 4px;
 }
 
 .operator-interest-page fieldset:has(input[name="interest"]) > div > label {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 12px 14px;
-  border: 1px solid #e4ddd2;
-  border-radius: 12px;
-  background: #f7f3eb;
+  gap: 11px;
+  min-height: 58px;
+  padding: 13px 15px;
+  border: 1px solid rgba(3,33,38,.12);
+  border-radius: 14px;
+  background: rgba(247,243,235,.9);
   color: #24323b;
-  font-weight: 600;
+  font-weight: 650;
   line-height: 1.35;
   cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+}
+
+.operator-interest-page fieldset:has(input[name="interest"]) > div > label:hover {
+  transform: translateY(-1px);
+  border-color: rgba(202,168,106,.72);
+  background: #fff;
 }
 
 .operator-interest-page fieldset:has(input[name="interest"]) input[type="radio"] {
@@ -36,10 +93,39 @@
 .operator-interest-page fieldset:has(input[name="interest"]) > div > label:has(input:checked) {
   border-color: #caa86a;
   background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(202, 168, 106, .22);
+  color: #032126;
+  box-shadow: 0 8px 22px rgba(3,33,38,.08), inset 0 0 0 1px rgba(202,168,106,.22);
+}
+
+.operator-interest-page form button[type="submit"] {
+  min-height: 48px !important;
+  padding: 0 24px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(202,168,106,.22) !important;
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+
+.operator-interest-page form button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(202,168,106,.28) !important;
+  filter: brightness(1.02);
+}
+
+.operator-interest-page form input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: #032126;
 }
 
 @media (max-width: 760px) {
+  .operator-interest-page form {
+    border-radius: 22px !important;
+  }
+
+  .operator-interest-page fieldset:has(input[name="interest"]) {
+    padding: 19px 18px 20px !important;
+  }
+
   .operator-interest-page fieldset:has(input[name="interest"]) > div {
     grid-template-columns: 1fr;
   }
