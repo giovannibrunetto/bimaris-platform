@@ -13,7 +13,13 @@ const PUBLIC_PRELAUNCH_API_PATHS = new Set([
 ]);
 
 function isPrelaunchEnabled() {
-  return process.env.VERCEL_ENV === "production" && process.env.BIMARIS_PRELAUNCH_MODE === "true";
+  const configured = process.env.BIMARIS_PRELAUNCH_MODE === "true";
+  const production = process.env.VERCEL_ENV === "production";
+  const explicitPreviewAudit =
+    process.env.VERCEL_ENV === "preview" &&
+    process.env.BIMARIS_PRELAUNCH_AUDIT === "true";
+
+  return configured && (production || explicitPreviewAudit);
 }
 
 export function proxy(request: NextRequest) {
