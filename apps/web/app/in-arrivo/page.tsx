@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ComingSoonPage() {
   return (
-    <section style={{ minHeight: "80vh", display: "grid", placeItems: "center", padding: "72px 20px", background: "#06454b", color: "#f7f3e9" }}>
+    <section style={{ minHeight: "80vh", display: "grid", placeItems: "center", padding: "72px 20px", background: "#07363A", color: "#f7f3e9" }}>
       <div style={{ width: "100%", maxWidth: 720, textAlign: "center" }}>
         <p style={{ letterSpacing: ".18em", textTransform: "uppercase", fontSize: 14, opacity: .8 }}>BIMARIS · Messina da vivere</p>
         <h1 style={{ fontSize: "clamp(2.4rem,6vw,4.5rem)", lineHeight: 1.08, margin: "24px 0" }}>Messina ha ancora tanto da raccontarti.</h1>
