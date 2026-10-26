@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrelaunchHome } from "@/components/PrelaunchHome";
+import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
 export const revalidate = 300;
 
@@ -10,10 +11,6 @@ const discoveryCategories = [
   { label: "Borghi", href: "/borghi" },
   { label: "Esperienze", href: "/esperienze" },
 ];
-
-function isPrelaunchEnabled() {
-  return process.env.VERCEL_ENV === "production" && process.env.BIMARIS_PRELAUNCH_MODE === "true";
-}
 
 export default function Home() {
   if (isPrelaunchEnabled()) return <PrelaunchHome />;
