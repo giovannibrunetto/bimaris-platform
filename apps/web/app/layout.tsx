@@ -9,6 +9,7 @@ import "./home-polish.css";
 import "./onboarding-polish.css";
 import "./profile-polish.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+import { PrelaunchHeader, PrelaunchFooter } from "@/components/PrelaunchChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
@@ -23,16 +24,21 @@ export const metadata: Metadata = {
   },
 };
 
+function isPrelaunchEnabled() {
+  return process.env.VERCEL_ENV === "production" && process.env.BIMARIS_PRELAUNCH_MODE === "true";
+}
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const prelaunch = isPrelaunchEnabled();
   return (
     <html lang="it">
       <body>
         <Suspense fallback={null}>
-        <SiteHeader />
+        {prelaunch ? <PrelaunchHeader /> : <SiteHeader />}
         <AnalyticsTracker />
         <AnalyticsClickTracker />
         <main>{children}</main>
-        <SiteFooter />
+        {prelaunch ? <PrelaunchFooter /> : <SiteFooter />}
         <ConsentBanner />
         </Suspense>
       </body>
