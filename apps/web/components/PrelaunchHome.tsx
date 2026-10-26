@@ -1,86 +1,19 @@
 import Link from "next/link";
 
 const futureActions = [
-  {
-    title: "SCOPRI",
-    copy: "Luoghi, cultura, miti, sapori ed esperienze del territorio.",
-  },
-  {
-    title: "ESPLORA",
-    copy: "Mappe e percorsi per lasciarti guidare o costruire il tuo modo di vivere Messina.",
-  },
-  {
-    title: "VIVI",
-    copy: "Trova esperienze e realtà locali capaci di trasformare una scoperta in qualcosa da vivere.",
-  },
+  { title: "SCOPRI", copy: "Luoghi, cultura, miti, sapori ed esperienze del territorio." },
+  { title: "ESPLORA", copy: "Mappe e percorsi per lasciarti guidare o costruire il tuo modo di vivere Messina." },
+  { title: "VIVI", copy: "Trova esperienze e realtà locali capaci di trasformare una scoperta in qualcosa da vivere." },
 ];
 
-const eyebrowStyle = {
-  color: "#CAA86A",
-  fontSize: 13,
-  fontWeight: 800,
-  letterSpacing: ".14em",
-  textTransform: "uppercase" as const,
-};
+const eyebrowStyle = { color: "#CAA86A", fontSize: 13, fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase" as const };
 
 export function PrelaunchHome() {
-  return (
-    <>
-      <section style={{minHeight:"76vh",display:"grid",placeItems:"center",padding:"88px 20px",background:"#032126",color:"#fff",textAlign:"center"}}>
-        <div style={{maxWidth:940}}>
-          <div style={{...eyebrowStyle,marginBottom:18}}>MESSINA, DA VIVERE.</div>
-          <h1 style={{fontFamily:"Georgia,serif",fontSize:"clamp(48px,8vw,88px)",lineHeight:1.02,margin:"0 0 22px",color:"#fff"}}>BIMARIS sta arrivando.</h1>
-          <p style={{maxWidth:780,margin:"0 auto 14px",fontSize:"clamp(20px,2.3vw,24px)",lineHeight:1.55,color:"#F7F3EB"}}>Un nuovo modo di scoprire Messina e il suo territorio.</p>
-          <p style={{maxWidth:760,margin:"0 auto 32px",fontSize:17,lineHeight:1.75,color:"#E9E2D5"}}>Luoghi, storie, sapori ed esperienze in un'unica piattaforma pensata per aiutarti a scegliere cosa vivere e scoprire.</p>
-          <a className="button" href="#scopri-bimaris">SCOPRI BIMARIS ↓</a>
-        </div>
-      </section>
-
-      <section id="scopri-bimaris" style={{padding:"clamp(72px,10vw,118px) 20px",background:"#F7F3EB",scrollMarginTop:90}}>
-        <div style={{maxWidth:850,margin:"0 auto",textAlign:"center"}}>
-          <div style={{...eyebrowStyle,color:"#9A7942"}}>UN TERRITORIO. TANTI MODI DI VIVERLO.</div>
-          <h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(36px,5vw,58px)",lineHeight:1.08,color:"#032126",margin:"14px 0 24px"}}>Non un semplice portale turistico.</h2>
-          <p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:"0 auto 14px",maxWidth:790}}>BIMARIS nasce per mettere in relazione persone, luoghi, storie, operatori ed esperienze del territorio.</p>
-          <p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:0}}>Un punto di partenza per chi visita Messina, ma anche per chi la vive ogni giorno e vuole scoprire qualcosa di nuovo.</p>
-        </div>
-      </section>
-
-      <section style={{padding:"clamp(72px,10vw,118px) 20px",background:"#102E31",color:"#F7F3EB"}}>
-        <div style={{maxWidth:1060,margin:"0 auto"}}>
-          <div style={{maxWidth:800,margin:"0 auto clamp(44px,6vw,68px)",textAlign:"center"}}>
-            <div style={eyebrowStyle}>PRESTO SU BIMARIS</div>
-            <h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,60px)",lineHeight:1.08,color:"#F7F3EB",margin:"14px 0 0"}}>Cosa vuoi vivere oggi?</h2>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:24}}>
-            {futureActions.map((item) => (
-              <article key={item.title} style={{borderTop:"1px solid #CAA86A",padding:"28px 8px 12px"}}>
-                <h3 style={{fontFamily:"Georgia,serif",fontSize:27,lineHeight:1.15,color:"#F7F3EB",margin:"0 0 14px"}}>{item.title}</h3>
-                <p style={{fontSize:16,lineHeight:1.7,color:"#E9E2D5",margin:0}}>{item.copy}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section style={{padding:"clamp(72px,10vw,118px) 20px",background:"#F7F3EB",textAlign:"center"}}>
-        <div style={{maxWidth:850,margin:"0 auto"}}>
-          <div style={{...eyebrowStyle,color:"#9A7942"}}>BIMARIS È UNA DOMANDA</div>
-          <h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:1.08,color:"#032126",margin:"14px 0 24px"}}>Cosa vuoi fare oggi?</h2>
-          <p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:"0 auto 14px"}}>Non partire da una lista infinita di cose da vedere. Parti da ciò che ti interessa, dal tempo che hai e da quello che hai voglia di vivere.</p>
-          <p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:0}}>BIMARIS nasce per aiutarti a trasformare una domanda semplice in una scoperta del territorio.</p>
-        </div>
-      </section>
-
-      <section style={{padding:"clamp(76px,10vw,124px) 20px",background:"#032126",color:"#F7F3EB",textAlign:"center"}}>
-        <div style={{maxWidth:880,margin:"0 auto"}}>
-          <div style={eyebrowStyle}>SEI UN OPERATORE DEL TERRITORIO?</div>
-          <h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:1.08,color:"#F7F3EB",margin:"14px 0 22px"}}>La tua attività, nuove opportunità.</h2>
-          <p style={{fontSize:18,lineHeight:1.75,color:"#E9E2D5",margin:"0 auto 14px",maxWidth:760}}>Fai conoscere la tua attività attraverso BIMARIS e scopri nuove opportunità di collaborazione con altre realtà del territorio.</p>
-          <p style={{fontSize:17,lineHeight:1.7,color:"#E9E2D5",margin:"0 auto 30px",maxWidth:720}}>BIMARIS sta selezionando le prime realtà interessate al progetto.</p>
-          <Link className="button" href="/operatori/interesse">MANIFESTA IL TUO INTERESSE</Link>
-          <p style={{fontSize:13,lineHeight:1.6,color:"#CAA86A",margin:"18px auto 0",fontWeight:700,letterSpacing:".04em"}}>Nessun costo. Nessun impegno.</p>
-        </div>
-      </section>
-    </>
-  );
+  return <>
+    <section style={{minHeight:"76vh",display:"grid",placeItems:"center",padding:"88px 20px",background:"#032126",color:"#fff",textAlign:"center"}}><div style={{maxWidth:940}}><div style={{...eyebrowStyle,marginBottom:18}}>MESSINA, DA VIVERE.</div><h1 style={{fontFamily:"Georgia,serif",fontSize:"clamp(48px,8vw,88px)",lineHeight:1.02,margin:"0 0 22px",color:"#fff"}}>BIMARIS sta arrivando.</h1><p style={{maxWidth:780,margin:"0 auto 14px",fontSize:"clamp(20px,2.3vw,24px)",lineHeight:1.55,color:"#F7F3EB"}}>Un nuovo modo di scoprire Messina e il suo territorio.</p><p style={{maxWidth:760,margin:"0 auto 32px",fontSize:17,lineHeight:1.75,color:"#E9E2D5"}}>Luoghi, storie, sapori ed esperienze in un'unica piattaforma pensata per aiutarti a scegliere cosa vivere e scoprire.</p><a className="button" href="#scopri-bimaris">SCOPRI BIMARIS ↓</a></div></section>
+    <section id="scopri-bimaris" style={{padding:"clamp(72px,10vw,118px) 20px",background:"#F7F3EB",scrollMarginTop:90}}><div style={{maxWidth:850,margin:"0 auto",textAlign:"center"}}><div style={{...eyebrowStyle,color:"#9A7942"}}>UN TERRITORIO. TANTI MODI DI VIVERLO.</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(36px,5vw,58px)",lineHeight:1.08,color:"#032126",margin:"14px 0 24px"}}>Non un semplice portale turistico.</h2><p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:"0 auto 14px",maxWidth:790}}>BIMARIS nasce per mettere in relazione persone, luoghi, storie, operatori ed esperienze del territorio.</p><p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:0}}>Un punto di partenza per chi visita Messina, ma anche per chi la vive ogni giorno e vuole scoprire qualcosa di nuovo.</p></div></section>
+    <section style={{padding:"clamp(72px,10vw,118px) 20px",background:"#102E31",color:"#F7F3EB"}}><div style={{maxWidth:1060,margin:"0 auto"}}><div style={{maxWidth:800,margin:"0 auto clamp(44px,6vw,68px)",textAlign:"center"}}><div style={eyebrowStyle}>PRESTO SU BIMARIS</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,60px)",lineHeight:1.08,color:"#F7F3EB",margin:"14px 0 0"}}>Cosa vuoi vivere oggi?</h2></div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:24}}>{futureActions.map(item=><article key={item.title} style={{borderTop:"1px solid #CAA86A",padding:"28px 8px 12px"}}><h3 style={{fontFamily:"Georgia,serif",fontSize:27,lineHeight:1.15,color:"#F7F3EB",margin:"0 0 14px"}}>{item.title}</h3><p style={{fontSize:16,lineHeight:1.7,color:"#E9E2D5",margin:0}}>{item.copy}</p></article>)}</div></div></section>
+    <section style={{padding:"clamp(72px,10vw,118px) 20px",background:"#F7F3EB",textAlign:"center"}}><div style={{maxWidth:850,margin:"0 auto"}}><div style={{...eyebrowStyle,color:"#9A7942"}}>BIMARIS È UNA DOMANDA</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:1.08,color:"#032126",margin:"14px 0 24px"}}>Cosa vuoi fare oggi?</h2><p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:"0 auto 14px"}}>Non partire da una lista infinita di cose da vedere. Parti da ciò che ti interessa, dal tempo che hai e da quello che hai voglia di vivere.</p><p style={{fontSize:18,lineHeight:1.75,color:"#394850",margin:0}}>BIMARIS nasce per aiutarti a trasformare una domanda semplice in una scoperta del territorio.</p></div></section>
+    <section style={{padding:"clamp(76px,10vw,124px) 20px",background:"#032126",color:"#F7F3EB",textAlign:"center"}}><div style={{maxWidth:880,margin:"0 auto"}}><div style={eyebrowStyle}>SEI UN OPERATORE DEL TERRITORIO?</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:1.08,color:"#F7F3EB",margin:"14px 0 22px"}}>La tua attività, nuove opportunità.</h2><p style={{fontSize:18,lineHeight:1.75,color:"#E9E2D5",margin:"0 auto 14px",maxWidth:760}}>Fai conoscere la tua attività attraverso BIMARIS e scopri nuove opportunità di collaborazione con altre realtà del territorio.</p><p style={{fontSize:17,lineHeight:1.7,color:"#E9E2D5",margin:"0 auto 30px",maxWidth:720}}>BIMARIS sta selezionando le prime realtà interessate al progetto.</p><Link className="button" href="/operatori/interesse#prelancio">MANIFESTA IL TUO INTERESSE</Link><p style={{fontSize:13,lineHeight:1.6,color:"#CAA86A",margin:"18px auto 0",fontWeight:700,letterSpacing:".04em"}}>Nessun costo. Nessun impegno.</p></div></section>
+  </>;
 }
