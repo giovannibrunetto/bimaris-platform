@@ -16,7 +16,7 @@ export default function ComingSoonPage() {
         <p style={{ fontSize: "clamp(1.05rem,2vw,1.3rem)", lineHeight: 1.7, opacity: .9 }}>Stiamo costruendo un nuovo modo di scoprire luoghi, storie, esperienze e persone del territorio.</p>
         <h2 style={{ marginTop: 32, fontSize: "clamp(1.7rem,4vw,2.5rem)" }}>BIMARIS sta arrivando.</h2>
         <div style={{ marginTop: 44, padding: "24px", border: "1px solid #caa86a", borderRadius: 16, background: "rgba(2, 31, 34, .22)", boxShadow: "0 16px 44px rgba(0, 15, 17, .18), inset 0 0 0 1px rgba(202, 168, 106, .16)" }}>
-          <h3 style={{ fontSize: 21, marginBottom: 12 }}>Nuove connessioni. Nuove opportunità.</h3>
+          <h3 style={{ fontSize: 21, marginBottom: 12 }}>Sei un operatore del territorio?</h3>
           <p style={{ lineHeight: 1.6, opacity: .9 }}>BIMARIS valorizza le attività del territorio, favorisce nuove collaborazioni e crea opportunità per operatori, produttori e professionisti.</p>
           <Link href="/operatori/candidatura" style={{ display: "inline-block", marginTop: 18, padding: "13px 20px", borderRadius: 10, background: "#caa86a", color: "#102c2b", fontWeight: 700, textDecoration: "none" }}>Scopri BIMARIS per la tua attività</Link>
         </div>
