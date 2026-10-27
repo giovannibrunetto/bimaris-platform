@@ -16,13 +16,17 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
  const rows=((data??[]) as Membership[]).map(r=>({role:r.role,operator_id:r.operator_id,operator:related(r.operators)})).filter(r=>r.operator&&["owner","manager"].includes(r.role)) as {role:string;operator_id:string;operator:Operator}[];
  const params=await searchParams;const requested=params.operatore;const active=rows.find(r=>r.operator_id===requested)??rows[0]??null;
  return <>
-  <section className="page-hero" style={{paddingTop:"clamp(24px,4vw,42px)",paddingBottom:"clamp(24px,4vw,42px)"}}><div className="kicker">Area Operatore · Agenda</div><h1 style={{marginBottom:8}}>Importa il tuo calendario</h1><p style={{maxWidth:760}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p></section>
+  <section className="page-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}>
+   <div className="kicker">Area Operatore · Agenda</div>
+   <h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Importa il tuo calendario</h1>
+   <p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p>
+  </section>
   <section className="section" style={{background:"var(--sand)",paddingTop:26}}><div className="container" style={{maxWidth:1120,display:"grid",gap:16}}>
    {rows.length===0?<div className="detail-panel"><h2>Nessuna attività gestibile</h2><p>Questo account non risulta collegato come responsabile di un operatore.</p></div>:<>
     <nav aria-label="Seleziona attività" style={{background:"#fff",border:"1px solid rgba(202,168,106,.28)",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,flexWrap:"wrap"}}><strong style={{marginRight:4}}>Stai importando per:</strong>{rows.map(r=><a key={r.operator_id} href={`/area-operatore/calendario?operatore=${encodeURIComponent(r.operator_id)}`} aria-current={active?.operator_id===r.operator_id?"page":undefined} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:999,textDecoration:"none",fontWeight:700,border:"1px solid rgba(202,168,106,.55)",background:active?.operator_id===r.operator_id?"#0c3448":"#fbfaf7",color:active?.operator_id===r.operator_id?"#fff":"#152b38"}}>{r.operator.name}</a>)}</nav>
     {active&&<div style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(280px,1fr)",gap:16,alignItems:"start"}}>
       <CalendarImporter operatorId={active.operator_id} operatorName={active.operator.name}/>
-      <aside className="detail-panel" style={{margin:0,padding:"22px",position:"sticky",top:18}}>
+      <aside style={{margin:0,padding:"22px",position:"sticky",top:18,border:"1px solid rgba(202,168,106,.28)",borderRadius:22,background:"#fff",boxShadow:"0 14px 36px rgba(7,24,35,.05)"}}>
        <div className="eyebrow">Come funziona</div>
        <h3 style={{margin:"7px 0 14px",fontSize:24}}>Prima bozza, poi verifica</h3>
        <div style={{display:"grid",gap:12}}>
