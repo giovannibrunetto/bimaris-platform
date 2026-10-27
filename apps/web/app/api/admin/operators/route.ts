@@ -15,13 +15,22 @@ export async function POST(request:NextRequest){
    const payload={name:text(form,"name",200),category:text(form,"category",120)||null,address:text(form,"address",300)||null,phone:text(form,"phone",80)||null,whatsapp:text(form,"whatsapp",80)||null,email:nextEmail,website:text(form,"website",500)||null,instagram:text(form,"instagram",500)||null,premium:form.get("premium")==="on",updated_at:new Date().toISOString()};
 
    if(nextEmail){
-    const {data:members,error:membersError}=await db.from("operator_memberships").select("user_id").eq("operator_id",id); if(membersError)throw membersError;
-    if((members??[]).length>1)throw new Error("Operator has multiple linked accounts; auth email update requires explicit account selection");
-    const userId=members?.[0]?.user_id;
-    if(userId){
-     const {data:authUser,error:getAuthError}=await db.auth.admin.getUserById(userId); if(getAuthError)throw getAuthError;
-     if(authUser.user?.email!==nextEmail){
-      const {error:authError}=await db.auth.admin.updateUserById(userId,{email:nextEmail,email_confirm:true}); if(authError)throw authError;
+    const {data:members,error:membersError}=await db.from("operator_memberships").select("user_id,role").eq("operator_id",id); if(membersError)throw membersError;
+    if((members??[]).length>1)throw new Error("Operator has multiple linked accounts; auth reconciliation requires explicit account selection");
+    const linkedUserId=members?.[0]?.user_id;
+    if(linkedUserId){
+     const {data:linkedAuth,error:getAuthError}=await db.auth.admin.getUserById(linkedUserId); if(getAuthError)throw getAuthError;
+     if(linkedAuth.user?.email!==nextEmail){
+      const {data:users,error:listError}=await db.auth.admin.listUsers({page:1,perPage:1000}); if(listError)throw listError;
+      const existing=users.users.find((u)=>u.email?.toLowerCase()===nextEmail.toLowerCase());
+      if(existing&&existing.id!==linkedUserId){
+       const role=members?.[0]?.role||"owner";
+       const {error:addError}=await db.from("operator_memberships").upsert({operator_id:id,user_id:existing.id,role},{onConflict:"operator_id,user_id"}); if(addError)throw addError;
+       const {error:removeError}=await db.from("operator_memberships").delete().eq("operator_id",id).eq("user_id",linkedUserId); if(removeError)throw removeError;
+       // The orphaned Auth user is intentionally retained here. Account deletion is a separate audited/destructive action.
+      }else if(!existing){
+       const {error:authError}=await db.auth.admin.updateUserById(linkedUserId,{email:nextEmail,email_confirm:true}); if(authError)throw authError;
+      }
      }
     }
    }
