@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
+import { B2B_TAGS, COLLABORATION_TYPES, CUSTOMER_SEGMENTS, LANGUAGES, AVAILABILITY_MODES } from "@/lib/b2b";
 
 async function getContext(operatorId: string) {
   const supabase = await createUserServerClient();
@@ -11,6 +12,13 @@ async function getContext(operatorId: string) {
   if (!membership) return { error: NextResponse.json({ error: "Operatore non autorizzato" }, { status: 403 }) };
   return { supabase, role: membership.role as string };
 }
+
+const allowedValues = (items: readonly (readonly [string, string])[]) => new Set(items.map(([value]) => value));
+const B2B_TAG_VALUES = allowedValues(B2B_TAGS);
+const COLLABORATION_TYPE_VALUES = allowedValues(COLLABORATION_TYPES);
+const CUSTOMER_SEGMENT_VALUES = allowedValues(CUSTOMER_SEGMENTS);
+const LANGUAGE_VALUES = allowedValues(LANGUAGES);
+const AVAILABILITY_MODE_VALUES = allowedValues(AVAILABILITY_MODES);
 
 export async function GET(req: NextRequest) {
   const operatorId = req.nextUrl.searchParams.get("operatorId");
@@ -30,18 +38,32 @@ export async function POST(req: NextRequest) {
   if ("error" in ctx) return ctx.error;
   if (!["owner", "manager"].includes(ctx.role)) return NextResponse.json({ error: "Permesso insufficiente" }, { status: 403 });
 
-  const arr = (value: unknown) => Array.isArray(value) ? value.filter((x): x is string => typeof x === "string").slice(0, 30) : [];
+  const arr = (value: unknown) => Array.isArray(value) ? value.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean).slice(0, 30) : [];
+  const taxonomyArr = (value: unknown, allowed: ReadonlySet<string>) => {
+    const values = arr(value);
+    return { values, valid: values.every((item) => allowed.has(item)) };
+  };
+  const offerTags = taxonomyArr(body?.offer_tags, B2B_TAG_VALUES);
+  const seekTags = taxonomyArr(body?.seek_tags, B2B_TAG_VALUES);
+  const collaborationTypes = taxonomyArr(body?.collaboration_types, COLLABORATION_TYPE_VALUES);
+  const customerSegments = taxonomyArr(body?.customer_segments, CUSTOMER_SEGMENT_VALUES);
+  const languages = taxonomyArr(body?.languages, LANGUAGE_VALUES);
+  const availabilityModes = taxonomyArr(body?.availability_modes, AVAILABILITY_MODE_VALUES);
+  if (![offerTags, seekTags, collaborationTypes, customerSegments, languages, availabilityModes].every((field) => field.valid)) {
+    return NextResponse.json({ error: "Il profilo B2B contiene valori non riconosciuti." }, { status: 400 });
+  }
+
   const text = (value: unknown) => typeof value === "string" ? value.trim().slice(0, 1200) || null : null;
   const payload = {
     operator_id: operatorId,
     enabled: body?.enabled === true,
-    offer_tags: arr(body?.offer_tags),
-    seek_tags: arr(body?.seek_tags),
-    collaboration_types: arr(body?.collaboration_types),
-    customer_segments: arr(body?.customer_segments),
-    languages: arr(body?.languages),
+    offer_tags: offerTags.values,
+    seek_tags: seekTags.values,
+    collaboration_types: collaborationTypes.values,
+    customer_segments: customerSegments.values,
+    languages: languages.values,
     areas: arr(body?.areas),
-    availability_modes: arr(body?.availability_modes),
+    availability_modes: availabilityModes.values,
     offer_summary: text(body?.offer_summary),
     seek_summary: text(body?.seek_summary),
     conditions_notes: text(body?.conditions_notes),
