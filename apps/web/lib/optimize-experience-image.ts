@@ -1,5 +1,5 @@
-const MAX_EDGE = 1800;
-const WEBP_QUALITY = 0.82;
+const MAX_EDGE = 2400;
+const WEBP_QUALITY = 0.9;
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 
 function loadImage(file: File) {
@@ -25,6 +25,8 @@ export async function optimizeExperienceImage(file: File): Promise<File> {
   canvas.height = height;
   const context = canvas.getContext("2d", { alpha: false });
   if (!context) throw new Error("Ottimizzazione immagine non disponibile");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
   context.drawImage(image, 0, 0, width, height);
 
   const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, "image/webp", WEBP_QUALITY));
