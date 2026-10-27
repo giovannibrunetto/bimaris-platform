@@ -41,13 +41,12 @@ export async function POST(request:NextRequest){
    if(readError||!experience||!allowed.includes(experience.review_status))return back(request,"invalid-review-state");
    const operator=experience.operator as unknown as {id:string;name:string|null;published:boolean;selection_status:string;email:string|null}|null;
    if(action==="approve"){
-    if(!experience.category_id||!experience.territory_id)return back(request,"missing-classification");
+    if(!experience.territory_id)return back(request,"missing-classification");
     if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
-    const now=new Date().toISOString();
-    if(!operator.published){const {error:operatorPublishError}=await supabase.from("operators").update({published:true,updated_at:now}).eq("id",operator.id).eq("selection_status","selected");if(operatorPublishError)throw operatorPublishError;}
-    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:true,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
+    const now=new Date().toISOString(),publishNow=Boolean(operator.published);
+    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:publishNow,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
-    return operatorDossier(request,operator.id,"experience-approved");
+    return operatorDossier(request,operator.id,publishNow?"experience-approved":"experience-approved-awaiting-operator-publication");
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
@@ -57,7 +56,7 @@ export async function POST(request:NextRequest){
    return operator?operatorDossier(request,operator.id,"changes-requested"):back(request,"changes-requested");
   }
   if(action==="publish"){
-   const {data:experience,error:readError}=await supabase.from("experiences").select("operator_id,territory_id,category_id,operator:operators(published,selection_status)").eq("id",experienceId).maybeSingle();if(readError||!experience)return back(request,"invalid-data");if(!experience.category_id||!experience.territory_id)return back(request,"missing-classification");const operator=experience.operator as unknown as {published:boolean;selection_status:string}|null;if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");
+   const {data:experience,error:readError}=await supabase.from("experiences").select("operator_id,territory_id,review_status,operator:operators(published,selection_status)").eq("id",experienceId).maybeSingle();if(readError||!experience)return back(request,"invalid-data");if(!experience.territory_id)return back(request,"missing-classification");const operator=experience.operator as unknown as {published:boolean;selection_status:string}|null;if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");if(experience.review_status!=="approved")return back(request,"invalid-review-state");
    const {error}=await supabase.from("experiences").update({published:true,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;return operatorDossier(request,experience.operator_id,"experience-published");
   }
   if(action==="unpublish"){const {data:experience}=await supabase.from("experiences").select("operator_id").eq("id",experienceId).maybeSingle();const {error}=await supabase.from("experiences").update({published:false,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;return experience?.operator_id?operatorDossier(request,experience.operator_id,"experience-unpublished"):back(request,"unpublished");}
