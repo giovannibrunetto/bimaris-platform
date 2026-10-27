@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   const myOperator = operatorMap.get(operatorId);
   const matches = (profiles ?? []).map((candidate) => {
     const op = operatorMap.get(candidate.operator_id);
-    if (!op) return null;
+    if (!op || !op.published || op.selection_status !== "selected") return null;
     const result = scoreB2BMatch(mine as B2BProfile, candidate as B2BProfile, Boolean(myOperator?.territory_id && op.territory_id === myOperator.territory_id));
     if (!result || result.score < 55) return null;
     return {
