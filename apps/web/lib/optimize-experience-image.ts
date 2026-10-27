@@ -17,7 +17,14 @@ export async function optimizeExperienceImage(file: File): Promise<File> {
   if (file.size > MAX_SOURCE_BYTES) throw new Error("La fotografia supera 20 MB");
 
   const image = await loadImage(file);
-  const scale = Math.min(1, MAX_EDGE / Math.max(image.naturalWidth, image.naturalHeight));
+  const longestEdge = Math.max(image.naturalWidth, image.naturalHeight);
+
+  // Do not recompress photographs that are already within the delivery envelope.
+  // Re-encoding a JPEG/PNG/WebP through canvas can visibly soften detail even when
+  // dimensions are unchanged. Keep the original bytes and only optimize oversized files.
+  if (longestEdge <= MAX_EDGE) return file;
+
+  const scale = MAX_EDGE / longestEdge;
   const width = Math.max(1, Math.round(image.naturalWidth * scale));
   const height = Math.max(1, Math.round(image.naturalHeight * scale));
   const canvas = document.createElement("canvas");
