@@ -28,8 +28,12 @@ export type Experience = {
   excerpt: string;
   description: string;
   territory: TerritorySlug;
-  category: CategorySlug;
-  categoryName: string;
+  /** Legacy compatibility only. New experiences are classified by interests + activities. */
+  category?: CategorySlug;
+  categoryName?: string;
+  interestKey?: string;
+  interestNames?: string[];
+  activityNames?: string[];
   location: string;
   duration?: string;
   priceFrom?: number;
