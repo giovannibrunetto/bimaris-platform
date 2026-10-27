@@ -28,9 +28,9 @@ export type Experience = {
   excerpt: string;
   description: string;
   territory: TerritorySlug;
-  /** Legacy compatibility only. New experiences are classified by interests + activities. */
-  category?: CategorySlug;
-  categoryName?: string;
+  /** Compatibility field for older public filters; new records are classified by interests + activities. */
+  category: CategorySlug;
+  categoryName: string;
   interestKey?: string;
   interestNames?: string[];
   activityNames?: string[];
