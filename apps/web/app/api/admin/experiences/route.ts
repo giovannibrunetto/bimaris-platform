@@ -43,10 +43,10 @@ export async function POST(request:NextRequest){
    if(action==="approve"){
     if(!experience.territory_id)return back(request,"missing-classification");
     if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
-    const now=new Date().toISOString(),publishNow=Boolean(operator.published);
-    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:publishNow,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
+    const now=new Date().toISOString();
+    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
-    return operatorDossier(request,operator.id,publishNow?"experience-approved":"experience-approved-awaiting-operator-publication");
+    return operatorDossier(request,operator.id,"experience-approved-awaiting-publication");
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
