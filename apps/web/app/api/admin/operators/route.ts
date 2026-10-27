@@ -11,16 +11,18 @@ export async function POST(request:NextRequest){
  const db=createServiceClient(); if(!db)return back(request,id,"service-error");
  try{
   if(action==="save_profile"){
-   const {data:current,error:currentError}=await db.from("operators").select("email").eq("id",id).single(); if(currentError)throw currentError;
    const nextEmail=text(form,"email",200)||null;
    const payload={name:text(form,"name",200),category:text(form,"category",120)||null,address:text(form,"address",300)||null,phone:text(form,"phone",80)||null,whatsapp:text(form,"whatsapp",80)||null,email:nextEmail,website:text(form,"website",500)||null,instagram:text(form,"instagram",500)||null,premium:form.get("premium")==="on",updated_at:new Date().toISOString()};
 
-   if(nextEmail&&nextEmail!==current?.email){
+   if(nextEmail){
     const {data:members,error:membersError}=await db.from("operator_memberships").select("user_id").eq("operator_id",id); if(membersError)throw membersError;
     if((members??[]).length>1)throw new Error("Operator has multiple linked accounts; auth email update requires explicit account selection");
     const userId=members?.[0]?.user_id;
     if(userId){
-     const {error:authError}=await db.auth.admin.updateUserById(userId,{email:nextEmail,email_confirm:true}); if(authError)throw authError;
+     const {data:authUser,error:getAuthError}=await db.auth.admin.getUserById(userId); if(getAuthError)throw getAuthError;
+     if(authUser.user?.email!==nextEmail){
+      const {error:authError}=await db.auth.admin.updateUserById(userId,{email:nextEmail,email_confirm:true}); if(authError)throw authError;
+     }
     }
    }
 
