@@ -65,13 +65,16 @@ export function SaveToCollectionButton({ itemType, itemId, interestKey }: Props)
     router.refresh();
 
     if (nextSaved && interestKey) {
-      void supabase.rpc("record_user_behavior", {
-        p_event_type: "save_item",
-        p_content_type: itemType,
-        p_content_id: itemId,
-        p_interest_key: interestKey,
-        p_weight: 3,
-      });
+      void (async () => {
+        const { error } = await supabase.rpc("record_user_behavior", {
+          p_event_type: "save_item",
+          p_content_type: itemType,
+          p_content_id: itemId,
+          p_interest_key: interestKey,
+          p_weight: 3,
+        });
+        if (error) console.warn("BIMARIS behavior signal failed", { eventType: "save_item", itemType, itemId, code: error.code });
+      })();
     }
   }
 
