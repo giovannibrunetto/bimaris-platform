@@ -31,7 +31,7 @@ async function recordIntent(experience: Experience, eventType: string, weight: n
   if (!supabase) return;
   const auth = await supabase.auth.getUser();
   if (!auth.data.user) return;
-  await supabase.rpc("record_user_behavior", {
+  const { error } = await supabase.rpc("record_user_behavior", {
     p_event_type: eventType,
     p_content_type: "experience",
     p_content_id: experience.slug,
@@ -43,6 +43,7 @@ async function recordIntent(experience: Experience, eventType: string, weight: n
     p_source_id: experience.slug,
     p_action_type: actionType,
   });
+  if (error) console.warn("BIMARIS behavior signal failed", { eventType, actionType, code: error.code });
 }
 
 export function ExperienceDetailActions({ experience }: { experience: Experience }) {
