@@ -13,7 +13,8 @@ const interests:Interest[]=[
  {value:"sapori",title:"Sapori e vino",description:"Prodotti tipici, cantine, produttori e degustazioni",index:"04"},
  {value:"mare",title:"Mare",description:"Stretto, costa, barca e attività sul mare",index:"05"},
  {value:"natura-trekking",title:"Natura e trekking",description:"Sentieri, panorami e attività all'aperto",index:"06"},
- {value:"esperienze",title:"Esperienze",description:"Attività selezionate da vivere sul territorio",index:"07"},
+ {value:"avventura",title:"Avventura",description:"Attività dinamiche, outdoor e esperienze adrenaliniche",index:"07"},
+ {value:"esperienze",title:"Esperienze",description:"Attività selezionate da vivere sul territorio",index:"08"},
 ];
 const companion=[
  {value:"solo",title:"Da solo",description:"Libertà totale, seguendo solo il tuo ritmo",index:"01"},
