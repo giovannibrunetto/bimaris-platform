@@ -26,7 +26,7 @@ function guidesForStep(experience:Experience|null,step:number):Guide[]{
 }
 
 function normalized(value:string|null|undefined){return (value??"").trim().toLocaleLowerCase("it-IT");}
-function currentStep(root:Element){const text=root.querySelector(".experience-step__number")?.textContent??"";const match=text.match(/0?([1-5])/);return match?Math.max(0,Number(match[1])-1):0;}
+function currentStep(root:Element){const text=root.querySelector(".experience-step__number")?.textContent??"";const match=text.match(/0?([1-6])/);return match?Math.max(0,Number(match[1])-1):0;}
 function experienceFromWizard(wizard:Element,experiences:Experience[]){const values=Array.from(wizard.querySelectorAll("input,textarea")).map(node=>normalized((node as HTMLInputElement|HTMLTextAreaElement).value)).filter(Boolean);const exact=experiences.find(e=>values.includes(normalized(e.name))||values.includes(normalized(e.description))||values.includes(normalized(e.excerpt)));return exact??null;}
 
 export default function WizardReviewGuide({experiences}:{experiences:Experience[]}){
