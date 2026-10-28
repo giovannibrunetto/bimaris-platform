@@ -14,11 +14,17 @@ import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
-export const metadata: Metadata = {
-  title: "BIMARIS STA ARRIVANDO",
-  description: "BIMARIS STA ARRIVANDO",
-  robots: { index: false, follow: false },
-};
+export function generateMetadata(): Metadata {
+  const prelaunch = isPrelaunchEnabled();
+
+  return {
+    title: prelaunch ? "BIMARIS STA ARRIVANDO" : "BIMARIS",
+    description: prelaunch
+      ? "BIMARIS STA ARRIVANDO"
+      : "Scopri esperienze, luoghi, percorsi e operatori del territorio con BIMARIS.",
+    robots: { index: false, follow: false },
+  };
+}
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const prelaunch = isPrelaunchEnabled();
