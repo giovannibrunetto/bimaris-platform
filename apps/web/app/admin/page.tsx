@@ -11,13 +11,14 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, expsRes, revsRes, opRevsRes, itinsRes, eventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experiences").select("id,published,review_status"),
+    db.from("experiences").select("id", { count: "exact", head: true }).in("review_status", ["pending", "submitted"]),
+    db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    db.from("itineraries").select("published"),
+    db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending"),
   ]);
 
@@ -25,13 +26,11 @@ export default async function AdminPage() {
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
-  const exps = expsRes.data ?? [];
-  const itins = itinsRes.data ?? [];
-  const pendingExperiences = exps.filter((x: any) => x.review_status === "pending" || x.review_status === "submitted").length;
+  const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
-  const onlineExperiences = exps.filter((x: any) => x.published).length;
-  const onlineItineraries = itins.filter((x: any) => x.published).length;
+  const onlineExperiences = onlineExpsRes.count ?? 0;
+  const onlineItineraries = onlineItinsRes.count ?? 0;
 
   const metric = (href: string, label: string, value: number, attention = false) => (
     <Link href={href} aria-label={`Apri ${label}`} style={{ display: "block", minWidth: 0, padding: "18px 16px", borderRadius: 18, background: attention && value > 0 ? "#fff7f4" : "rgba(255,255,255,.72)", border: attention && value > 0 ? "1px solid rgba(143,47,36,.35)" : "1px solid rgba(16,24,32,.08)", boxShadow: "0 8px 24px rgba(7,24,35,.04)", textDecoration: "none", color: "inherit", cursor: "pointer" }}>
