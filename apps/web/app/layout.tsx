@@ -26,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="it">
       <body>
         {prelaunch ? (
-          <main>{children}</main>
+          <main><Suspense fallback={null}>{children}</Suspense></main>
         ) : (
           <Suspense fallback={null}>
             <SiteHeader />
