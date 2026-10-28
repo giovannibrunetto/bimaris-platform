@@ -6,7 +6,6 @@ const interests = new Set(["b2c", "b2b", "both"]);
 const categories = new Set(["hospitality", "food_beverage", "producer", "experience", "guide", "artisan", "culture", "other"]);
 const text = (value: unknown, max: number) => typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, max) : "";
 const email = (value: unknown) => text(value, 320).toLowerCase();
-const phone = (value: unknown) => { const raw=text(value,80); if(!raw)return null; const plus=raw.startsWith("+"); const digits=raw.replace(/\D/g,""); return digits ? `${plus?"+":""}${digits}` : null; };
 
 export async function POST(request: NextRequest) {
   let body: any;
@@ -15,19 +14,20 @@ export async function POST(request: NextRequest) {
   if (text(body.website_url, 200)) return NextResponse.json({ok:true},{status:201});
 
   const categoryCode = categories.has(body.category_code) ? body.category_code : "";
-  // Data minimisation for pre-launch interest: retain only the locality needed to
-  // understand territorial relevance. Exact coordinates, postal code and Google
-  // Place ID are deliberately not persisted by this endpoint.
-  const locality = text(body.physical_city, 160) || text(body.physical_province, 120) || text(body.physical_address ?? body.location, 200);
+  const locality = text(body.locality ?? body.physical_city ?? body.location ?? body.physical_address, 160);
 
+  // Pre-launch minimisation: persist only what is necessary to identify the
+  // business, contact its representative and understand territorial/category
+  // relevance. Exact address, coordinates, Place IDs, phone and social URL are
+  // deliberately discarded even if a crafted client sends them.
   const payload = {
     business_name: text(body.business_name, 200),
     category: categoryCode,
     category_code: categoryCode,
     location: locality,
     physical_address: null,
-    physical_city: text(body.physical_city, 160) || null,
-    physical_province: text(body.physical_province, 120) || null,
+    physical_city: locality || null,
+    physical_province: null,
     physical_postal_code: null,
     physical_country_code: null,
     physical_latitude: null,
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
     location_source: "manual",
     contact_name: text(body.contact_name, 200),
     email: email(body.email),
-    phone: phone(body.phone),
-    site_social: text(body.site_social, 500) || null,
+    phone: null,
+    site_social: null,
     interest: interests.has(body.interest) ? body.interest : "",
     privacy_consent: body.privacy_consent === true || body.privacy_consent === "yes",
     source: "public_prelaunch",
