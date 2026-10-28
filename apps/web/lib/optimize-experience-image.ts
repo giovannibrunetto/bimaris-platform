@@ -48,7 +48,7 @@ export async function optimizeExperienceImages(files: File[], limit = 6) {
   const rejected: string[] = [];
   for (const file of selected) {
     try { optimized.push(await optimizeExperienceImage(file)); }
-    catch { rejected.push(file.name); }
+    catch (error) { rejected.push(`${file.name}: ${error instanceof Error ? error.message : "errore sconosciuto"}`); }
   }
   return { optimized, rejected };
 }
