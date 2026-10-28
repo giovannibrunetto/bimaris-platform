@@ -11,7 +11,9 @@ export async function POST(request:NextRequest){
  if(!membership||!["owner","manager"].includes(membership.role))return NextResponse.json({error:"Non autorizzato."},{status:403});
  const {data:experience}=await db.from("experiences").select("id,operator_id,published,review_status").eq("id",experienceId).eq("operator_id",operatorId).maybeSingle();
  if(!experience||experience.published||!["draft","rejected"].includes(experience.review_status))return NextResponse.json({error:"L'esperienza non può essere modificata in questo stato."},{status:409});
- const {data:partner}=await db.from("operators").select("id").eq("id",partnerId).maybeSingle();if(!partner)return NextResponse.json({error:"Operatore partner non trovato."},{status:404});
+ const {data:partner}=await db.from("operators").select("id,published,selection_status").eq("id",partnerId).maybeSingle();
+ if(!partner)return NextResponse.json({error:"Operatore partner non trovato."},{status:404});
+ if(!partner.published||partner.selection_status!=="selected")return NextResponse.json({error:"Puoi collaborare solo con operatori approvati e pubblicati su BIMARIS."},{status:409});
  const {error}=await db.from("experience_operators").upsert({experience_id:experienceId,operator_id:partnerId,role:"participant",activity_label:activity,approval_status:"pending",approved_at:null,invited_by_operator_id:operatorId,updated_at:new Date().toISOString()},{onConflict:"experience_id,operator_id"});
  if(error)return NextResponse.json({error:error.message},{status:400});
  return NextResponse.json({ok:true});
