@@ -6,7 +6,6 @@ import { AVAILABILITY_MODES, B2B_TAGS, COLLABORATION_TYPES, CUSTOMER_SEGMENTS, L
 
 type Match = {
   operator: { id: string; name: string; slug: string; category: string | null };
-  profile: B2BProfile;
   score: number;
   direct: string[];
   reciprocal: string[];
