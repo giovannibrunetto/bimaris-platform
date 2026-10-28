@@ -19,16 +19,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
   const db = createServiceClient();
   if (!db) throw new Error("Supabase service client non configurato");
 
-  const { data: experience } = await db.from("experiences").select("id,name,slug,excerpt,description,duration_minutes,price_from,operator:operators(name)").eq("id", id).maybeSingle();
+  const { data: experience } = await db.from("experiences").select("id,name,slug,excerpt,description,duration_minutes,price_from,operator_id").eq("id", id).maybeSingle();
   if (!experience) notFound();
-  const { data: revision } = await db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  const [{ data: operator }, { data: revision }] = await Promise.all([
+    db.from("operators").select("name").eq("id", experience.operator_id).maybeSingle(),
+    db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle(),
+  ]);
   const [{ data: livePhotos }, { data: proposedPhotos }] = await Promise.all([
     db.from("experience_media").select("storage_path,alt_text,sort_order,is_cover").eq("experience_id", id).order("sort_order"),
     revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] }),
   ]);
   const next = (revision?.content ?? {}) as Content;
   const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "La versione pubblicata o l'operatore non sono più in uno stato compatibile con l'applicazione.", "action-error": "Operazione non riuscita." };
-  const operator = Array.isArray(experience.operator) ? experience.operator[0] : experience.operator;
 
   return <><section style={{ background: "linear-gradient(135deg,#17120d,#080706)", color: "#fff", padding: "16px 6vw 18px" }}><div className="kicker" style={{ color: "#d8b778" }}>AREA PRIVATA · REVISIONE ESPERIENZA</div><h1 style={{ margin: "5px 0 10px", color: "#fff" }}>{experience.name}</h1><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Link className="button" href={`/admin/esperienze/${id}`}>← Scheda esperienza</Link><Link className="button" href="/admin/operatori">Operatori ed Esperienze</Link></div></section><section style={{ padding: "20px 5vw 50px", background: "#f8f4ee" }}>
     {state && <div style={{ padding: 12, marginBottom: 14, background: "#fff", border: "1px solid #d7c7b6" }}>{stateMessage[state] ?? state}</div>}
