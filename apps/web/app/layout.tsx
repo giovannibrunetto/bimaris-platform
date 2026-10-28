@@ -9,20 +9,15 @@ import "./home-polish.css";
 import "./onboarding-polish.css";
 import "./profile-polish.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
-import { PrelaunchHeader, PrelaunchFooter } from "@/components/PrelaunchChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
 export const metadata: Metadata = {
-  title: "BIMARIS — Messina da Vivere",
-  description: "Esperienze, sapori e luoghi selezionati per vivere davvero Messina.",
-  openGraph: {
-    title: "BIMARIS — Messina da Vivere",
-    description: "Esperienze, sapori e luoghi selezionati per vivere davvero Messina.",
-    images: ["/brand/bimaris-main.jpeg"],
-  },
+  title: "BIMARIS STA ARRIVANDO",
+  description: "BIMARIS STA ARRIVANDO",
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -30,14 +25,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="it">
       <body>
-        <Suspense fallback={null}>
-        {prelaunch ? <PrelaunchHeader /> : <SiteHeader />}
-        <AnalyticsTracker />
-        <AnalyticsClickTracker />
-        <main>{children}</main>
-        {prelaunch ? <PrelaunchFooter /> : <SiteFooter />}
-        <ConsentBanner />
-        </Suspense>
+        {prelaunch ? (
+          <main>{children}</main>
+        ) : (
+          <Suspense fallback={null}>
+            <SiteHeader />
+            <AnalyticsTracker />
+            <AnalyticsClickTracker />
+            <main>{children}</main>
+            <SiteFooter />
+            <ConsentBanner />
+          </Suspense>
+        )}
       </body>
     </html>
   );
