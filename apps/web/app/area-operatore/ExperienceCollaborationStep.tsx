@@ -17,7 +17,7 @@ export default function ExperienceCollaborationStep({operatorId,experienceId,onC
  const [message,setMessage]=useState("");
  const partner=operators.find(o=>o.id===partnerId);
 
- useEffect(()=>{let live=true;(async()=>{const {data}=await supabase.from("operators").select("id,name,category").neq("id",operatorId).order("name");if(live)setOperators((data??[]) as OperatorOption[])})();return()=>{live=false}},[operatorId,supabase]);
+ useEffect(()=>{let live=true;(async()=>{const {data}=await supabase.from("operators").select("id,name,category").eq("published",true).eq("selection_status","selected").neq("id",operatorId).order("name");if(live)setOperators((data??[]) as OperatorOption[])})();return()=>{live=false}},[operatorId,supabase]);
 
  useEffect(()=>{let live=true;if(!experienceId)return; (async()=>{
   const {data,error}=await supabase.from("experience_operators").select("operator_id,activity_label,approval_status").eq("experience_id",experienceId).eq("role","participant").limit(1).maybeSingle();
