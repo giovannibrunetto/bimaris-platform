@@ -4,7 +4,7 @@ import {useEffect,useMemo,useState} from "react";
 import {createBrowserClient} from "@supabase/ssr";
 
 type OperatorOption={id:string;name:string;category:string|null};
-export type ExperienceCollaboration={operatorId:string;operatorName:string;activity:string;status:"pending"|"accepted"};
+export type ExperienceCollaboration={operatorId:string;operatorName:string;activity:string;status:"pending"|"accepted"|"rejected"};
 
 export default function ExperienceCollaborationStep({operatorId,experienceId,onChange,onReadyChange}:{operatorId:string;experienceId:string;onChange:(value:ExperienceCollaboration|null)=>void;onReadyChange:(ready:boolean)=>void}){
  const supabase=useMemo(()=>createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!),[]);
@@ -24,9 +24,16 @@ export default function ExperienceCollaborationStep({operatorId,experienceId,onC
   if(!live||error||!data)return;
   const {data:partnerRow}=await supabase.from("operators").select("name").eq("id",data.operator_id).maybeSingle();
   if(!live)return;
-  const value:ExperienceCollaboration={operatorId:data.operator_id,operatorName:partnerRow?.name??"Operatore BIMARIS",activity:data.activity_label??"",status:data.approval_status==="accepted"?"accepted":"pending"};
-  setMode("partner");setPartnerId(data.operator_id);setActivity(data.activity_label??"");setInvited(true);onChange(value);onReadyChange(true);
-  setMessage(data.approval_status==="accepted"?"Collaborazione confermata dal partner.":"Invito già inviato. Nell'anteprima il partner sarà indicato come in attesa di conferma.");
+  const status:ExperienceCollaboration["status"]=data.approval_status==="accepted"?"accepted":data.approval_status==="rejected"?"rejected":"pending";
+  const value:ExperienceCollaboration={operatorId:data.operator_id,operatorName:partnerRow?.name??"Operatore BIMARIS",activity:data.activity_label??"",status};
+  setMode("partner");setPartnerId(data.operator_id);setActivity(data.activity_label??"");onChange(value);
+  if(status==="rejected"){
+   setInvited(false);onReadyChange(false);
+   setMessage("Il partner ha rifiutato la collaborazione. Puoi modificare il partner o l'attività e inviare un nuovo invito.");
+  }else{
+   setInvited(true);onReadyChange(true);
+   setMessage(status==="accepted"?"Collaborazione confermata dal partner.":"Invito già inviato. Nell'anteprima il partner sarà indicato come in attesa di conferma.");
+  }
  })();return()=>{live=false}},[experienceId,supabase,onChange,onReadyChange]);
 
  useEffect(()=>{onReadyChange(mode==="solo"||(mode==="partner"&&invited))},[mode,invited,onReadyChange]);
