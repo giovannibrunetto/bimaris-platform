@@ -35,13 +35,12 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
  const [target,setTarget]=useState<Element|null>(null);
  const [experience,setExperience]=useState<Experience|null>(null);
  const [step,setStep]=useState(0);
- const [collaboration,setCollaboration]=useState<"solo"|"partners"|null>(null);
 
  useEffect(()=>{
   function sync(){
    const wizard=document.querySelector(".experience-wizard");
    const stepNode=wizard?.querySelector(".experience-step")??null;
-   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);setCollaboration(null);return;}
+   if(!wizard||!stepNode){activeId.current=null;setTarget(null);setExperience(null);return;}
    const match=experienceFromWizard(wizard,experiences);
    if(match)activeId.current=match.id;
    const active=experiences.find(e=>e.id===activeId.current)??null;
@@ -54,10 +53,6 @@ export default function WizardReviewGuide({experiences}:{experiences:Experience[
 
  if(!target)return null;
  const guides=guidesForStep(experience&&rejected.some(e=>e.id===experience.id)?experience:null,step);
- const showCollaboration=step===1;
- if(!guides.length&&!showCollaboration)return null;
- return createPortal(<>
-   {guides.length>0&&<aside aria-label="Correzioni richieste da BIMARIS" style={{margin:"0 0 14px",padding:"14px 16px",border:"1px solid rgba(153,91,42,.3)",borderRadius:14,background:"rgba(153,91,42,.08)"}}><div className="eyebrow">Correzione richiesta da BIMARIS</div><div style={{display:"grid",gap:10,marginTop:8}}>{guides.map(guide=><div key={guide.label}><strong>{guide.label}</strong><p style={{margin:"4px 0 0",whiteSpace:"pre-wrap",lineHeight:1.45}}>{guide.note}</p></div>)}</div></aside>}
-   {showCollaboration&&<aside aria-label="Collaborazione esperienza" className="experience-network-guide" style={{margin:"10px 0 0",padding:"14px 16px",border:"1px solid #d7c3a0",borderRadius:14,background:"#f8f3ea",color:"#2b241c",boxSizing:"border-box",maxWidth:720}}><div className="eyebrow" style={{color:"#986a20"}}>RETE BIMARIS</div><h4 style={{fontFamily:"Georgia,serif",fontSize:"1.08rem",lineHeight:1.25,margin:"5px 0 5px",color:"#2b241c"}}>Questa esperienza è realizzata insieme ad altre realtà?</h4><p style={{margin:"0 0 10px",lineHeight:1.4,color:"#5e5448",fontSize:".88rem"}}>Indica se l’esperienza è interamente tua oppure se coinvolge altri operatori. Un partner dovrà confermare la propria partecipazione prima dell’invio a BIMARIS.</p><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button type="button" className={collaboration==="solo"?"button":"experience-secondary"} style={collaboration==="solo"?{color:"#21180d",background:"#d8ad5d",border:"1px solid #d8ad5d"}:{color:"#342a20",background:"#fff",border:"1px solid #bda989"}} onClick={()=>setCollaboration("solo")}>No, la realizziamo noi</button><button type="button" className={collaboration==="partners"?"button":"experience-secondary"} style={collaboration==="partners"?{color:"#21180d",background:"#d8ad5d",border:"1px solid #d8ad5d"}:{color:"#342a20",background:"#fff",border:"1px solid #bda989"}} onClick={()=>setCollaboration("partners")}>Sì, collaboriamo con altri operatori</button></div>{collaboration==="partners"&&<div style={{marginTop:12,paddingTop:12,borderTop:"1px solid rgba(202,168,106,.35)"}}><p style={{margin:"0 0 9px",color:"#5e5448",lineHeight:1.4}}>La bozza è già stata salvata: puoi collegare uno o più operatori e attribuire a ciascuno la propria attività.</p><a className="button" href="/area-operatore/collaborazioni/nuova">Aggiungi i partner →</a></div>}</aside>}
- </>,target);
+ if(!guides.length)return null;
+ return createPortal(<aside aria-label="Correzioni richieste da BIMARIS" style={{margin:"0 0 14px",padding:"14px 16px",border:"1px solid rgba(153,91,42,.3)",borderRadius:14,background:"rgba(153,91,42,.08)"}}><div className="eyebrow">Correzione richiesta da BIMARIS</div><div style={{display:"grid",gap:10,marginTop:8}}>{guides.map(guide=><div key={guide.label}><strong>{guide.label}</strong><p style={{margin:"4px 0 0",whiteSpace:"pre-wrap",lineHeight:1.45}}>{guide.note}</p></div>)}</div></aside>,target);
 }
