@@ -5,15 +5,25 @@ type MediaClient={
 
 type UploadInput={experienceId:string;operatorId:string;file:File;storageFilename:string;sortOrder:number;altText:string};
 type RevisionUploadInput={revisionId:string;operatorId:string;file:File;storageFilename:string;sortOrder:number;altText:string};
+type LiveMediaDeleteItem={id:string;storagePath:string};
 
 const LIVE_MEDIA_BUCKET="experience-media";
 const REVISION_MEDIA_BUCKET="experience-revision-media";
 const REVISION_URL_TTL_SECONDS=300;
 
-export async function deleteExperienceMedia(client:MediaClient,experienceId:string,paths:string[]){
- if(!paths.length)return {ok:true as const,storageWarning:false};
+export async function deleteExperienceMedia(client:MediaClient,experienceId:string,paths:string[]):Promise<any>;
+export async function deleteExperienceMedia(client:MediaClient,item:LiveMediaDeleteItem):Promise<any>;
+export async function deleteExperienceMedia(client:MediaClient,experienceOrItem:string|LiveMediaDeleteItem,paths?:string[]){
+ if(typeof experienceOrItem!=="string"){
+  const item=experienceOrItem;
+  const db=await client.from("experience_media").delete().eq("id",item.id).eq("storage_path",item.storagePath);
+  if(db.error)return {ok:false as const,reason:"database" as const,error:db.error};
+  const storage=await client.storage.from(LIVE_MEDIA_BUCKET).remove([item.storagePath]);
+  return {ok:true as const,storageWarning:Boolean(storage.error),error:storage.error??null};
+ }
+ if(!paths?.length)return {ok:true as const,storageWarning:false};
  const unique=[...new Set(paths)];
- const db=await client.from("experience_media").delete().eq("experience_id",experienceId).in("storage_path",unique);
+ const db=await client.from("experience_media").delete().eq("experience_id",experienceOrItem).in("storage_path",unique);
  if(db.error)return {ok:false as const,reason:"database" as const,error:db.error};
  const storage=await client.storage.from(LIVE_MEDIA_BUCKET).remove(unique);
  return {ok:true as const,storageWarning:Boolean(storage.error),error:storage.error??null};
