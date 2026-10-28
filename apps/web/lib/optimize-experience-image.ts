@@ -18,15 +18,15 @@ export async function optimizeExperienceImage(file: File): Promise<File> {
 
   const image = await loadImage(file);
   const longestEdge = Math.max(image.naturalWidth, image.naturalHeight);
-
-  // Do not recompress photographs that are already within the delivery envelope.
-  // Re-encoding a JPEG/PNG/WebP through canvas can visibly soften detail even when
-  // dimensions are unchanged. Keep the original bytes and only optimize oversized files.
-  if (longestEdge <= MAX_EDGE) return file;
-
-  const scale = MAX_EDGE / longestEdge;
+  const scale = longestEdge > MAX_EDGE ? MAX_EDGE / longestEdge : 1;
   const width = Math.max(1, Math.round(image.naturalWidth * scale));
   const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+  // Storage intentionally accepts only WebP. Keep an already-compliant WebP unchanged
+  // when no resize is needed, but normalize JPEG/PNG/other browser-readable images
+  // to WebP even when their dimensions are already within the delivery envelope.
+  if (scale === 1 && file.type === "image/webp") return file;
+
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
