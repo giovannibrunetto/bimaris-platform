@@ -16,7 +16,19 @@ export default function ExperienceCollaborationStep({operatorId,experienceId,onC
  const [busy,setBusy]=useState(false);
  const [message,setMessage]=useState("");
  const partner=operators.find(o=>o.id===partnerId);
+
  useEffect(()=>{let live=true;(async()=>{const {data}=await supabase.from("operators").select("id,name,category").neq("id",operatorId).order("name");if(live)setOperators((data??[]) as OperatorOption[])})();return()=>{live=false}},[operatorId,supabase]);
+
+ useEffect(()=>{let live=true;if(!experienceId)return; (async()=>{
+  const {data,error}=await supabase.from("experience_operators").select("operator_id,activity_label,approval_status").eq("experience_id",experienceId).eq("role","participant").limit(1).maybeSingle();
+  if(!live||error||!data)return;
+  const {data:partnerRow}=await supabase.from("operators").select("name").eq("id",data.operator_id).maybeSingle();
+  if(!live)return;
+  const value:ExperienceCollaboration={operatorId:data.operator_id,operatorName:partnerRow?.name??"Operatore BIMARIS",activity:data.activity_label??"",status:data.approval_status==="accepted"?"accepted":"pending"};
+  setMode("partner");setPartnerId(data.operator_id);setActivity(data.activity_label??"");setInvited(true);onChange(value);onReadyChange(true);
+  setMessage(data.approval_status==="accepted"?"Collaborazione confermata dal partner.":"Invito già inviato. Nell'anteprima il partner sarà indicato come in attesa di conferma.");
+ })();return()=>{live=false}},[experienceId,supabase,onChange,onReadyChange]);
+
  useEffect(()=>{onReadyChange(mode==="solo"||(mode==="partner"&&invited))},[mode,invited,onReadyChange]);
  async function invite(){
   if(!experienceId)return setMessage("Completa i passaggi precedenti prima di invitare il partner.");
