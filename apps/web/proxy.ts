@@ -1,39 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
-const PUBLIC_PRELAUNCH_PATHS = new Set([
-  "/",
-  "/operatori/interesse",
-  "/privacy",
-  "/cookie",
-  "/note-legali",
-]);
-
-const PUBLIC_PRELAUNCH_API_PATHS = new Set([
-  "/api/operator-interest",
-]);
-
 export function proxy(request: NextRequest) {
   if (!isPrelaunchEnabled()) return NextResponse.next();
 
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_PRELAUNCH_PATHS.has(pathname) || PUBLIC_PRELAUNCH_API_PATHS.has(pathname)) {
-    return NextResponse.next();
+  if (pathname === "/") {
+    const response = NextResponse.next();
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+    response.headers.set("Cache-Control", "public, max-age=0, must-revalidate");
+    return response;
   }
 
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const url = request.nextUrl.clone();
-  url.pathname = "/";
-  url.search = "";
-  return NextResponse.redirect(url, 307);
+  return new NextResponse("Not Found", {
+    status: 404,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+    },
+  });
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|brand/|images/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|woff|woff2)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|woff|woff2)$).*)",
   ],
 };
