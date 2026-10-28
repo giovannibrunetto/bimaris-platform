@@ -6,6 +6,9 @@ export function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // The minimal public mode intentionally exposes only the root document and
+  // Next.js build assets required to render it. Application-owned public files
+  // (images, maps, brand assets, etc.) remain unreachable by direct URL.
   if (pathname === "/") {
     const response = NextResponse.next();
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
@@ -13,8 +16,15 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
+  if (pathname.startsWith("/_next/static/") || pathname.startsWith("/_next/image/")) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "not_found" }, { status: 404 });
+    const response = NextResponse.json({ error: "not_found" }, { status: 404 });
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 
   return new NextResponse("Not Found", {
@@ -28,7 +38,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|woff|woff2)$).*)",
-  ],
+  matcher: ["/:path*"],
 };
