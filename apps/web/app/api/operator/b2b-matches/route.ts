@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (!service) return NextResponse.json({ error: "Servizio non disponibile" }, { status: 500 });
 
   const [{ data: profiles, error: profilesError }, { data: operators, error: operatorsError }] = await Promise.all([
-    service.from("operator_b2b_profiles").select("*").eq("enabled", true).neq("operator_id", operatorId),
+    service.from("operator_b2b_profiles").select("operator_id,enabled,offer_tags,seek_tags,collaboration_types,customer_segments,languages,areas,availability_modes,offer_summary,seek_summary,conditions_notes").eq("enabled", true).neq("operator_id", operatorId),
     service.from("operators").select("id,name,slug,category,territory_id,published,selection_status"),
   ]);
   if (profilesError || operatorsError) return NextResponse.json({ error: profilesError?.message ?? operatorsError?.message }, { status: 400 });
@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
     if (!result || result.score < 55) return null;
     return {
       operator: { id: op.id, name: op.name, slug: op.slug, category: op.category },
-      profile: candidate,
       ...result,
       level: result.score >= 85 ? "molto_forte" : result.score >= 70 ? "buono" : "potenziale",
     };
