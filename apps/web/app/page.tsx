@@ -20,7 +20,7 @@ export default function Home() {
       <section className="brand-hero brand-hero-compact">
         <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
         <div className="brand-hero-visual">
-          <img src="/brand/bimaris-main.jpeg" alt="BIMARIS — Messina da Vivere" />
+          <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
         </div>
       </section>
 
