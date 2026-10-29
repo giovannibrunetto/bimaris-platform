@@ -35,8 +35,8 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
     <style>{`
       .culture-detail{background:#f7f9f7;color:#172326;padding-bottom:28px}
       .culture-detail-shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
-      .culture-detail-hero{background:linear-gradient(115deg,#07343b 0%,#032126 72%);color:#fff;padding:46px 0 42px}
-      .culture-detail-hero h1{max-width:940px;margin:10px 0 14px;font:500 clamp(38px,4.5vw,66px)/1.02 Georgia,serif;letter-spacing:-.025em}
+      .culture-detail-hero{background:linear-gradient(115deg,#07343b 0%,#032126 72%);color:#fff;padding:42px 0 38px}
+      .culture-detail-hero h1{max-width:900px;margin:10px 0 14px;font:500 clamp(36px,3.7vw,56px)/1.04 Georgia,serif;letter-spacing:-.022em}
       .culture-detail-hero p{max-width:850px;margin:0;color:#dce8e5;font-size:17px;line-height:1.58}
       .culture-detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center}
       .culture-detail-media{padding:34px 0 0}
@@ -70,7 +70,7 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       .culture-detail-source-list a{display:block;color:#8d6b34;font-weight:700;margin-bottom:3px}
       .culture-detail-back{padding:0 0 22px}
       @media(max-width:820px){.culture-detail-shell{width:min(100% - 32px,1180px)}.culture-detail-hero{padding:34px 0}.culture-detail-story{grid-template-columns:1fr;gap:26px;padding:42px 0 36px}.culture-detail-copy{max-width:none}.culture-detail-side{position:static}.culture-detail-gallery-grid,.culture-detail-source-list{grid-template-columns:1fr}.culture-detail-main-photo img{height:clamp(300px,62vw,480px)}.culture-detail-gallery img{height:260px}}
-      @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:38px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}.culture-detail-gallery img{height:220px}}
+      @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:36px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}.culture-detail-gallery img{height:220px}}
     `}</style>
     <main className="culture-detail">
       <section className="culture-detail-hero"><div className="culture-detail-shell"><div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="culture-detail-actions"><Link className="button" href={mapUrl}>Apri in BIMARIS Map</Link><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></div></section>
