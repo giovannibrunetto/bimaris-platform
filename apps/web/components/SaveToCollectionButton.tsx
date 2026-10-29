@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
@@ -8,9 +8,12 @@ type Props = {
   itemType: string;
   itemId: string;
   interestKey?: string;
+  buttonClassName?: string;
+  buttonStyle?: CSSProperties;
+  wrapperStyle?: CSSProperties;
 };
 
-export function SaveToCollectionButton({ itemType, itemId, interestKey }: Props) {
+export function SaveToCollectionButton({ itemType, itemId, interestKey, buttonClassName, buttonStyle, wrapperStyle }: Props) {
   const router = useRouter();
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -78,8 +81,8 @@ export function SaveToCollectionButton({ itemType, itemId, interestKey }: Props)
     }
   }
 
-  return <div style={{ marginTop: 18 }}>
-    <button type="button" className={saved ? "button" : "button ghost"} onClick={toggleSaved} disabled={loading} aria-pressed={saved}>
+  return <div style={{ marginTop: 18, ...wrapperStyle }}>
+    <button type="button" className={buttonClassName ?? (saved ? "button" : "button ghost")} style={buttonStyle} onClick={toggleSaved} disabled={loading} aria-pressed={saved}>
       {loading ? "Attendi…" : saved ? "♥ Salvato nella raccolta" : "♡ Salva nella raccolta"}
     </button>
     {message ? <p className="muted" style={{ margin: "9px 0 0", fontSize: 14 }}>{message}</p> : null}
