@@ -92,15 +92,40 @@ body { background:var(--color-bg); color:var(--color-text); }
   .home-category-grid .category { min-height:108px; padding:18px 20px; }
   .home-journey { padding-top:58px; padding-bottom:64px; }
   .home-journey-intro { margin-bottom:32px; }
-  .home-journey-paths { align-items:stretch; }
-  .home-journey-path {
+
+  /* HOME-D02 — the two journey routes are equivalent choices: identical geometry and internal grid. */
+  .home-journey-paths {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:22px;
+    align-items:stretch;
+  }
+  .home-journey-path,
+  .home-journey-guided,
+  .home-journey-free {
     min-height:270px;
     height:100%;
-    padding:30px;
-    margin-top:0 !important;
+    margin:0 !important;
+    transform:none !important;
     align-self:stretch;
+    align-items:flex-start;
+    gap:26px;
+    padding:30px;
     background:#12363a !important;
   }
+  .home-journey-path:hover,
+  .home-journey-guided:hover,
+  .home-journey-free:hover { transform:translateY(-4px) !important; }
+  .home-journey-number { flex:0 0 54px; }
+  .home-journey-path-copy {
+    align-self:stretch;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .home-journey-path h3 { min-height:2.04em; }
+  .home-journey-path p { flex:1; }
+  .home-journey-action { margin-top:auto; }
 }
 
 /* Privacy: compact first state; details may expand deliberately. */
