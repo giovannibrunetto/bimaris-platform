@@ -49,7 +49,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   const heroImage = narrativeIllustration ?? story.imageUrl;
   const heroAlt = narrativeIllustration ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
   const typeLabel = shortStoryType(story.storyType);
-  const actionStyle = { width: "100%", minHeight: 48, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 18px", textAlign: "center" as const };
+  const actionStyle = { width: "100%", height: 48, minHeight: 48, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 12px", textAlign: "center" as const, whiteSpace: "nowrap" as const, fontSize: 14 };
   const contextItems = [
     ["Cosa è documentato", story.editorial?.documentedText],
     ["La tradizione", story.editorial?.traditionText],
@@ -69,7 +69,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           </figure>}
           <div style={{ display: "grid", gridTemplateColumns: story.places.length > 0 ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 10, marginTop: 12 }}>
             {story.places.length > 0 && <BehaviorTrackedLink className="button" style={actionStyle} href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink>}
-            <SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" buttonClassName="button" buttonStyle={actionStyle} wrapperStyle={{ marginTop: 0, width: "100%" }} />
+            <SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" buttonClassName="button" buttonStyle={actionStyle} wrapperStyle={{ marginTop: 0, width: "100%", height: 48 }} />
           </div>
         </div>
 
