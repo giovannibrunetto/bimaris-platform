@@ -42,6 +42,12 @@ body { background:var(--color-bg); color:var(--color-text); }
 .page-hero p { color:rgba(255,255,255,.82); }
 .page-hero .kicker { color:#e0bc7b; }
 
+/* CULT-D02 / shared discovery grid — keep editorial hero content on the same horizontal grid as page sections. */
+.discovery-page-hero {
+  padding-left:max(6vw, calc((100% - 1180px) / 2));
+  padding-right:max(6vw, calc((100% - 1180px) / 2));
+}
+
 .section.sand,
 .home-visitors { background:var(--color-surface-subtle); }
 .card,
@@ -166,6 +172,7 @@ body { background:var(--color-bg); color:var(--color-text); }
 .consent-options label { display:inline-flex; align-items:center; gap:7px; }
 
 @media (max-width:760px) {
+  .discovery-page-hero { padding-left:18px; padding-right:18px; }
   .brand-hero-compact .brand-hero-visual { height:auto !important; }
   .consent {
     left:10px;
