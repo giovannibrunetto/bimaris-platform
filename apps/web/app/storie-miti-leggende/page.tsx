@@ -17,6 +17,20 @@ const editorialIllustrations: Record<string, string> = {
   "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
 };
 
+function storyTypeLabel(storyType: string) {
+  const normalized = storyType.trim().toLowerCase();
+
+  if (normalized.includes("fenomeno naturale")) return "Leggenda naturale";
+  if (normalized.includes("religioso") || normalized.includes("devozionale")) return "Tradizione devozionale";
+  if (normalized.includes("mito")) return "Mito";
+  if (normalized.includes("leggenda popolare")) return "Leggenda popolare";
+  if (normalized.includes("tradizione popolare")) return "Tradizione popolare";
+  if (normalized.includes("leggenda")) return "Leggenda";
+  if (normalized.includes("tradizione")) return "Tradizione";
+
+  return storyType;
+}
+
 export default async function StoriesPage() {
   const stories = await getPublishedStories();
 
@@ -74,7 +88,7 @@ export default async function StoriesPage() {
                         style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
                       />
                     )}
-                    <span style={{ position: "absolute", top: 12, right: 12 }}>{story.storyType}</span>
+                    <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body" style={{ padding: "18px 20px 20px" }}>
                     <div className="eyebrow">
