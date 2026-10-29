@@ -32,16 +32,58 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
-    <section className="page-hero" style={{ paddingBottom: 28 }}><div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="actions" style={{ marginTop: 18 }}><Link className="button" href={mapUrl}>Apri in BIMARIS Map</Link><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></section>
+    <style>{`
+      .culture-detail{background:#f7f9f7;color:#172326;padding-bottom:28px}
+      .culture-detail-shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
+      .culture-detail-hero{background:linear-gradient(115deg,#07343b 0%,#032126 72%);color:#fff;padding:46px 0 42px}
+      .culture-detail-hero h1{max-width:940px;margin:10px 0 14px;font:500 clamp(38px,4.5vw,66px)/1.02 Georgia,serif;letter-spacing:-.025em}
+      .culture-detail-hero p{max-width:850px;margin:0;color:#dce8e5;font-size:17px;line-height:1.58}
+      .culture-detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center}
+      .culture-detail-media{padding:34px 0 0}
+      .culture-detail-main-photo{margin:0}
+      .culture-detail-main-photo img{width:100%;height:clamp(360px,46vw,570px);display:block;object-fit:cover;border-radius:22px;box-shadow:0 16px 46px rgba(7,52,59,.11)}
+      .culture-detail-caption{max-width:980px;margin:9px 2px 0;color:#687777;font-size:11px;line-height:1.45}
+      .culture-detail-caption a{text-decoration:underline;text-underline-offset:2px}
+      .culture-detail-story{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.7fr);gap:52px;padding:58px 0 46px;align-items:start}
+      .culture-detail-copy{max-width:760px}
+      .culture-detail-copy h2,.culture-detail-gallery h2,.culture-detail-sources h2{font:500 clamp(34px,4vw,48px)/1.08 Georgia,serif;margin:7px 0 22px;letter-spacing:-.02em}
+      .culture-detail-body{font-size:17px;line-height:1.72;color:#435354;white-space:pre-line;margin:0}
+      .culture-detail-side{display:grid;gap:16px;position:sticky;top:96px}
+      .culture-detail-card{background:#fff;border:1px solid #d7dfdc;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(7,52,59,.045)}
+      .culture-detail-card h3{font:600 25px/1.15 Georgia,serif;margin:7px 0 13px}
+      .culture-detail-card p{color:#536363;line-height:1.55;margin:0}
+      .culture-detail-facts{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:13px}
+      .culture-detail-facts li{padding-top:13px;border-top:1px solid #e5ebe8;color:#536363;line-height:1.4}
+      .culture-detail-facts strong{display:block;color:#172326;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+      .culture-detail-card .actions{margin-top:18px;gap:8px}
+      .culture-detail-card .button{padding:11px 15px;font-size:14px}
+      .culture-detail-gallery{padding:10px 0 48px}
+      .culture-detail-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+      .culture-detail-gallery figure{margin:0;background:#fff;border:1px solid #d7dfdc;border-radius:18px;overflow:hidden}
+      .culture-detail-gallery img{width:100%;height:310px;display:block;object-fit:cover}
+      .culture-detail-gallery figcaption{padding:10px 14px 13px;color:#687777;font-size:11px;line-height:1.45}
+      .culture-detail-gallery figcaption a{text-decoration:underline;text-underline-offset:2px}
+      .culture-detail-sources{padding:10px 0 40px}
+      .culture-detail-sources-card{background:#fff;border:1px solid #d7dfdc;border-radius:20px;padding:28px 30px}
+      .culture-detail-source-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;list-style:none;padding:0;margin:8px 0 0}
+      .culture-detail-source-list li{padding:15px 0;border-top:1px solid #e5ebe8;color:#5b6969;line-height:1.45}
+      .culture-detail-source-list a{display:block;color:#8d6b34;font-weight:700;margin-bottom:3px}
+      .culture-detail-back{padding:0 0 22px}
+      @media(max-width:820px){.culture-detail-shell{width:min(100% - 32px,1180px)}.culture-detail-hero{padding:34px 0}.culture-detail-story{grid-template-columns:1fr;gap:26px;padding:42px 0 36px}.culture-detail-copy{max-width:none}.culture-detail-side{position:static}.culture-detail-gallery-grid,.culture-detail-source-list{grid-template-columns:1fr}.culture-detail-main-photo img{height:clamp(300px,62vw,480px)}.culture-detail-gallery img{height:260px}}
+      @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:38px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}.culture-detail-gallery img{height:220px}}
+    `}</style>
+    <main className="culture-detail">
+      <section className="culture-detail-hero"><div className="culture-detail-shell"><div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="culture-detail-actions"><Link className="button" href={mapUrl}>Apri in BIMARIS Map</Link><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></div></section>
 
-    {hero && <section className="culture-hero-wrap"><figure className="culture-hero-figure"><img src={hero.imageUrl} alt={hero.altText ?? entry.title} decoding="async" />{(hero.caption || hero.author || hero.license) && <figcaption>{hero.caption && <>{hero.caption} · </>}Foto: {hero.author ?? "Wikimedia Commons"}{hero.license && <> · {hero.license}</>}{hero.sourceUrl && <> · <a href={hero.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{hero.licenseUrl && <> · <a href={hero.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure></section>}
+      {hero && <section className="culture-detail-media"><div className="culture-detail-shell"><figure className="culture-detail-main-photo"><img src={hero.imageUrl} alt={hero.altText ?? entry.title} decoding="async" />{(hero.caption || hero.author || hero.license) && <figcaption className="culture-detail-caption">{hero.caption && <>{hero.caption} · </>}Foto: {hero.author ?? "Wikimedia Commons"}{hero.license && <> · {hero.license}</>}{hero.sourceUrl && <> · <a href={hero.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{hero.licenseUrl && <> · <a href={hero.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure></div></section>}
 
-    <section className="section detail-grid"><article><div className="kicker">La storia</div><h2 style={{ fontFamily: "Georgia,serif", fontSize: 42, marginTop: 8 }}>Conosci il luogo</h2><p style={{ fontSize: 18, lineHeight: 1.75, color: "#4d5962", whiteSpace: "pre-line" }}>{entry.body}</p>{entry.historicalPeriodNote && <div className="detail-panel" style={{ marginTop: 24 }}><div className="kicker">Epoca storica</div><h3>{periodLabel ?? "Più epoche"}</h3><p>{entry.historicalPeriodNote}</p>{entry.primaryHistoricalPeriod && entry.primaryHistoricalPeriod !== "trasversale" && <Link className="text-link" href={`/mappa/epoche?epoca=${entry.primaryHistoricalPeriod}`}>Vedi i luoghi della stessa epoca →</Link>}</div>}</article><aside className="detail-panel"><div className="kicker">Esplora</div><h3>{entry.placeName}</h3><ul className="list">{periodLabel && <li><strong>Epoca</strong><br />{periodLabel}</li>}{entry.address && <li><strong>Indirizzo</strong><br />{entry.address}</li>}<li><strong>Territorio</strong><br />Messina</li></ul><div className="actions" style={{ marginTop: 20 }}><Link className="button" href={mapUrl}>BIMARIS Map</Link><BehaviorTrackedLink className="button ghost" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "culture", content_id: entry.id }} behaviorEvent="directions_open" contentType="culture" contentId={entry.slug} interestKey="cultura" weight={2}>Indicazioni Google Maps</BehaviorTrackedLink></div></aside></section>
+      <div className="culture-detail-shell"><section className="culture-detail-story"><article className="culture-detail-copy"><div className="kicker">La storia</div><h2>Conosci il luogo</h2><p className="culture-detail-body">{entry.body}</p></article><aside className="culture-detail-side">{entry.historicalPeriodNote && <div className="culture-detail-card"><div className="kicker">Epoca storica</div><h3>{periodLabel ?? "Più epoche"}</h3><p>{entry.historicalPeriodNote}</p>{entry.primaryHistoricalPeriod && entry.primaryHistoricalPeriod !== "trasversale" && <Link className="text-link" style={{display:"inline-block",marginTop:14}} href={`/mappa/epoche?epoca=${entry.primaryHistoricalPeriod}`}>Vedi i luoghi della stessa epoca →</Link>}</div>}<div className="culture-detail-card"><div className="kicker">Esplora</div><h3>{entry.placeName}</h3><ul className="culture-detail-facts">{periodLabel && <li><strong>Epoca</strong>{periodLabel}</li>}{entry.address && <li><strong>Indirizzo</strong>{entry.address}</li>}<li><strong>Territorio</strong>Messina</li></ul><div className="actions"><Link className="button" href={mapUrl}>BIMARIS Map</Link><BehaviorTrackedLink className="button ghost" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "culture", content_id: entry.id }} behaviorEvent="directions_open" contentType="culture" contentId={entry.slug} interestKey="cultura" weight={2}>Google Maps</BehaviorTrackedLink></div></div></aside></section>
 
-    {secondaryImages.length > 0 && <section className="section"><div className="kicker">Galleria</div><h2 style={{ fontFamily: "Georgia,serif", fontSize: 36, marginTop: 8 }}>Altri sguardi</h2><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 18, marginTop: 22 }}>{secondaryImages.map((image,index)=><figure className="culture-hero-figure" key={`${image.imageUrl}-${index}`} style={{ margin: 0 }}><img src={image.imageUrl} alt={image.altText ?? `${entry.title} — immagine ${index+2}`} loading="lazy" decoding="async" style={{ height: 260, objectFit: "cover" }} />{(image.caption || image.author || image.license) && <figcaption>{image.caption && <>{image.caption} · </>}Foto: {image.author ?? "Wikimedia Commons"}{image.license && <> · {image.license}</>}{image.sourceUrl && <> · <a href={image.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{image.licenseUrl && <> · <a href={image.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure>)}</div></section>}
+      {secondaryImages.length > 0 && <section className="culture-detail-gallery"><div className="kicker">Galleria</div><h2>Altri sguardi</h2><div className="culture-detail-gallery-grid">{secondaryImages.map((image,index)=><figure key={`${image.imageUrl}-${index}`}><img src={image.imageUrl} alt={image.altText ?? `${entry.title} — immagine ${index+2}`} loading="lazy" decoding="async" />{(image.caption || image.author || image.license) && <figcaption>{image.caption && <>{image.caption} · </>}Foto: {image.author ?? "Wikimedia Commons"}{image.license && <> · {image.license}</>}{image.sourceUrl && <> · <a href={image.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{image.licenseUrl && <> · <a href={image.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure>)}</div></section>}
 
-    {entry.sources.length > 0 && <section className="section"><div className="detail-panel"><div className="kicker">Fonti</div><h2 style={{ fontFamily: "Georgia,serif", fontSize: 30, marginTop: 8 }}>Per approfondire</h2><ul className="list" style={{ marginTop: 14 }}>{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a className="text-link" href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <><br /><span>{source.note}</span></>}</li>)}</ul></div></section>}
+      {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Per approfondire</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
 
-    <section className="section" style={{ paddingTop: 0 }}><Link className="text-link" href="/cultura">← Torna a Cultura</Link></section>
+      <section className="culture-detail-back"><Link className="text-link" href="/cultura">← Torna a Cultura</Link></section></div>
+    </main>
   </>;
 }
