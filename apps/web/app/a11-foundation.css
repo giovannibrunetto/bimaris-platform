@@ -97,7 +97,9 @@ body { background:var(--color-bg); color:var(--color-text); }
 .culture-editorial-card-featured .text-link { color:#e0bc7b; }
 .culture-editorial-card-light {
   margin-top:24px;
-  margin-bottom:30px;
+  margin-bottom:24px;
+  padding-top:30px;
+  padding-bottom:30px;
   background:#fff;
   color:var(--bimaris-abyssal-teal);
   border-color:rgba(7,52,59,.14);
@@ -111,6 +113,10 @@ body { background:var(--color-bg); color:var(--color-text); }
   font-size:clamp(38px,4.6vw,68px);
   line-height:1.02;
   font-weight:500;
+}
+.culture-editorial-card-light .culture-editorial-copy h2 {
+  margin-bottom:0;
+  font-size:clamp(38px,4vw,60px);
 }
 .culture-editorial-card p {
   max-width:600px;
@@ -149,8 +155,12 @@ body { background:var(--color-bg); color:var(--color-text); }
   .section-head { margin-bottom:26px; }
   .page-hero { padding-top:48px; padding-bottom:48px; }
   .discovery-page-first { padding-top:42px; padding-bottom:24px; }
-  .culture-card-media { height:225px; }
-  .card-body { padding:19px 20px 21px; }
+
+  /* CULT-D05 — compact the catalogue so a complete first row is useful in the desktop viewport. */
+  .culture-card-media { height:185px; }
+  .culture-card .card-body { padding:15px 20px 17px; }
+  .culture-card .card-body h3 { margin-top:5px; margin-bottom:8px; }
+  .culture-card .card-body p { margin-top:0; margin-bottom:12px; line-height:1.45; }
 
   .home-audience { padding-top:34px; padding-bottom:38px; }
   .home-audience-intro { margin-bottom:20px; }
