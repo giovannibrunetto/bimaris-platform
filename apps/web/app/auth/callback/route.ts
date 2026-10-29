@@ -11,12 +11,22 @@ const ALLOWED_HOSTS = new Set([
   "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app",
 ]);
 
+function isAllowedHost(hostname: string) {
+  if (ALLOWED_HOSTS.has(hostname)) return true;
+
+  // Vercel creates a new immutable hostname for every preview deployment.
+  // Accept only preview hosts belonging to this BIMARIS project/account so the
+  // callback stays on the deployment that initiated auth without opening the
+  // redirect to arbitrary hosts.
+  return /^bimaris-platform-[a-z0-9-]+-giovannibrunetto84-1508\.vercel\.app$/i.test(hostname);
+}
+
 function safePath(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 }
 
 function publicUrl(path: string, requestUrl: URL) {
-  const origin = ALLOWED_HOSTS.has(requestUrl.hostname) ? requestUrl.origin : PUBLIC_SITE_URL;
+  const origin = isAllowedHost(requestUrl.hostname) ? requestUrl.origin : PUBLIC_SITE_URL;
   return new URL(path, origin);
 }
 
