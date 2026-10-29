@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const story = await getPublishedStoryBySlug(slug);
   if (!story) return {};
-  const image = editorialIllustrations[story.slug] ?? story.imageUrl;
+  const image = editorialIllustrations[slug] ?? story.imageUrl;
   return { title: `${story.title} | Miti e leggende di Messina | BIMARIS`, description: story.excerpt, openGraph: image ? { images: [image] } : undefined };
 }
 
@@ -45,8 +45,9 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
   const paragraphs = story.body.split(/\n\n+/).filter(Boolean);
   const secondaryImages = story.images.filter(image => !image.isPrimary);
-  const heroImage = editorialIllustrations[story.slug] ?? story.imageUrl;
-  const heroAlt = editorialIllustrations[story.slug]
+  const narrativeIllustration = editorialIllustrations[slug];
+  const heroImage = narrativeIllustration ?? story.imageUrl;
+  const heroAlt = narrativeIllustration
     ? `Illustrazione BIMARIS dedicata a ${story.title}`
     : story.imageAlt ?? story.title;
   const typeLabel = shortStoryType(story.storyType);
@@ -72,14 +73,14 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
       </div>
     </section>
 
-    {heroImage && <section className="culture-hero-wrap" style={{ paddingTop: 34, paddingBottom: 18 }}>
-      <figure className="culture-hero-figure" style={{ maxWidth: 980, margin: "0 auto" }}>
-        <img src={heroImage} alt={heroAlt} decoding="async" style={{ width:"100%",height:420,objectFit:"cover",display:"block" }} />
-        {!editorialIllustrations[story.slug] && <figcaption>{story.images.find(image=>image.isPrimary)?.caption ?? story.imageAlt}{(story.imageAuthor || story.imageLicense) && <> · {story.imageAuthor ?? "BIMARIS"}{story.imageLicense && <> · {story.imageLicense}</>}{story.imageSourceUrl && <> · <a href={story.imageSourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{story.imageLicenseUrl && <> · <a href={story.imageLicenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</>}</figcaption>}
+    {heroImage && <section className="culture-hero-wrap" style={{ paddingTop: 30, paddingBottom: 14 }}>
+      <figure className="culture-hero-figure" style={{ maxWidth: 900, margin: "0 auto" }}>
+        <img src={heroImage} alt={heroAlt} decoding="async" style={{ width:"100%",height:350,objectFit:"cover",display:"block" }} />
+        {!narrativeIllustration && <figcaption>{story.images.find(image=>image.isPrimary)?.caption ?? story.imageAlt}{(story.imageAuthor || story.imageLicense) && <> · {story.imageAuthor ?? "BIMARIS"}{story.imageLicense && <> · {story.imageLicense}</>}{story.imageSourceUrl && <> · <a href={story.imageSourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{story.imageLicenseUrl && <> · <a href={story.imageLicenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</>}</figcaption>}
       </figure>
     </section>}
 
-    <section className="section detail-grid" style={{ paddingTop: 42 }}>
+    <section className="section detail-grid" style={{ paddingTop: 38 }}>
       <article>
         <div className="kicker">Il racconto</div>
         <h2 style={{ fontFamily:"Georgia,serif",fontSize:42,marginTop:8 }}>Tra storia e leggenda</h2>
