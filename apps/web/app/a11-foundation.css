@@ -93,7 +93,14 @@ body { background:var(--color-bg); color:var(--color-text); }
   .home-journey { padding-top:58px; padding-bottom:64px; }
   .home-journey-intro { margin-bottom:32px; }
   .home-journey-paths { align-items:stretch; }
-  .home-journey-path { min-height:270px; height:100%; padding:30px; margin-top:0 !important; align-self:stretch; }
+  .home-journey-path {
+    min-height:270px;
+    height:100%;
+    padding:30px;
+    margin-top:0 !important;
+    align-self:stretch;
+    background:#12363a !important;
+  }
 }
 
 /* Privacy: compact first state; details may expand deliberately. */
