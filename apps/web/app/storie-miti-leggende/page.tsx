@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description: "Scopri miti e leggende di Messina e dello Stretto: Colapesce, Mata e Grifone, Fata Morgana, Scilla e Cariddi e i luoghi reali cui sono legati.",
 };
 
+const editorialIllustrations: Record<string, string> = {
+  "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
+  colapesce: "/storie-miti-leggende/colapesce.webp",
+  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp",
+  "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
+};
+
 export default async function StoriesPage() {
   const stories = await getPublishedStories();
 
@@ -36,42 +43,49 @@ export default async function StoriesPage() {
 
         {stories.length > 0 ? (
           <div className="cards">
-            {stories.map(story => (
-              <Link className="card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
-                <div
-                  className="card-media"
-                  style={{
-                    position: "relative",
-                    minHeight: 0,
-                    padding: 0,
-                    aspectRatio: "4 / 5",
-                    overflow: "hidden",
-                    background: "linear-gradient(135deg, #8d7354, #4f3b28)",
-                  }}
-                >
-                  {story.imageUrl && (
-                    <img
-                      src={story.imageUrl}
-                      alt={story.imageAlt ?? story.title}
-                      loading="lazy"
-                      decoding="async"
-                      style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
-                    />
-                  )}
-                  <span style={{ position: "absolute", top: 16, right: 16 }}>{story.storyType}</span>
-                </div>
-                <div className="card-body">
-                  <div className="eyebrow">
-                    {story.places.length > 0
-                      ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}`
-                      : "Messina e lo Stretto"}
+            {stories.map(story => {
+              const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
+              const cardAlt = editorialIllustrations[story.slug]
+                ? `Illustrazione BIMARIS dedicata a ${story.title}`
+                : story.imageAlt ?? story.title;
+
+              return (
+                <Link className="card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
+                  <div
+                    className="card-media"
+                    style={{
+                      position: "relative",
+                      minHeight: 0,
+                      padding: 0,
+                      aspectRatio: "16 / 9",
+                      overflow: "hidden",
+                      background: "linear-gradient(135deg, #8d7354, #4f3b28)",
+                    }}
+                  >
+                    {cardImage && (
+                      <img
+                        src={cardImage}
+                        alt={cardAlt}
+                        loading="lazy"
+                        decoding="async"
+                        style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
+                      />
+                    )}
+                    <span style={{ position: "absolute", top: 14, right: 14 }}>{story.storyType}</span>
                   </div>
-                  <h3>{story.title}</h3>
-                  <p>{story.excerpt}</p>
-                  <span className="text-link">Leggi la storia →</span>
-                </div>
-              </Link>
-            ))}
+                  <div className="card-body">
+                    <div className="eyebrow">
+                      {story.places.length > 0
+                        ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}`
+                        : "Messina e lo Stretto"}
+                    </div>
+                    <h3>{story.title}</h3>
+                    <p>{story.excerpt}</p>
+                    <span className="text-link">Leggi la storia →</span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="detail-panel">
