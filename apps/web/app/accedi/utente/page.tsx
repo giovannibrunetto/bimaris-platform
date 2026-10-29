@@ -13,6 +13,7 @@ export default function AccessoUtentePage(){
  const [message,setMessage]=useState("");
  const [loading,setLoading]=useState(false);
  const [googleLoading,setGoogleLoading]=useState(false);
+ const busy=loading||googleLoading;
 
  useEffect(()=>{
   document.body.classList.add("personal-access-active");
@@ -25,7 +26,7 @@ export default function AccessoUtentePage(){
   setGoogleLoading(true);setMessage("");
   const callback=getAuthCallback();
   const {error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:callback}});
-  if(error){setGoogleLoading(false);setMessage("Accesso con Google non ancora disponibile. Riprova più tardi.");}
+  if(error){setGoogleLoading(false);setMessage("Accesso con Google non disponibile in questo momento. Riprova più tardi.");}
  }
 
  async function sendMagicLink(event:FormEvent){
@@ -34,9 +35,10 @@ export default function AccessoUtentePage(){
   if(!supabase){setMessage("Accesso non disponibile in questo momento.");return;}
   setLoading(true);setMessage("");
   const callback=getAuthCallback();
-  const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:callback}});
+  const {error}=await supabase.auth.signInWithOtp({email:email.trim(),options:{emailRedirectTo:callback}});
   setLoading(false);
-  setMessage(error?"Non è stato possibile inviare il link. Riprova.":"Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
+  if(error?.status===429){setMessage("Hai richiesto troppi link in poco tempo. Attendi qualche minuto e riprova.");return;}
+  setMessage(error?"Non è stato possibile inviare il link. Verifica l'indirizzo email o riprova tra poco.":"Controlla la tua email: ti abbiamo inviato il link per accedere a BIMARIS.");
  }
 
  return <main className="personal-access user-access-centered">
@@ -48,18 +50,18 @@ export default function AccessoUtentePage(){
     <h1>Messina,<br/>come vuoi viverla tu.</h1>
     <p className="personal-access-intro">Entra nel tuo spazio personale per salvare luoghi ed esperienze e lasciare che BIMARIS impari ciò che ti interessa.</p>
 
-    <div className="personal-access-panel">
-     <button className="personal-google" type="button" onClick={signInWithGoogle} disabled={googleLoading}>
+    <div className="personal-access-panel" aria-busy={busy}>
+     <button className="personal-google" type="button" onClick={signInWithGoogle} disabled={busy}>
       <span aria-hidden="true" className="google-mark">G</span>
       {googleLoading?"Connessione a Google…":"Continua con Google"}
      </button>
      <div className="personal-divider"><span>oppure con email</span></div>
      <form onSubmit={sendMagicLink} className="personal-email-form">
       <label htmlFor="user-email">Email</label>
-      <input id="user-email" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.it"/>
-      <button className="personal-email-button" type="submit" disabled={loading}>{loading?"Invio…":"Ricevi il link di accesso"}</button>
+      <input id="user-email" name="email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.it"/>
+      <button className="personal-email-button" type="submit" disabled={busy}>{loading?"Invio…":"Ricevi il link di accesso"}</button>
      </form>
-     {message&&<p role="status" className="personal-access-message">{message}</p>}
+     {message&&<p role="status" aria-live="polite" className="personal-access-message">{message}</p>}
      <p className="personal-access-note">Al primo accesso il tuo account personale viene creato automaticamente.</p>
     </div>
     <Link className="personal-access-back" href="/accedi">← Scegli un altro tipo di accesso</Link>
