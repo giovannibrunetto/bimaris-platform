@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { track } from "@/lib/analytics";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
@@ -12,6 +12,7 @@ type Props = {
   href: string;
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   target?: string;
   rel?: string;
   analyticsEvent?: AnalyticsEventName;
@@ -29,7 +30,7 @@ type Props = {
   actionType?: string;
 };
 
-export function BehaviorTrackedLink({ href, children, className, target, rel, analyticsEvent, analyticsData = {}, behaviorEvent, contentType, contentId, interestKey, weight = 1, external = false, operatorId, operatorName, sourceType, sourceId, actionType }: Props) {
+export function BehaviorTrackedLink({ href, children, className, style, target, rel, analyticsEvent, analyticsData = {}, behaviorEvent, contentType, contentId, interestKey, weight = 1, external = false, operatorId, operatorName, sourceType, sourceId, actionType }: Props) {
   const handleClick = () => {
     const resolvedSourceType = sourceType ?? contentType;
     const resolvedSourceId = sourceId ?? contentId;
@@ -66,6 +67,6 @@ export function BehaviorTrackedLink({ href, children, className, target, rel, an
     })();
   };
 
-  if (external) return <a className={className} href={href} target={target} rel={rel} onClick={handleClick}>{children}</a>;
-  return <Link className={className} href={href} onClick={handleClick}>{children}</Link>;
+  if (external) return <a className={className} style={style} href={href} target={target} rel={rel} onClick={handleClick}>{children}</a>;
+  return <Link className={className} style={style} href={href} onClick={handleClick}>{children}</Link>;
 }
