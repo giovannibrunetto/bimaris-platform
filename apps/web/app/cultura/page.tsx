@@ -30,22 +30,22 @@ export default async function CulturePage() {
         </p>
       </section>
 
-      <section className="section sand discovery-page-first">
-        <div className="section-head">
-          <div>
+      <section className="section culture-editorial-section discovery-page-first">
+        <div className="culture-editorial-card culture-editorial-card-featured">
+          <div className="culture-editorial-copy">
             <div className="kicker">Messina nel tempo</div>
             <h2>Vuoi seguire la storia della città?</h2>
+            <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
           </div>
           <p>
             I percorsi storici raccolgono i monumenti per epoca e aprono direttamente l&apos;itinerario dedicato, senza aggiungere altri filtri alla pagina Cultura.
           </p>
         </div>
-        <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <div>
+      <section className="section culture-places-section">
+        <div className="culture-editorial-card culture-editorial-card-light">
+          <div className="culture-editorial-copy">
             <div className="kicker">Luoghi da scoprire</div>
             <h2>Monumenti e cultura.</h2>
           </div>
