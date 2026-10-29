@@ -10,6 +10,7 @@ import "./onboarding-polish.css";
 import "./profile-polish.css";
 import "./foundation.css";
 import "./home-a3.css";
+import "./a11-foundation.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
