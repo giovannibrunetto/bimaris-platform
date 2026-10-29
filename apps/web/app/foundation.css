@@ -120,6 +120,99 @@ body { background: var(--color-bg); color: var(--color-text); }
   color: #f1ca8a;
 }
 
+/* A7 — Access gateway: presentation only; auth/session logic remains untouched. */
+.access-gateway {
+  max-width: 1120px;
+  padding: clamp(40px, 6vw, 64px) var(--gutter) clamp(64px, 8vw, 88px);
+}
+
+.access-gateway h1 {
+  margin: var(--space-2) 0 var(--space-3);
+  font-family: Georgia, serif;
+  font-size: clamp(38px, 5vw, 58px);
+  line-height: 1.05;
+}
+
+.access-gateway-intro {
+  max-width: 720px;
+  margin: 0 0 var(--space-6);
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+.access-gateway-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+.access-gateway-card {
+  min-width: 0;
+  min-height: 310px;
+  padding: clamp(22px, 3vw, 30px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.access-gateway-card h2 {
+  margin: 7px 0 10px;
+  font-size: clamp(27px, 3vw, 32px);
+}
+
+.access-gateway-card p { margin-top: 0; }
+
+.access-gateway-actions {
+  margin-top: auto;
+  display: grid;
+  gap: 10px;
+}
+
+.access-gateway-actions .button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  text-align: center;
+}
+
+.operator-access-form {
+  display: grid;
+  gap: 10px;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(3, 33, 38, .12);
+}
+
+.operator-access-form label { line-height: 1.4; }
+.operator-access-form input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0 14px;
+  background: #fff;
+  color: var(--color-text);
+}
+
+.access-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface-subtle);
+  line-height: 1.45;
+}
+
+.access-gateway-note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.access-gateway-back { margin-top: var(--space-5); }
+
 @media (max-width: 760px) {
   :root { --gutter: 18px; }
 
@@ -132,4 +225,15 @@ body { background: var(--color-bg); color: var(--color-text); }
     left: var(--space-3);
     right: var(--space-3);
   }
+
+  .access-gateway { padding-top: var(--space-6); }
+  .access-gateway-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .access-gateway-card { min-height: 0; }
+  .access-gateway-intro { margin-bottom: var(--space-5); }
+}
+
+@media (max-width: 390px) {
+  .access-gateway h1 { font-size: 36px; }
+  .access-gateway-card { padding: 20px 18px; }
+  .access-gateway-actions .button { padding-left: 14px; padding-right: 14px; }
 }
