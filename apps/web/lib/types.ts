@@ -55,6 +55,24 @@ export type Experience = {
   imageAlt?: string;
 };
 
+export type CultureSource = {
+  label: string;
+  url: string;
+  sourceType?: string;
+  note?: string;
+};
+
+export type CultureImage = {
+  imageUrl: string;
+  altText?: string;
+  caption?: string;
+  author?: string;
+  license?: string;
+  sourceUrl?: string;
+  licenseUrl?: string;
+  isPrimary?: boolean;
+};
+
 export type CultureEntry = {
   id: string;
   slug: string;
@@ -69,6 +87,7 @@ export type CultureEntry = {
   longitude?: number;
   sourceLabel?: string;
   sourceUrl?: string;
+  sources: CultureSource[];
   featured?: boolean;
   imageUrl?: string;
   imageAlt?: string;
@@ -76,6 +95,7 @@ export type CultureEntry = {
   imageLicense?: string;
   imageSourceUrl?: string;
   imageLicenseUrl?: string;
+  images: CultureImage[];
   primaryHistoricalPeriod?: HistoricalPeriodKey;
   historicalPeriods: HistoricalPeriodKey[];
   historicalPeriodNote?: string;
