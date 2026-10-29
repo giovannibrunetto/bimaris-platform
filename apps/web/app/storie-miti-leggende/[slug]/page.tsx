@@ -43,7 +43,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   const story = await getPublishedStoryBySlug(slug);
   if (!story) notFound();
 
-  const paragraphs = story.body.split(/\n\n+/).filter(Boolean);
+  const normalizedBody = story.body.replace(/\\n/g, "\n");
+  const paragraphs = normalizedBody.split(/\n\s*\n+/).map(paragraph => paragraph.trim()).filter(Boolean);
   const narrativeIllustration = editorialIllustrations[slug];
   const heroImage = narrativeIllustration ?? story.imageUrl;
   const heroAlt = narrativeIllustration ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
