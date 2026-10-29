@@ -17,6 +17,9 @@
   --color-disabled-text: #7b817f;
   --color-error: #a43c32;
   --color-success: #236447;
+  --color-error-bg: #fff1ef;
+  --color-success-bg: #edf7f1;
+  --color-info-bg: #f7f3e9;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -54,6 +57,12 @@ body { background: var(--color-bg); color: var(--color-text); }
   opacity: .68;
 }
 
+:where(button, input, textarea, select):disabled {
+  background-color: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  border-color: var(--color-border);
+}
+
 .button {
   min-height: var(--control-min-height);
   border-radius: var(--radius-pill);
@@ -64,6 +73,23 @@ body { background: var(--color-bg); color: var(--color-text); }
 .button.secondary {
   background: transparent;
   border-color: currentColor;
+}
+
+/* A10 — shared presentation for existing feedback states; no business logic. */
+:where(.detail-panel,[role="status"],[role="alert"]) {
+  overflow-wrap: anywhere;
+}
+
+:where(.detail-panel,[role="status"]) {
+  border-color: var(--color-border);
+}
+
+[role="alert"] {
+  border-color: color-mix(in srgb, var(--color-error) 45%, var(--color-border));
+}
+
+[aria-busy="true"] {
+  cursor: progress;
 }
 
 .site-header {
@@ -202,6 +228,16 @@ body { background: var(--color-bg); color: var(--color-text); }
   border-left: 3px solid var(--color-accent);
   background: var(--color-surface-subtle);
   line-height: 1.45;
+}
+
+.access-status[role="alert"] {
+  border-left-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.access-status[role="status"] {
+  border-left-color: var(--color-success);
 }
 
 .access-gateway-note {
