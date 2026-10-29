@@ -126,7 +126,10 @@ export async function POST(request: NextRequest) {
       }
     }
     if (action === "publish_operator" && operatorId) {
-      const { error } = await supabase.from("operators").update({ published: true, selection_status: "selected", updated_at: new Date().toISOString() }).eq("id", operatorId);
+      const { data: operator, error: readError } = await supabase.from("operators").select("selection_status").eq("id", operatorId).maybeSingle();
+      if (readError) throw readError;
+      if (!operator || operator.selection_status !== "selected") return back(request, "publish-requires-selection");
+      const { error } = await supabase.from("operators").update({ published: true, updated_at: new Date().toISOString() }).eq("id", operatorId).eq("selection_status", "selected");
       if (error) throw error;
       return back(request, "published");
     }
