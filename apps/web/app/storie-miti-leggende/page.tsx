@@ -22,10 +22,13 @@ export default async function StoriesPage() {
 
   return (
     <>
-      <section className="page-hero discovery-page-hero">
+      <section
+        className="page-hero discovery-page-hero"
+        style={{ paddingTop: 42, paddingBottom: 42, minHeight: 0 }}
+      >
         <div className="kicker">Messina da raccontare</div>
-        <h1>Storia, miti e leggende</h1>
-        <p>
+        <h1 style={{ marginTop: 14, marginBottom: 14 }}>Storia, miti e leggende</h1>
+        <p style={{ marginBottom: 0 }}>
           Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.
         </p>
       </section>
