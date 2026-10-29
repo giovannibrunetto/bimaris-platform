@@ -58,61 +58,57 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   return <>
     <UserBehaviorSignal contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={0.5} />
 
-    <section className="section" style={{ paddingTop: 42, paddingBottom: 38 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, .8fr) minmax(0, 1.35fr)", gap: 48, alignItems: "start" }}>
-        <div>
-          {heroImage && <figure className="culture-hero-figure" style={{ margin: 0, overflow: "hidden" }}>
-            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 430, objectFit: "cover", display: "block" }} />
-            {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
-          </figure>}
-        </div>
+    <section className="section" style={{ paddingTop: 28, paddingBottom: 26 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(260px,.68fr) minmax(0,1.45fr)", gap: 38, alignItems: "start" }}>
+        {heroImage && <figure className="culture-hero-figure" style={{ margin: 0, overflow: "hidden" }}>
+          <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 300, objectFit: "cover", display: "block" }} />
+          {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
+        </figure>}
 
         <article>
           <div className="kicker">{typeLabel} · Messina e lo Stretto</div>
-          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(38px,4vw,58px)", lineHeight: 1.02, marginTop: 12, marginBottom: 14 }}>{story.title}</h1>
-          <p style={{ fontSize: 20, lineHeight: 1.5, color: "#4d5962", marginBottom: 22 }}>{story.excerpt}</p>
-          <div className="kicker" style={{ marginBottom: 10 }}>Il racconto</div>
-          {paragraphs.map((paragraph, index) => <p key={index} style={{ fontSize: 17, lineHeight: 1.68, color: "#344448", marginTop: index === 0 ? 0 : 14 }}>{paragraph}</p>)}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginTop: 24 }}>
+          <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(34px,3.4vw,50px)", lineHeight: 1.02, margin: "8px 0 10px" }}>{story.title}</h1>
+          <p style={{ fontSize: 17, lineHeight: 1.42, color: "#4d5962", margin: "0 0 14px" }}>{story.excerpt}</p>
+          <div className="kicker" style={{ marginBottom: 7 }}>Il racconto</div>
+          {paragraphs.map((paragraph, index) => <p key={index} style={{ fontSize: 15.5, lineHeight: 1.55, color: "#344448", margin: index === 0 ? 0 : "10px 0 0" }}>{paragraph}</p>)}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 16 }}>
             {story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink>}
-            <div style={{ transform: "scale(.9)", transformOrigin: "left center" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div>
+            <div style={{ transform: "scale(.84)", transformOrigin: "left center" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div>
           </div>
         </article>
       </div>
     </section>
 
-    <section className="section sand" style={{ paddingTop: 38, paddingBottom: 38 }}>
-      <div className="section-head" style={{ marginBottom: 24 }}>
-        <div><div className="kicker">Approfondisci</div><h2 style={{ marginBottom: 0 }}>Dettagli del racconto</h2></div>
-        <p>Contesto, tradizione e luoghi collegati, mantenendo distinta la narrazione da ciò che le fonti documentano.</p>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.35fr) minmax(300px,.65fr)", gap: 28, alignItems: "start" }}>
+    <section className="section sand" style={{ paddingTop: 26, paddingBottom: 26 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.55fr) minmax(280px,.55fr)", gap: 22, alignItems: "start" }}>
         <div>
-          {contextItems.length > 0 && <div className="cards" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))" }}>
-            {contextItems.map(([label, text]) => <article className="card" key={label}><div className="card-body" style={{ padding: 20 }}><div className="eyebrow">{label}</div><p style={{ marginBottom: 0 }}>{text}</p></div></article>)}
+          <div style={{ marginBottom: 14 }}><div className="kicker">Approfondisci</div><h2 style={{ fontFamily:"Georgia,serif", fontSize: 34, fontWeight:500, margin:"5px 0 0" }}>Dettagli del racconto</h2></div>
+          {contextItems.length > 0 && <div className="cards" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 12 }}>
+            {contextItems.map(([label, text]) => <article className="card" key={label}><div className="card-body" style={{ padding: 14 }}><div className="eyebrow">{label}</div><p style={{ margin: "6px 0 0", fontSize: 14, lineHeight: 1.4 }}>{text}</p></div></article>)}
           </div>}
-          {story.editorial?.originText && <div className="detail-panel" style={{ marginTop: 20 }}><div className="kicker">Origine della tradizione</div><p>{story.editorial.originText}</p>{story.editorial.periodLabel && <p className="muted" style={{ marginBottom: 0 }}>{story.editorial.periodLabel}</p>}</div>}
+          {story.editorial?.originText && <div style={{ marginTop: 14, padding: "12px 14px", background: "rgba(255,255,255,.72)", borderRadius: 14 }}><div className="eyebrow">Origine della tradizione</div><p style={{ margin:"6px 0 0", fontSize:14, lineHeight:1.4 }}>{story.editorial.originText}</p>{story.editorial.periodLabel && <p className="muted" style={{ margin: "5px 0 0", fontSize: 13 }}>{story.editorial.periodLabel}</p>}</div>}
         </div>
 
-        <aside className="detail-panel">
+        <aside className="detail-panel" style={{ padding: 18 }}>
           <div className="kicker">Nel territorio</div>
-          <h3>Luoghi collegati</h3>
-          {story.editorial?.geographicReference && <p className="muted">{story.editorial.geographicReference}</p>}
+          <h3 style={{ margin:"7px 0 10px" }}>Luoghi collegati</h3>
+          {story.editorial?.geographicReference && <p className="muted" style={{ fontSize:14 }}>{story.editorial.geographicReference}</p>}
           {story.places.length > 0 ? <ul className="list">{story.places.map(place => {
             const hasCoordinates = Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
             const destination = hasCoordinates ? `${place.latitude},${place.longitude}` : place.googleMapsQuery;
             const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-            return <li key={`${place.position}-${place.googleMapsQuery}`}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}<div style={{ marginTop: 10 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div></li>;
-          })}</ul> : <p className="muted">Il racconto è legato a un’area o a una tradizione diffusa, non a un singolo punto visitabile.</p>}
-          <div className="actions" style={{ marginTop: 18 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
+            return <li key={`${place.position}-${place.googleMapsQuery}`} style={{ fontSize:14 }}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}<div style={{ marginTop: 6 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div></li>;
+          })}</ul> : <p className="muted">Il racconto è legato a un’area o a una tradizione diffusa.</p>}
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:12 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
         </aside>
       </div>
     </section>
 
-    {story.sources.length > 0 && <section className="section" style={{ paddingTop: 38, paddingBottom: 42 }}>
-      <div className="section-head" style={{ marginBottom: 20 }}><div><div className="kicker">Verifica</div><h2>Fonti e riferimenti</h2></div><p>Riferimenti utilizzati per la verifica e la contestualizzazione della scheda.</p></div>
-      <div className="detail-panel"><ul className="list" style={{ columns: story.sources.length > 3 ? 2 : 1, columnGap: 42 }}>{story.sources.map(source => <li key={`${source.sortOrder}-${source.label}`} style={{ breakInside: "avoid" }}><strong>{source.label}</strong>{source.sourceType && <> · <span className="muted">{source.sourceType}</span></>}{source.note && <><br /><span className="muted">{source.note}</span></>}{source.url && <><br /><a className="text-link" href={source.url} target="_blank" rel="noreferrer">Consulta la fonte →</a></>}</li>)}</ul></div>
+    {story.sources.length > 0 && <section className="section" style={{ paddingTop: 22, paddingBottom: 24 }}>
+      <details className="detail-panel" style={{ padding: "16px 20px" }}>
+        <summary style={{ cursor:"pointer", listStyle:"none", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20 }}><span><span className="kicker">Verifica</span><strong style={{ display:"block", fontFamily:"Georgia,serif", fontSize:26, marginTop:3 }}>Fonti e riferimenti</strong></span><span className="text-link">Mostra fonti ↓</span></summary>
+        <ul className="list" style={{ columns: story.sources.length > 3 ? 2 : 1, columnGap: 36, marginTop:16 }}>{story.sources.map(source => <li key={`${source.sortOrder}-${source.label}`} style={{ breakInside: "avoid", fontSize:14 }}><strong>{source.label}</strong>{source.sourceType && <> · <span className="muted">{source.sourceType}</span></>}{source.note && <><br /><span className="muted">{source.note}</span></>}{source.url && <><br /><a className="text-link" href={source.url} target="_blank" rel="noreferrer">Consulta la fonte →</a></>}</li>)}</ul>
+      </details>
     </section>}
   </>;
 }
