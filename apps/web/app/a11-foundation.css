@@ -1,0 +1,127 @@
+/* A11.1 — shared visual foundation. Presentation only: no application logic. */
+:root {
+  --bimaris-abyssal-teal:#032126;
+  --bimaris-petrol:#07343b;
+  --bimaris-gold:#caa86a;
+  --bimaris-ivory:#f8f8f5;
+  --color-bg:#f6f7f5;
+  --color-surface:#ffffff;
+  --color-surface-subtle:#eef2ef;
+  --color-text:#172326;
+  --color-text-muted:#5f6e70;
+  --color-border:#d7dfdc;
+  --color-brand:var(--bimaris-abyssal-teal);
+  --color-accent:var(--bimaris-gold);
+  --navy:var(--bimaris-abyssal-teal);
+  --navy-2:var(--bimaris-petrol);
+  --sand:var(--color-surface-subtle);
+  --white:#fff;
+  --ink:var(--color-text);
+  --muted:var(--color-text-muted);
+  --line:var(--color-border);
+}
+
+html { background:var(--color-brand); }
+body { background:var(--color-bg); color:var(--color-text); }
+
+.site-header {
+  background:rgba(3,33,38,.97);
+  border-bottom-color:rgba(202,168,106,.28);
+  box-shadow:0 6px 24px rgba(1,20,24,.16);
+}
+.nav a { color:#f4f7f5; }
+
+/* Shared editorial headers: explicit high contrast fixes the A11 P0 defect. */
+.page-hero {
+  color:#fff;
+  background:
+    radial-gradient(circle at 82% 16%,rgba(202,168,106,.16),transparent 25%),
+    linear-gradient(135deg,#07343b 0%,#032126 62%,#02171b 100%);
+}
+.page-hero h1 { color:#fff; }
+.page-hero p { color:rgba(255,255,255,.82); }
+.page-hero .kicker { color:#e0bc7b; }
+
+.section.sand,
+.home-visitors { background:var(--color-surface-subtle); }
+.card,
+.detail-panel { background:var(--color-surface); border-color:var(--color-border); }
+.card { box-shadow:0 12px 34px rgba(3,33,38,.07); }
+.card p,.section-head p { color:var(--color-text-muted); }
+.eyebrow,.text-link { color:#87642d; }
+
+.section.dark {
+  background:linear-gradient(145deg,#07343b,#032126 68%,#02171b);
+  color:#fff;
+}
+.section.dark .section-head p { color:rgba(255,255,255,.74); }
+
+/* Recover vertical space without reducing reading size. */
+@media (min-width:761px) {
+  .section { padding-top:58px; padding-bottom:58px; }
+  .section-head { margin-bottom:26px; }
+  .page-hero { padding-top:48px; padding-bottom:48px; }
+  .discovery-page-first { padding-top:48px; padding-bottom:48px; }
+  .culture-card-media { height:225px; }
+  .card-body { padding:19px 20px 21px; }
+
+  .brand-hero-compact .brand-hero-visual { height:clamp(245px,27vw,340px); }
+  .home-audience { padding-top:48px; padding-bottom:48px; }
+  .home-audience-intro { margin-bottom:26px; }
+  .home-category-grid .category { min-height:118px; }
+  .home-journey { padding-top:58px; padding-bottom:64px; }
+  .home-journey-intro { margin-bottom:32px; }
+  .home-journey-path { min-height:270px; padding:30px; }
+}
+
+/* Privacy: compact first state; details may expand deliberately. */
+.consent {
+  position:fixed;
+  z-index:1000;
+  left:18px;
+  right:18px;
+  bottom:16px;
+  width:auto;
+  max-width:1380px;
+  margin:0 auto;
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto;
+  gap:12px 22px;
+  align-items:center;
+  border:1px solid var(--color-border);
+  border-radius:16px;
+  background:rgba(255,255,255,.97);
+  color:var(--color-text);
+  box-shadow:0 14px 42px rgba(3,33,38,.18);
+  backdrop-filter:blur(12px);
+}
+.consent strong { display:block; margin-bottom:3px; font-size:14px; }
+.consent p { margin:0; max-width:760px; color:var(--color-text-muted); font-size:12px; line-height:1.4; }
+.consent-actions { display:flex; justify-content:flex-end; align-items:center; gap:8px; flex-wrap:wrap; }
+.consent-actions .button { min-height:38px; padding:8px 14px; font-size:12px; box-shadow:none; }
+.consent-options {
+  grid-column:1 / -1;
+  display:flex;
+  gap:10px 20px;
+  flex-wrap:wrap;
+  padding-top:12px;
+  border-top:1px solid var(--color-border);
+  font-size:13px;
+}
+.consent-options label { display:inline-flex; align-items:center; gap:7px; }
+
+@media (max-width:760px) {
+  .consent {
+    left:10px;
+    right:10px;
+    bottom:10px;
+    grid-template-columns:1fr;
+    padding:14px;
+    border-radius:14px;
+  }
+  .consent-actions { display:grid; grid-template-columns:1fr 1fr; width:100%; }
+  .consent-actions .button { width:100%; min-height:44px; }
+  .consent-actions .button:last-child { grid-column:1 / -1; }
+  .consent-options { grid-column:1; display:grid; grid-template-columns:1fr 1fr; }
+}
