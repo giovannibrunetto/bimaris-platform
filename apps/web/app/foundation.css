@@ -46,6 +46,11 @@
 html { background: var(--color-brand); }
 body { background: var(--color-bg); color: var(--color-text); }
 
+/* A11 — prevent intrinsic content from forcing horizontal overflow. */
+:where(main, section, article, aside, nav, form, fieldset, div) { min-width: 0; }
+:where(img, video, svg, canvas, iframe) { max-width: 100%; }
+:where(input, textarea, select, button) { max-width: 100%; }
+
 :where(a, button, input, textarea, select, summary):focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
@@ -249,8 +254,26 @@ body { background: var(--color-bg); color: var(--color-text); }
 
 .access-gateway-back { margin-top: var(--space-5); }
 
+/* A11 — essential accessibility without changing visual hierarchy or behavior. */
+@media (forced-colors: active) {
+  :where(a, button, input, textarea, select, summary):focus-visible { outline: 2px solid CanvasText; }
+  .nav a[aria-current="page"], .mobile-nav a[aria-current="page"] { outline: 1px solid CanvasText; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @media (max-width: 760px) {
   :root { --gutter: 18px; }
+
+  html, body { width: 100%; max-width: 100%; overflow-x: clip; }
 
   .site-header {
     padding-left: var(--space-4);
@@ -266,6 +289,9 @@ body { background: var(--color-bg); color: var(--color-text); }
   .access-gateway-grid { grid-template-columns: 1fr; gap: var(--space-4); }
   .access-gateway-card { min-height: 0; }
   .access-gateway-intro { margin-bottom: var(--space-5); }
+
+  :where(.button, button, input:not([type="hidden"]), select, summary) { min-height: var(--control-min-height); }
+  :where(input, textarea, select) { font-size: 16px; }
 }
 
 @media (max-width: 390px) {
