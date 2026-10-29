@@ -38,33 +38,53 @@ export function ExperienceExplorer({ experiences }: { experiences: Experience[] 
 
   return (
     <>
-      <div className="detail-panel" style={{ marginBottom: 28 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 16 }}>
-          <label>
-            Categoria
+      <div className="detail-panel experience-filters" aria-label="Filtra le esperienze">
+        <div className="experience-filter-grid">
+          <label className="experience-filter-field">
+            <span>Categoria</span>
             <select value={category} onChange={event => chooseCategory(event.target.value)}>
               <option value="all">Tutte le categorie</option>
               {categories.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
             </select>
           </label>
-          <label>
-            Territorio
+          <label className="experience-filter-field">
+            <span>Territorio</span>
             <select value={territory} onChange={event => chooseTerritory(event.target.value)}>
               <option value="all">Tutti i territori</option>
               {territories.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
             </select>
           </label>
         </div>
-        <p className="muted" style={{ marginBottom: 0, marginTop: 14 }}>
+        <p className="muted experience-filter-count" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "esperienza disponibile" : "esperienze disponibili"}
         </p>
       </div>
 
       {filtered.length > 0 ? (
-        <div className="cards">{filtered.map(experience => <ExperienceCard key={experience.id} experience={experience} />)}</div>
+        <div className="cards experience-results">{filtered.map(experience => <ExperienceCard key={experience.id} experience={experience} />)}</div>
       ) : (
-        <div className="detail-panel"><p>Nessuna esperienza corrisponde ai filtri selezionati.</p></div>
+        <div className="detail-panel experience-empty" role="status">
+          <div className="kicker">Nessun risultato</div>
+          <h3>Nessuna esperienza corrisponde ai filtri selezionati.</h3>
+          <p className="muted">Modifica la categoria o il territorio per vedere le altre proposte disponibili.</p>
+        </div>
       )}
+
+      <style jsx>{`
+        .experience-filters { margin-bottom: 28px; }
+        .experience-filter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .experience-filter-field { display: grid; gap: 8px; font-weight: 700; }
+        .experience-filter-field span { font-size: 14px; }
+        .experience-filter-field select { width: 100%; min-height: 48px; padding: 10px 12px; border-radius: 10px; }
+        .experience-filter-field select:focus-visible { outline: 3px solid var(--color-accent, #CAA86A); outline-offset: 2px; }
+        .experience-filter-count { margin: 14px 0 0; }
+        .experience-empty h3 { margin-bottom: 8px; }
+        .experience-empty p { margin-bottom: 0; }
+        @media (max-width: 700px) {
+          .experience-filter-grid { grid-template-columns: 1fr; gap: 14px; }
+          .experience-filters { margin-bottom: 20px; }
+        }
+      `}</style>
     </>
   );
 }
