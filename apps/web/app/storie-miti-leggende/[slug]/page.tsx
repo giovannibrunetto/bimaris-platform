@@ -61,10 +61,16 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
     <section className="section" style={{ paddingTop: 24, paddingBottom: 20 }}>
       <div style={{ display: "grid", gridTemplateColumns: "minmax(280px,.72fr) minmax(0,1.38fr)", gap: 30, alignItems: "start" }}>
-        {heroImage && <figure className="culture-hero-figure" style={{ margin: 0, overflow: "hidden" }}>
-          <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: "cover", display: "block" }} />
-          {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
-        </figure>}
+        <div>
+          {heroImage && <figure className="culture-hero-figure" style={{ margin: 0, overflow: "hidden" }}>
+            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: "cover", display: "block" }} />
+            {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
+          </figure>}
+          <div style={{ display: "grid", gridTemplateColumns: story.places.length > 0 ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 10, marginTop: 12 }}>
+            {story.places.length > 0 && <div style={{ minHeight: 46, display: "flex" }}><BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink></div>}
+            <div style={{ minHeight: 46, display: "flex" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div>
+          </div>
+        </div>
 
         <article>
           <div className="kicker">{typeLabel} · Messina e lo Stretto</div>
@@ -72,10 +78,6 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           <p style={{ fontSize: 16.5, lineHeight: 1.4, color: "#4d5962", margin: "0 0 12px" }}>{story.excerpt}</p>
           <div className="kicker" style={{ marginBottom: 6 }}>Il racconto</div>
           {paragraphs.map((paragraph, index) => <p key={index} style={{ fontSize: 15, lineHeight: 1.5, color: "#344448", margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "stretch", marginTop: 14 }}>
-            {story.places.length > 0 && <div style={{ minWidth: 190, minHeight: 46, display: "flex" }}><BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink></div>}
-            <div style={{ minWidth: 190, minHeight: 46, display: "flex", alignItems: "stretch" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div>
-          </div>
         </article>
       </div>
     </section>
