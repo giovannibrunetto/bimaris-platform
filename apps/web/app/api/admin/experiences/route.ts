@@ -23,15 +23,7 @@ export async function POST(request:NextRequest){
  const form=await request.formData(),action=text(form.get("action"),40),experienceId=text(form.get("experience_id"),80),supabase=createServiceClient();
  if(!supabase)return back(request,"action-error");
  try{
-  if(action==="create"){
-   const name=text(form.get("name"),200),slug=slugify(text(form.get("slug"),150)||name),operatorId=text(form.get("operator_id"),80),territoryId=text(form.get("territory_id"),80),categoryId=text(form.get("category_id"),80),excerpt=text(form.get("excerpt"),300),description=text(form.get("description"),5000),whySelected=text(form.get("why_selected"),3000),wantsPublished=form.get("published")==="yes";
-   if(!name||!slug||!operatorId||!territoryId||!categoryId||!excerpt||!description||!whySelected)return back(request,"invalid-data");
-   const {data:operator,error:operatorError}=await supabase.from("operators").select("id,published,selection_status").eq("id",operatorId).maybeSingle();
-   if(operatorError||!operator||operator.selection_status!=="selected")return back(request,"invalid-data");if(wantsPublished&&!operator.published)return back(request,"operator-not-published");
-   const duration=numberValue(text(form.get("duration_minutes"),20)),price=numberValue(text(form.get("price_from"),30)),latitude=numberValue(text(form.get("latitude"),40)),longitude=numberValue(text(form.get("longitude"),40));
-   const {error}=await supabase.from("experiences").insert({name,slug,operator_id:operatorId,territory_id:territoryId,category_id:categoryId,excerpt,description,why_selected:whySelected,duration_minutes:duration==null?null:Math.max(1,Math.round(duration)),price_from:price==null?null:Math.max(0,price),meeting_point:text(form.get("meeting_point"),500)||null,google_maps_query:text(form.get("google_maps_query"),500)||null,latitude,longitude,image_url:text(form.get("image_url"),1000)||null,image_alt:text(form.get("image_alt"),500)||null,booking_url:text(form.get("booking_url"),1000)||null,booking_note:text(form.get("booking_note"),1000)||null,bookable:form.get("bookable")==="yes",featured:form.get("featured")==="yes",published:wantsPublished,review_status:wantsPublished?"approved":"draft",reviewed_at:wantsPublished?new Date().toISOString():null,updated_at:new Date().toISOString()});
-   if(error)throw error;return back(request,"created");
-  }
+  if(action==="create")return back(request,"legacy-create-disabled");
   if(!experienceId)return back(request,"invalid-data");
   if(action==="approve"||action==="request-changes"){
    const generalNote=text(form.get("review_notes"),2000),sections=reviewSections(form),reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
