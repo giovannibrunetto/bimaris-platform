@@ -1,0 +1,28 @@
+.admin-shell-nav{border-bottom:1px solid var(--border-soft);background:var(--surface-subtle)}
+.admin-shell-nav__inner{width:min(100%,1440px);margin:0 auto;padding:4px var(--page-gutter);display:flex;gap:20px;align-items:center;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.admin-shell-nav__inner::-webkit-scrollbar{display:none}
+.admin-shell-nav a{display:inline-flex;align-items:center;min-height:44px;flex:0 0 auto;font-size:14px;font-weight:750;white-space:nowrap;text-underline-offset:4px}
+.admin-shell-nav a:focus-visible,.admin-action:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}
+.admin-page{width:min(100%,1440px);margin:0 auto}
+.admin-status-guide{margin:14px var(--page-gutter) 0;padding:13px 15px;border:1px solid var(--border-soft);border-radius:var(--radius-md);background:var(--surface);font-size:13px;line-height:1.5;color:var(--text-muted)}
+.admin-status-guide strong{color:var(--text)}
+.admin-status-guide__steps{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px}
+.admin-status-guide__step{display:inline-flex;align-items:center;min-height:32px;padding:5px 9px;border:1px solid var(--border-soft);border-radius:999px;background:var(--surface-subtle);font-weight:750;color:var(--text)}
+.admin-status-guide__arrow{color:var(--text-muted)}
+.admin-operator-grid{display:grid;grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(150px,1fr) auto;gap:18px;align-items:center}
+.admin-operator-card-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.admin-operator-card-actions a,.admin-operator-card-actions button{min-height:44px}
+.admin-feedback{border-radius:var(--radius-md);border:1px solid var(--border-soft);background:var(--surface);color:var(--text);font-weight:650}
+@media(max-width:760px){
+ .admin-shell-nav__inner{gap:16px}
+ .admin-status-guide{margin-inline:var(--page-gutter);font-size:12px}
+ .admin-status-guide__steps{display:grid;grid-template-columns:1fr;gap:5px}
+ .admin-status-guide__arrow{display:none}
+ .admin-operator-grid{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:12px!important}
+ .admin-operator-grid>span:nth-child(2)::before{content:"Stato: ";font-weight:800;color:var(--text)}
+ .admin-operator-grid>span:nth-child(3)::before{content:"Pubblicazione: ";font-weight:800;color:var(--text)}
+ .admin-operator-grid>span:last-child,.admin-operator-grid>a:last-child{justify-self:start}
+ .admin-operator-card-actions{justify-content:flex-start;width:100%}
+ .admin-operator-card-actions a,.admin-operator-card-actions form,.admin-operator-card-actions button{width:100%}
+ .admin-operator-card-actions a,.admin-operator-card-actions button{justify-content:center}
+}
