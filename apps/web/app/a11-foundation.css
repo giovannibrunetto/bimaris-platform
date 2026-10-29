@@ -56,9 +56,11 @@ body { background:var(--color-bg); color:var(--color-text); }
 }
 .section.dark .section-head p { color:rgba(255,255,255,.74); }
 
-/* HOME-D01a — the hero is branded artwork, not a cover photo: never crop its lockup. */
+/* HOME-D01b — preserve the complete brand lockup while giving the wide hero an immersive field. */
 .brand-hero-compact { background:var(--bimaris-abyssal-teal); overflow:hidden; }
 .brand-hero-compact .brand-hero-visual {
+  position:relative;
+  isolation:isolate;
   height:clamp(225px,24vw,300px) !important;
   display:flex;
   align-items:center;
@@ -66,12 +68,33 @@ body { background:var(--color-bg); color:var(--color-text); }
   overflow:hidden;
   background:var(--bimaris-abyssal-teal);
 }
+.brand-hero-compact .brand-hero-visual::before {
+  content:"";
+  position:absolute;
+  z-index:-2;
+  inset:-34px;
+  background-image:url('/brand/bimaris-main.jpeg');
+  background-size:cover;
+  background-position:center 48%;
+  filter:blur(22px) saturate(.82) brightness(.58);
+  transform:scale(1.08);
+}
+.brand-hero-compact .brand-hero-visual::after {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:linear-gradient(90deg,rgba(3,33,38,.52) 0%,rgba(3,33,38,.10) 30%,rgba(3,33,38,.04) 50%,rgba(3,33,38,.10) 70%,rgba(3,33,38,.52) 100%);
+}
 .brand-hero-compact .brand-hero-visual img {
   width:100%;
   height:100%;
   display:block;
   object-fit:contain !important;
   object-position:center center !important;
+  position:relative;
+  z-index:1;
+  filter:drop-shadow(0 10px 28px rgba(0,0,0,.18));
 }
 
 /* Recover vertical space without reducing reading size. */
@@ -85,7 +108,7 @@ body { background:var(--color-bg); color:var(--color-text); }
 
   .home-audience { padding-top:34px; padding-bottom:38px; }
   .home-audience-intro { margin-bottom:20px; }
-  .home-audience-intro h2 { font-size:clamp(38px,4.2vw,64px); line-height:1.02; }
+  .home-audience-intro h2 { font-size:clamp(36px,3.8vw,58px); line-height:1.02; }
   .home-audience-intro p { margin-top:12px; }
   .home-category-grid .category { min-height:108px; padding:18px 20px; }
   .home-journey { padding-top:58px; padding-bottom:64px; }
@@ -132,6 +155,7 @@ body { background:var(--color-bg); color:var(--color-text); }
 
 @media (max-width:760px) {
   .brand-hero-compact .brand-hero-visual { height:clamp(170px,42vw,240px) !important; }
+  .brand-hero-compact .brand-hero-visual::before { inset:-24px; filter:blur(16px) saturate(.82) brightness(.56); }
   .consent {
     left:10px;
     right:10px;
