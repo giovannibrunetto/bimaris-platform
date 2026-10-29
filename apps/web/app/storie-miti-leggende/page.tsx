@@ -56,8 +56,8 @@ export default async function StoriesPage() {
                     style={{
                       position: "relative",
                       minHeight: 0,
+                      height: "190px",
                       padding: 0,
-                      aspectRatio: "16 / 9",
                       overflow: "hidden",
                       background: "linear-gradient(135deg, #8d7354, #4f3b28)",
                     }}
@@ -71,16 +71,16 @@ export default async function StoriesPage() {
                         style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
                       />
                     )}
-                    <span style={{ position: "absolute", top: 14, right: 14 }}>{story.storyType}</span>
+                    <span style={{ position: "absolute", top: 12, right: 12 }}>{story.storyType}</span>
                   </div>
-                  <div className="card-body">
+                  <div className="card-body" style={{ padding: "18px 20px 20px" }}>
                     <div className="eyebrow">
                       {story.places.length > 0
                         ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}`
                         : "Messina e lo Stretto"}
                     </div>
-                    <h3>{story.title}</h3>
-                    <p>{story.excerpt}</p>
+                    <h3 style={{ marginTop: 8, marginBottom: 8 }}>{story.title}</h3>
+                    <p style={{ marginBottom: 14 }}>{story.excerpt}</p>
                     <span className="text-link">Leggi la storia →</span>
                   </div>
                 </Link>
