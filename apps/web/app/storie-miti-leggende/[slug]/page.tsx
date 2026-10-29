@@ -72,8 +72,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           <div className="kicker" style={{ marginBottom: 6 }}>Il racconto</div>
           {paragraphs.map((paragraph, index) => <p key={index} style={{ fontSize: 15, lineHeight: 1.5, color: "#344448", margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "stretch", marginTop: 14 }}>
-            {story.places.length > 0 && <BehaviorTrackedLink className="button" style={{ minWidth: 190, minHeight: 46, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 18px" }} href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink>}
-            <div style={{ minWidth: 190, minHeight: 46, display: "flex", alignItems: "stretch" }}><div style={{ width: "100%", display: "flex" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div></div>
+            {story.places.length > 0 && <div style={{ minWidth: 190, minHeight: 46, display: "flex" }}><BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink></div>}
+            <div style={{ minWidth: 190, minHeight: 46, display: "flex", alignItems: "stretch" }}><SaveToCollectionButton itemType="story" itemId={story.slug} interestKey="miti-leggende" /></div>
           </div>
         </article>
       </div>
