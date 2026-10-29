@@ -41,8 +41,14 @@ export async function POST(request:NextRequest){
    const payload={description:text(form,"description",5000)||null,updated_at:new Date().toISOString()};
    const {error}=await db.from("operators").update(payload).eq("id",id); if(error)throw error; return back(request,id,"saved");
   }
-  if(action==="publish"||action==="unpublish"){
-   const {error}=await db.from("operators").update({published:action==="publish",...(action==="publish"?{selection_status:"selected"}:{}),updated_at:new Date().toISOString()}).eq("id",id); if(error)throw error; return back(request,id,action==="publish"?"published":"unpublished");
+  if(action==="publish"){
+   const {data:operator,error:readError}=await db.from("operators").select("selection_status").eq("id",id).maybeSingle();
+   if(readError)throw readError;
+   if(!operator||operator.selection_status!=="selected")return back(request,id,"publish-requires-selection");
+   const {error}=await db.from("operators").update({published:true,updated_at:new Date().toISOString()}).eq("id",id).eq("selection_status","selected"); if(error)throw error; return back(request,id,"published");
+  }
+  if(action==="unpublish"){
+   const {error}=await db.from("operators").update({published:false,updated_at:new Date().toISOString()}).eq("id",id); if(error)throw error; return back(request,id,"unpublished");
   }
   return back(request,id,"invalid");
  }catch(error){console.error("BIMARIS admin operator update failed",error);return back(request,id,"error")}
