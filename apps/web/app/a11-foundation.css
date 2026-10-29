@@ -4,9 +4,11 @@
   --bimaris-petrol:#07343b;
   --bimaris-gold:#caa86a;
   --bimaris-ivory:#f8f8f5;
-  --color-bg:#f6f7f5;
+  --bimaris-mist:#edf3f1;
+  --bimaris-pearl:#f7f9f7;
+  --color-bg:var(--bimaris-pearl);
   --color-surface:#ffffff;
-  --color-surface-subtle:#eef2ef;
+  --color-surface-subtle:var(--bimaris-mist);
   --color-text:#172326;
   --color-text-muted:#5f6e70;
   --color-border:#d7dfdc;
@@ -42,14 +44,19 @@ body { background:var(--color-bg); color:var(--color-text); }
 .page-hero p { color:rgba(255,255,255,.82); }
 .page-hero .kicker { color:#e0bc7b; }
 
-/* CULT-D02 / shared discovery grid — keep editorial hero content on the same horizontal grid as page sections. */
+/* Shared discovery grid: fluid on wide desktop, still bounded for readable editorial lines. */
 .discovery-page-hero {
-  padding-left:max(6vw, calc((100% - 1180px) / 2));
-  padding-right:max(6vw, calc((100% - 1180px) / 2));
+  padding-left:clamp(32px,6vw,108px);
+  padding-right:clamp(32px,6vw,108px);
 }
 
+/* BIMARIS light surfaces: cool petrol-derived neutrals instead of generic beige/grey. */
 .section.sand,
-.home-visitors { background:var(--color-surface-subtle); }
+.home-visitors {
+  background:
+    radial-gradient(circle at 88% 12%,rgba(7,52,59,.045),transparent 27%),
+    linear-gradient(135deg,var(--bimaris-mist),#f4f7f5 68%,#eef4f2);
+}
 .card,
 .detail-panel { background:var(--color-surface); border-color:var(--color-border); }
 .card { box-shadow:0 12px 34px rgba(3,33,38,.07); }
@@ -88,6 +95,28 @@ body { background:var(--color-bg); color:var(--color-text); }
   .section-head { margin-bottom:26px; }
   .page-hero { padding-top:48px; padding-bottom:48px; }
   .discovery-page-first { padding-top:48px; padding-bottom:48px; }
+
+  /* CULT-D04 — use the available desktop canvas rather than a narrow fixed editorial strip. */
+  .discovery-page-first,
+  .discovery-page-first + .section {
+    padding-left:clamp(32px,6vw,108px);
+    padding-right:clamp(32px,6vw,108px);
+  }
+  .discovery-page-first .section-head,
+  .discovery-page-first + .section .section-head {
+    width:100%;
+    max-width:none;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);
+    gap:clamp(48px,7vw,128px);
+    align-items:center;
+  }
+  .discovery-page-first .section-head > p,
+  .discovery-page-first + .section .section-head > p {
+    max-width:680px;
+    justify-self:end;
+  }
+
   .culture-card-media { height:225px; }
   .card-body { padding:19px 20px 21px; }
 
