@@ -12,6 +12,7 @@ import "./foundation.css";
 import "./home-a3.css";
 import "./a11-foundation.css";
 import "./map-route-polish.css";
+import "./section-hero-uniform.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
