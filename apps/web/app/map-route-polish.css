@@ -1,0 +1,68 @@
+/* QA map route-builder polish — presentation only. */
+.bimaris-route-panel-toggle {
+  width:100%;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:13px 16px;
+  border:0;
+  border-radius:14px;
+  background:#07343b;
+  color:#fff;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(3,33,38,.14);
+}
+.bimaris-route-panel-toggle > span:first-child { display:grid; gap:2px; }
+.bimaris-route-panel-toggle strong { font-size:15px; line-height:1.2; }
+.bimaris-route-panel-toggle small { color:rgba(255,255,255,.72); font-size:11px; line-height:1.2; }
+.bimaris-route-panel-toggle > span:last-child {
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  flex:0 0 30px;
+  border:1px solid rgba(202,168,106,.5);
+  border-radius:50%;
+  color:#e0bc7b;
+  font-size:20px;
+  line-height:1;
+}
+.bimaris-route-panel-mode {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin:0 0 14px;
+  padding:4px;
+  border:1px solid #d7dfdc;
+  border-radius:12px;
+  background:#edf3f1;
+}
+.bimaris-route-panel-mode button {
+  min-height:40px;
+  padding:8px 12px;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:#435354;
+  font:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.bimaris-route-panel-mode button:hover { background:rgba(255,255,255,.72); }
+.bimaris-route-panel-mode button.active {
+  border-color:rgba(202,168,106,.72);
+  background:#fff;
+  color:#032126;
+  box-shadow:0 3px 10px rgba(3,33,38,.08);
+}
+.bimaris-route-panel-toggle:focus-visible,
+.bimaris-route-panel-mode button:focus-visible {
+  outline:3px solid rgba(202,168,106,.48);
+  outline-offset:2px;
+}
