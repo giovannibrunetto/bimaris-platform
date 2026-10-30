@@ -120,11 +120,13 @@
   display: none !important;
 }
 
-/* Desktop: il percorso selezionato diventa una vera colonna laterale. */
+/* Desktop: il percorso selezionato diventa una vera colonna laterale.
+   La riga mantiene l'altezza della mappa; con molte tappe scorre solo l'elenco. */
 @media (min-width: 761px) {
   .bimaris-map-stage:has(.bimaris-map-route) {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: clamp(420px, 50vh, 540px);
     gap: 12px;
     overflow: visible !important;
     border: 0 !important;
@@ -135,6 +137,8 @@
     grid-column: 1;
     grid-row: 1;
     min-width: 0;
+    min-height: 0;
+    height: 100% !important;
     border-radius: 22px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, .16);
@@ -158,16 +162,19 @@
     width: auto !important;
     height: 100%;
     min-width: 0;
+    min-height: 0;
+    max-height: 100%;
     margin: 0 !important;
     padding: 18px !important;
     border-radius: 22px !important;
     display: flex;
     flex-direction: column;
     align-self: stretch;
-    overflow: auto !important;
+    overflow: hidden !important;
   }
 
   .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-head {
+    flex: 0 0 auto;
     flex-direction: column;
     align-items: stretch !important;
     gap: 12px !important;
@@ -184,6 +191,25 @@
   .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-clear {
     align-self: flex-start;
     min-height: 36px !important;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(202,168,106,.55) transparent;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-list::-webkit-scrollbar { width: 6px; }
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-list::-webkit-scrollbar-track { background: transparent; }
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-list::-webkit-scrollbar-thumb { background: rgba(202,168,106,.55); border-radius: 999px; }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-mode,
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-directions {
+    flex: 0 0 auto;
   }
 }
 
