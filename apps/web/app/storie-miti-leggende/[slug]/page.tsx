@@ -12,7 +12,7 @@ export const revalidate = 0;
 const editorialIllustrations: Record<string, string> = {
   "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
   colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp",
+  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp?v=20261030-2",
   "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
 };
 
@@ -88,31 +88,19 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
         <div>
           <div style={{ marginBottom: 10 }}><div className="kicker">Approfondisci</div><h2 style={{ fontFamily:"Georgia,serif", fontSize: 32, fontWeight:500, margin:"3px 0 0" }}>Dettagli del racconto</h2></div>
           {contextItems.length > 0 && <div className="cards" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 10 }}>
-            {contextItems.map(([label, text]) => <article className="card" key={label}><div className="card-body" style={{ padding: 12 }}><div className="eyebrow">{label}</div><p style={{ margin: "5px 0 0", fontSize: 13.5, lineHeight: 1.35 }}>{text}</p></div></article>)}
+            {contextItems.map(([label, value]) => <article className="card" key={label}><div className="card-body" style={{ padding: "13px 15px" }}><div className="kicker">{label}</div><p style={{ margin: "5px 0 0", lineHeight: 1.45 }}>{value}</p></div></article>)}
           </div>}
-          {story.editorial?.originText && <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(255,255,255,.72)", borderRadius: 14 }}><div className="eyebrow">Origine della tradizione</div><p style={{ margin:"5px 0 0", fontSize:13.5, lineHeight:1.35 }}>{story.editorial.originText}</p>{story.editorial.periodLabel && <p className="muted" style={{ margin: "4px 0 0", fontSize: 12.5 }}>{story.editorial.periodLabel}</p>}</div>}
+          {story.origin && <div className="detail-panel" style={{ marginTop: 10, padding: "13px 15px" }}><div className="kicker">Origine della tradizione</div><p style={{ margin: "5px 0 0", lineHeight: 1.45 }}>{story.origin}</p></div>}
+          {story.sources.length > 0 && <details className="detail-panel" style={{ marginTop: 10, padding: "12px 15px" }}><summary style={{ cursor: "pointer", fontWeight: 700 }}>Fonti e riferimenti</summary><div style={{ marginTop: 10 }}>{story.sources.map(source => <p key={source.id} style={{ margin: "6px 0" }}><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a>{source.note ? ` — ${source.note}` : ""}</p>)}</div></details>}
         </div>
 
-        <aside className="detail-panel" style={{ padding: 16 }}>
-          <div className="kicker">Nel territorio</div>
-          <h3 style={{ margin:"5px 0 8px" }}>Luoghi collegati</h3>
-          {story.editorial?.geographicReference && <p className="muted" style={{ fontSize:13.5, marginTop:0 }}>{story.editorial.geographicReference}</p>}
-          {story.places.length > 0 ? <ul className="list">{story.places.map(place => {
-            const hasCoordinates = Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
-            const destination = hasCoordinates ? `${place.latitude},${place.longitude}` : place.googleMapsQuery;
-            const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-            return <li key={`${place.position}-${place.googleMapsQuery}`} style={{ fontSize:13.5 }}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}<div style={{ marginTop: 5 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div></li>;
-          })}</ul> : <p className="muted">Il racconto è legato a un’area o a una tradizione diffusa.</p>}
-          <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:10 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
+        <aside className="detail-panel" style={{ padding: "15px 16px" }}>
+          <div className="kicker">Territorio</div><h3 style={{ margin: "5px 0 8px" }}>Luoghi collegati</h3>
+          {story.places.length > 0 ? story.places.map(place => <div key={place.id} style={{ marginTop: 8 }}><strong>{place.name}</strong>{place.relationNote && <p style={{ margin: "2px 0 0", fontSize: 14 }}>{place.relationNote}</p>}</div>) : <p>Nessun luogo specifico associato.</p>}
         </aside>
       </div>
     </section>
 
-    {story.sources.length > 0 && <section className="section" style={{ paddingTop: 14, paddingBottom: 16 }}>
-      <details className="detail-panel" style={{ padding: "12px 16px" }}>
-        <summary style={{ cursor:"pointer", listStyle:"none", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20 }}><span><span className="kicker">Verifica</span><strong style={{ display:"block", fontFamily:"Georgia,serif", fontSize:24, marginTop:2 }}>Fonti e riferimenti</strong></span><span className="text-link">Mostra fonti ↓</span></summary>
-        <ul className="list" style={{ columns: story.sources.length > 3 ? 2 : 1, columnGap: 36, marginTop:14 }}>{story.sources.map(source => <li key={`${source.sortOrder}-${source.label}`} style={{ breakInside: "avoid", fontSize:13.5 }}><strong>{source.label}</strong>{source.sourceType && <> · <span className="muted">{source.sourceType}</span></>}{source.note && <><br /><span className="muted">{source.note}</span></>}{source.url && <><br /><a className="text-link" href={source.url} target="_blank" rel="noreferrer">Consulta la fonte →</a></>}</li>)}</ul>
-      </details>
-    </section>}
+    <section className="section" style={{ paddingTop: 16, paddingBottom: 24 }}><Link className="text-link" href="/storie-miti-leggende">← Torna a miti e leggende</Link></section>
   </>;
 }
