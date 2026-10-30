@@ -66,6 +66,16 @@
   transform: translateX(-50%);
 }
 
+/* Quando esiste un percorso selezionato, il pannello percorso occupa la fascia
+   inferiore dello stage: i filtri desktop risalgono e restano separati. */
+.bimaris-map-stage:has(.bimaris-map-route) .map-filter-desktop {
+  bottom: 96px;
+}
+
+.bimaris-map-stage:has(.bimaris-map-route) .map-period-desktop {
+  bottom: 158px;
+}
+
 .map-mobile-filter-grid {
   display: none !important;
 }
