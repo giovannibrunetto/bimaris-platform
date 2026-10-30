@@ -1,6 +1,6 @@
 /* BIMARIS Map — desktop visual architecture. Presentation only. */
 .map-page-section {
-  background:#f7f9f7 !important;
+  background:#E7E0D3 !important;
   color:#172326;
   padding:42px clamp(28px,5vw,92px) 56px !important;
 }
@@ -28,10 +28,10 @@
   width:min(100%,1500px);
   margin:0 auto;
   padding:18px;
-  border:1px solid #d7dfdc;
+  border:1px solid rgba(3,33,38,.16);
   border-radius:28px;
-  background:#fff;
-  box-shadow:0 18px 50px rgba(3,33,38,.09);
+  background:rgba(255,253,249,.76);
+  box-shadow:0 18px 50px rgba(3,33,38,.11);
 }
 .bimaris-map-card-head {
   min-height:42px;
@@ -68,7 +68,7 @@
     min-height:0;
     height:clamp(500px,62vh,650px);
     overflow:hidden;
-    border:1px solid #d7dfdc;
+    border:1px solid rgba(3,33,38,.18);
     border-radius:22px;
     background:#edf3f1;
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
@@ -149,7 +149,7 @@
   .bimaris-map-period-desktop button.active { background:#caa86a; color:#032126; }
   .bimaris-map-legend {
     padding:11px 4px 0;
-    color:#718083;
+    color:#59696b;
     font-size:11px;
     line-height:1.4;
     letter-spacing:.01em;
@@ -163,9 +163,9 @@
     flex-direction:column;
     align-self:stretch;
     overflow:hidden;
-    border:1px solid #d7dfdc;
+    border:1px solid rgba(3,33,38,.16);
     border-radius:22px;
-    background:linear-gradient(180deg,#f8faf8 0%,#edf3f1 100%);
+    background:rgba(255,253,249,.68);
   }
   .bimaris-route-panel-toggle {
     width:100%;
@@ -218,9 +218,9 @@
     gap:6px;
     margin:0 0 14px;
     padding:4px;
-    border:1px solid #d7dfdc;
+    border:1px solid rgba(3,33,38,.14);
     border-radius:12px;
-    background:#fff;
+    background:rgba(255,255,255,.62);
   }
   .bimaris-route-panel-mode button {
     min-height:40px;
@@ -233,7 +233,7 @@
     font-weight:800;
     cursor:pointer;
   }
-  .bimaris-route-panel-mode button:hover { background:#edf3f1; }
+  .bimaris-route-panel-mode button:hover { background:rgba(255,255,255,.76); }
   .bimaris-route-panel-mode button.active {
     border-color:rgba(202,168,106,.7);
     background:#032126;
@@ -254,7 +254,7 @@
     gap:9px;
     align-items:center;
     padding:10px 4px;
-    border-bottom:1px solid #d7dfdc;
+    border-bottom:1px solid rgba(3,33,38,.13);
   }
   .bimaris-route-list li > span {
     width:26px;height:26px;display:grid;place-items:center;border-radius:50%;
@@ -265,10 +265,10 @@
   .bimaris-route-list li > button {
     width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#667477;font-size:18px;cursor:pointer;
   }
-  .bimaris-route-list li > button:hover { background:#fff; color:#032126; }
+  .bimaris-route-list li > button:hover { background:rgba(255,255,255,.7); color:#032126; }
   .bimaris-route-panel-actions { flex:0 0 auto; display:grid; gap:8px; padding-top:12px; }
   .bimaris-route-clear {
-    min-height:40px;border:1px solid #d7dfdc;border-radius:999px;background:#fff;color:#435354;font-size:12px;font-weight:700;cursor:pointer;
+    min-height:40px;border:1px solid rgba(3,33,38,.16);border-radius:999px;background:rgba(255,255,255,.62);color:#435354;font-size:12px;font-weight:700;cursor:pointer;
   }
   .bimaris-route-panel-actions .button { display:flex; align-items:center; justify-content:center; text-align:center; }
 }
@@ -292,7 +292,7 @@
   .bimaris-route-panel-toggle small { color:rgba(255,255,255,.7); font-size:11px; }
   .bimaris-route-panel-toggle > span:last-child { color:#e0bc7b; font-size:20px; }
   .bimaris-route-panel-body { padding:12px 4px 2px; }
-  .bimaris-route-panel-mode { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; background:#edf3f1; border-radius:12px; }
+  .bimaris-route-panel-mode { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; background:rgba(255,255,255,.56); border-radius:12px; }
   .bimaris-route-panel-mode button { min-height:40px; border:0; border-radius:9px; background:transparent; color:#435354; font-weight:700; }
   .bimaris-route-panel-mode button.active { background:#032126; color:#fff; }
 }
