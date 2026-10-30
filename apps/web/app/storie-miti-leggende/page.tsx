@@ -36,15 +36,15 @@ export default async function StoriesPage() {
   const stories = await getPublishedStories();
   return (
     <>
-      <section className="page-hero discovery-page-hero bimaris-ambient-hero" style={{ paddingTop: 42, paddingBottom: 42, minHeight: 0 }}>
+      <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero" style={{ minHeight: 0 }}>
         <div className="kicker">Messina da raccontare</div>
         <h1 style={{ marginTop: 14, marginBottom: 14 }}>Storia, miti e leggende</h1>
         <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
 
-      <section className="section discovery-page-first bimaris-ambient-section">
+      <section className="section discovery-page-first bimaris-ambient-section stories-page-first">
         <div className="section-head">
-          <div><div className="kicker">Tra racconto e territorio</div><h2>Le storie dello Stretto</h2></div>
+          <div><div className="kicker stories-section-kicker">Tra racconto e territorio</div><h2>Le storie dello Stretto</h2></div>
           <p>Ogni scheda collega il racconto ai luoghi di Messina che permettono di leggerlo direttamente nel paesaggio.</p>
         </div>
 
