@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BehaviorTrackedLink } from "@/components/BehaviorTrackedLink";
+import { ExpandableStoryText } from "@/components/ExpandableStoryText";
 import { SaveToCollectionButton } from "@/components/SaveToCollectionButton";
 import { UserBehaviorSignal } from "@/components/UserBehaviorSignal";
 import { getPublishedStoryBySlug } from "@/data/stories";
@@ -87,12 +88,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           <p style={{ fontSize: 16.5, lineHeight: 1.4, color: "#4d5962", margin: "0 0 12px" }}>{story.excerpt}</p>
           <div className="kicker" style={{ marginBottom: 6 }}>Il racconto</div>
           {visibleParagraphs.map((paragraph, index) => <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
-          {hiddenParagraphs.length > 0 && <details style={{ marginTop: 8 }}>
-            <summary className="text-link" style={{ cursor: "pointer", fontWeight: 700, listStylePosition: "inside" }}>Continua a leggere</summary>
-            <div style={{ marginTop: 8 }}>
-              {hiddenParagraphs.map((paragraph, index) => <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
-            </div>
-          </details>}
+          {hiddenParagraphs.length > 0 && <ExpandableStoryText paragraphs={hiddenParagraphs} />}
         </article>
       </div>
     </section>
