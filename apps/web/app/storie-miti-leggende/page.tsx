@@ -22,7 +22,6 @@ const editorialIllustrations: Record<string, string> = {
 
 function storyTypeLabel(storyType: string) {
   const normalized = storyType.trim().toLowerCase();
-
   if (normalized.includes("fenomeno naturale")) return "Leggenda naturale";
   if (normalized.includes("religioso") || normalized.includes("devozionale")) return "Tradizione devozionale";
   if (normalized.includes("mito")) return "Mito";
@@ -30,75 +29,38 @@ function storyTypeLabel(storyType: string) {
   if (normalized.includes("tradizione popolare")) return "Tradizione popolare";
   if (normalized.includes("leggenda")) return "Leggenda";
   if (normalized.includes("tradizione")) return "Tradizione";
-
   return storyType;
 }
 
 export default async function StoriesPage() {
   const stories = await getPublishedStories();
-
   return (
     <>
-      <section
-        className="page-hero discovery-page-hero"
-        style={{ paddingTop: 42, paddingBottom: 42, minHeight: 0 }}
-      >
+      <section className="page-hero discovery-page-hero bimaris-ambient-hero" style={{ paddingTop: 42, paddingBottom: 42, minHeight: 0 }}>
         <div className="kicker">Messina da raccontare</div>
         <h1 style={{ marginTop: 14, marginBottom: 14 }}>Storia, miti e leggende</h1>
-        <p style={{ marginBottom: 0 }}>
-          Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.
-        </p>
+        <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
 
-      <section className="section discovery-page-first">
+      <section className="section discovery-page-first bimaris-ambient-section">
         <div className="section-head">
-          <div>
-            <div className="kicker">Tra racconto e territorio</div>
-            <h2>Le storie dello Stretto</h2>
-          </div>
-          <p>
-            Ogni scheda collega il racconto ai luoghi di Messina che permettono di leggerlo direttamente nel paesaggio.
-          </p>
+          <div><div className="kicker">Tra racconto e territorio</div><h2>Le storie dello Stretto</h2></div>
+          <p>Ogni scheda collega il racconto ai luoghi di Messina che permettono di leggerlo direttamente nel paesaggio.</p>
         </div>
 
         {stories.length > 0 ? (
           <div className="cards">
             {stories.map(story => {
               const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
-              const cardAlt = editorialIllustrations[story.slug]
-                ? `Illustrazione BIMARIS dedicata a ${story.title}`
-                : story.imageAlt ?? story.title;
-
+              const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
               return (
                 <Link className="card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
-                  <div
-                    className="card-media"
-                    style={{
-                      position: "relative",
-                      minHeight: 0,
-                      height: "190px",
-                      padding: 0,
-                      overflow: "hidden",
-                      background: "linear-gradient(135deg, #8d7354, #4f3b28)",
-                    }}
-                  >
-                    {cardImage && (
-                      <img
-                        src={cardImage}
-                        alt={cardAlt}
-                        loading="lazy"
-                        decoding="async"
-                        style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
-                      />
-                    )}
+                  <div className="card-media" style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
+                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body" style={{ padding: "18px 20px 20px" }}>
-                    <div className="eyebrow">
-                      {story.places.length > 0
-                        ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}`
-                        : "Messina e lo Stretto"}
-                    </div>
+                    <div className="eyebrow">{story.places.length > 0 ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}` : "Messina e lo Stretto"}</div>
                     <h3 style={{ marginTop: 8, marginBottom: 8 }}>{story.title}</h3>
                     <p style={{ marginBottom: 14 }}>{story.excerpt}</p>
                     <span className="text-link">Leggi la storia →</span>
@@ -108,19 +70,13 @@ export default async function StoriesPage() {
             })}
           </div>
         ) : (
-          <div className="detail-panel">
-            <h3>Contenuti in preparazione</h3>
-            <p>Stiamo raccogliendo le storie, i miti e le leggende del territorio messinese.</p>
-          </div>
+          <div className="detail-panel"><h3>Contenuti in preparazione</h3><p>Stiamo raccogliendo le storie, i miti e le leggende del territorio messinese.</p></div>
         )}
       </section>
 
-      <section className="section sand">
+      <section className="section sand bimaris-ambient-section">
         <div className="section-head">
-          <div>
-            <div className="kicker">Esplora</div>
-            <h2>Vuoi vedere dove nascono queste storie?</h2>
-          </div>
+          <div><div className="kicker">Esplora</div><h2>Vuoi vedere dove nascono queste storie?</h2></div>
           <p>Apri la mappa BIMARIS per orientarti nello Stretto e nel territorio di Messina.</p>
         </div>
         <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
