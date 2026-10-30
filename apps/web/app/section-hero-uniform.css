@@ -1,63 +1,83 @@
-/* BIMARIS — shared section-title system.
-   Keeps page-specific backgrounds, but normalizes the identity hierarchy
-   across Cultura, Miti e leggende, Percorsi, Mappa and Accedi. */
+/* BIMARIS — canonical primary section-header system.
+   Primary navigation pages share one hierarchy: kicker, sans-serif H1,
+   intro copy and spacing. Editorial headings inside the page remain serif. */
 
 .page-hero,
 .discovery-page-hero,
 .stories-page-hero,
-.bimaris-ambient-hero {
-  --section-title-size: clamp(34px, 3vw, 46px);
+.bimaris-ambient-hero,
+.map-page-intro {
+  --section-title-size: clamp(40px, 3.2vw, 54px);
   --section-kicker-size: 13px;
   --section-intro-size: 17px;
 }
 
+/* Primary page kicker */
 .page-hero > .kicker,
 .discovery-page-hero > .kicker,
 .stories-page-hero > .kicker,
-.bimaris-ambient-hero > .kicker {
-  margin-bottom: 12px;
-  color: #e0bc7b;
-  font-size: var(--section-kicker-size);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+.bimaris-ambient-hero > .kicker,
+.map-page-intro > .kicker {
+  margin: 0 0 14px !important;
+  color: #87642d !important;
+  font-size: var(--section-kicker-size) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
 }
 
+/* Primary H1: always sans-serif. Serif is reserved for editorial H2s. */
 .page-hero > h1,
 .discovery-page-hero > h1,
 .stories-page-hero > h1,
-.bimaris-ambient-hero > h1 {
-  margin: 0 0 16px;
-  font-family: inherit;
-  font-size: var(--section-title-size);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -.02em;
+.bimaris-ambient-hero > h1,
+.map-page-intro > h1 {
+  margin: 0 0 16px !important;
+  color: var(--bimaris-abyssal-teal) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: var(--section-title-size) !important;
+  font-weight: 700 !important;
+  line-height: 1.06 !important;
+  letter-spacing: -.025em !important;
 }
 
+/* Primary intro */
 .page-hero > p,
 .discovery-page-hero > p,
 .stories-page-hero > p,
-.bimaris-ambient-hero > p {
-  max-width: 1180px;
-  margin: 0;
-  font-size: var(--section-intro-size);
-  line-height: 1.55;
+.bimaris-ambient-hero > p,
+.map-page-intro > p {
+  max-width: 1180px !important;
+  margin: 0 !important;
+  color: #4f5e60 !important;
+  font-size: var(--section-intro-size) !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
 }
 
-/* Light/tortora heroes keep the same hierarchy with the dark-brand palette. */
-.bimaris-ambient-hero > .kicker { color: #87642d !important; }
-.bimaris-ambient-hero > h1 { color: var(--bimaris-abyssal-teal) !important; }
-.bimaris-ambient-hero > p { color: #4f5e60 !important; }
+/* All discovery-section headers use the same tortora environment.
+   Cultura previously retained the old dark hero and therefore looked like
+   a different generation of the product. */
+.culture-page > .page-hero,
+.bimaris-ambient-hero,
+.stories-page-hero {
+  background: var(--bimaris-tortora) !important;
+  color: var(--bimaris-abyssal-teal) !important;
+}
 
 @media (min-width: 761px) {
   .page-hero,
   .discovery-page-hero,
   .stories-page-hero,
   .bimaris-ambient-hero {
-    padding-top: 36px !important;
-    padding-bottom: 34px !important;
+    padding-top: 40px !important;
+    padding-bottom: 38px !important;
+  }
+
+  /* Map is structurally not a .page-hero, so normalize its intro explicitly. */
+  .map-page-intro {
+    margin: 0 0 34px !important;
   }
 }
 
@@ -65,8 +85,9 @@
   .page-hero,
   .discovery-page-hero,
   .stories-page-hero,
-  .bimaris-ambient-hero {
-    --section-title-size: clamp(30px, 9vw, 38px);
+  .bimaris-ambient-hero,
+  .map-page-intro {
+    --section-title-size: clamp(32px, 9vw, 40px);
     --section-kicker-size: 12px;
     --section-intro-size: 15px;
   }
