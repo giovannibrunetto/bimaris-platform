@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "./map-filters.css";
 import { getVillageHistoricalPeriods, getVillagePointHistoricalPeriods } from "@/data/village-historical-periods";
 import { BimarisGoogleMap, type BimarisMapPoint, type MapFilterKey } from "@/components/BimarisGoogleMapV2";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
