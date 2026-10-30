@@ -202,6 +202,30 @@ body { background:var(--color-bg); color:var(--color-text); }
   .home-journey-path h3 { min-height:2.04em; }
   .home-journey-path p { flex:1; }
   .home-journey-action { margin-top:auto; }
+
+  /* ACCESS-D01 — the two access paths are the page focus: centered and viewport-filling. */
+  .access-gateway {
+    width:min(92vw,1680px) !important;
+    max-width:none !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+  .access-gateway-grid {
+    width:100%;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:clamp(24px,2.4vw,42px) !important;
+  }
+  .access-gateway-card {
+    min-width:0;
+    min-height:clamp(390px,48vh,500px);
+    padding:clamp(30px,2.4vw,42px) !important;
+  }
+  .access-gateway-card > div:first-child p { max-width:680px; }
+  .access-gateway-actions { width:100%; }
+  .access-gateway-actions .button { width:100%; text-align:center; }
+  .access-gateway-back { margin-top:28px; }
 }
 
 /* Privacy: compact first state; details may expand deliberately. */
