@@ -57,13 +57,63 @@
   opacity: .78;
 }
 
+/* Desktop: il filtro secondario per epoca usa il paradigma mobile/Apple:
+   pannello compatto dentro la mappa, in alto a sinistra, con elenco verticale. */
 .map-period-desktop {
-  bottom: 78px;
-  left: 50%;
+  top: 16px;
+  bottom: auto;
+  left: 16px;
   right: auto;
-  width: max-content;
+  width: 250px;
   max-width: calc(100% - 32px);
-  transform: translateX(-50%);
+  max-height: 286px;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(202,168,106,.55) transparent;
+  border-radius: 16px;
+  background: rgba(6, 22, 36, .94);
+  box-shadow: 0 12px 34px rgba(3, 17, 26, .32);
+  backdrop-filter: blur(14px);
+}
+
+.map-period-desktop::-webkit-scrollbar { width: 6px; }
+.map-period-desktop::-webkit-scrollbar-track { background: transparent; }
+.map-period-desktop::-webkit-scrollbar-thumb { background: rgba(202,168,106,.55); border-radius: 999px; }
+
+.map-period-desktop button {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 11px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  background: transparent;
+  color: #eef2f4;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.2;
+  box-shadow: none;
+}
+
+.map-period-desktop button:last-child { border-bottom: 0; }
+.map-period-desktop button:hover,
+.map-period-desktop button:focus-visible {
+  background: rgba(202,168,106,.12);
+  border-color: transparent;
+}
+.map-period-desktop button[aria-pressed="true"] {
+  background: #caa86a;
+  color: #101820;
+  box-shadow: none;
 }
 
 .map-mobile-filter-grid {
@@ -96,6 +146,7 @@
 
   .bimaris-map-stage:has(.bimaris-map-route) .map-period-desktop {
     right: auto;
+    width: 250px;
     max-width: calc(100% - 380px);
   }
 
