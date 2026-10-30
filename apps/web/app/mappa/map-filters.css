@@ -66,18 +66,74 @@
   transform: translateX(-50%);
 }
 
-/* Quando esiste un percorso selezionato, il pannello percorso occupa la fascia
-   inferiore dello stage: i filtri desktop risalgono e restano separati. */
-.bimaris-map-stage:has(.bimaris-map-route) .map-filter-desktop {
-  bottom: 96px;
-}
-
-.bimaris-map-stage:has(.bimaris-map-route) .map-period-desktop {
-  bottom: 158px;
-}
-
 .map-mobile-filter-grid {
   display: none !important;
+}
+
+/* Desktop: il percorso selezionato diventa una vera colonna laterale. */
+@media (min-width: 761px) {
+  .bimaris-map-stage:has(.bimaris-map-route) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 12px;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-canvas {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .16);
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .map-filter-desktop {
+    right: 348px;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .map-period-desktop {
+    right: auto;
+    max-width: calc(100% - 380px);
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 18px !important;
+    border-radius: 22px !important;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    overflow: auto !important;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-head {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-summary {
+    min-width: 0 !important;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-toggle {
+    width: 100%;
+  }
+
+  .bimaris-map-stage:has(.bimaris-map-route) .bimaris-map-route-clear {
+    align-self: flex-start;
+    min-height: 36px !important;
+  }
 }
 
 @media (max-width: 760px) {
