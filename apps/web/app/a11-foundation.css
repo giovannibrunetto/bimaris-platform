@@ -193,6 +193,28 @@ body { background:var(--color-bg); color:var(--color-text); }
 .contact-form > .wide:last-child { display:flex; justify-content:flex-start; }
 .contact-form .button { min-width:190px; }
 
+/* QA F09 — historical routes expose their composition before the external hand-off. */
+.historical-route-card .card-body { display:flex; flex-direction:column; }
+.historical-route-count {
+  margin:2px 0 12px;
+  color:var(--color-text-muted);
+  font-size:13px;
+  font-weight:700;
+}
+.historical-route-stops {
+  margin:0 0 18px;
+  padding:14px 14px 14px 34px;
+  border-top:1px solid var(--color-border);
+  border-bottom:1px solid var(--color-border);
+  color:var(--color-text-muted);
+  font-size:14px;
+  line-height:1.45;
+}
+.historical-route-stops li + li { margin-top:6px; }
+.historical-route-stops a { color:var(--color-text); text-decoration:none; }
+.historical-route-stops a:hover { text-decoration:underline; text-underline-offset:3px; }
+.historical-route-card .text-link { margin-top:auto; }
+
 @media (min-width:761px) {
   .section { padding-top:58px; padding-bottom:58px; }
   .section-head { margin-bottom:26px; }
@@ -328,6 +350,7 @@ body { background:var(--color-bg); color:var(--color-text); }
   .contact-form { grid-template-columns:1fr; gap:18px !important; }
   .contact-form .wide { grid-column:1; }
   .contact-form .button { width:100%; }
+  .historical-route-stops { padding-left:30px; }
   .consent {
     left:10px;
     right:10px;
