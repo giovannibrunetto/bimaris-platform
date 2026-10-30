@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const editorialIllustrations: Record<string, string> = {
   "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
   colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp",
+  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp?v=20261030-2",
   "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
 };
 
