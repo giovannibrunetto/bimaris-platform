@@ -108,6 +108,11 @@ body:has(.access-gateway) { background:var(--bimaris-tortora); }
   .culture-editorial-card-featured { padding-top:30px; padding-bottom:30px; }
   .culture-editorial-card-featured .culture-editorial-copy h2 { font-size:clamp(42px,4.1vw,62px); margin-top:6px; margin-bottom:14px; }
   .culture-places-section { margin-top:0 !important; border-top:0 !important; }
+  /* Culture final map CTA is a closing action, not a second hero. */
+  .culture-explore-section { padding-top:36px !important; padding-bottom:36px !important; }
+  .culture-explore-section .section-head { margin-bottom:18px; align-items:center; }
+  .culture-explore-section .section-head h2 { font-size:clamp(38px,4vw,58px); line-height:1.02; }
+  .culture-explore-section .section-head p { max-width:650px; }
   /* Stories desktop: preserve the approved cards while reducing dead space in the first viewport. */
   .stories-page-hero { padding-top:38px !important; padding-bottom:30px !important; }
   .stories-page-first { padding-top:24px !important; }
