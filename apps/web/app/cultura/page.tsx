@@ -30,54 +30,56 @@ export default async function CulturePage() {
         </p>
       </section>
 
-      <section className="section culture-editorial-section discovery-page-first">
-        <div className="culture-editorial-card culture-editorial-card-featured">
-          <div className="culture-editorial-copy">
-            <div className="kicker">Messina nel tempo</div>
-            <h2>Vuoi seguire la storia della città?</h2>
-            <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
+      <div style={{ background: "var(--bimaris-tortora)" }}>
+        <section className="section culture-editorial-section discovery-page-first">
+          <div className="culture-editorial-card culture-editorial-card-featured">
+            <div className="culture-editorial-copy">
+              <div className="kicker">Messina nel tempo</div>
+              <h2>Vuoi seguire la storia della città?</h2>
+              <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
+            </div>
+            <p>
+              I percorsi storici collegano monumenti e luoghi attraverso le diverse epoche di Messina, per scoprire come la città è cambiata nel tempo.
+            </p>
           </div>
-          <p>
-            I percorsi storici collegano monumenti e luoghi attraverso le diverse epoche di Messina, per scoprire come la città è cambiata nel tempo.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <section className="section culture-places-section">
-        <div className="culture-editorial-card culture-editorial-card-light">
-          <div className="culture-editorial-copy">
-            <div className="kicker">Luoghi da scoprire</div>
-            <h2>Monumenti e cultura.</h2>
+        <section className="section culture-places-section">
+          <div className="culture-editorial-card culture-editorial-card-light">
+            <div className="culture-editorial-copy">
+              <div className="kicker">Luoghi da scoprire</div>
+              <h2>Monumenti e cultura.</h2>
+            </div>
+            <p>
+              Tutti i luoghi culturali selezionati da BIMARIS in un unico spazio. Apri una scheda per conoscere il luogo e raggiungerlo.
+            </p>
           </div>
-          <p>
-            Tutti i luoghi culturali selezionati da BIMARIS in un unico spazio. Apri una scheda per conoscere il luogo e raggiungerlo.
-          </p>
-        </div>
 
-        <div className="cards">
-          {orderedEntries.map(entry => (
-            <article className="card culture-card" key={entry.id}>
-              <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
-                <div className="culture-card-media">
-                  {entry.imageUrl ? (
-                    <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} loading="lazy" decoding="async" />
-                  ) : (
-                    <div className="culture-card-placeholder" />
-                  )}
-                  <span>{entry.category}</span>
-                </div>
-                <div className="card-body">
-                  <div className="eyebrow">{entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
-                  <h3>{entry.title}</h3>
-                  <p>{entry.excerpt}</p>
-                  <span className="text-link">Scopri il luogo →</span>
-                </div>
-              </Link>
-              {entry.imageAuthor && entry.imageLicense && <div className="photo-credit">Foto: {entry.imageAuthor} · {entry.imageLicense}</div>}
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="cards">
+            {orderedEntries.map(entry => (
+              <article className="card culture-card" key={entry.id}>
+                <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
+                  <div className="culture-card-media">
+                    {entry.imageUrl ? (
+                      <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} loading="lazy" decoding="async" />
+                    ) : (
+                      <div className="culture-card-placeholder" />
+                    )}
+                    <span>{entry.category}</span>
+                  </div>
+                  <div className="card-body">
+                    <div className="eyebrow">{entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
+                    <h3>{entry.title}</h3>
+                    <p>{entry.excerpt}</p>
+                    <span className="text-link">Scopri il luogo →</span>
+                  </div>
+                </Link>
+                {entry.imageAuthor && entry.imageLicense && <div className="photo-credit">Foto: {entry.imageAuthor} · {entry.imageLicense}</div>}
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
 
       <section className="section dark">
         <div className="section-head">
