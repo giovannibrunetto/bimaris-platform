@@ -48,11 +48,16 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
   const normalizedBody = story.body.replace(/\\n/g, "\n");
   const paragraphs = normalizedBody.split(/\n\s*\n+/).map(paragraph => paragraph.trim()).filter(Boolean);
+  const isLongStory = paragraphs.length > 5;
+  const visibleParagraphs = isLongStory ? paragraphs.slice(0, 3) : paragraphs;
+  const hiddenParagraphs = isLongStory ? paragraphs.slice(3) : [];
   const narrativeIllustration = editorialIllustrations[slug];
   const heroImage = narrativeIllustration ?? story.imageUrl;
   const heroAlt = narrativeIllustration ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
+  const heroObjectPosition = slug === "mata-e-grifone" ? "center top" : "center center";
   const typeLabel = shortStoryType(story.storyType);
   const actionStyle = { width: "100%", height: 48, minHeight: 48, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 12px", textAlign: "center" as const, whiteSpace: "nowrap" as const, fontSize: 14 };
+  const paragraphStyle = { fontSize: 15, lineHeight: 1.5, color: "#344448" };
   const contextItems = [
     ["Cosa è documentato", story.editorial?.documentedText],
     ["La tradizione", story.editorial?.traditionText],
@@ -67,7 +72,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
       <div style={{ display: "grid", gridTemplateColumns: "minmax(280px,.72fr) minmax(0,1.38fr)", gap: 30, alignItems: "start" }}>
         <div>
           {heroImage && <figure className="culture-hero-figure" style={{ margin: 0, overflow: "hidden" }}>
-            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: "cover", display: "block" }} />
+            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: "cover", objectPosition: heroObjectPosition, display: "block" }} />
             {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
           </figure>}
           <div style={{ display: "grid", gridTemplateColumns: story.places.length > 0 ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 10, marginTop: 12 }}>
@@ -81,7 +86,13 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(34px,3.2vw,48px)", lineHeight: 1.02, margin: "7px 0 9px" }}>{story.title}</h1>
           <p style={{ fontSize: 16.5, lineHeight: 1.4, color: "#4d5962", margin: "0 0 12px" }}>{story.excerpt}</p>
           <div className="kicker" style={{ marginBottom: 6 }}>Il racconto</div>
-          {paragraphs.map((paragraph, index) => <p key={index} style={{ fontSize: 15, lineHeight: 1.5, color: "#344448", margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
+          {visibleParagraphs.map((paragraph, index) => <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
+          {hiddenParagraphs.length > 0 && <details style={{ marginTop: 8 }}>
+            <summary className="text-link" style={{ cursor: "pointer", fontWeight: 700, listStylePosition: "inside" }}>Continua a leggere</summary>
+            <div style={{ marginTop: 8 }}>
+              {hiddenParagraphs.map((paragraph, index) => <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
+            </div>
+          </details>}
         </article>
       </div>
     </section>
@@ -106,7 +117,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
             const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
             return <li key={`${place.position}-${place.googleMapsQuery}`} style={{ fontSize:13.5 }}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}<div style={{ marginTop: 5 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div></li>;
           })}</ul> : <p className="muted">Il racconto è legato a un’area o a una tradizione diffusa.</p>}
-          <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:10 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:10 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
         </aside>
       </div>
     </section>
