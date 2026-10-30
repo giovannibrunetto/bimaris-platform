@@ -8,7 +8,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Percorsi storici di Messina | BIMARIS",
-  description: "Scegli un'epoca e apri direttamente in Google Maps un percorso tra i monumenti di Messina selezionati da BIMARIS.",
+  description: "Scegli un'epoca, consulta le tappe e apri in Google Maps un percorso tra i monumenti di Messina selezionati da BIMARIS.",
 };
 
 const MIN_PLACES_FOR_FEATURED_ERA = 2;
@@ -50,7 +50,7 @@ export default async function HistoricalMapPage() {
         <div className="kicker">Messina nel tempo</div>
         <h1>Percorsi storici</h1>
         <p>
-          Scegli l&apos;epoca che vuoi esplorare. BIMARIS ha già raccolto e ordinato le tappe: con un tocco puoi aprire direttamente il percorso in Google Maps.
+          Scegli l&apos;epoca che vuoi esplorare. Prima di partire puoi vedere tutte le tappe; quando sei pronto, BIMARIS apre il percorso pedonale in Google Maps.
         </p>
       </section>
 
@@ -67,16 +67,23 @@ export default async function HistoricalMapPage() {
 
         <div className="cards">
           {availablePeriods.map(period => (
-            <article className="card" key={period.key}>
+            <article className="card historical-route-card" key={period.key}>
               <div className="card-body">
                 <div className="eyebrow">{period.range}</div>
                 <h3>{period.label}</h3>
                 <p>{period.shortDescription}</p>
-                <div style={{ fontSize: 13, opacity: 0.72, marginBottom: 12 }}>
-                  {period.places.length} tappe
+                <div className="historical-route-count">
+                  {period.places.length} tappe · percorso pedonale
                 </div>
+                <ol className="historical-route-stops" aria-label={`Tappe del percorso ${period.label}`}>
+                  {period.places.map(place => (
+                    <li key={place.id}>
+                      <Link href={`/cultura/${place.slug}`}>{place.title}</Link>
+                    </li>
+                  ))}
+                </ol>
                 <a className="text-link" href={period.routeUrl} target="_blank" rel="noreferrer">
-                  Avvia percorso →
+                  Apri percorso pedonale in Google Maps ↗
                 </a>
               </div>
             </article>
