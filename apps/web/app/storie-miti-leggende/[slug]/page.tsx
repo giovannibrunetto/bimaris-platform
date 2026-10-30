@@ -14,9 +14,9 @@ const editorialIllustrations: Record<string, string> = {
   colapesce: "/storie-miti-leggende/colapesce.webp",
   "fata-morgana-stretto": "/storie-miti-leggende/fata-morgana.png?v=20261030-3",
   "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
-  "madonna-della-lettera": "/storie-miti-leggende/Madonna e la Lettera a Messina.png",
-  "leggende-madonna-dinnammare": "/storie-miti-leggende/Madonna sullo Stretto di Messina.png",
-  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/La città sommersa di Ganzirri.png",
+  "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
+  "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
+  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
 };
 
 const storyTypeLabels: Record<string, string> = {
