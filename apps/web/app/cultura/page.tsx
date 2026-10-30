@@ -22,7 +22,7 @@ export default async function CulturePage() {
 
   return (
     <>
-      <section className="page-hero discovery-page-hero">
+      <section className="page-hero discovery-page-hero bimaris-ambient-hero">
         <div className="kicker">Scopri Messina</div>
         <h1>Cultura</h1>
         <p>
@@ -60,33 +60,20 @@ export default async function CulturePage() {
               <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
                 <div className="culture-card-media">
                   {entry.imageUrl ? (
-                    <img
-                      src={entry.imageUrl}
-                      alt={entry.imageAlt ?? entry.title}
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} loading="lazy" decoding="async" />
                   ) : (
                     <div className="culture-card-placeholder" />
                   )}
                   <span>{entry.category}</span>
                 </div>
                 <div className="card-body">
-                  <div className="eyebrow">
-                    {entry.primaryHistoricalPeriod === "trasversale"
-                      ? "Più epoche"
-                      : historicalPeriodLabel(entry.primaryHistoricalPeriod)}
-                  </div>
+                  <div className="eyebrow">{entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
                   <h3>{entry.title}</h3>
                   <p>{entry.excerpt}</p>
                   <span className="text-link">Scopri il luogo →</span>
                 </div>
               </Link>
-              {entry.imageAuthor && entry.imageLicense && (
-                <div className="photo-credit">
-                  Foto: {entry.imageAuthor} · {entry.imageLicense}
-                </div>
-              )}
+              {entry.imageAuthor && entry.imageLicense && <div className="photo-credit">Foto: {entry.imageAuthor} · {entry.imageLicense}</div>}
             </article>
           ))}
         </div>
@@ -94,10 +81,7 @@ export default async function CulturePage() {
 
       <section className="section dark">
         <div className="section-head">
-          <div>
-            <div className="kicker">Esplora</div>
-            <h2>Guarda i luoghi sulla mappa.</h2>
-          </div>
+          <div><div className="kicker">Esplora</div><h2>Guarda i luoghi sulla mappa.</h2></div>
           <p>Apri la mappa generale di BIMARIS per vedere i punti di interesse e costruire il tuo percorso personale.</p>
         </div>
         <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
