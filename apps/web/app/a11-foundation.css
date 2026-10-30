@@ -107,6 +107,11 @@ body:has(.access-gateway) { background:var(--bimaris-tortora); }
   .culture-editorial-section.discovery-page-first { padding-top:22px; padding-bottom:18px; }
   .culture-editorial-card-featured { padding-top:30px; padding-bottom:30px; }
   .culture-editorial-card-featured .culture-editorial-copy h2 { font-size:clamp(42px,4.1vw,62px); margin-top:6px; margin-bottom:14px; }
+  /* Stories desktop: preserve the approved cards while reducing dead space in the first viewport. */
+  .stories-page-hero { padding-top:38px !important; padding-bottom:30px !important; }
+  .stories-page-first { padding-top:24px !important; }
+  .stories-page-first .section-head { margin-bottom:22px; }
+  .stories-section-kicker { color:#87642d !important; }
   .culture-card-media { height:185px; }
   .culture-card .card-body { padding:15px 20px 17px; }
   .culture-card .card-body h3 { margin-top:5px; margin-bottom:8px; }
