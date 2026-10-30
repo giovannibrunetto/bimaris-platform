@@ -1,68 +1,298 @@
-/* QA map route-builder polish — presentation only. */
-.bimaris-route-panel-toggle {
-  width:100%;
-  min-height:58px;
+/* BIMARIS Map — desktop visual architecture. Presentation only. */
+.map-page-section {
+  background:#f7f9f7 !important;
+  color:#172326;
+  padding:42px clamp(28px,5vw,92px) 56px !important;
+}
+.map-page-intro {
+  width:min(100%,1500px);
+  margin:0 auto 26px;
+}
+.map-page-intro .kicker { color:#87642d; }
+.map-page-intro h1 {
+  margin:7px 0 8px;
+  color:#032126;
+  font-family:Georgia,serif;
+  font-size:clamp(42px,4.8vw,66px);
+  line-height:1;
+  font-weight:500;
+}
+.map-page-intro p {
+  max-width:760px;
+  margin:0;
+  color:#5f6e70;
+  font-size:16px;
+  line-height:1.55;
+}
+.bimaris-map-card {
+  width:min(100%,1500px);
+  margin:0 auto;
+  padding:18px;
+  border:1px solid #d7dfdc;
+  border-radius:28px;
+  background:#fff;
+  box-shadow:0 18px 50px rgba(3,33,38,.09);
+}
+.bimaris-map-card-head {
+  min-height:42px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
-  padding:13px 16px;
-  border:0;
-  border-radius:14px;
-  background:#07343b;
-  color:#fff;
-  font:inherit;
-  text-align:left;
-  cursor:pointer;
-  box-shadow:0 8px 22px rgba(3,33,38,.14);
+  gap:18px;
+  padding:0 4px 14px;
 }
-.bimaris-route-panel-toggle > span:first-child { display:grid; gap:2px; }
-.bimaris-route-panel-toggle strong { font-size:15px; line-height:1.2; }
-.bimaris-route-panel-toggle small { color:rgba(255,255,255,.72); font-size:11px; line-height:1.2; }
-.bimaris-route-panel-toggle > span:last-child {
-  width:30px;
-  height:30px;
-  display:grid;
-  place-items:center;
-  flex:0 0 30px;
-  border:1px solid rgba(202,168,106,.5);
-  border-radius:50%;
-  color:#e0bc7b;
-  font-size:20px;
-  line-height:1;
+.map-card-eyebrow {
+  color:#87642d;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:11px;
+  font-weight:800;
 }
-.bimaris-route-panel-mode {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:8px;
-  margin:0 0 14px;
-  padding:4px;
-  border:1px solid #d7dfdc;
-  border-radius:12px;
-  background:#edf3f1;
+.bimaris-map-count {
+  color:#667477;
+  font-size:12px;
+  line-height:1.35;
+  text-align:right;
 }
-.bimaris-route-panel-mode button {
-  min-height:40px;
-  padding:8px 12px;
-  border:1px solid transparent;
-  border-radius:9px;
-  background:transparent;
-  color:#435354;
-  font:inherit;
-  font-size:13px;
-  font-weight:700;
-  cursor:pointer;
-  transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease;
+
+@media (min-width:761px) {
+  .bimaris-map-layout {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(285px,330px);
+    gap:18px;
+    align-items:stretch;
+  }
+  .bimaris-map-main { min-width:0; display:flex; flex-direction:column; }
+  .bimaris-map-canvas-wrap {
+    position:relative;
+    min-height:0;
+    height:clamp(500px,62vh,650px);
+    overflow:hidden;
+    border:1px solid #d7dfdc;
+    border-radius:22px;
+    background:#edf3f1;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
+  }
+  .bimaris-map-canvas { width:100%; height:100% !important; min-height:100%; }
+  .bimaris-map-filter-overlay {
+    position:absolute;
+    z-index:5;
+    left:16px;
+    right:16px;
+    bottom:16px;
+    pointer-events:none;
+  }
+  .bimaris-map-filter-desktop {
+    width:max-content;
+    max-width:100%;
+    margin:0 auto;
+    padding:8px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:18px;
+    background:rgba(3,33,38,.91);
+    box-shadow:0 12px 32px rgba(3,33,38,.24);
+    backdrop-filter:blur(14px);
+    pointer-events:auto;
+  }
+  .bimaris-map-filter-desktop button {
+    min-height:38px;
+    padding:8px 12px;
+    border:1px solid transparent;
+    border-radius:12px;
+    background:transparent;
+    color:#f5f8f6;
+    font-size:12px;
+    font-weight:700;
+    box-shadow:none;
+  }
+  .bimaris-map-filter-desktop button:hover { background:rgba(255,255,255,.09); }
+  .bimaris-map-filter-desktop button span { color:rgba(255,255,255,.62); }
+  .bimaris-map-filter-desktop button.active {
+    border-color:rgba(202,168,106,.72);
+    background:#caa86a;
+    color:#032126;
+  }
+  .bimaris-map-filter-desktop button.active span { color:rgba(3,33,38,.68); }
+  .bimaris-map-period-overlay {
+    position:absolute;
+    z-index:6;
+    top:16px;
+    left:16px;
+  }
+  .bimaris-map-period-desktop {
+    width:230px;
+    max-height:280px;
+    overflow-y:auto;
+    flex-direction:column;
+    flex-wrap:nowrap;
+    gap:2px;
+    padding:8px;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:16px;
+    background:rgba(3,33,38,.92);
+    box-shadow:0 12px 32px rgba(3,33,38,.25);
+    backdrop-filter:blur(14px);
+  }
+  .bimaris-map-period-desktop button {
+    width:100%;
+    min-height:38px;
+    padding:8px 10px;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:#f5f8f6;
+    text-align:left;
+    font-size:12px;
+    box-shadow:none;
+  }
+  .bimaris-map-period-desktop button:hover { background:rgba(255,255,255,.08); }
+  .bimaris-map-period-desktop button.active { background:#caa86a; color:#032126; }
+  .bimaris-map-legend {
+    padding:11px 4px 0;
+    color:#718083;
+    font-size:11px;
+    line-height:1.4;
+    letter-spacing:.01em;
+  }
+  .bimaris-route-panel {
+    min-width:0;
+    height:100%;
+    min-height:0;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    align-self:stretch;
+    overflow:hidden;
+    border:1px solid #d7dfdc;
+    border-radius:22px;
+    background:linear-gradient(180deg,#f8faf8 0%,#edf3f1 100%);
+  }
+  .bimaris-route-panel-toggle {
+    width:100%;
+    min-height:70px;
+    padding:14px 14px 14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    border:1px solid rgba(3,33,38,.1);
+    border-radius:16px;
+    background:#032126;
+    color:#fff;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(3,33,38,.14);
+  }
+  .bimaris-route-panel-toggle > span:first-child { display:grid; gap:4px; }
+  .bimaris-route-panel-toggle strong {
+    font-family:Georgia,serif;
+    font-size:20px;
+    line-height:1.1;
+    font-weight:500;
+  }
+  .bimaris-route-panel-toggle small { color:rgba(255,255,255,.7); font-size:11px; }
+  .bimaris-route-panel-toggle > span:last-child {
+    width:34px;
+    height:34px;
+    display:grid;
+    place-items:center;
+    flex:0 0 34px;
+    border:1px solid rgba(202,168,106,.6);
+    border-radius:50%;
+    color:#e0bc7b;
+    font-size:21px;
+  }
+  .bimaris-route-panel-body {
+    flex:1 1 auto;
+    min-height:0;
+    padding:16px 2px 2px;
+    display:flex;
+    flex-direction:column;
+    color:#435354;
+  }
+  .bimaris-route-panel-body > p { margin:4px 4px 0; font-size:13px; line-height:1.5; color:#667477; }
+  .bimaris-route-panel-mode {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;
+    margin:0 0 14px;
+    padding:4px;
+    border:1px solid #d7dfdc;
+    border-radius:12px;
+    background:#fff;
+  }
+  .bimaris-route-panel-mode button {
+    min-height:40px;
+    padding:8px 10px;
+    border:1px solid transparent;
+    border-radius:9px;
+    background:transparent;
+    color:#59696b;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .bimaris-route-panel-mode button:hover { background:#edf3f1; }
+  .bimaris-route-panel-mode button.active {
+    border-color:rgba(202,168,106,.7);
+    background:#032126;
+    color:#fff;
+    box-shadow:none;
+  }
+  .bimaris-route-list {
+    flex:1 1 auto;
+    min-height:0;
+    margin:0;
+    padding:0;
+    overflow-y:auto;
+    list-style:none;
+  }
+  .bimaris-route-list li {
+    display:grid;
+    grid-template-columns:28px minmax(0,1fr) 32px;
+    gap:9px;
+    align-items:center;
+    padding:10px 4px;
+    border-bottom:1px solid #d7dfdc;
+  }
+  .bimaris-route-list li > span {
+    width:26px;height:26px;display:grid;place-items:center;border-radius:50%;
+    background:#caa86a;color:#032126;font-size:11px;font-weight:800;
+  }
+  .bimaris-route-list strong { display:block; color:#172326; font-size:12px; line-height:1.3; }
+  .bimaris-route-list small { display:block; margin-top:2px; color:#718083; font-size:10px; }
+  .bimaris-route-list li > button {
+    width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#667477;font-size:18px;cursor:pointer;
+  }
+  .bimaris-route-list li > button:hover { background:#fff; color:#032126; }
+  .bimaris-route-panel-actions { flex:0 0 auto; display:grid; gap:8px; padding-top:12px; }
+  .bimaris-route-clear {
+    min-height:40px;border:1px solid #d7dfdc;border-radius:999px;background:#fff;color:#435354;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .bimaris-route-panel-actions .button { display:flex; align-items:center; justify-content:center; text-align:center; }
 }
-.bimaris-route-panel-mode button:hover { background:rgba(255,255,255,.72); }
-.bimaris-route-panel-mode button.active {
-  border-color:rgba(202,168,106,.72);
-  background:#fff;
-  color:#032126;
-  box-shadow:0 3px 10px rgba(3,33,38,.08);
-}
+
 .bimaris-route-panel-toggle:focus-visible,
-.bimaris-route-panel-mode button:focus-visible {
-  outline:3px solid rgba(202,168,106,.48);
-  outline-offset:2px;
+.bimaris-route-panel-mode button:focus-visible { outline:3px solid rgba(202,168,106,.48); outline-offset:2px; }
+
+@media (max-width:760px) {
+  .map-page-section { padding:24px 16px 36px !important; }
+  .map-page-intro { margin-bottom:18px; }
+  .map-page-intro h1 { font-size:clamp(38px,11vw,50px); }
+  .bimaris-map-card { padding:10px; border-radius:20px; }
+  .bimaris-map-card-head { display:block; padding:4px 4px 10px; }
+  .bimaris-map-count { margin-top:5px; text-align:left; }
+  .bimaris-route-panel { margin-top:12px; }
+  .bimaris-route-panel-toggle {
+    width:100%;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border:0;border-radius:14px;background:#032126;color:#fff;text-align:left;
+  }
+  .bimaris-route-panel-toggle > span:first-child { display:grid; gap:2px; }
+  .bimaris-route-panel-toggle strong { font-family:Georgia,serif; font-size:17px; font-weight:500; }
+  .bimaris-route-panel-toggle small { color:rgba(255,255,255,.7); font-size:11px; }
+  .bimaris-route-panel-toggle > span:last-child { color:#e0bc7b; font-size:20px; }
+  .bimaris-route-panel-body { padding:12px 4px 2px; }
+  .bimaris-route-panel-mode { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; background:#edf3f1; border-radius:12px; }
+  .bimaris-route-panel-mode button { min-height:40px; border:0; border-radius:9px; background:transparent; color:#435354; font-weight:700; }
+  .bimaris-route-panel-mode button.active { background:#032126; color:#fff; }
 }
