@@ -5,8 +5,8 @@ import type { Experience } from "@/lib/types";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { track } from "@/lib/analytics";
 
-export function ExperienceExplorer({ experiences }: { experiences: Experience[] }) {
-  const [category, setCategory] = useState("all");
+export function ExperienceExplorer({ experiences, initialCategory = "all" }: { experiences: Experience[]; initialCategory?: string }) {
+  const [category, setCategory] = useState(initialCategory);
   const [territory, setTerritory] = useState("all");
 
   const categories = useMemo(() => {
