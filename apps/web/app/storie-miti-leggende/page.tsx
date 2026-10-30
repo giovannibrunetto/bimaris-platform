@@ -13,8 +13,11 @@ export const metadata: Metadata = {
 const editorialIllustrations: Record<string, string> = {
   "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
   colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana": "/storie-miti-leggende/fata-morgana.webp?v=20261030-2",
+  "fata-morgana-stretto": "/storie-miti-leggende/fata-morgana.png?v=20261030-3",
   "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
+  "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
+  "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
+  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
 };
 
 function storyTypeLabel(storyType: string) {
