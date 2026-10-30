@@ -102,6 +102,11 @@ body:has(.access-gateway) { background:var(--bimaris-tortora); }
   .section-head { margin-bottom:26px; }
   .page-hero { padding-top:48px; padding-bottom:48px; }
   .discovery-page-first { padding-top:42px; padding-bottom:24px; }
+  /* Culture desktop: keep the validated visual language but bring the next section into the first viewport. */
+  .discovery-page-hero:not(.bimaris-ambient-hero) { padding-top:38px; padding-bottom:34px; }
+  .culture-editorial-section.discovery-page-first { padding-top:22px; padding-bottom:18px; }
+  .culture-editorial-card-featured { padding-top:30px; padding-bottom:30px; }
+  .culture-editorial-card-featured .culture-editorial-copy h2 { font-size:clamp(42px,4.1vw,62px); margin-top:6px; margin-bottom:14px; }
   .culture-card-media { height:185px; }
   .culture-card .card-body { padding:15px 20px 17px; }
   .culture-card .card-body h3 { margin-top:5px; margin-bottom:8px; }
