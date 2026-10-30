@@ -1,78 +1,126 @@
-@media (max-width: 620px) {
-  /* Compact Apple Watch-style wheel: lateral, three visible rows. */
-  .map-filter-watch {
-    top: 10px;
-    left: 8px;
-    right: auto;
-    transform: none;
-    width: min(41vw, 150px);
-    height: 138px;
-    padding: 46px 0;
-    border: 0;
-    border-radius: 34px;
-    outline: 0;
-    box-shadow: none;
-    background: linear-gradient(90deg, rgba(6,22,36,.25) 0%, rgba(6,22,36,.18) 64%, rgba(6,22,36,0) 100%);
-    backdrop-filter: blur(1.5px);
-    -webkit-backdrop-filter: blur(1.5px);
-    scrollbar-width: none;
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+/* QA map controls — one control set per viewport, styled consistently with BIMARIS. */
+.bimaris-map-filter-mobile,
+.bimaris-map-period-mobile {
+  display: none;
+}
+
+.bimaris-map-filter-desktop,
+.bimaris-map-period-desktop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bimaris-map-filter-desktop button,
+.bimaris-map-period-desktop button {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(3,33,38,.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,.96);
+  color: #173035;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
+  box-shadow: 0 5px 16px rgba(3,33,38,.10);
+  cursor: pointer;
+}
+
+.bimaris-map-filter-desktop button span {
+  margin-left: 6px;
+  color: #667477;
+  font-size: 11px;
+}
+
+.bimaris-map-filter-desktop button.active,
+.bimaris-map-period-desktop button.active {
+  border-color: #caa86a;
+  background: #07343b;
+  color: #fff;
+}
+
+.bimaris-map-filter-desktop button.active span { color: #e8d5ad; }
+
+@media (max-width: 760px) {
+  .bimaris-map-filter-desktop,
+  .bimaris-map-period-desktop {
+    display: none;
   }
 
-  .map-filter-watch::-webkit-scrollbar { display: none; }
+  .bimaris-map-filter-mobile,
+  .bimaris-map-period-mobile {
+    display: flex;
+  }
 
-  .map-filter-orb {
+  .bimaris-map-filter-mobile {
+    width: min(43vw, 156px);
+    max-height: 154px;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 0;
+    padding: 46px 6px;
+    border-radius: 28px;
+    background: linear-gradient(90deg, rgba(3,33,38,.78), rgba(3,33,38,.34));
+    box-shadow: 0 8px 24px rgba(3,33,38,.18);
+    scrollbar-width: none;
+    scroll-snap-type: y mandatory;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+  }
+
+  .bimaris-map-filter-mobile::-webkit-scrollbar { display: none; }
+
+  .bimaris-map-filter-mobile button {
     flex: 0 0 46px;
     width: 100%;
     min-height: 46px;
-    padding: 0 11px;
+    padding: 0 10px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 9px;
-    color: #fff;
-    text-align: left;
+    gap: 7px;
     border: 0;
     border-radius: 999px;
-    outline: 0;
     background: transparent;
-    box-shadow: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,.8), 0 0 4px rgba(0,0,0,.5);
-    -webkit-text-stroke: .25px rgba(6,22,36,.8);
-    scroll-snap-stop: always;
-  }
-
-  .map-filter-orb strong {
-    flex: 0 0 auto;
-    font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 0;
-    white-space: nowrap;
-  }
-
-  .map-filter-orb span {
-    flex: 0 0 auto;
-    font-size: 14px;
-    font-weight: 900;
-    opacity: 1;
-  }
-
-  .map-filter-orb[aria-current="true"] {
-    border: 0;
-    outline: 0;
-    border-radius: 999px;
-    background: rgba(6,22,36,.58);
-    box-shadow: none;
-    text-shadow: 0 1px 2px rgba(0,0,0,.32);
-    -webkit-text-stroke: 0;
-  }
-
-  .map-filter-orb[aria-current="true"] strong,
-  .map-filter-orb[aria-current="true"] span {
-    font-size: 14px;
-    font-weight: 900;
     color: #fff;
-    opacity: 1;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: left;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    scroll-snap-align: center;
+  }
+
+  .bimaris-map-filter-mobile button span { margin-left: auto; font-size: 12px; }
+  .bimaris-map-filter-mobile button.active { background: rgba(255,255,255,.16); }
+  .bimaris-map-wheel-spacer { flex: 0 0 1px; }
+
+  .bimaris-map-period-mobile {
+    max-width: min(76vw, 330px);
+    max-height: 190px;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    border-radius: 18px;
+    background: rgba(3,33,38,.90);
+    box-shadow: 0 8px 24px rgba(3,33,38,.20);
+  }
+
+  .bimaris-map-period-mobile button {
+    min-height: 40px;
+    padding: 8px 11px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 12px;
+    background: rgba(255,255,255,.07);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .bimaris-map-period-mobile button.active {
+    border-color: #caa86a;
+    background: #caa86a;
+    color: #032126;
   }
 }
