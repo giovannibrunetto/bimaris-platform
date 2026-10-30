@@ -21,9 +21,14 @@ const experienceCategories: Array<{ slug: CategorySlug; title: string; text: str
   { slug: "artigianato-laboratori", title: "Artigianato e laboratori", text: "Botteghe, lavorazioni e attività pratiche legate ai saperi del territorio." },
 ];
 
-export default async function ExperiencesPage() {
+export default async function ExperiencesPage({ searchParams }: { searchParams?: Promise<{ categoria?: string }> }) {
   const experiences = await getPublishedExperiences();
   const availableCategories = new Set<CategorySlug>(experiences.map(experience => experience.category));
+  const params = searchParams ? await searchParams : undefined;
+  const requestedCategory = params?.categoria;
+  const initialCategory = requestedCategory && availableCategories.has(requestedCategory as CategorySlug)
+    ? requestedCategory
+    : "all";
 
   return (
     <>
@@ -51,7 +56,11 @@ export default async function ExperiencesPage() {
                 <div className="kicker">{availableCategories.has(category.slug) ? "Esperienze disponibili" : "Categoria BIMARIS"}</div>
                 <h3>{category.title}</h3>
                 <p>{category.text}</p>
-                {availableCategories.has(category.slug) && <a className="text-link" href="#esperienze-disponibili">Vedi le proposte →</a>}
+                {availableCategories.has(category.slug) && (
+                  <Link className="text-link" href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}>
+                    Vedi le proposte →
+                  </Link>
+                )}
               </div>
             </article>
           ))}
@@ -68,7 +77,7 @@ export default async function ExperiencesPage() {
         </div>
 
         {experiences.length > 0 ? (
-          <ExperienceExplorer experiences={experiences} />
+          <ExperienceExplorer experiences={experiences} initialCategory={initialCategory} />
         ) : (
           <div className="detail-panel">
             <div className="kicker">Prima della pubblicazione</div>
