@@ -1,13 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Experience } from "@/lib/types";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { track } from "@/lib/analytics";
 
 export function ExperienceExplorer({ experiences, initialCategory = "all" }: { experiences: Experience[]; initialCategory?: string }) {
+  const searchParams = useSearchParams();
   const [category, setCategory] = useState(initialCategory);
   const [territory, setTerritory] = useState("all");
+  const categoryFromUrl = searchParams.get("categoria") ?? "all";
+
+  useEffect(() => {
+    setCategory(categoryFromUrl);
+  }, [categoryFromUrl]);
 
   const categories = useMemo(() => {
     const values = new Map<string, string>();
