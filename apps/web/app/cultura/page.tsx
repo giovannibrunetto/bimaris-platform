@@ -38,7 +38,7 @@ export default async function CulturePage() {
             <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
           </div>
           <p>
-            I percorsi storici raccolgono i monumenti per epoca e aprono direttamente l&apos;itinerario dedicato, senza aggiungere altri filtri alla pagina Cultura.
+            I percorsi storici collegano monumenti e luoghi attraverso le diverse epoche di Messina, per scoprire come la città è cambiata nel tempo.
           </p>
         </div>
       </section>
