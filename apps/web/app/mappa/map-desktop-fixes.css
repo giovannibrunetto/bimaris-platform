@@ -1,0 +1,20 @@
+/* Desktop-only QA refinements for the BIMARIS map route. */
+@media (min-width: 761px) {
+  .map-page-section {
+    padding-top: 64px;
+    padding-bottom: 56px;
+  }
+
+  .map-page-section .map-page-intro h1 {
+    margin-top: 24px;
+    margin-bottom: 20px;
+  }
+
+  .map-page-section .map-page-intro p {
+    margin-bottom: 20px;
+  }
+
+  .map-page-section .bimaris-map-canvas {
+    height: clamp(420px, 50vh, 540px) !important;
+  }
+}
