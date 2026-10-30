@@ -81,7 +81,7 @@ export default async function CulturePage() {
         </section>
       </div>
 
-      <section className="section dark">
+      <section className="section dark culture-explore-section">
         <div className="section-head">
           <div><div className="kicker">Esplora</div><h2>Guarda i luoghi sulla mappa.</h2></div>
           <p>Apri la mappa generale di BIMARIS per vedere i punti di interesse e costruire il tuo percorso personale.</p>
