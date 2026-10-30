@@ -79,6 +79,12 @@
   .map-page-intro {
     margin: 0 0 34px !important;
   }
+
+  /* Cultura closing CTA: subordinate to editorial content, not a second hero. */
+  .culture-explore-section .section-head h2 {
+    font-size: 42px !important;
+    line-height: 1.04 !important;
+  }
 }
 
 @media (max-width: 760px) {
