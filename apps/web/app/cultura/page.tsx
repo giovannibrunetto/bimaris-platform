@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedCultureEntries } from "@/data/live";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
+import "./culture-compact.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -21,7 +22,7 @@ export default async function CulturePage() {
   });
 
   return (
-    <>
+    <div className="culture-page">
       <section className="page-hero discovery-page-hero">
         <div className="kicker">Scopri Messina</div>
         <h1>Cultura</h1>
@@ -88,6 +89,6 @@ export default async function CulturePage() {
         </div>
         <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
       </section>
-    </>
+    </div>
   );
 }
