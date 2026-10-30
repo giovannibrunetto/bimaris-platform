@@ -22,7 +22,7 @@ export default async function CulturePage() {
 
   return (
     <>
-      <section className="page-hero discovery-page-hero bimaris-ambient-hero">
+      <section className="page-hero discovery-page-hero">
         <div className="kicker">Scopri Messina</div>
         <h1>Cultura</h1>
         <p>
