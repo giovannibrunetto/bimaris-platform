@@ -12,16 +12,15 @@ export const metadata: Metadata = {
 
 export default async function ItinerariesPage() {
   const itineraries = await getPublishedItineraries();
-
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero bimaris-ambient-hero">
         <div className="kicker">Percorsi</div>
         <h1>Itinerari BIMARIS</h1>
         <p>Esplora Messina attraverso percorsi già disponibili oppure scegli gli itinerari esperienziali BIMARIS man mano che vengono verificati e pubblicati.</p>
       </section>
 
-      <section className="section">
+      <section className="section bimaris-ambient-section">
         <div className="section-head">
           <div><div className="kicker">Due modi di esplorare</div><h2>Scegli il percorso che fa per te.</h2></div>
           <p>I percorsi storici sono già costruiti a partire dai luoghi culturali pubblicati. Gli itinerari esperienziali collegano invece cultura, storie, esperienze e operatori e vengono pubblicati solo dopo la verifica delle singole tappe.</p>
