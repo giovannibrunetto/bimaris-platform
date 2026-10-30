@@ -31,17 +31,14 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const activeStoryQueries = new Set((activeStory?.places ?? []).map(place => place.googleMapsQuery.trim().toLowerCase()));
   const activeStoryPoints = legendPoints.filter(point => activeStoryQueries.has(point.googleMapsQuery.trim().toLowerCase()));
   const operatorPoints: BimarisMapPoint[] = operators.map(operator => ({ id: `operator-${operator.id}`, kind: "operator", title: operator.name, address: operator.address, googleMapsQuery: operator.googleMapsQuery, latitude: operator.latitude, longitude: operator.longitude, filterCategories: operatorFilters(operator.category), categoryLabel: operator.category, links: [{ label: "Apri la scheda operatore", href: `/operatori/${operator.slug}` }] }));
-  const experiencePoints: BimarisMapPoint[] = experiences.filter(experience => Boolean(experience.googleMapsQuery)).map(experience => ({ id: `experience-${experience.id}`, kind: "experience", title: experience.name, address: experience.meetingPoint, googleMapsQuery: experience.googleMapsQuery as string, latitude: experience.latitude, longitude: experience.longitude, filterCategories: ["esperienze"], categoryLabel: categoryDisplayName(experience.category), links: [{ label: "Apri l'esperienza", href: `/esperienze/${experience.slug}` }] }));
+  const experiencePoints: BimarisMapPoint[] = experiences
+    .filter(experience => Boolean(experience.meetingPoint))
+    .map(experience => ({ id: `experience-${experience.id}`, kind: "experience", title: experience.name, address: experience.meetingPoint, googleMapsQuery: experience.googleMapsQuery as string, latitude: experience.latitude, longitude: experience.longitude, filterCategories: ["esperienze"], categoryLabel: categoryDisplayName(experience.category), links: [{ label: "Apri l'esperienza", href: `/esperienze/${experience.slug}` }] }));
   const villagePoints: BimarisMapPoint[] = villages.map(village => ({ id: `village-${village.id}`, kind: "village", title: village.name, address: village.address, googleMapsQuery: village.googleMapsQuery, latitude: village.latitude, longitude: village.longitude, filterCategories: ["borghi"], historicalPeriods: getVillageHistoricalPeriods(village.slug, (villagePointsById.get(village.id) ?? []).map(point => point.slug)), links: [{ label: "Apri la scheda del borgo", href: `/borghi/${village.slug}` }] }));
   const villagePoiPoints: BimarisMapPoint[] = activeVillage ? activeVillagePoints.map(point => ({ id: `village-poi-${point.id}`, kind: "village-poi", title: point.name, address: point.address, googleMapsQuery: point.googleMapsQuery, latitude: point.latitude, longitude: point.longitude, filterCategories: ["borghi"], historicalPeriods: getVillagePointHistoricalPeriods(activeVillage.slug, point.slug), categoryLabel: villagePoiType(point.name), links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }] })) : [];
   const allPoints = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints, ...villagePoints, ...villagePoiPoints];
   const points = activeStory && !expandedStoryContext ? activeStoryPoints : allPoints;
 
-  const contextTitle = activeStory
-    ? `I luoghi di ${activeStory.title}`
-    : activeVillage
-      ? `Esplora ${activeVillage.name}.`
-      : "Scegli cosa vuoi scoprire.";
   const contextText = activeStory
     ? expandedStoryContext
       ? "I luoghi della leggenda restano disponibili insieme agli altri punti BIMARIS. Usa i filtri per aggiungere monumenti, borghi, esperienze e operatori alla tua esplorazione."
