@@ -46,17 +46,17 @@ export default function Home() {
           <div className="home-journey-intro">
             <div className="kicker">Il tuo viaggio comincia qui</div>
             <h2 id="home-journey-title">Scopri il mondo BIMARIS.</h2>
-            <p>Messina non si scopre in un solo modo. Puoi lasciarti raccontare la città, vivere un’esperienza oppure esplorarla liberamente.</p>
+            <p>Messina non si scopre in un solo modo. Puoi entrare nella sua storia, vivere un’esperienza oppure esplorarla liberamente.</p>
           </div>
 
           <div className="home-journey-paths home-journey-paths-v2">
             <Link className="home-journey-path home-journey-story" href="/mappa/epoche">
               <span className="home-journey-number">01</span>
               <div className="home-journey-path-copy">
-                <span className="home-journey-label">Lasciati raccontare la città</span>
+                <span className="home-journey-label">Entra nella storia della città</span>
                 <h3>Ti racconto Messina</h3>
-                <p>Storie, epoche e luoghi collegati in un racconto che ti accompagna dentro l’identità della città.</p>
-                <span className="home-journey-action">Scopri i racconti <b>→</b></span>
+                <p>Epoche, eventi e luoghi si collegano per farti conoscere Messina attraverso le sue storie.</p>
+                <span className="home-journey-action">Inizia a scoprire <b>→</b></span>
               </div>
             </Link>
 
@@ -89,10 +89,10 @@ export default function Home() {
         <div className="home-operator-inner">
           <div>
             <div className="kicker">Sei un operatore del territorio?</div>
-            <h2>Costruiamo insieme il racconto di Messina.</h2>
+            <h2>Porta la tua attività dentro BIMARIS.</h2>
           </div>
           <div className="home-operator-copy">
-            <p>BIMARIS vuole creare una rete di operatori, produttori e realtà del territorio che condividono qualità, autenticità e identità locale.</p>
+            <p>Entra nella rete di operatori, produttori e realtà locali che condividono qualità, autenticità e identità del territorio.</p>
             <Link className="button" href="/operatori/candidatura">Scopri come partecipare</Link>
           </div>
         </div>
