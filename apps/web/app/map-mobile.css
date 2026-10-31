@@ -43,12 +43,8 @@
 
 @media (max-width: 760px) {
   .bimaris-map-filter-desktop,
-  .bimaris-map-period-desktop {
-    display: none;
-  }
+  .bimaris-map-period-desktop { display: none; }
 
-  /* Mobile: two independent translucent vertical lists, locked to opposite
-     sides of the map. Insets + max widths guarantee a central gap even on 360px. */
   .bimaris-map-filter-overlay {
     position: absolute !important;
     z-index: 7;
@@ -69,7 +65,7 @@
     top: 58px !important;
     right: 8px !important;
     left: auto !important;
-    bottom: auto !important;
+    bottom: 8px !important;
     width: min(134px, calc(50% - 18px)) !important;
     max-width: calc(50% - 18px) !important;
     transform: none !important;
@@ -82,9 +78,7 @@
     display: flex;
     width: 100%;
     max-width: 100%;
-    max-height: min(310px, calc(100% - 74px));
     overflow-x: hidden;
-    overflow-y: auto;
     flex-direction: column;
     align-items: stretch;
     gap: 4px;
@@ -104,13 +98,28 @@
     -webkit-mask-image: none;
   }
 
+  .bimaris-map-filter-mobile {
+    max-height: 286px;
+    overflow-y: auto;
+  }
+
+  /* The historical list must remain completely inside the map. Its overlay is
+     bounded by top/bottom, and rows are compact enough to expose all 8 choices. */
+  .bimaris-map-period-mobile {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    gap: 3px;
+    padding: 5px;
+  }
+
   .bimaris-map-filter-mobile button,
   .bimaris-map-period-mobile button {
     flex: 0 0 auto;
     min-width: 0;
     width: 100%;
-    min-height: 40px;
-    padding: 7px 8px;
+    min-height: 38px;
+    padding: 6px 7px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -119,9 +128,9 @@
     border-radius: 9px;
     background: rgba(3,33,38,.32);
     color: #fff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
-    line-height: 1.12;
+    line-height: 1.08;
     text-align: left;
     text-shadow: 0 1px 2px rgba(0,0,0,.42);
     white-space: normal;
@@ -130,10 +139,18 @@
     opacity: 1 !important;
   }
 
+  .bimaris-map-period-mobile button {
+    flex: 1 1 0;
+    min-height: 0;
+    padding: 4px 6px;
+    font-size: 9px;
+    line-height: 1.02;
+  }
+
   .bimaris-map-filter-mobile button span {
     margin-left: auto;
     flex: 0 0 auto;
-    font-size: 9px;
+    font-size: 8px;
     opacity: .82;
   }
 
@@ -145,15 +162,9 @@
     text-shadow: none;
   }
 
-  .bimaris-map-filter-mobile button.active span {
-    color: #032126;
-    opacity: .78;
-  }
-
+  .bimaris-map-filter-mobile button.active span { color: #032126; opacity: .78; }
   .bimaris-map-wheel-spacer { display: none; }
 
-  /* Marker detail is the only foreground panel while open. This prevents the
-     category/period controls from competing with or covering the InfoWindow. */
   .bimaris-map-canvas-wrap:has(.gm-style-iw) .bimaris-map-filter-overlay,
   .bimaris-map-canvas-wrap:has(.gm-style-iw) .bimaris-map-period-overlay {
     opacity: 0 !important;
@@ -161,32 +172,116 @@
     pointer-events: none !important;
   }
 
-  /* BIMARIS marker cards are intentionally synthetic: all content must remain
-     visible in one card, without a nested scroll area on mobile. */
   .bimaris-map-canvas-wrap .gm-style-iw-c {
     max-width: min(260px, calc(100vw - 72px)) !important;
     max-height: none !important;
     padding: 10px 10px 8px !important;
     border-radius: 12px !important;
   }
-
-  .bimaris-map-canvas-wrap .gm-style-iw-d {
-    max-height: none !important;
-    overflow: visible !important;
-    padding: 0 !important;
-  }
-
-  .bimaris-map-canvas-wrap .gm-style-iw-d > div {
-    max-width: 228px !important;
-  }
-
+  .bimaris-map-canvas-wrap .gm-style-iw-d { max-height: none !important; overflow: visible !important; padding: 0 !important; }
+  .bimaris-map-canvas-wrap .gm-style-iw-d > div { max-width: 228px !important; }
   .bimaris-map-canvas-wrap .gm-style-iw-d button,
-  .bimaris-map-canvas-wrap .gm-style-iw-d a {
-    min-height: 36px !important;
+  .bimaris-map-canvas-wrap .gm-style-iw-d a { min-height: 36px !important; }
+  .bimaris-map-canvas-wrap .gm-style-iw-d a { margin-top: 2px !important; }
+
+  /* Mobile route: neutralize inherited list/button rules and render each stop as
+     one compact row. No duplicated browser list marker, no detached × button. */
+  .bimaris-route-panel,
+  .bimaris-route-panel * { box-sizing: border-box; }
+
+  .bimaris-route-panel-body { min-width: 0; overflow: hidden; }
+
+  .bimaris-route-panel-mode {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
   }
 
-  .bimaris-map-canvas-wrap .gm-style-iw-d a {
+  .bimaris-route-list {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    gap: 8px !important;
+    counter-reset: none !important;
+  }
+
+  .bimaris-route-list li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 9px 8px !important;
+    display: grid !important;
+    grid-template-columns: 28px minmax(0,1fr) 34px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border: 1px solid rgba(3,33,38,.10) !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,.48) !important;
+  }
+
+  .bimaris-route-list li::marker { content: "" !important; }
+
+  .bimaris-route-list li > span {
+    display: grid !important;
+    place-items: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: #07343b !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+  }
+
+  .bimaris-route-list li > div { min-width: 0 !important; }
+  .bimaris-route-list li strong {
+    display: block !important;
+    margin: 0 !important;
+    color: #032126 !important;
+    font-size: 13px !important;
+    line-height: 1.18 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .bimaris-route-list li small {
+    display: block !important;
     margin-top: 2px !important;
+    color: #667477 !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+  }
+  .bimaris-route-list li > button {
+    appearance: none !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(3,33,38,.18) !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    color: #032126 !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  .bimaris-route-panel-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+  }
+  .bimaris-route-panel-actions > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    text-align: center !important;
   }
 }
 
@@ -199,20 +294,13 @@
     width: min(126px, calc(50% - 16px)) !important;
     max-width: calc(50% - 16px) !important;
   }
-  .bimaris-map-filter-mobile button,
-  .bimaris-map-period-mobile button {
-    min-height: 38px;
-    padding: 6px 7px;
-    font-size: 10px;
-  }
+  .bimaris-map-filter-mobile button { min-height: 36px; padding: 5px 6px; font-size: 9px; }
   .bimaris-map-filter-mobile button span { font-size: 8px; }
+  .bimaris-map-period-mobile button { font-size: 8.5px; padding: 3px 5px; }
 
   .bimaris-map-canvas-wrap .gm-style-iw-c {
     max-width: min(248px, calc(100vw - 64px)) !important;
     padding: 9px 9px 7px !important;
   }
-
-  .bimaris-map-canvas-wrap .gm-style-iw-d > div {
-    max-width: 216px !important;
-  }
+  .bimaris-map-canvas-wrap .gm-style-iw-d > div { max-width: 216px !important; }
 }
