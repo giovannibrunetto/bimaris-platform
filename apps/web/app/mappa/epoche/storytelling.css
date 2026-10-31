@@ -10,7 +10,8 @@
 .storytelling-card-featured{background:var(--bimaris-abyssal-teal);color:var(--bimaris-ivory);border-color:var(--bimaris-abyssal-teal)}
 .storytelling-number{position:absolute;right:22px;top:20px;font-family:Georgia,serif;font-size:36px;color:rgba(3,33,38,.16)}
 .storytelling-card-featured .storytelling-number{color:rgba(255,255,255,.17)}
-.storytelling-card .kicker{padding-right:46px}
+.storytelling-card .kicker{padding-right:46px;color:#705d39}
+.storytelling-card-featured .kicker{color:var(--bimaris-gold)}
 .storytelling-card h3{font-family:Georgia,serif;font-size:clamp(28px,2.6vw,38px);line-height:1.04;margin:12px 0;color:var(--bimaris-abyssal-teal)}
 .storytelling-card-featured h3{color:var(--bimaris-ivory)}
 .storytelling-card>p{line-height:1.55;margin:0 0 20px;color:#52605f}
@@ -22,10 +23,10 @@
 .storytelling-periods{display:grid;gap:1px;border-radius:20px;overflow:hidden;border:1px solid rgba(3,33,38,.1)}
 .storytelling-period{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr) auto;gap:28px;align-items:center;padding:20px 24px;background:#fff}
 .storytelling-period div{display:flex;flex-direction:column;gap:3px}
-.storytelling-period span{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#7c8583}
+.storytelling-period span{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b716f}
 .storytelling-period strong{font-family:Georgia,serif;font-size:22px;color:var(--bimaris-abyssal-teal)}
 .storytelling-period p{margin:0;color:#596564;line-height:1.45}
-.storytelling-period .storytelling-period-count{white-space:nowrap;color:#806b43}
+.storytelling-period .storytelling-period-count{white-space:nowrap;color:#705d39}
 .storytelling-exit{background:var(--bimaris-abyssal-teal)}
 @media(min-width:761px){.storytelling-hero{padding-top:34px!important;padding-bottom:34px!important}.storytelling-intro{padding-bottom:42px}.storytelling-exit{padding-top:30px!important;padding-bottom:30px!important}}
 @media(max-width:900px){.storytelling-grid{grid-template-columns:1fr}.storytelling-card{min-height:0}.storytelling-intro-copy{grid-template-columns:1fr}.storytelling-period{grid-template-columns:1fr;gap:8px}}
