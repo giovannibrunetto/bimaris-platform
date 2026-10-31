@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BehaviorTrackedLink } from "@/components/BehaviorTrackedLink";
 import { SaveToCollectionButton } from "@/components/SaveToCollectionButton";
 import { UserBehaviorSignal } from "@/components/UserBehaviorSignal";
-import { getPublishedCultureEntries, getPublishedCultureEntryBySlug } from "@/data/live";
+import { getPublishedCultureEntryBySlug, getPublishedCultureRelations } from "@/data/live";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
 
 export const dynamic = "force-dynamic";
@@ -34,29 +34,7 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
   const gallery = entry.images.length ? entry.images : entry.imageUrl ? [{ imageUrl: entry.imageUrl, altText: entry.imageAlt, author: entry.imageAuthor, license: entry.imageLicense, sourceUrl: entry.imageSourceUrl, licenseUrl: entry.imageLicenseUrl, isPrimary: true }] : [];
   const hero = gallery.find(image => image.isPrimary) ?? gallery[0];
   const preserveFullHero = preserveFullHeroSlugs.has(entry.slug);
-  const cultureEntries = await getPublishedCultureEntries();
-  const related = cultureEntries
-    .filter(candidate => candidate.slug !== entry.slug)
-    .map(candidate => {
-      const samePrimaryPeriod = Boolean(entry.primaryHistoricalPeriod && candidate.primaryHistoricalPeriod === entry.primaryHistoricalPeriod);
-      const sameCategory = candidate.category === entry.category;
-      const sharedPeriod = Boolean(entry.historicalPeriods?.some(period => candidate.historicalPeriods?.includes(period)));
-      const hasAdditionalRelation = sameCategory || (sharedPeriod && !samePrimaryPeriod);
-      const relationLabel = sameCategory
-        ? `Stesso contesto · ${candidate.category}`
-        : sharedPeriod && !samePrimaryPeriod
-          ? `Periodo storico collegato`
-          : null;
-      const relationReason = sameCategory
-        ? `BIMARIS collega questo luogo perché appartiene allo stesso contesto culturale: ${candidate.category}.`
-        : sharedPeriod && !samePrimaryPeriod
-          ? `BIMARIS collega questo luogo perché condivide almeno un periodo storico documentato con quello che stai esplorando.`
-          : null;
-      return { candidate, samePrimaryPeriod, sameCategory, sharedPeriod, hasAdditionalRelation, relationLabel, relationReason, score: (sameCategory ? 4 : 0) + (sharedPeriod && !samePrimaryPeriod ? 2 : 0) + (samePrimaryPeriod ? 1 : 0) };
-    })
-    .filter(item => item.hasAdditionalRelation && item.relationLabel && item.relationReason)
-    .sort((a, b) => b.score - a.score || a.candidate.title.localeCompare(b.candidate.title, "it"))
-    .slice(0, 2);
+  const related = await getPublishedCultureRelations(entry.id);
 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
@@ -86,7 +64,7 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       {hero && <section className="culture-detail-media"><div className="culture-detail-shell"><figure className={`culture-detail-main-photo${preserveFullHero ? " culture-detail-main-photo--preserve" : ""}`}><img src={hero.imageUrl} alt={hero.altText ?? entry.title} decoding="async" />{(hero.caption || hero.author || hero.license) && <figcaption className="culture-detail-caption">{hero.caption && <>{hero.caption} · </>}Foto: {hero.author ?? "Wikimedia Commons"}{hero.license && <> · {hero.license}</>}{hero.sourceUrl && <> · <a href={hero.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{hero.licenseUrl && <> · <a href={hero.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure></div></section>}
       <div className="culture-detail-shell"><section className="culture-detail-story"><article className="culture-detail-copy"><div className="kicker">La storia</div><h2>Conosci il luogo</h2><p className="culture-detail-body">{entry.body}</p></article><aside className="culture-detail-side">{entry.historicalPeriodNote && <div className="culture-detail-card"><div className="kicker">Epoca storica</div><h3>{periodLabel ?? "Più epoche"}</h3><p>{entry.historicalPeriodNote}</p>{entry.primaryHistoricalPeriod && entry.primaryHistoricalPeriod !== "trasversale" && <Link className="text-link" style={{display:"inline-block",marginTop:14}} href={`/mappa/epoche?epoca=${entry.primaryHistoricalPeriod}`}>Vedi i luoghi della stessa epoca →</Link>}</div>}<div className="culture-detail-card"><div className="kicker">Esplora</div><h3>{entry.placeName}</h3><ul className="culture-detail-facts">{entry.address && <li><strong>Indirizzo</strong>{entry.address}</li>}<li><strong>Territorio</strong>Messina</li></ul><div className="actions"><Link className="button" href={mapUrl}>BIMARIS Map</Link><BehaviorTrackedLink className="button ghost" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "culture", content_id: entry.id }} behaviorEvent="directions_open" contentType="culture" contentId={entry.slug} interestKey="cultura" weight={2}>Google Maps</BehaviorTrackedLink></div></div></aside></section>
       {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Fonti e riferimenti</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
-      {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Luoghi collegati a questa storia</h2><p className="culture-detail-related-intro">BIMARIS mostra solo collegamenti che può motivare con i dati culturali disponibili.</p></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(({ candidate: item, relationLabel, relationReason }) => <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{relationLabel}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-reason">{relationReason}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>)}</div></section>}
+      {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Luoghi collegati a questa storia</h2><p className="culture-detail-related-intro">Collegamenti editoriali selezionati e motivati da BIMARIS.</p></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(({ target:item, relationLabel, reason }) => <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{relationLabel}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-reason"><strong>Perché:</strong> {reason}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>)}</div></section>}
       </div>
     </main>
   </>;
