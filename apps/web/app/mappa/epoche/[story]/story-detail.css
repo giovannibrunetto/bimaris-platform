@@ -1,7 +1,7 @@
 .story-detail-page{background:var(--bimaris-tortora)}
 .story-back{display:inline-block;margin-bottom:18px;color:#705d39;text-decoration:none;font-size:13px;font-weight:700}
 .story-detail-hero h1{max-width:1000px}.story-detail-hero p{max-width:900px}.story-detail-subtitle{font-size:18px!important}
-.story-detail-opening{padding-top:30px;padding-bottom:30px}.story-detail-opening>.kicker{margin-bottom:10px}
+.story-detail-opening{padding-top:30px;padding-bottom:30px}.story-detail-opening>.kicker{margin-bottom:10px;color:#705d39}
 .story-public-copy{max-width:820px}.story-public-copy p{margin:0 0 12px;line-height:1.62}.story-public-copy p:last-child{margin-bottom:0}
 .story-detail-opening .story-public-copy{max-width:940px;font-family:Georgia,serif;font-size:clamp(20px,1.85vw,27px);line-height:1.38;color:var(--bimaris-abyssal-teal)}
 .story-detail-opening .story-public-copy p{line-height:1.42;margin-bottom:10px}
