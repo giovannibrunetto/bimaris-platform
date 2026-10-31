@@ -36,16 +36,17 @@
 .storytelling-intro-copy h2{font-size:38px;margin-top:4px}
 .storytelling-intro-copy p{line-height:1.42}
 .storytelling-grid{gap:12px}
-.storytelling-card{padding:20px 21px;border-radius:20px;min-height:0}
-.storytelling-card .kicker{padding-right:42px;font-size:12px;line-height:1.22;letter-spacing:.12em}
-.storytelling-card h3{font-size:27px;line-height:1.06;margin:11px 0 8px}
-.storytelling-card>p{font-size:16px;line-height:1.42;margin-bottom:15px}
-.storytelling-number{right:20px;top:19px;font-size:28px}
-.storytelling-exit{padding-top:22px!important;padding-bottom:22px!important}
-.storytelling-exit-copy{gap:5px;margin-bottom:14px}
-.storytelling-exit-copy h2{font-size:30px;line-height:1.05;margin-top:3px}
-.storytelling-exit-copy p{line-height:1.4}
-.storytelling-exit .actions{display:grid;grid-template-columns:1fr;gap:8px}
-.storytelling-exit .button{text-align:center}
+.storytelling-card{padding:18px 20px;border-radius:20px;min-height:0}
+.storytelling-card .kicker{padding-right:42px;font-size:11px;line-height:1.2;letter-spacing:.1em}
+.storytelling-card h3{font-size:27px;line-height:1.06;margin:9px 0 7px}
+.storytelling-card>p{font-size:16px;line-height:1.38;margin-bottom:12px}
+.storytelling-number{right:20px;top:17px;font-size:28px}
+.storytelling-exit{padding-top:15px!important;padding-bottom:15px!important}
+.storytelling-exit-copy{gap:2px;margin-bottom:10px}
+.storytelling-exit-copy .kicker{font-size:10px;line-height:1.1;letter-spacing:.13em}
+.storytelling-exit-copy h2{font-size:23px;line-height:1.04;margin-top:2px}
+.storytelling-exit-copy p{font-size:14px;line-height:1.25}
+.storytelling-exit .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.storytelling-exit .button{min-height:40px;padding:9px 10px;text-align:center;font-size:14px}
 .storytelling-period{padding:18px}
 }
