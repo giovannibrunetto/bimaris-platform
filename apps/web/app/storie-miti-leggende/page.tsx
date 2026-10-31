@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedStories } from "@/data/stories";
+import "./stories-mobile.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,6 +33,12 @@ function storyTypeLabel(storyType: string) {
   return storyType;
 }
 
+function placeLabel(count: number) {
+  if (count === 1) return "1 luogo collegato";
+  if (count > 1) return `${count} luoghi collegati`;
+  return "Racconto dello Stretto";
+}
+
 export default async function StoriesPage() {
   const stories = await getPublishedStories();
   return (
@@ -48,20 +55,20 @@ export default async function StoriesPage() {
         </div>
 
         {stories.length > 0 ? (
-          <div className="cards">
+          <div className="cards stories-cards">
             {stories.map(story => {
               const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
               const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
               return (
-                <Link className="card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
-                  <div className="card-media" style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
+                <Link className="card story-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
+                  <div className="card-media story-card-media" style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
                     {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
-                  <div className="card-body" style={{ padding: "18px 20px 20px" }}>
-                    <div className="eyebrow">{story.places.length > 0 ? `${story.places.length} ${story.places.length === 1 ? "luogo da raggiungere" : "luoghi da raggiungere"}` : "Messina e lo Stretto"}</div>
+                  <div className="card-body story-card-body" style={{ padding: "18px 20px 20px" }}>
+                    <div className="eyebrow">{placeLabel(story.places.length)}</div>
                     <h3 style={{ marginTop: 8, marginBottom: 8 }}>{story.title}</h3>
-                    <p style={{ marginBottom: 14 }}>{story.excerpt}</p>
+                    <p className="story-card-excerpt" style={{ marginBottom: 14 }}>{story.excerpt}</p>
                     <span className="text-link">Leggi la storia →</span>
                   </div>
                 </Link>
@@ -73,10 +80,10 @@ export default async function StoriesPage() {
         )}
       </section>
 
-      <section className="section sand bimaris-ambient-section">
+      <section className="section sand bimaris-ambient-section stories-map-cta">
         <div className="section-head">
-          <div><div className="kicker">Esplora</div><h2>Vuoi vedere dove nascono queste storie?</h2></div>
-          <p>Apri la mappa BIMARIS per orientarti nello Stretto e nel territorio di Messina.</p>
+          <div><div className="kicker">Esplora</div><h2>Trova le storie sulla mappa.</h2></div>
+          <p>Orientati tra Messina e lo Stretto.</p>
         </div>
         <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
       </section>
