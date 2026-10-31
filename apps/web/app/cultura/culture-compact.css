@@ -243,4 +243,31 @@
     font-size: 68px;
     color: rgba(3,33,38,.045);
   }
+
+  /* Monument catalogue: keep every card on the same mobile alignment
+     and make long photographic category labels less dominant. */
+  .culture-monuments-page .culture-places-section {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .culture-monuments-page .culture-places-section > .cards {
+    gap: 20px;
+  }
+
+  .culture-monuments-page .culture-card {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .culture-monuments-page .culture-card-media > span {
+    left: 14px;
+    right: auto;
+    max-width: calc(100% - 28px);
+    padding: 6px 10px;
+    font-size: 10px;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
 }
