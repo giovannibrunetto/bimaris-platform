@@ -47,119 +47,122 @@
     display: none;
   }
 
-  /* Mobile: category and period filters occupy two independent map zones.
-     Categories stay at the bottom as a horizontal rail; historical periods
-     stay at the top. This prevents the two controls from ever overlapping. */
+  /* Mobile: keep map controls compact. Categories are a two-row grid so every
+     option is visible without a hidden horizontal gesture. Periods are a
+     compact horizontal rail, leaving the map navigable while they are active. */
   .bimaris-map-filter-overlay {
     position: absolute;
     z-index: 7;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
     pointer-events: none;
   }
 
   .bimaris-map-period-overlay {
     position: absolute;
     z-index: 8;
-    top: 10px;
-    left: 10px;
-    right: 10px;
+    top: 8px;
+    left: 8px;
+    right: 8px;
     bottom: auto;
     pointer-events: none;
   }
 
   .bimaris-map-filter-mobile,
   .bimaris-map-period-mobile {
-    display: flex;
     pointer-events: auto;
     box-sizing: border-box;
   }
 
   .bimaris-map-filter-mobile {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
     width: 100%;
     max-width: 100%;
     max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
+    overflow: visible;
+    gap: 5px;
     padding: 6px;
-    border-radius: 16px;
+    border-radius: 15px;
     background: rgba(3,33,38,.92);
     box-shadow: 0 8px 24px rgba(3,33,38,.22);
-    scrollbar-width: none;
-    scroll-snap-type: x proximity;
-    overscroll-behavior-x: contain;
     mask-image: none;
     -webkit-mask-image: none;
   }
 
-  .bimaris-map-filter-mobile::-webkit-scrollbar { display: none; }
-
   .bimaris-map-filter-mobile button {
-    flex: 0 0 auto;
-    width: auto;
-    min-width: max-content;
-    min-height: 44px;
-    padding: 0 13px;
-    display: inline-flex;
+    min-width: 0;
+    width: 100%;
+    min-height: 42px;
+    padding: 5px 4px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 3px;
     border: 1px solid rgba(255,255,255,.12);
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(255,255,255,.06);
     color: #fff;
-    font-size: 13px;
+    font-size: 10.5px;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.08;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0,0,0,.25);
-    scroll-snap-align: start;
     transform: none !important;
     opacity: 1 !important;
   }
 
-  .bimaris-map-filter-mobile button span { margin-left: 2px; font-size: 11px; opacity: .76; }
+  .bimaris-map-filter-mobile button span {
+    margin-left: 1px;
+    font-size: 9px;
+    opacity: .72;
+  }
+
   .bimaris-map-filter-mobile button.active {
     border-color: #caa86a;
     background: #caa86a;
     color: #032126;
     text-shadow: none;
   }
-  .bimaris-map-filter-mobile button.active span { color: #032126; opacity: .72; }
+  .bimaris-map-filter-mobile button.active span { color: #032126; opacity: .7; }
   .bimaris-map-wheel-spacer { display: none; }
 
   .bimaris-map-period-mobile {
-    width: min(100%, 330px);
+    display: flex;
+    width: 100%;
     max-width: 100%;
-    max-height: 152px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex-direction: column;
-    gap: 4px;
-    padding: 7px;
-    border-radius: 15px;
+    max-height: 54px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 14px;
     background: rgba(3,33,38,.94);
     box-shadow: 0 8px 24px rgba(3,33,38,.22);
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+
+  .bimaris-map-period-mobile::-webkit-scrollbar { display: none; }
 
   .bimaris-map-period-mobile button {
     flex: 0 0 auto;
-    width: 100%;
-    min-height: 40px;
-    padding: 8px 11px;
+    width: auto;
+    min-width: max-content;
+    min-height: 42px;
+    padding: 7px 11px;
     border: 1px solid rgba(255,255,255,.14);
     border-radius: 10px;
     background: rgba(255,255,255,.06);
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    text-align: left;
+    line-height: 1;
+    text-align: center;
   }
 
   .bimaris-map-period-mobile button.active {
@@ -167,4 +170,9 @@
     background: #caa86a;
     color: #032126;
   }
+}
+
+@media (max-width: 390px) {
+  .bimaris-map-filter-mobile button { font-size: 9.5px; }
+  .bimaris-map-filter-mobile button span { font-size: 8px; }
 }
