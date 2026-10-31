@@ -166,12 +166,24 @@
 
 @media (max-width: 760px) {
   .culture-page .page-hero {
-    padding-bottom: 18px;
+    padding-top: 0;
+    padding-bottom: 10px;
+  }
+
+  .culture-page .page-hero h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  .culture-page .page-hero p {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.45;
   }
 
   .culture-page .culture-entry-section.discovery-page-first {
-    padding-top: 18px;
-    padding-bottom: 22px;
+    padding-top: 10px;
+    padding-bottom: 16px;
   }
 
   .culture-page .culture-entry-head,
@@ -180,41 +192,55 @@
   }
 
   .culture-page .culture-entry-head {
-    gap: 8px;
-    margin-bottom: 14px;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .culture-page .culture-entry-head h2 {
+    margin-top: 3px;
   }
 
   .culture-page .culture-entry-head > p {
     max-width: none;
+    line-height: 1.4;
   }
 
   .culture-page .culture-entry-grid {
-    gap: 12px;
+    gap: 10px;
   }
 
   .culture-page .culture-entry-card {
     min-height: 0;
-    padding: 20px 20px;
+    padding: 17px 18px;
     border-radius: 20px;
   }
 
   .culture-page .culture-entry-card h2 {
-    margin-top: 5px;
-    margin-bottom: 9px;
+    margin-top: 4px;
+    margin-bottom: 8px;
     font-size: clamp(34px, 10vw, 44px);
   }
 
   .culture-page .culture-entry-card p {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     font-size: 15px;
-    line-height: 1.45;
+    line-height: 1.42;
   }
 
   .culture-page .culture-entry-card .button {
-    margin-top: 3px;
+    margin-top: 2px;
   }
 
   .culture-page .culture-entry-number {
-    font-size: 82px;
+    right: 16px;
+    top: 12px;
+    font-size: 74px;
+  }
+
+  .culture-page .culture-entry-card-places .culture-entry-number {
+    right: 14px;
+    top: 18px;
+    font-size: 68px;
+    color: rgba(3,33,38,.045);
   }
 }
