@@ -37,8 +37,7 @@ export default async function StoriesPage() {
   return (
     <>
       <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero" style={{ minHeight: 0 }}>
-        <div className="kicker">Messina da raccontare</div>
-        <h1 style={{ marginTop: 14, marginBottom: 14 }}>Storia, miti e leggende</h1>
+        <h1 style={{ marginTop: 0, marginBottom: 14 }}>Storia, miti e leggende</h1>
         <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
 
