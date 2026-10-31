@@ -1,30 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedCultureEntries } from "@/data/live";
-import { historicalPeriodLabel } from "@/lib/historical-periods";
 import "./culture-compact.css";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Cultura a Messina | BIMARIS",
-  description: "Lasciati raccontare Messina attraverso epoche e storie collegate, oppure esplora monumenti, musei e luoghi culturali selezionati da BIMARIS.",
+  description: "Lasciati raccontare Messina attraverso epoche e storie collegate, oppure esplora liberamente monumenti, musei e luoghi culturali selezionati da BIMARIS.",
 };
 
-export default async function CulturePage() {
-  const entries = await getPublishedCultureEntries();
-  const orderedEntries = [...entries].sort((a, b) => {
-    const yearA = a.historicalSortYear ?? 9999;
-    const yearB = b.historicalSortYear ?? 9999;
-    if (yearA !== yearB) return yearA - yearB;
-    return a.title.localeCompare(b.title, "it");
-  });
-
+export default function CulturePage() {
   return (
-    <div className="culture-page">
+    <div className="culture-page culture-landing-page">
       <section className="page-hero discovery-page-hero">
-        <div className="kicker">Scopri Messina</div>
         <h1>Cultura</h1>
         <p>
           Non solo luoghi da visitare. Scegli se farti accompagnare nella storia di Messina oppure esplorare liberamente monumenti, musei e architetture della città.
@@ -59,53 +45,11 @@ export default async function CulturePage() {
               <p>
                 Consulta direttamente tutti i luoghi culturali selezionati da BIMARIS e apri la scheda del monumento, museo o architettura che vuoi conoscere.
               </p>
-              <a className="button ghost" href="#monumenti">Esplora i luoghi →</a>
+              <Link className="button ghost" href="/cultura/monumenti">Esplora i luoghi →</Link>
             </article>
           </div>
         </section>
-
-        <section className="section culture-places-section" id="monumenti">
-          <div className="culture-places-heading">
-            <div>
-              <div className="kicker">Monumenti e cultura</div>
-              <h2>Esplora i luoghi di Messina.</h2>
-            </div>
-            <p>Scegli liberamente un luogo. Ogni scheda ne racconta la storia e ti permette di continuare l'esplorazione nella città.</p>
-          </div>
-
-          <div className="cards">
-            {orderedEntries.map(entry => (
-              <article className="card culture-card" key={entry.id}>
-                <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
-                  <div className="culture-card-media">
-                    {entry.imageUrl ? (
-                      <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="culture-card-placeholder" />
-                    )}
-                    <span>{entry.category}</span>
-                  </div>
-                  <div className="card-body">
-                    <div className="eyebrow">{entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
-                    <h3>{entry.title}</h3>
-                    <p>{entry.excerpt}</p>
-                    <span className="text-link">Scopri il luogo →</span>
-                  </div>
-                </Link>
-                {entry.imageAuthor && entry.imageLicense && <div className="photo-credit">Foto: {entry.imageAuthor} · {entry.imageLicense}</div>}
-              </article>
-            ))}
-          </div>
-        </section>
       </div>
-
-      <section className="section dark culture-explore-section">
-        <div className="section-head">
-          <div><div className="kicker">Esplora sulla mappa</div><h2>Guarda dove nasce la storia.</h2></div>
-          <p>Passa dalla lettura al territorio: visualizza i luoghi culturali sulla BIMARIS Map e costruisci liberamente il tuo percorso.</p>
-        </div>
-        <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
-      </section>
     </div>
   );
 }
