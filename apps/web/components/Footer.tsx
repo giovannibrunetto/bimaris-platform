@@ -8,10 +8,6 @@ export function Footer() {
         <span className={styles.brandImage} />
       </Link>
       <div className={styles.links}>
-        <Link href="/cultura">Cultura</Link>
-        <Link href="/storie-miti-leggende">Miti e leggende</Link>
-        <Link href="/esperienze">Esperienze</Link>
-        <Link href="/mappa">Mappa</Link>
         <Link href="/operatori/candidatura">Operatori</Link>
         <Link href="/contatti">Contatti</Link>
         <Link href="/privacy">Privacy</Link>
