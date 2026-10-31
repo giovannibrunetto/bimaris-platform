@@ -2,6 +2,7 @@
 .storytelling-hero h1{max-width:980px}
 .storytelling-hero p{max-width:900px}
 .storytelling-intro{padding-top:34px}
+.storytelling-intro>.kicker{color:#705d39}
 .storytelling-intro-copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.58fr);gap:34px;align-items:end;margin-bottom:28px}
 .storytelling-intro-copy h2{font-family:Georgia,serif;font-size:clamp(38px,4.5vw,62px);line-height:1;margin:5px 0 0;color:var(--bimaris-abyssal-teal)}
 .storytelling-intro-copy p{margin:0;line-height:1.55;color:#4f5d5d}
