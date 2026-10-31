@@ -1,0 +1,78 @@
+@media (max-width:760px){
+  .story-detail-hero,
+  .story-detail-context,
+  .story-detail-sources{
+    overflow-x:hidden;
+  }
+
+  .story-detail-hero-grid,
+  .story-detail-context-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:20px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .story-detail-media-column,
+  .story-detail-article,
+  .story-detail-context-main,
+  .story-detail-places{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  .story-detail-figure img{
+    height:220px!important;
+  }
+
+  .story-detail-actions{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+
+  .story-detail-article h1{
+    font-size:34px!important;
+    overflow-wrap:anywhere;
+  }
+
+  .story-detail-context-cards{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+
+  .story-detail-context-cards .card,
+  .story-detail-origin{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .story-detail-context-cards p,
+  .story-detail-origin p,
+  .story-detail-places,
+  .story-detail-places li{
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+
+  .story-detail-place-actions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  .story-detail-place-actions .button{
+    width:100%;
+    text-align:center;
+  }
+
+  .story-detail-sources summary{
+    align-items:flex-start!important;
+    gap:10px!important;
+  }
+
+  .story-detail-sources ul{
+    columns:1!important;
+  }
+}
