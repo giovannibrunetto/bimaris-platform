@@ -47,27 +47,31 @@
     display: none;
   }
 
-  /* Mobile: two independent translucent vertical lists on opposite sides.
-     The map remains visible beneath the controls while labels stay readable. */
+  /* Mobile: two independent translucent vertical lists, locked to opposite
+     sides of the map. Insets + max widths guarantee a central gap even on 360px. */
   .bimaris-map-filter-overlay {
-    position: absolute;
+    position: absolute !important;
     z-index: 7;
-    top: 58px;
-    left: 8px;
-    right: auto;
-    bottom: auto;
-    width: min(132px, 38vw);
+    top: 58px !important;
+    left: 8px !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(124px, calc(50% - 18px)) !important;
+    max-width: calc(50% - 18px) !important;
+    transform: none !important;
     pointer-events: none;
   }
 
   .bimaris-map-period-overlay {
-    position: absolute;
+    position: absolute !important;
     z-index: 8;
-    top: 58px;
-    right: 8px;
-    left: auto;
-    bottom: auto;
-    width: min(142px, 40vw);
+    top: 58px !important;
+    right: 8px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: min(134px, calc(50% - 18px)) !important;
+    max-width: calc(50% - 18px) !important;
+    transform: none !important;
     pointer-events: none;
   }
 
@@ -148,8 +152,14 @@
 }
 
 @media (max-width: 390px) {
-  .bimaris-map-filter-overlay { width: min(126px, 37vw); }
-  .bimaris-map-period-overlay { width: min(134px, 39vw); }
+  .bimaris-map-filter-overlay {
+    width: min(116px, calc(50% - 16px)) !important;
+    max-width: calc(50% - 16px) !important;
+  }
+  .bimaris-map-period-overlay {
+    width: min(126px, calc(50% - 16px)) !important;
+    max-width: calc(50% - 16px) !important;
+  }
   .bimaris-map-filter-mobile button,
   .bimaris-map-period-mobile button {
     min-height: 38px;
