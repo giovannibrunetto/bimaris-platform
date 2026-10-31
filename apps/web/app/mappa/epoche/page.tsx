@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   description: "Tre racconti per conoscere Messina attraverso i luoghi del catalogo Cultura BIMARIS.",
 };
 
+const STORY_CHOICE_SUMMARIES: Record<string, string> = {
+  medioevo: "Chiese, comunità e relazioni mediterranee nella Messina medievale.",
+  cinquecento: "Acqua, mito e difesa del porto nella Messina del Rinascimento.",
+  "1908-rinascita": "Dal terremoto del 1908 alla ricostruzione della città moderna.",
+};
+
 export default async function HistoricalMapPage() {
   const entries = await getPublishedCultureEntries();
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
@@ -30,25 +36,24 @@ export default async function HistoricalMapPage() {
       <section className="section bimaris-ambient-section storytelling-intro">
         <div className="storytelling-intro-copy">
           <div><div className="kicker">Da dove vuoi cominciare?</div><h2>Scegli un racconto.</h2></div>
-          <p>Tre racconti pilota, costruiti su undici capitoli e dieci luoghi del catalogo Cultura. L’ordine è narrativo: non è un itinerario pedonale.</p>
+          <p>Tre storie, tre epoche diverse. Scegli quella che vuoi conoscere: i luoghi e i capitoli ti accompagneranno dentro il racconto.</p>
         </div>
 
         <div className="storytelling-grid">
-          {stories.map((story,index)=><article className={`storytelling-card${index===0?" storytelling-card-featured":""}`} key={story.key}>
+          {stories.map((story,index)=><article className="storytelling-card" key={story.key}>
             <div className="storytelling-number">0{index+1}</div>
             <div className="kicker">{story.theme}</div>
             <h3>{story.title}</h3>
-            <p>{story.subtitle}</p>
-            <div className="storytelling-places">{story.chapters.map(chapter=><span key={chapter.slug}>{chapter.placeTitle}</span>)}</div>
+            <p className="storytelling-card-summary">{STORY_CHOICE_SUMMARIES[story.key] ?? story.subtitle}</p>
             <Link className="text-link" href={`/mappa/epoche/${story.key}`}>Entra nel racconto →</Link>
           </article>)}
         </div>
       </section>
 
       <section className="section dark storytelling-exit">
-        <div className="section-head">
-          <div><div className="kicker">Preferisci scegliere tu?</div><h2>Esplora Messina liberamente.</h2></div>
-          <p>Puoi lasciare il racconto in qualsiasi momento e tornare ai singoli monumenti oppure alla mappa generale BIMARIS.</p>
+        <div className="storytelling-exit-copy">
+          <div><div className="kicker">Preferisci esplorare liberamente?</div><h2>Vai direttamente ai luoghi.</h2></div>
+          <p>Esplora i monumenti oppure apri la mappa BIMARIS.</p>
         </div>
         <div className="actions"><Link className="button" href="/cultura/monumenti">Esplora i monumenti</Link><Link className="button ghost" href="/mappa">Apri la mappa BIMARIS</Link></div>
       </section>
