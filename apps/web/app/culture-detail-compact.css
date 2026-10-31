@@ -36,10 +36,23 @@
     padding-top: 18px !important;
   }
 
+  .culture-detail-main-photo img {
+    height: clamp(340px, 42vw, 520px) !important;
+  }
+
+  .culture-detail-main-photo--preserve img {
+    height: clamp(410px, 49vw, 610px) !important;
+  }
+
   .culture-detail-story {
-    gap: 42px !important;
-    padding-top: 42px !important;
-    padding-bottom: 34px !important;
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, .72fr) !important;
+    gap: 46px !important;
+    padding-top: 38px !important;
+    padding-bottom: 30px !important;
+  }
+
+  .culture-detail-copy {
+    max-width: 800px !important;
   }
 
   .culture-detail-copy h2 {
@@ -48,39 +61,40 @@
   }
 
   .culture-detail-sources {
-    padding-top: 4px !important;
-    padding-bottom: 22px !important;
+    padding-top: 0 !important;
+    padding-bottom: 18px !important;
   }
 
   .culture-detail-sources-card {
-    padding: 20px 24px !important;
-    border-radius: 18px !important;
+    padding: 16px 20px !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
   }
 
   .culture-detail-sources .kicker {
-    margin-bottom: 4px !important;
-    font-size: 11px !important;
+    margin-bottom: 3px !important;
+    font-size: 10px !important;
   }
 
   .culture-detail-sources h2 {
-    margin: 4px 0 12px !important;
-    font-size: 30px !important;
+    margin: 3px 0 9px !important;
+    font-size: 28px !important;
     line-height: 1.05 !important;
   }
 
   .culture-detail-source-list {
     margin-top: 0 !important;
-    gap: 0 24px !important;
+    gap: 0 22px !important;
   }
 
   .culture-detail-source-list li {
-    padding: 9px 0 !important;
-    font-size: 14px !important;
-    line-height: 1.4 !important;
+    padding: 7px 0 !important;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
   }
 
   .culture-detail-source-list a {
-    margin-bottom: 2px !important;
+    margin-bottom: 1px !important;
   }
 
   .culture-detail-back {
