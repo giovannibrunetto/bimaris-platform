@@ -1,0 +1,23 @@
+@media (max-width:760px){
+  .stories-page-first{padding-bottom:28px!important}
+  .stories-page-first .section-head{margin-bottom:20px}
+  .stories-cards{gap:16px}
+  .story-card-media{height:170px!important}
+  .story-card-body{padding:15px 18px 17px!important}
+  .story-card-body h3{font-size:27px;line-height:1.04;margin:7px 0 8px!important}
+  .story-card-body .eyebrow{font-size:10px;line-height:1.25}
+  .story-card-excerpt{
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;
+    overflow:hidden;
+    font-size:15px;
+    line-height:1.45!important;
+    margin-bottom:11px!important;
+  }
+  .stories-map-cta{padding-top:22px!important;padding-bottom:22px!important}
+  .stories-map-cta .section-head{display:block;margin-bottom:12px}
+  .stories-map-cta .section-head h2{font-size:28px;line-height:1.05;margin:4px 0 5px}
+  .stories-map-cta .section-head p{margin:0;line-height:1.4}
+  .stories-map-cta .button{display:inline-block;padding:11px 17px}
+}
