@@ -37,16 +37,20 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
   const cultureEntries = await getPublishedCultureEntries();
   const related = cultureEntries
     .filter(candidate => candidate.slug !== entry.slug)
-    .map(candidate => ({
-      candidate,
-      score:
-        (entry.primaryHistoricalPeriod && candidate.primaryHistoricalPeriod === entry.primaryHistoricalPeriod ? 4 : 0) +
-        (candidate.category === entry.category ? 2 : 0) +
-        (entry.historicalPeriods?.some(period => candidate.historicalPeriods?.includes(period)) ? 1 : 0),
-    }))
+    .map(candidate => {
+      const samePrimaryPeriod = Boolean(entry.primaryHistoricalPeriod && candidate.primaryHistoricalPeriod === entry.primaryHistoricalPeriod);
+      const sameCategory = candidate.category === entry.category;
+      const sharedPeriod = Boolean(entry.historicalPeriods?.some(period => candidate.historicalPeriods?.includes(period)));
+      return {
+        candidate,
+        samePrimaryPeriod,
+        sameCategory,
+        sharedPeriod,
+        score: (samePrimaryPeriod ? 4 : 0) + (sameCategory ? 2 : 0) + (sharedPeriod ? 1 : 0),
+      };
+    })
     .sort((a, b) => b.score - a.score || a.candidate.title.localeCompare(b.candidate.title, "it"))
-    .slice(0, 2)
-    .map(item => item.candidate);
+    .slice(0, 2);
 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
@@ -85,12 +89,13 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       .culture-detail-related{padding:4px 0 24px;border-top:1px solid #dce4e1}
       .culture-detail-related-head{display:flex;align-items:end;justify-content:space-between;gap:24px;padding:20px 0 14px}
       .culture-detail-related h2{font:500 30px/1.08 Georgia,serif;margin:4px 0 0;letter-spacing:-.02em}
+      .culture-detail-related-intro{max-width:720px;margin:7px 0 0;color:#5b6969;font-size:13px;line-height:1.45}
       .culture-detail-related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
       .culture-detail-related-card{display:grid;grid-template-columns:132px minmax(0,1fr);min-height:104px;background:#fff;border:1px solid #d7dfdc;border-radius:16px;overflow:hidden;color:inherit;text-decoration:none;transition:border-color .18s ease,transform .18s ease}
       .culture-detail-related-card:hover{border-color:#caa86a;transform:translateY(-1px)}
       .culture-detail-related-card img{width:100%;height:100%;min-height:104px;object-fit:cover;display:block}
       .culture-detail-related-copy{padding:14px 16px;align-self:center}
-      .culture-detail-related-meta{display:block;color:#9a753c;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+      .culture-detail-related-meta{display:block;color:#9a753c;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
       .culture-detail-related-title{display:block;font:600 19px/1.12 Georgia,serif;color:#172326;margin-bottom:6px}
       .culture-detail-related-link{display:block;color:#536363;font-size:12px;font-weight:700}
       .culture-detail-back{padding:0 0 22px}
@@ -106,7 +111,7 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
 
       {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Fonti e riferimenti</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
 
-      {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Altri luoghi da conoscere</h2></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(item => { const itemPeriod = historicalPeriodLabel(item.primaryHistoricalPeriod); return <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{itemPeriod ?? item.category}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>})}</div></section>}
+      {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Luoghi collegati a questa storia</h2><p className="culture-detail-related-intro">BIMARIS ti suggerisce luoghi collegati per epoca, storia o contesto culturale.</p></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(({ candidate: item, samePrimaryPeriod, sameCategory, sharedPeriod }) => { const itemPeriod = historicalPeriodLabel(item.primaryHistoricalPeriod); const relationLabel = samePrimaryPeriod && itemPeriod ? `Stessa epoca · ${itemPeriod}` : sharedPeriod && itemPeriod ? `Periodo collegato · ${itemPeriod}` : sameCategory ? `Stesso contesto · ${item.category}` : itemPeriod ?? item.category; return <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{relationLabel}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>})}</div></section>}
 
       <section className="culture-detail-back"><Link className="text-link" href="/cultura">← Torna a Cultura</Link></section></div>
     </main>
