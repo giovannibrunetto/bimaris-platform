@@ -244,6 +244,11 @@
     color: rgba(3,33,38,.045);
   }
 
+  /* Monument catalogue is a browsing page, not the compact /cultura decision surface. */
+  .culture-monuments-page .page-hero {
+    padding-top: 18px;
+  }
+
   /* Monument catalogue: keep every card on the same mobile alignment
      and make long photographic category labels less dominant. */
   .culture-monuments-page .culture-places-section {
