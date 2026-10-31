@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PrelaunchHome } from "@/components/PrelaunchHome";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import "./home-journey-v2.css";
 
 export const revalidate = 300;
 
