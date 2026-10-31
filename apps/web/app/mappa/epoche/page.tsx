@@ -51,7 +51,7 @@ export default async function HistoricalMapPage() {
           <div><div className="kicker">Preferisci scegliere tu?</div><h2>Esplora Messina liberamente.</h2></div>
           <p>Puoi lasciare il racconto in qualsiasi momento e tornare ai singoli monumenti oppure alla mappa generale BIMARIS.</p>
         </div>
-        <div className="actions"><Link className="button" href="/cultura#monumenti">Esplora i monumenti</Link><Link className="button ghost" href="/mappa">Apri la mappa BIMARIS</Link></div>
+        <div className="actions"><Link className="button" href="/cultura/monumenti">Esplora i monumenti</Link><Link className="button ghost" href="/mappa">Apri la mappa BIMARIS</Link></div>
       </section>
     </div>
   );
