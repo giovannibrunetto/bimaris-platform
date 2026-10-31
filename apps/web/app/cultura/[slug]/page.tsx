@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BehaviorTrackedLink } from "@/components/BehaviorTrackedLink";
 import { SaveToCollectionButton } from "@/components/SaveToCollectionButton";
 import { UserBehaviorSignal } from "@/components/UserBehaviorSignal";
-import { getPublishedCultureEntryBySlug } from "@/data/live";
+import { getPublishedCultureEntries, getPublishedCultureEntryBySlug } from "@/data/live";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +34,19 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
   const gallery = entry.images.length ? entry.images : entry.imageUrl ? [{ imageUrl: entry.imageUrl, altText: entry.imageAlt, author: entry.imageAuthor, license: entry.imageLicense, sourceUrl: entry.imageSourceUrl, licenseUrl: entry.imageLicenseUrl, isPrimary: true }] : [];
   const hero = gallery.find(image => image.isPrimary) ?? gallery[0];
   const preserveFullHero = preserveFullHeroSlugs.has(entry.slug);
+  const cultureEntries = await getPublishedCultureEntries();
+  const related = cultureEntries
+    .filter(candidate => candidate.slug !== entry.slug)
+    .map(candidate => ({
+      candidate,
+      score:
+        (entry.primaryHistoricalPeriod && candidate.primaryHistoricalPeriod === entry.primaryHistoricalPeriod ? 4 : 0) +
+        (candidate.category === entry.category ? 2 : 0) +
+        (entry.historicalPeriods?.some(period => candidate.historicalPeriods?.includes(period)) ? 1 : 0),
+    }))
+    .sort((a, b) => b.score - a.score || a.candidate.title.localeCompare(b.candidate.title, "it"))
+    .slice(0, 2)
+    .map(item => item.candidate);
 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
@@ -69,9 +82,20 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       .culture-detail-source-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;list-style:none;padding:0;margin:8px 0 0}
       .culture-detail-source-list li{padding:15px 0;border-top:1px solid #e5ebe8;color:#5b6969;line-height:1.45}
       .culture-detail-source-list a{display:block;color:#8d6b34;font-weight:700;margin-bottom:3px}
+      .culture-detail-related{padding:4px 0 24px;border-top:1px solid #dce4e1}
+      .culture-detail-related-head{display:flex;align-items:end;justify-content:space-between;gap:24px;padding:20px 0 14px}
+      .culture-detail-related h2{font:500 30px/1.08 Georgia,serif;margin:4px 0 0;letter-spacing:-.02em}
+      .culture-detail-related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+      .culture-detail-related-card{display:grid;grid-template-columns:132px minmax(0,1fr);min-height:104px;background:#fff;border:1px solid #d7dfdc;border-radius:16px;overflow:hidden;color:inherit;text-decoration:none;transition:border-color .18s ease,transform .18s ease}
+      .culture-detail-related-card:hover{border-color:#caa86a;transform:translateY(-1px)}
+      .culture-detail-related-card img{width:100%;height:100%;min-height:104px;object-fit:cover;display:block}
+      .culture-detail-related-copy{padding:14px 16px;align-self:center}
+      .culture-detail-related-meta{display:block;color:#9a753c;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+      .culture-detail-related-title{display:block;font:600 19px/1.12 Georgia,serif;color:#172326;margin-bottom:6px}
+      .culture-detail-related-link{display:block;color:#536363;font-size:12px;font-weight:700}
       .culture-detail-back{padding:0 0 22px}
-      @media(max-width:820px){.culture-detail-shell{width:min(100% - 32px,1180px)}.culture-detail-hero{padding:34px 0}.culture-detail-story{grid-template-columns:1fr;gap:26px;padding:42px 0 36px}.culture-detail-copy{max-width:none}.culture-detail-side{position:static}.culture-detail-source-list{grid-template-columns:1fr}.culture-detail-main-photo img{height:clamp(300px,62vw,480px)}.culture-detail-main-photo--preserve img{height:clamp(390px,78vw,560px)}}
-      @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:36px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-main-photo--preserve{border-radius:16px}.culture-detail-main-photo--preserve img{height:min(116vw,470px);border-radius:0}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}}
+      @media(max-width:820px){.culture-detail-shell{width:min(100% - 32px,1180px)}.culture-detail-hero{padding:34px 0}.culture-detail-story{grid-template-columns:1fr;gap:26px;padding:42px 0 36px}.culture-detail-copy{max-width:none}.culture-detail-side{position:static}.culture-detail-source-list{grid-template-columns:1fr}.culture-detail-main-photo img{height:clamp(300px,62vw,480px)}.culture-detail-main-photo--preserve img{height:clamp(390px,78vw,560px)}.culture-detail-related-grid{grid-template-columns:1fr}.culture-detail-related-head{align-items:start}.culture-detail-related-card{grid-template-columns:112px minmax(0,1fr)}}
+      @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:36px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-main-photo--preserve{border-radius:16px}.culture-detail-main-photo--preserve img{height:min(116vw,470px);border-radius:0}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}.culture-detail-related-card{grid-template-columns:96px minmax(0,1fr)}.culture-detail-related-title{font-size:17px}}
     `}</style>
     <main className="culture-detail">
       <section className="culture-detail-hero"><div className="culture-detail-shell"><div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="culture-detail-actions"><Link className="button" href={mapUrl}>Apri in BIMARIS Map</Link><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></div></section>
@@ -81,6 +105,8 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       <div className="culture-detail-shell"><section className="culture-detail-story"><article className="culture-detail-copy"><div className="kicker">La storia</div><h2>Conosci il luogo</h2><p className="culture-detail-body">{entry.body}</p></article><aside className="culture-detail-side">{entry.historicalPeriodNote && <div className="culture-detail-card"><div className="kicker">Epoca storica</div><h3>{periodLabel ?? "Più epoche"}</h3><p>{entry.historicalPeriodNote}</p>{entry.primaryHistoricalPeriod && entry.primaryHistoricalPeriod !== "trasversale" && <Link className="text-link" style={{display:"inline-block",marginTop:14}} href={`/mappa/epoche?epoca=${entry.primaryHistoricalPeriod}`}>Vedi i luoghi della stessa epoca →</Link>}</div>}<div className="culture-detail-card"><div className="kicker">Esplora</div><h3>{entry.placeName}</h3><ul className="culture-detail-facts">{entry.address && <li><strong>Indirizzo</strong>{entry.address}</li>}<li><strong>Territorio</strong>Messina</li></ul><div className="actions"><Link className="button" href={mapUrl}>BIMARIS Map</Link><BehaviorTrackedLink className="button ghost" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "culture", content_id: entry.id }} behaviorEvent="directions_open" contentType="culture" contentId={entry.slug} interestKey="cultura" weight={2}>Google Maps</BehaviorTrackedLink></div></div></aside></section>
 
       {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Fonti e riferimenti</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
+
+      {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Altri luoghi da conoscere</h2></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(item => { const itemPeriod = historicalPeriodLabel(item.primaryHistoricalPeriod); return <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{itemPeriod ?? item.category}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>})}</div></section>}
 
       <section className="culture-detail-back"><Link className="text-link" href="/cultura">← Torna a Cultura</Link></section></div>
     </main>
