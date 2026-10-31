@@ -14,10 +14,13 @@
 .home-operators .home-operator-copy .button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 22px}
 
 @media(min-width:761px){
-  /* Use more of the desktop canvas without increasing the section height. */
-  .home-journey .home-journey-inner{width:min(100% - 64px,1400px);max-width:1400px}
-  .home-journey .home-journey-intro{grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);gap:clamp(54px,7vw,110px)}
-  .home-journey-paths-v2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:stretch;gap:24px}
+  /* The new home journey is content-driven: no inherited viewport-height spacing. */
+  .home-journey{min-height:0!important;height:auto!important;padding-top:46px!important;padding-bottom:52px!important;display:block!important}
+  .home-journey .home-journey-inner{width:min(100% - 64px,1400px);max-width:1400px;margin:0 auto!important;min-height:0!important;height:auto!important;display:block!important}
+  .home-journey .home-journey-intro{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);gap:clamp(54px,7vw,110px);align-items:end!important;margin:0 0 26px!important;min-height:0!important;height:auto!important;padding:0!important}
+  .home-journey .home-journey-intro h2{margin-top:8px!important;margin-bottom:0!important}
+  .home-journey .home-journey-intro p{margin:0!important;align-self:end}
+  .home-journey-paths-v2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:stretch;gap:24px;margin:0!important}
   .home-journey-paths-v2 .home-journey-story{min-height:340px;height:100%;padding:32px 38px}
   .home-journey-paths-v2 .home-journey-story .home-journey-path-copy{max-width:680px}
   .home-journey-paths-v2 .home-journey-story h3{font-size:clamp(40px,3.1vw,54px);min-height:0;margin-top:8px;margin-bottom:14px}
