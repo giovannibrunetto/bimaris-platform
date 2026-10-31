@@ -41,11 +41,11 @@
 .storytelling-intro-copy p{line-height:1.42}
 .storytelling-grid{gap:14px}
 .storytelling-card{padding:21px;border-radius:20px}
-.storytelling-card .kicker{padding-right:42px;font-size:11px;line-height:1.12;letter-spacing:.15em}
+.storytelling-card .kicker{padding-right:42px;font-size:12px;line-height:1.22;letter-spacing:.13em}
 .storytelling-card h3{font-size:30px;margin:14px 0 9px}
 .storytelling-card>p{line-height:1.45;margin-bottom:16px}
 .storytelling-number{right:20px;top:20px;font-size:30px}
-.storytelling-places{gap:4px;margin-bottom:18px;padding-top:14px;font-size:11px;line-height:1.28}
+.storytelling-places{gap:5px;margin-bottom:18px;padding-top:14px;font-size:13px;line-height:1.4}
 .storytelling-period{padding:18px}
 .storytelling-exit .actions{display:grid;grid-template-columns:1fr}
 .storytelling-exit .button{text-align:center}
