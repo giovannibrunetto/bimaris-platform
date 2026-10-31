@@ -14,15 +14,18 @@
 .home-operators .home-operator-copy .button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 22px}
 
 @media(min-width:761px){
-  .home-journey-paths-v2{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);align-items:stretch}
-  .home-journey-paths-v2 .home-journey-story{min-height:350px;height:100%;padding:32px 36px}
-  .home-journey-paths-v2 .home-journey-story .home-journey-path-copy{max-width:620px}
-  .home-journey-paths-v2 .home-journey-story h3{font-size:clamp(38px,3.2vw,52px);min-height:0;margin-top:8px;margin-bottom:14px}
-  .home-journey-paths-v2 .home-journey-story p{margin-top:0;margin-bottom:24px;line-height:1.5;flex:0 0 auto}
-  .home-journey-paths-v2 .home-journey-story .home-journey-action{margin-top:22px}
-  .home-journey-secondary{grid-template-rows:repeat(2,minmax(0,1fr))}
-  .home-journey-secondary .home-journey-path{min-height:0;height:100%;padding:22px 28px}
-  .home-journey-secondary .home-journey-path h3{min-height:0;font-size:clamp(27px,2vw,34px);margin-top:7px;margin-bottom:8px}
+  /* Use more of the desktop canvas without increasing the section height. */
+  .home-journey .home-journey-inner{width:min(100% - 64px,1400px);max-width:1400px}
+  .home-journey .home-journey-intro{grid-template-columns:minmax(0,.9fr) minmax(420px,1.1fr);gap:clamp(54px,7vw,110px)}
+  .home-journey-paths-v2{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);align-items:stretch;gap:24px}
+  .home-journey-paths-v2 .home-journey-story{min-height:340px;height:100%;padding:32px 38px}
+  .home-journey-paths-v2 .home-journey-story .home-journey-path-copy{max-width:680px}
+  .home-journey-paths-v2 .home-journey-story h3{font-size:clamp(40px,3.1vw,54px);min-height:0;margin-top:8px;margin-bottom:14px}
+  .home-journey-paths-v2 .home-journey-story p{max-width:600px;margin-top:0;margin-bottom:20px;line-height:1.5;flex:0 0 auto}
+  .home-journey-paths-v2 .home-journey-story .home-journey-action{margin-top:18px}
+  .home-journey-secondary{grid-template-rows:repeat(2,minmax(0,1fr));gap:18px}
+  .home-journey-secondary .home-journey-path{min-height:0;height:100%;padding:22px 30px}
+  .home-journey-secondary .home-journey-path h3{min-height:0;font-size:clamp(28px,2vw,36px);margin-top:7px;margin-bottom:8px}
   .home-journey-secondary .home-journey-path p{margin-top:0;margin-bottom:10px;line-height:1.42}
   .home-journey-secondary .home-journey-path-copy{justify-content:center}
   .home-journey-secondary .home-journey-action{margin-top:10px}
