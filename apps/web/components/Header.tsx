@@ -11,6 +11,11 @@ const primaryLinks = [
   { href: "/mappa", label: "Mappa" },
 ];
 
+const utilityLinks = [
+  { href: "/operatori/candidatura", label: "Sei un operatore?" },
+  { href: "/contatti", label: "Contatti" },
+];
+
 function isCurrentPath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -40,6 +45,15 @@ export function Header() {
           </Link>
         ))}
         <Link href="/accedi" aria-current={isCurrentPath(pathname, "/accedi") ? "page" : undefined}>Accedi</Link>
+        {utilityLinks.map(link => (
+          <Link
+            href={link.href}
+            key={link.href}
+            aria-current={isCurrentPath(pathname, link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </Link>
+        ))}
       </nav>
 
       <details className="mobile-menu" ref={mobileMenuRef}>
@@ -56,8 +70,16 @@ export function Header() {
             </Link>
           ))}
           <Link href="/accedi" onClick={closeMobileMenu} aria-current={isCurrentPath(pathname, "/accedi") ? "page" : undefined}>Accedi / Il tuo BIMARIS</Link>
-          <Link href="/operatori/candidatura" onClick={closeMobileMenu} aria-current={isCurrentPath(pathname, "/operatori/candidatura") ? "page" : undefined}>Sei un operatore?</Link>
-          <Link href="/contatti" onClick={closeMobileMenu} aria-current={isCurrentPath(pathname, "/contatti") ? "page" : undefined}>Contatti</Link>
+          {utilityLinks.map(link => (
+            <Link
+              href={link.href}
+              key={link.href}
+              onClick={closeMobileMenu}
+              aria-current={isCurrentPath(pathname, link.href) ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
       </details>
     </header>
