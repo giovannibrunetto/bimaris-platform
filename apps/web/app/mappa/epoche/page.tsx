@@ -23,7 +23,6 @@ export default async function HistoricalMapPage() {
   return (
     <div className="storytelling-page">
       <section className="page-hero bimaris-ambient-hero storytelling-hero">
-        <div className="kicker">Ti racconto Messina</div>
         <h1>Ogni luogo è un pezzo di una storia più grande.</h1>
         <p>Non scegliere soltanto cosa vedere. Scegli quale Messina vuoi conoscere: BIMARIS collega eventi, epoche e luoghi per accompagnarti dentro la storia della città.</p>
       </section>
