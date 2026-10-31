@@ -7,7 +7,7 @@ import { useRef } from "react";
 const primaryLinks = [
   { href: "/cultura", label: "Cultura" },
   { href: "/storie-miti-leggende", label: "Miti e leggende" },
-  { href: "/itinerari", label: "Percorsi" },
+  { href: "/esperienze", label: "Esperienze" },
   { href: "/mappa", label: "Mappa" },
 ];
 
