@@ -9,7 +9,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Cultura a Messina | BIMARIS",
-  description: "Scopri monumenti, chiese, fontane, musei e luoghi culturali di Messina, con schede dedicate e percorsi storici.",
+  description: "Lasciati raccontare Messina attraverso epoche e storie collegate, oppure esplora monumenti, musei e luoghi culturali selezionati da BIMARIS.",
 };
 
 export default async function CulturePage() {
@@ -27,33 +27,50 @@ export default async function CulturePage() {
         <div className="kicker">Scopri Messina</div>
         <h1>Cultura</h1>
         <p>
-          Monumenti, architetture, musei e luoghi che raccontano Messina. Esplora liberamente le schede oppure scegli un percorso storico già costruito.
+          Non solo luoghi da visitare. Scegli se farti accompagnare nella storia di Messina oppure esplorare liberamente monumenti, musei e architetture della città.
         </p>
       </section>
 
-      <div style={{ background: "var(--bimaris-tortora)" }}>
-        <section className="section culture-editorial-section discovery-page-first">
-          <div className="culture-editorial-card culture-editorial-card-featured">
-            <div className="culture-editorial-copy">
-              <div className="kicker">Messina nel tempo</div>
-              <h2>Vuoi seguire la storia della città?</h2>
-              <Link className="text-link" href="/mappa/epoche">Scopri i percorsi storici →</Link>
+      <div className="culture-entry-zone">
+        <section className="section culture-entry-section discovery-page-first">
+          <div className="culture-entry-head">
+            <div>
+              <div className="kicker">Due modi di scoprire la città</div>
+              <h2>Da dove vuoi iniziare?</h2>
             </div>
-            <p>
-              I percorsi storici collegano monumenti e luoghi attraverso le diverse epoche di Messina, per scoprire come la città è cambiata nel tempo.
-            </p>
+            <p>BIMARIS può raccontarti Messina collegando luoghi e periodi storici, oppure lasciarti libero di scegliere direttamente cosa approfondire.</p>
+          </div>
+
+          <div className="culture-entry-grid">
+            <article className="culture-entry-card culture-entry-card-story">
+              <div className="culture-entry-number">01</div>
+              <div className="kicker">L'esperienza editoriale BIMARIS</div>
+              <h2>Ti racconto Messina</h2>
+              <p>
+                Entra nella storia della città per epoche e temi. I monumenti non sono più schede isolate: diventano tappe di un racconto che mostra come Messina si è trasformata nel tempo.
+              </p>
+              <Link className="button" href="/mappa/epoche">Inizia il racconto →</Link>
+            </article>
+
+            <article className="culture-entry-card culture-entry-card-places">
+              <div className="culture-entry-number">02</div>
+              <div className="kicker">Esplorazione libera</div>
+              <h2>Esplora i monumenti</h2>
+              <p>
+                Consulta direttamente tutti i luoghi culturali selezionati da BIMARIS e apri la scheda del monumento, museo o architettura che vuoi conoscere.
+              </p>
+              <a className="button ghost" href="#monumenti">Esplora i luoghi →</a>
+            </article>
           </div>
         </section>
 
-        <section className="section culture-places-section">
-          <div className="culture-editorial-card culture-editorial-card-light">
-            <div className="culture-editorial-copy">
-              <div className="kicker">Luoghi da scoprire</div>
-              <h2>Monumenti e cultura.</h2>
+        <section className="section culture-places-section" id="monumenti">
+          <div className="culture-places-heading">
+            <div>
+              <div className="kicker">Monumenti e cultura</div>
+              <h2>Esplora i luoghi di Messina.</h2>
             </div>
-            <p>
-              Tutti i luoghi culturali selezionati da BIMARIS in un unico spazio. Apri una scheda per conoscere il luogo e raggiungerlo.
-            </p>
+            <p>Scegli liberamente un luogo. Ogni scheda ne racconta la storia e ti permette di continuare l'esplorazione nella città.</p>
           </div>
 
           <div className="cards">
@@ -84,8 +101,8 @@ export default async function CulturePage() {
 
       <section className="section dark culture-explore-section">
         <div className="section-head">
-          <div><div className="kicker">Esplora</div><h2>Guarda i luoghi sulla mappa.</h2></div>
-          <p>Apri la mappa generale di BIMARIS per vedere i punti di interesse e costruire il tuo percorso personale.</p>
+          <div><div className="kicker">Esplora sulla mappa</div><h2>Guarda dove nasce la storia.</h2></div>
+          <p>Passa dalla lettura al territorio: visualizza i luoghi culturali sulla BIMARIS Map e costruisci liberamente il tuo percorso.</p>
         </div>
         <Link className="button" href="/mappa">Apri la mappa BIMARIS</Link>
       </section>
