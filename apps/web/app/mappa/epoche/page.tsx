@@ -18,6 +18,12 @@ const STORY_CHOICE_SUMMARIES: Record<string, string> = {
   "1908-rinascita": "Dal terremoto del 1908 alla ricostruzione della città moderna.",
 };
 
+const STORY_CHOICE_PERIODS: Record<string, string> = {
+  medioevo: "Messina medievale · XII–XIII secolo",
+  cinquecento: "Messina rinascimentale · XVI secolo",
+  "1908-rinascita": "Terremoto e ricostruzione · 1908–1943",
+};
+
 export default async function HistoricalMapPage() {
   const entries = await getPublishedCultureEntries();
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
@@ -42,7 +48,7 @@ export default async function HistoricalMapPage() {
         <div className="storytelling-grid">
           {stories.map((story,index)=><article className="storytelling-card" key={story.key}>
             <div className="storytelling-number">0{index+1}</div>
-            <div className="kicker">{story.theme}</div>
+            <div className="kicker">{STORY_CHOICE_PERIODS[story.key] ?? story.theme}</div>
             <h3>{story.title}</h3>
             <p className="storytelling-card-summary">{STORY_CHOICE_SUMMARIES[story.key] ?? story.subtitle}</p>
             <Link className="text-link" href={`/mappa/epoche/${story.key}`}>Entra nel racconto →</Link>
@@ -52,10 +58,10 @@ export default async function HistoricalMapPage() {
 
       <section className="section dark storytelling-exit">
         <div className="storytelling-exit-copy">
-          <div><div className="kicker">Preferisci esplorare liberamente?</div><h2>Vai direttamente ai luoghi.</h2></div>
-          <p>Esplora i monumenti oppure apri la mappa BIMARIS.</p>
+          <div><div className="kicker">Esplora liberamente</div><h2>Preferisci scegliere tu?</h2></div>
+          <p>Vai ai monumenti o apri la mappa.</p>
         </div>
-        <div className="actions"><Link className="button" href="/cultura/monumenti">Esplora i monumenti</Link><Link className="button ghost" href="/mappa">Apri la mappa BIMARIS</Link></div>
+        <div className="actions"><Link className="button" href="/cultura/monumenti">Monumenti</Link><Link className="button ghost" href="/mappa">Mappa BIMARIS</Link></div>
       </section>
     </div>
   );
