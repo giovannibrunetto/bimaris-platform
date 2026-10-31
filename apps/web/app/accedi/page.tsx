@@ -52,7 +52,7 @@ export default function AccediPage(){
  }
 
  return <div className="container access-gateway">
-  <div className="kicker">Entra in BIMARIS</div><h1>Come vuoi usare BIMARIS?</h1><p className="access-gateway-intro">Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati.</p>
+  <h1>Come vuoi usare BIMARIS?</h1><p className="access-gateway-intro">Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati.</p>
   <div className="access-gateway-grid">
    <section className="card access-gateway-card">
     <div><div className="kicker">Per te</div><h2>Utente</h2><p>Salva luoghi ed esperienze, costruisci il tuo BIMARIS e ricevi suggerimenti più vicini ai tuoi interessi.</p></div>
