@@ -48,34 +48,34 @@
   .home-operators .home-operator-copy .button{min-height:40px;padding:9px 20px}
 }
 @media(max-width:760px){
-  /* Mobile home: preserve the desktop hierarchy without reproducing desktop proportions. */
+  /* Mobile home: preserve hierarchy, but reduce vertical density at phone widths. */
   .brand-hero-compact{padding-bottom:0!important}
   .brand-hero-compact .brand-hero-visual img{width:100%;height:clamp(205px,58vw,285px)!important;object-fit:cover!important;object-position:center center!important}
 
-  .home-journey{padding:30px 16px 34px!important}
+  .home-journey{padding:26px 16px 28px!important}
   .home-journey .home-journey-inner{width:100%;margin:0 auto}
-  .home-journey .home-journey-intro{margin:0 0 20px!important}
+  .home-journey .home-journey-intro{margin:0 0 17px!important}
   .home-journey .home-journey-heading{display:block}
   .home-journey .home-journey-intro .kicker{font-size:11px;line-height:1.35;margin:0 0 7px!important}
-  .home-journey .home-journey-intro h2{max-width:340px;font-size:clamp(37px,10.5vw,48px);line-height:.98;margin:0 0 12px!important}
-  .home-journey .home-journey-intro>p{max-width:390px;font-size:15px;line-height:1.48;margin:0!important}
+  .home-journey .home-journey-intro h2{max-width:340px;font-size:clamp(37px,10.5vw,48px);line-height:.98;margin:0 0 10px!important}
+  .home-journey .home-journey-intro>p{max-width:390px;font-size:15px;line-height:1.45;margin:0!important}
 
-  .home-journey-paths-v2{grid-template-columns:1fr;gap:12px!important}
-  .home-journey-secondary{grid-template-columns:1fr;gap:12px!important}
-  .home-journey-paths-v2 .home-journey-path{min-height:0!important;height:auto!important;padding:20px 18px!important;gap:14px!important;border-radius:20px!important}
-  .home-journey-paths-v2 .home-journey-story{padding-top:22px!important;padding-bottom:22px!important}
+  .home-journey-paths-v2{grid-template-columns:1fr;gap:10px!important}
+  .home-journey-secondary{grid-template-columns:1fr;gap:10px!important}
+  .home-journey-paths-v2 .home-journey-path{min-height:0!important;height:auto!important;padding:17px 18px!important;gap:14px!important;border-radius:20px!important}
+  .home-journey-paths-v2 .home-journey-story{padding-top:19px!important;padding-bottom:19px!important}
   .home-journey-paths-v2 .home-journey-number{flex:0 0 38px;font-size:31px}
   .home-journey-paths-v2 .home-journey-label{font-size:10px;line-height:1.35;letter-spacing:.11em}
-  .home-journey-paths-v2 .home-journey-path h3{min-height:0;font-size:clamp(27px,7.7vw,34px);line-height:1.02;margin:5px 0 8px}
-  .home-journey-paths-v2 .home-journey-path p{font-size:14px;line-height:1.43;margin:0 0 13px}
+  .home-journey-paths-v2 .home-journey-path h3{min-height:0;font-size:clamp(27px,7.7vw,34px);line-height:1.02;margin:4px 0 7px}
+  .home-journey-paths-v2 .home-journey-path p{font-size:14px;line-height:1.4;margin:0 0 10px}
   .home-journey-paths-v2 .home-journey-action{font-size:14px;margin-top:0}
 
-  .home-operators{padding:24px 16px 26px!important;min-height:0!important}
-  .home-operators .home-operator-inner{width:100%;grid-template-columns:1fr;gap:16px}
-  .home-operators .home-operator-inner .kicker{font-size:10px;line-height:1.35;margin:0 0 6px!important}
-  .home-operators .home-operator-inner h2{max-width:390px;font-size:clamp(32px,9vw,42px);line-height:1;margin:0!important}
+  .home-operators{padding:20px 16px 22px!important;min-height:0!important}
+  .home-operators .home-operator-inner{width:100%;grid-template-columns:1fr;gap:13px}
+  .home-operators .home-operator-inner .kicker{font-size:10px;line-height:1.35;margin:0 0 5px!important}
+  .home-operators .home-operator-inner h2{max-width:390px;font-size:clamp(31px,8.6vw,40px);line-height:1;margin:0!important}
   .home-operators .home-operator-copy{max-width:none}
-  .home-operators .home-operator-copy p{font-size:14px;line-height:1.45;margin:0 0 14px}
+  .home-operators .home-operator-copy p{font-size:14px;line-height:1.42;margin:0 0 12px}
   .home-operators .home-operator-copy .button{width:100%;min-height:44px;padding:10px 16px}
 }
 
