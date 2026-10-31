@@ -24,12 +24,30 @@
   .culture-detail-actions {
     margin-top: 11px !important;
     gap: 9px !important;
+    align-items: center !important;
   }
 
-  .culture-detail-actions .button {
-    padding: 9px 15px !important;
+  /* SaveToCollectionButton ships with an inline top margin on its wrapper.
+     Inside the culture hero that margin displaced the second CTA vertically.
+     Normalize the wrapper and both controls at template level so every
+     monument/detail page inherits the same baseline and height. */
+  .culture-detail-actions > div {
+    margin-top: 0 !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .culture-detail-actions .button,
+  .culture-detail-actions > div > button {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     min-height: 40px !important;
+    padding: 9px 15px !important;
+    margin: 0 !important;
     font-size: 13px !important;
+    line-height: 1.2 !important;
   }
 
   .culture-detail-media {
