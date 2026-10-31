@@ -10,7 +10,7 @@ export function Footer() {
       <div className={styles.links}>
         <Link href="/cultura">Cultura</Link>
         <Link href="/storie-miti-leggende">Miti e leggende</Link>
-        <Link href="/itinerari">Percorsi</Link>
+        <Link href="/esperienze">Esperienze</Link>
         <Link href="/mappa">Mappa</Link>
         <Link href="/operatori/candidatura">Operatori</Link>
         <Link href="/contatti">Contatti</Link>
