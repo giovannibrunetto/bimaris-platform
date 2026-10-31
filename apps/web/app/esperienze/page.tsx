@@ -33,7 +33,6 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
   return (
     <>
       <section className="page-hero discovery-page-hero">
-        <div className="kicker">Vivi il territorio</div>
         <h1>Esperienze BIMARIS</h1>
         <p>
           Non un elenco di attività, ma una selezione di modi autentici per vivere Messina e il suo territorio: mare, sapori, natura, cultura e saperi locali.
