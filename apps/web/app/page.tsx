@@ -20,8 +20,10 @@ export default function Home() {
       <section className="home-journey home-journey-first" aria-labelledby="home-journey-title">
         <div className="home-journey-inner">
           <div className="home-journey-intro">
-            <div className="kicker">Scopri Messina con BIMARIS</div>
-            <h2 id="home-journey-title">Scegli come vivere la città.</h2>
+            <div className="home-journey-heading">
+              <div className="kicker">Scopri Messina con BIMARIS</div>
+              <h2 id="home-journey-title">Scegli come vivere la città.</h2>
+            </div>
             <p>Entra nella sua storia, vivi un’esperienza oppure esplora liberamente luoghi e territorio.</p>
           </div>
 
