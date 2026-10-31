@@ -1,0 +1,22 @@
+.home-journey-paths-v2{display:grid;gap:22px}
+.home-journey-paths-v2 .home-journey-path{margin:0!important;transform:none!important;background:#12363a!important}
+.home-journey-paths-v2 .home-journey-story{background:radial-gradient(circle at 85% 12%,rgba(202,168,106,.16),transparent 28%),linear-gradient(145deg,#0b4249,#032126)!important;border-color:rgba(202,168,106,.38)}
+.home-journey-secondary{display:grid;gap:22px}
+.home-journey-paths-v2 .home-journey-experiences,.home-journey-paths-v2 .home-journey-map{background:#12363a!important}
+.home-journey-paths-v2 .home-journey-path:hover{transform:translateY(-4px)!important}
+@media(min-width:761px){
+  .home-journey-paths-v2{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);align-items:stretch}
+  .home-journey-paths-v2 .home-journey-story{min-height:440px;height:100%;padding:38px}
+  .home-journey-paths-v2 .home-journey-story .home-journey-path-copy{max-width:620px}
+  .home-journey-paths-v2 .home-journey-story h3{font-size:clamp(38px,3.2vw,52px);min-height:0}
+  .home-journey-secondary{grid-template-rows:repeat(2,minmax(0,1fr))}
+  .home-journey-secondary .home-journey-path{min-height:0;height:100%;padding:26px 30px}
+  .home-journey-secondary .home-journey-path h3{min-height:0;font-size:clamp(27px,2vw,34px);margin-top:8px;margin-bottom:10px}
+  .home-journey-secondary .home-journey-path p{margin-top:0;margin-bottom:14px;line-height:1.45}
+  .home-journey-secondary .home-journey-number{font-size:34px;flex-basis:48px}
+}
+@media(max-width:760px){
+  .home-journey-paths-v2{grid-template-columns:1fr}
+  .home-journey-secondary{grid-template-columns:1fr}
+  .home-journey-paths-v2 .home-journey-path{min-height:0!important;height:auto!important;padding:24px!important}
+}
