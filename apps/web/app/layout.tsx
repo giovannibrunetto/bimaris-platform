@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import "./brand.css";
 import "./map-mobile.css";
+import "./map-mobile-layout-fix.css";
 import "./personal-access-mobile.css";
 import "./home-mobile.css";
 import "./home-polish.css";
