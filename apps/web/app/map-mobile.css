@@ -47,9 +47,8 @@
     display: none;
   }
 
-  /* Mobile: two independent vertical lists on opposite sides of the map.
-     Primary categories stay on the left; historical periods, when relevant,
-     stay on the right. Neither control spans the map or covers the other. */
+  /* Mobile: two independent translucent vertical lists on opposite sides.
+     The map remains visible beneath the controls while labels stay readable. */
   .bimaris-map-filter-overlay {
     position: absolute;
     z-index: 7;
@@ -84,9 +83,12 @@
     align-items: stretch;
     gap: 4px;
     padding: 6px;
+    border: 1px solid rgba(255,255,255,.16);
     border-radius: 14px;
-    background: rgba(3,33,38,.92);
-    box-shadow: 0 8px 24px rgba(3,33,38,.22);
+    background: rgba(3,33,38,.64);
+    box-shadow: 0 6px 18px rgba(3,33,38,.16);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     pointer-events: auto;
     box-sizing: border-box;
     overscroll-behavior: contain;
@@ -107,15 +109,15 @@
     align-items: center;
     justify-content: flex-start;
     gap: 4px;
-    border: 1px solid rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
     border-radius: 9px;
-    background: rgba(255,255,255,.06);
+    background: rgba(3,33,38,.32);
     color: #fff;
     font-size: 11px;
     font-weight: 800;
     line-height: 1.12;
     text-align: left;
-    text-shadow: 0 1px 2px rgba(0,0,0,.25);
+    text-shadow: 0 1px 2px rgba(0,0,0,.42);
     white-space: normal;
     overflow-wrap: anywhere;
     transform: none !important;
@@ -126,20 +128,20 @@
     margin-left: auto;
     flex: 0 0 auto;
     font-size: 9px;
-    opacity: .72;
+    opacity: .82;
   }
 
   .bimaris-map-filter-mobile button.active,
   .bimaris-map-period-mobile button.active {
-    border-color: #caa86a;
-    background: #caa86a;
+    border-color: rgba(202,168,106,.94);
+    background: rgba(202,168,106,.82);
     color: #032126;
     text-shadow: none;
   }
 
   .bimaris-map-filter-mobile button.active span {
     color: #032126;
-    opacity: .7;
+    opacity: .78;
   }
 
   .bimaris-map-wheel-spacer { display: none; }
