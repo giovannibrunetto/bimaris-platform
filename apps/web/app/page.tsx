@@ -28,7 +28,7 @@ export default function Home() {
         <div className="home-audience-intro">
           <div className="kicker">Sei qui per scoprire Messina?</div>
           <h2>Vivi il territorio con BIMARIS.</h2>
-          <p>Scegli ciò che ti interessa e decidi come esplorare Messina: seguendo un percorso BIMARIS oppure costruendo liberamente il tuo viaggio sulla mappa.</p>
+          <p>Scegli ciò che ti interessa e scopri Messina attraverso cultura, storie, territori ed esperienze.</p>
         </div>
 
         <div className="category-grid home-category-grid">
@@ -45,29 +45,41 @@ export default function Home() {
           <div className="home-journey-intro">
             <div className="kicker">Il tuo viaggio comincia qui</div>
             <h2 id="home-journey-title">Scopri il mondo BIMARIS.</h2>
-            <p>Non esiste un solo modo di conoscere Messina. Lasciati accompagnare da un racconto già costruito oppure scegli tu cosa vedere, tappa dopo tappa.</p>
+            <p>Messina non si scopre in un solo modo. Puoi lasciarti raccontare la città, vivere un’esperienza oppure esplorarla liberamente.</p>
           </div>
 
-          <div className="home-journey-paths">
-            <Link className="home-journey-path home-journey-guided" href="/itinerari">
+          <div className="home-journey-paths home-journey-paths-v2">
+            <Link className="home-journey-path home-journey-story" href="/mappa/epoche">
               <span className="home-journey-number">01</span>
               <div className="home-journey-path-copy">
-                <span className="home-journey-label">Lasciati guidare</span>
-                <h3>Segui un itinerario BIMARIS</h3>
-                <p>Percorsi pensati per farti incontrare monumenti, storie, luoghi e identità in un racconto coerente del territorio.</p>
-                <span className="home-journey-action">Scopri gli itinerari <b>→</b></span>
+                <span className="home-journey-label">Lasciati raccontare la città</span>
+                <h3>Ti racconto Messina</h3>
+                <p>Storie, epoche e luoghi collegati in un racconto che ti accompagna dentro l’identità della città.</p>
+                <span className="home-journey-action">Scopri i racconti <b>→</b></span>
               </div>
             </Link>
 
-            <Link className="home-journey-path home-journey-free" href="/mappa">
-              <span className="home-journey-number">02</span>
-              <div className="home-journey-path-copy">
-                <span className="home-journey-label">Muoviti liberamente</span>
-                <h3>Esplora la mappa BIMARIS</h3>
-                <p>Scegli ciò che ti incuriosisce e crea il tuo percorso tra luoghi, storie ed esperienze del territorio.</p>
-                <span className="home-journey-action">Apri la mappa <b>→</b></span>
-              </div>
-            </Link>
+            <div className="home-journey-secondary">
+              <Link className="home-journey-path home-journey-experiences" href="/esperienze">
+                <span className="home-journey-number">02</span>
+                <div className="home-journey-path-copy">
+                  <span className="home-journey-label">Vivi il territorio</span>
+                  <h3>Esperienze BIMARIS</h3>
+                  <p>Degustazioni, mare, natura, visite e attività selezionate per vivere Messina e il suo territorio.</p>
+                  <span className="home-journey-action">Scopri le esperienze <b>→</b></span>
+                </div>
+              </Link>
+
+              <Link className="home-journey-path home-journey-map" href="/mappa">
+                <span className="home-journey-number">03</span>
+                <div className="home-journey-path-copy">
+                  <span className="home-journey-label">Esplora liberamente</span>
+                  <h3>Mappa BIMARIS</h3>
+                  <p>Scegli ciò che ti incuriosisce e scopri luoghi, cultura ed esperienze direttamente sulla mappa.</p>
+                  <span className="home-journey-action">Apri la mappa <b>→</b></span>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
