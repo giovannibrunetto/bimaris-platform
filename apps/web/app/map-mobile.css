@@ -47,71 +47,115 @@
     display: none;
   }
 
+  /* Mobile: category and period filters occupy two independent map zones.
+     Categories stay at the bottom as a horizontal rail; historical periods
+     stay at the top. This prevents the two controls from ever overlapping. */
+  .bimaris-map-filter-overlay {
+    position: absolute;
+    z-index: 7;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    pointer-events: none;
+  }
+
+  .bimaris-map-period-overlay {
+    position: absolute;
+    z-index: 8;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: auto;
+    pointer-events: none;
+  }
+
   .bimaris-map-filter-mobile,
   .bimaris-map-period-mobile {
     display: flex;
+    pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .bimaris-map-filter-mobile {
-    width: min(43vw, 156px);
-    max-height: 154px;
-    overflow-y: auto;
-    flex-direction: column;
-    gap: 0;
-    padding: 46px 6px;
-    border-radius: 28px;
-    background: linear-gradient(90deg, rgba(3,33,38,.78), rgba(3,33,38,.34));
-    box-shadow: 0 8px 24px rgba(3,33,38,.18);
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 16px;
+    background: rgba(3,33,38,.92);
+    box-shadow: 0 8px 24px rgba(3,33,38,.22);
     scrollbar-width: none;
-    scroll-snap-type: y mandatory;
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   .bimaris-map-filter-mobile::-webkit-scrollbar { display: none; }
 
   .bimaris-map-filter-mobile button {
-    flex: 0 0 46px;
-    width: 100%;
-    min-height: 46px;
-    padding: 0 10px;
-    display: flex;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    min-height: 44px;
+    padding: 0 13px;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 7px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    background: rgba(255,255,255,.06);
     color: #fff;
     font-size: 13px;
     font-weight: 800;
-    text-align: left;
-    text-shadow: 0 1px 2px rgba(0,0,0,.35);
-    scroll-snap-align: center;
+    line-height: 1;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0,0,0,.25);
+    scroll-snap-align: start;
+    transform: none !important;
+    opacity: 1 !important;
   }
 
-  .bimaris-map-filter-mobile button span { margin-left: auto; font-size: 12px; }
-  .bimaris-map-filter-mobile button.active { background: rgba(255,255,255,.16); }
-  .bimaris-map-wheel-spacer { flex: 0 0 1px; }
+  .bimaris-map-filter-mobile button span { margin-left: 2px; font-size: 11px; opacity: .76; }
+  .bimaris-map-filter-mobile button.active {
+    border-color: #caa86a;
+    background: #caa86a;
+    color: #032126;
+    text-shadow: none;
+  }
+  .bimaris-map-filter-mobile button.active span { color: #032126; opacity: .72; }
+  .bimaris-map-wheel-spacer { display: none; }
 
   .bimaris-map-period-mobile {
-    max-width: min(76vw, 330px);
-    max-height: 190px;
+    width: min(100%, 330px);
+    max-width: 100%;
+    max-height: 152px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-direction: column;
-    gap: 5px;
-    padding: 8px;
-    border-radius: 18px;
-    background: rgba(3,33,38,.90);
-    box-shadow: 0 8px 24px rgba(3,33,38,.20);
+    gap: 4px;
+    padding: 7px;
+    border-radius: 15px;
+    background: rgba(3,33,38,.94);
+    box-shadow: 0 8px 24px rgba(3,33,38,.22);
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
 
   .bimaris-map-period-mobile button {
+    flex: 0 0 auto;
+    width: 100%;
     min-height: 40px;
     padding: 8px 11px;
-    border: 1px solid rgba(255,255,255,.16);
-    border-radius: 12px;
-    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 10px;
+    background: rgba(255,255,255,.06);
     color: #fff;
     font-size: 12px;
     font-weight: 700;
