@@ -1,0 +1,133 @@
+export type VillageStory = {
+  title: string;
+  paragraphs: readonly string[];
+};
+
+export const masseContext = {
+  title: "Le Masse di Messina",
+  subtitle: "Un territorio condiviso, quattro identità",
+  paragraphs: [
+    "Sulle colline del versante tirrenico di Messina, le Masse invitano a conoscere una parte della città attraverso il suo paesaggio rurale. Massa San Giorgio, Massa San Nicola, Massa Santa Lucia e Massa San Giovanni sono identità locali distinte, unite da relazioni che precedono la forma attuale dei singoli abitati.",
+    "Il nome comune richiama un'organizzazione di terreni e possedimenti. È una chiave per comprendere la storia agricola del territorio, non una data di fondazione: la presenza antica del termine non dimostra che ciascuno dei quattro villaggi esistesse già allora. Anche il loro assetto è cambiato nel tempo e non va immaginato come un sistema rimasto sempre identico.",
+    "La documentazione medievale e la presenza monastica di Santa Maria di Massa introducono il rapporto fra insediamenti, coltivazioni e organizzazione religiosa. Il ruolo del monastero aiuta a leggere il contesto, ma non permette di attribuirgli con certezza la fondazione di ogni nucleo.",
+    "Acqua, terrazzamenti e manufatti del lavoro raccontano un territorio che produceva e abitava le proprie risorse. La sua storia appartiene a quella di Messina: per comprenderla occorre uscire dall'immagine della sola città portuale e riconoscere il contributo delle colline e dei casali.",
+    "Le trasformazioni del Novecento hanno avuto effetti diversi. Il terremoto del 1908 e le ricostruzioni hanno modificato parte del patrimonio religioso; in seguito lo spopolamento e l'abbandono di coltivazioni hanno cambiato il rapporto fra abitati e campagna. Le permanenze materiali non sono uguali ovunque: una chiesa ricostruita e una casa rurale conservata raccontano due modi differenti di attraversare il tempo.",
+    "Il contesto comune serve a orientarsi, senza appiattire le differenze. Nei quattro racconti, la storia si avvicina a una fontana, a una scala esterna, a un'opera recuperata o alla memoria di una chiesa. È attraverso questi elementi che ogni Massa ritrova la propria voce dentro una geografia condivisa.",
+  ],
+} as const;
+
+export const villageStories: Readonly<Record<string, VillageStory>> = {
+  "castroreale": {
+    title: "Una città regia sopra le strade",
+    paragraphs: [
+      "Dalla torre del castello, Castroreale invita a guardare oltre le proprie case. Il colle non spiega soltanto dove sia sorto il paese: aiuta a comprendere quale posto abbia occupato nel territorio. Verso la Piana di Milazzo e attraverso i rilievi peloritani passavano relazioni che collegavano il borgo a un orizzonte più ampio delle sue mura.",
+      "La storia documentata dell'insediamento conduce al Medioevo. Nel 1324, un intervento del sovrano aragonese sul castello e il riconoscimento della condizione demaniale segnarono una svolta. Essere città demaniale significava dipendere direttamente dalla Corona: una posizione che contribuì alla crescita del centro e delle sue funzioni. La fortificazione era dunque una presenza militare, ma anche il segno visibile di un rapporto politico.",
+      "Attorno a quel rapporto si sviluppava una società più articolata di quanto il solo castello possa raccontare. A Castroreale viveva una comunità ebraica, parte della sua economia e della sua vita urbana. L'espulsione disposta nel 1492 interruppe questa presenza. Ricordarla permette di leggere il borgo anche attraverso le persone e le attività che non hanno lasciato un monumento integro a rappresentarle.",
+      "Nei secoli successivi Castroreale esercitò importanti funzioni amministrative. Fu sede di uffici e istituzioni scolastiche: all'altura fortificata si era aggiunta una città alla quale un territorio faceva riferimento. I successivi cambiamenti dei confini comunali modificarono quella geografia, senza cancellarne le testimonianze nel centro storico.",
+      "Una diversa forma di appartenenza si riconosce nel Cristo Lungo, venerato nella chiesa di Sant'Agata e portato in processione lungo le strade del paese. La croce innalzata sul fercolo cambia il rapporto fra rito e spazio urbano: la devozione attraversa le vie e supera in altezza molte delle case. Alla festa estiva è legata la memoria religiosa della protezione dal colera del 1854, interpretata dai fedeli come un intervento miracoloso.",
+      "La torre, le strade e gli edifici religiosi raccontano così dimensioni diverse della stessa città: il governo, la vita economica, la fede. Nel profilo raccolto di Castroreale rimane così leggibile una storia territoriale molto più estesa: dal governo alla vita economica, fino alle forme della devozione.",
+    ],
+  },
+  "montalbano-elicona": {
+    title: "Quando la fortezza diventa dimora",
+    paragraphs: [
+      "Nel castello di Montalbano Elicona, le aperture sulle murature invitano a una domanda: come si abita un luogo costruito anche per difendersi? È un buon punto da cui cominciare a conoscere il borgo. La sua storia si legge nel rapporto fra una rocca, le case che le stanno accanto e gli spazi nei quali il potere ha scelto di risiedere.",
+      "L'abitato è ricordato nella descrizione della Sicilia di al-Idrisi, nel XII secolo. Il complesso fortificato attraversò più fasi, fino ad assumere, in età aragonese, i caratteri di una residenza regia. Le sue forme non rispondono quindi a una sola esigenza: proteggere, controllare e ospitare sono funzioni che hanno lasciato segni diversi.",
+      "Il passaggio dalla fortezza alla dimora aiuta a comprendere anche la relazione con il territorio. Montalbano si trova fra rilievi e percorsi che mettono in comunicazione aree diverse della Sicilia nordorientale. Il castello ne rende riconoscibile la rilevanza politica; il tessuto delle vie mostra invece come l'abitato si sia adattato alla conformazione del suolo.",
+      "Per conoscere il paese occorre però lasciare che lo sguardo esca dalla residenza. La chiesa di San Nicola e quella di Santa Caterina appartengono alla storia della comunità che ha vissuto attorno alla rocca. Introducono una dimensione fatta di culto, opere e luoghi condivisi, che accompagna ma non coincide con la storia dei sovrani.",
+      "Nella devozione alla Madonna della Provvidenza, il patrimonio religioso continua a essere anche una pratica collettiva. Le immagini di culto non sono soltanto oggetti da osservare: per la comunità sono presenze attorno alle quali si rinnova un legame. È una delle differenze fra incontrare un edificio storico e comprendere il paese che lo custodisce.",
+      "Oggi il castello ha anche una funzione pubblica e culturale. Il suo riuso aggiunge un altro capitolo, dopo quelli della difesa e della residenza. La storia di Montalbano emerge in questi cambiamenti: dalle murature alle vie, dagli spazi del potere ai luoghi della vita comune. Il paesaggio rimane lo stesso riferimento, ma il modo di abitarlo cambia nel tempo.",
+    ],
+  },
+  "novara-di-sicilia": {
+    title: "La pietra, la voce, la strada",
+    paragraphs: [
+      "A Novara di Sicilia, una strada può essere il primo documento da leggere. La pietra delle pavimentazioni, dei portali e degli edifici collega il paese al materiale del suo territorio e al lavoro di chi ha saputo trasformarlo. Prima ancora di conoscere un nome o una data, si incontra una cultura del costruire.",
+      "Il territorio conserva testimonianze di frequentazioni molto antiche; la formazione del borgo attuale appartiene però a una storia distinta, che prende consistenza nel Medioevo. Il castello e la presenza monastica di Vallebona furono riferimenti importanti dell'organizzazione civile e religiosa. Guardarli insieme permette di comprendere un insediamento inserito in rapporti più ampi delle sue strade.",
+      "Il paese si sviluppò adattandosi ai dislivelli. Il Passitto, le vie che conducono verso piazza Duomo e le architetture religiose aiutano a riconoscere questa relazione fra forma dell'abitato e terreno. Una parte importante del tessuto costruito si consolidò in età moderna. La pietra locale fu lavorata anche in elementi di particolare cura: il mestiere dello scalpellino lega così la materia del paesaggio alla fisionomia delle case e delle chiese.",
+      "Accanto alla pietra, Novara custodisce una voce. La parlata galloitalica è parte di un patrimonio linguistico siciliano formato da contatti e trasformazioni secolari. La sua presenza non rende il paese estraneo all'isola: ne rivela una delle storie meno immediatamente visibili. È una traccia che si ascolta e si trasmette, anziché conservarsi soltanto nei muri.",
+      "Anche il Maiorchino porta la storia nello spazio quotidiano. Durante il gioco, le forme del formaggio vengono fatte rotolare lungo un percorso nelle strade del paese. Produzione casearia, abilità e partecipazione collettiva si incontrano nello stesso gesto. La festa è riconosciuta dalla Regione come patrimonio immateriale: al centro rimangono le persone che praticano e tramandano il gioco.",
+      "Pietra, lingua e Maiorchino sono eredità diverse, non le parti di un'origine unica. Insieme permettono di conoscere una comunità attraverso ciò che costruisce, dice e continua a fare. A Novara, la strada non conserva soltanto il passato: può essere ancora uno dei luoghi nei quali il paese si riconosce.",
+    ],
+  },
+  "san-marco-d-alunzio": {
+    title: "Le pietre cambiano uso",
+    paragraphs: [
+      "L'edificio noto come Tempio d'Ercole offre una chiave per entrare nella storia di San Marco d'Alunzio. Le sue strutture antiche furono riutilizzate come chiesa: nello stesso luogo si incontrano funzioni, forme e significati appartenenti a epoche differenti. È una trasformazione concreta, che rende visibile il modo in cui una comunità può fare proprio ciò che riceve dal passato.",
+      "L'antica Alontion, conosciuta in età romana come Haluntium, appartiene alla storia dei centri che hanno abitato le alture rivolte alla costa tirrenica. La posizione aiuta a leggere le relazioni fra il sito e il territorio circostante. Non basta però una veduta a spiegare tutti i passaggi della sua storia: le testimonianze archeologiche e gli edifici raccontano tempi differenti, che non sempre possono essere ricomposti in una sequenza senza interruzioni.",
+      "Le trasformazioni medievali e moderne hanno lasciato un patrimonio religioso articolato. Per comprenderlo non occorre contare le chiese, ma osservare che cosa custodiscono e come sono cambiate. Colonne, opere e decorazioni appartengono a una storia di costruzioni e riusi; le raccolte museali permettono di leggere testimonianze che hanno perso o mutato la loro collocazione originaria.",
+      "Nel museo parrocchiale, gli argenti testimoniano anche rapporti con maestranze di Messina e Palermo. Il borgo non era un mondo chiuso sulla propria altura: gli oggetti del culto collegavano la vita locale a reti artistiche più ampie. Materiali e lavorazioni permettono di riconoscere quei contatti senza doverli immaginare.",
+      "Nella chiesa dell'Aracoeli e nella processione del Crocifisso, il patrimonio religioso rimane inoltre una pratica della comunità. I penitenti incappucciati chiamati Babbaluti ne costituiscono uno degli elementi più riconoscibili. Le origini del rito non sono interamente chiarite: è proprio questa distinzione a permettere di conoscere una tradizione senza attribuirle una storia più certa di quella documentata.",
+      "Oggi musei, edifici e celebrazioni offrono modi diversi di avvicinare San Marco d'Alunzio. Il loro filo comune è la capacità di trasformare e trasmettere: un tempio diventa chiesa, un'opera entra in una raccolta, un gesto religioso viene ripetuto. Sono questi passaggi a dare forma al racconto del borgo: il passato riceve, di volta in volta, un nuovo posto nella vita del luogo.",
+    ],
+  },
+  "savoca": {
+    title: "Il colle e il territorio che guardava il mare",
+    paragraphs: [
+      "Dalla rocca di Pentefur, Savoca si comprende guardando anche fuori dal paese. Il nucleo sul colle apparteneva a una geografia di casali, terreni e marina: una trama nella quale il centro e il territorio si spiegavano a vicenda. Le case raccolte attorno all'altura sono soltanto una parte di questa storia.",
+      "Nel Medioevo, Savoca sviluppò un rapporto determinante con l'Archimandritato del Santissimo Salvatore di Messina. La presenza dell'archimandrita univa dimensioni religiose e poteri sul territorio. Il legame con Messina non era quindi una semplice vicinanza geografica: contribuiva all'organizzazione e alla vita del centro.",
+      "La rocca e la porta urbana introducono la storia delle difese e dei confini del nucleo abitato. Le chiese aprono invece quella delle comunità, delle devozioni e delle opere. Fra questi luoghi si sviluppava una società che viveva anche delle risorse del territorio, comprese attività agricole e lavorazioni ricordate dalla documentazione locale.",
+      "Con il tempo mutarono i rapporti fra il colle e la marina. Popolazione e funzioni si spostarono verso valle, modificando il peso del centro collinare. La storia amministrativa del Novecento aggiunse altre trasformazioni: nel 1948 l'Assemblea Regionale Siciliana approvò la ricostituzione di Savoca come Comune autonomo, dopo il periodo di aggregazione a Santa Teresa di Riva.",
+      "Il museo storico-etnoantropologico aiuta a riportare questa storia alla vita quotidiana. Strumenti, documenti e testimonianze della cultura contadina affiancano le vicende del potere e delle istituzioni. Ricordano che un territorio si governa, ma soprattutto si lavora e si abita.",
+      "La devozione a Santa Lucia appartiene a un'altra continuità riconoscibile. La festa lega la figura della santa alla partecipazione della comunità, accanto alle testimonianze materiali custodite nel borgo. Il culto e la memoria collettiva non si leggono nello stesso modo di una muratura, ma sono parte della conoscenza del luogo.",
+      "Savoca cambia prospettiva passando da una scala all'altra: la rocca e le vie, il colle e la marina, il rapporto con Messina e la vita delle famiglie. È questo movimento dello sguardo a restituire profondità al paese: un centro piccolo nelle dimensioni presenti, con una storia che attraversa un territorio assai più largo.",
+    ],
+  },
+  "castanea-delle-furie": {
+    title: "Il crinale dentro la storia di Messina",
+    paragraphs: [
+      "Il portale della chiesa di San Giovanni Battista, con la sua data incisa, offre un ingresso concreto nella storia di Castanea delle Furie. Non racconta da solo la nascita del paese: segna un momento riconoscibile nella lunga vita di una comunità collinare messinese.",
+      "Castanea appartiene ai casali che legavano Messina al suo territorio rurale. La città non viveva soltanto attorno al porto: sulle colline, fondi, abitati e luoghi di culto partecipavano alla sua organizzazione. Sul crinale, campagna e centro urbano entravano in relazione attraverso interessi, risorse e persone.",
+      "La documentazione sull'Ordine di San Giovanni mostra la complessità di questi rapporti. Nel casale erano presenti beni e rendite del gran priorato; la chiesa di San Giovanni Battista compare nelle visite storiche dell'Ordine. Le questioni di giurisdizione religiosa coinvolsero anche l'arcivescovado di Messina. Il luogo di culto apparteneva così anche a un sistema di diritti e autorità che collegava il casale alla città.",
+      "Il Rosario racconta un'altra trasformazione. L'edificio precedente fu distrutto dal terremoto del 1908 e quello attuale appartiene alla ricostruzione novecentesca. Le opere provenienti dalla chiesa antica distinguono ciò che è stato rifatto da ciò che è stato recuperato. Non tutti gli edifici del casale attraversarono però le stesse vicende: le loro storie vanno lette separatamente.",
+      "Anche le dimore storiche riportano Castanea dentro le relazioni con Messina, ricordando l'interesse delle famiglie cittadine per la vita fuori dal centro. Accanto a questa presenza, il lavoro rurale costituisce un'altra parte dell'identità locale, conservata anche nella memoria etnoantropologica del paese.",
+      "Nel presepe vivente, mestieri e vita comunitaria diventano una rappresentazione contemporanea. Non è la riproduzione intatta di un passato remoto, ma un modo con cui Castanea continua a raccontare la propria memoria.",
+      "Dal portale alle dimore, dal lavoro rurale alle istituzioni religiose, Castanea allarga così l'immagine di Messina oltre il porto e il centro urbano. Sul crinale, città e campagna non appaiono come mondi separati, ma come parti di una storia territoriale più ampia.",
+    ],
+  },
+  "massa-san-giorgio": {
+    title: "L'acqua e i luoghi della comunità",
+    paragraphs: [
+      "Una fontana con lavatoio introduce Massa San Giorgio attraverso la vita comune. L'acqua risponde a una necessità quotidiana; il manufatto che la raccoglie mostra come quella necessità potesse diventare un luogo condiviso. È una prospettiva diversa da quella di un castello o di un palazzo, adatta alla storia di questo casale messinese.",
+      "Massa San Giorgio appartiene al sistema delle Masse, gli abitati del territorio rurale a nord di Messina. Il nome comune rinvia alla storia dei terreni e dei possedimenti; le vicende dei singoli nuclei, però, non si lasciano ricondurre a un'unica data di nascita. Nelle vicinanze di San Giorgio, il sito di Santa Maria di Massa ricorda il ruolo della presenza monastica medievale nell'organizzazione di questo paesaggio.",
+      "Il rapporto con Messina passa per il lavoro agricolo e per istituzioni religiose che tenevano insieme città e territorio. In questa trama, la fontana-lavatoio riporta la storia alla scala dei gesti quotidiani: l'acqua, il lavoro, l'uso condiviso di uno spazio. La sua presenza si affianca alle testimonianze degli edifici di culto, senza attribuirle episodi non documentati.",
+      "La chiesa di San Giorgio attraversò la distruzione del 1908 e la successiva ricostruzione. Le opere recuperate dall'edificio precedente introducono una distinzione importante: una chiesa può cambiare materialmente mentre parte del suo patrimonio e della sua funzione rimane. Le testimonianze antiche custodite al suo interno non rendono antico allo stesso modo ogni muro che oggi le accoglie.",
+      "Anche Sant'Antonio Abate appartiene al patrimonio religioso del casale. Accanto alla fontana e agli spazi della vita rurale, questi luoghi mostrano un'altra dimensione della comunità: quella del culto e delle appartenenze condivise. La devozione a San Giorgio aggiunge un ulteriore legame collettivo alle opere e alle architetture.",
+      "L'organizzazione ecclesiastica contemporanea collega le chiese di San Giorgio e San Nicola senza cancellare la distinzione fra i due villaggi. A Massa San Giorgio, l'acqua offre così il filo più semplice per tenere insieme territorio e comunità: da una necessità quotidiana a un luogo condiviso, fino agli altri spazi nei quali il casale ha riconosciuto la propria vita collettiva.",
+    ],
+  },
+  "massa-san-nicola": {
+    title: "Come si abitava un paesaggio di lavoro",
+    paragraphs: [
+      "A Massa San Nicola, una scala esterna può raccontare una parte della storia del paese. Nelle abitazioni rurali su due livelli, il rapporto fra i vani a terra e quelli superiori rende riconoscibile una distinzione fra attività e vita domestica. L'architettura permette di avvicinare il lavoro senza bisogno di immaginare una scena del passato.",
+      "Il villaggio appartiene alle Masse di Messina, un sistema di abitati legato alla storia agricola delle colline tirreniche. Il loro nome comune richiama terreni e possedimenti, ma non consente di assegnare a tutti la stessa origine. Per San Nicola, le testimonianze costruite offrono un terreno di conoscenza più saldo di una remota fondazione non dimostrata.",
+      "La relazione con il corso d'acqua e con i manufatti produttivi aiuta a comprendere perché l'abitato non possa essere separato dalla campagna. Mulini, terrazzamenti e strutture del lavoro appartengono alla storia delle risorse del territorio. Le case ne conservano un'altra parte: materiali, aperture e collegamenti fra i piani mostrano come le esigenze della vita rurale incidessero sul costruire.",
+      "La chiesa di San Nicola introduce la dimensione religiosa di questa comunità. La sua storia materiale richiede ancora cautela nelle date; la presenza del luogo di culto, accanto alle abitazioni, ricorda comunque che il casale era uno spazio di lavoro e di relazioni, non soltanto un insieme di edifici produttivi.",
+      "Nel Novecento lo spopolamento cambiò profondamente il rapporto fra abitato e territorio. Parte dell'interesse storico di San Nicola deriva dalle forme rurali conservate, ma la loro permanenza non deve far dimenticare le difficoltà che accompagnano l'abbandono. Definire il paese come un luogo fuori dal tempo nasconderebbe proprio il cambiamento che aiuta a comprenderlo.",
+      "Gli studi e i rilievi recenti sul patrimonio costruito aggiungono oggi un nuovo modo di conoscere il villaggio: documentare le case e il loro contesto prima che le trasformazioni ne rendano più difficile la lettura. Nelle forme dell'abitare rimangono così leggibili la storia di una società rurale e la fragilità della sua eredità.",
+    ],
+  },
+  "massa-santa-lucia": {
+    title: "La memoria tra i villaggi",
+    paragraphs: [
+      "La chiesa di Santa Lucia conserva insieme due tempi: l'edificio ricostruito e le opere precedenti che vi hanno trovato posto. Ma la memoria del villaggio non rimane racchiusa fra queste mura. Alcuni dei suoi riferimenti conducono verso gli abitati vicini e mostrano una geografia religiosa condivisa.",
+      "Massa Santa Lucia è uno degli abitati delle Masse di Messina, legati al territorio rurale delle colline tirreniche. La storia comune riguarda possedimenti, coltivazioni e istituzioni religiose; non permette però di raccontare con certezza la nascita di ciascun villaggio come un episodio separato e precisamente datato.",
+      "Il terremoto del 1908 danneggiò gravemente il patrimonio di Santa Lucia e distrusse la chiesa parrocchiale, poi ricostruita nel Novecento. Il nuovo edificio continuò ad accogliere il culto della santa, insieme a opere recuperate dal patrimonio precedente. La ricostruzione è quindi una parte della storia, ma non ne esaurisce il significato.",
+      "San Rocco porta il racconto oltre il singolo villaggio. La memoria della chiesa a lui dedicata, posta fra Santa Lucia e Massa San Giovanni, appartiene a un territorio nel quale nuclei distinti avevano contatti e riferimenti condivisi. La statua conservata a Santa Lucia rende visibile quel rapporto attraverso un oggetto, senza trasformare in fatti certi tutti i racconti tramandati attorno al suo trasferimento.",
+      "La devozione a Lucia mantiene invece un riferimento identitario proprio. Il culto della santa e il legame con San Rocco mostrano due scale che convivono: l'appartenenza al villaggio e le relazioni con le comunità vicine.",
+      "Anche il paesaggio rurale restituisce questa doppia dimensione. Le Masse condividono un territorio, ma non una sola identità. A Santa Lucia, opere, culti e riferimenti religiosi permettono di seguire una memoria che resta locale e, nello stesso tempo, attraversa i confini del singolo abitato.",
+      "La chiesa ricostruita è quindi un punto della storia, non il suo unico centro. Massa Santa Lucia si riconosce anche nei legami che la collegano agli altri villaggi: una memoria custodita nei luoghi, ma capace di muoversi fra comunità vicine.",
+    ],
+  },
+  "massa-san-giovanni": {
+    title: "Quando la memoria resta scritta",
+    paragraphs: [
+      "Nella chiesa di San Giovanni Battista, una lapide conserva vicende che l'edificio attuale non potrebbe raccontare da solo. Accanto alle opere provenienti dalla costruzione precedente, la memoria scritta permette di distinguere la storia del luogo dalla sola età delle sue murature.",
+      "Massa San Giovanni appartiene al sistema delle Masse di Messina, gli abitati del territorio rurale sul versante tirrenico. Le relazioni fra coltivazioni, possedimenti e presenza religiosa ne definiscono il contesto, ma non restituiscono una data certa per la nascita di ogni nucleo. Qui sono soprattutto gli oggetti conservati e la testimonianza scritta della chiesa a rendere leggibile una parte della storia locale.",
+      "La chiesa precedente venne distrutta dal terremoto del 1908. La ricostruzione novecentesca accolse parte del patrimonio recuperato: opere legate al culto del Battista e altre testimonianze della vita religiosa. Le murature appartengono quindi a una fase diversa rispetto ad alcuni degli oggetti che custodiscono.",
+      "La memoria di Santa Barbara si inserisce in questa trama di devozioni e luoghi. Anche San Rocco, la cui chiesa sorgeva fra San Giovanni e Santa Lucia, ricorda che i villaggi erano identità distinte dentro un territorio di percorsi e riferimenti religiosi condivisi.",
+      "È però la lapide a offrire a San Giovanni il suo punto di osservazione più netto. Non è una cronaca completa del paese e riguarda soprattutto la storia della chiesa. Proprio questo limite ne definisce il valore: registra una memoria circoscritta, da leggere insieme alle opere recuperate senza estenderla a vicende che non documenta.",
+      "Dopo la distruzione, edificio, opere e memoria scritta hanno seguito tempi differenti per ritrovarsi nello stesso luogo. Massa San Giovanni racconta questa continuità senza nascondere la frattura: ciò che oggi resta leggibile non è una struttura rimasta intatta, ma una storia ricomposta attraverso testimonianze diverse.",
+    ],
+  },
+};
