@@ -44,14 +44,14 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const villagePoiPoints: BimarisMapPoint[] = activeVillage ? activeVillagePoints.map(point => ({ id: `village-poi-${point.id}`, kind: "village-poi", title: point.name, address: point.address, googleMapsQuery: point.googleMapsQuery, latitude: point.latitude, longitude: point.longitude, filterCategories: ["borghi"], historicalPeriods: getVillagePointHistoricalPeriods(activeVillage.slug, point.slug), categoryLabel: villagePoiType(point.name), links: [{ label: `Torna alla scheda di ${activeVillage.name}`, href: `/borghi/${activeVillage.slug}` }] })) : [];
   const allPoints = [...culturePoints, ...legendPoints, ...operatorPoints, ...experiencePoints, ...villagePoints, ...villagePoiPoints];
 
-  // A story deep-link is a contextual map: it must show only places connected to that story.
-  // Shared places are retained because their marker contains the active story link.
-  // The explicit "Mappa generale" action remains the way back to the complete dataset.
+  // A story deep-link starts focused on that story, while the map keeps the complete
+  // BIMARIS dataset available to the filters. Selecting any filter exits the contextual
+  // focus without requiring a page reload.
   const activeStoryHref = activeStory ? `/storie-miti-leggende/${activeStory.slug}` : undefined;
   const activeStoryPoints = activeStoryHref ? legendPoints.filter(point => point.links.some(link => link.href === activeStoryHref)) : [];
-  const points = activeStory ? activeStoryPoints : allPoints;
+  const activeStoryPointKeys = activeStoryPoints.map(point => `${point.kind}:${point.id}`);
 
-  const contextText = activeStory ? `Sono mostrati solo i luoghi collegati alla leggenda “${activeStory.title}”. Per esplorare tutti i punti BIMARIS torna alla mappa generale.` : activeCulture ? `Hai aperto la mappa da ${activeCulture.title}. Il luogo resta come riferimento, mentre tutti gli altri punti BIMARIS rimangono disponibili nei filtri.` : activeVillage ? `Sulla mappa sono state aggiunte le singole tappe da vedere a ${activeVillage.name}, insieme agli altri punti BIMARIS.` : "Monumenti e cultura, miti e leggende, sapori e territori, borghi ed esperienze sono organizzati anche geograficamente. Puoi filtrare la mappa e combinare le singole tappe nel tuo percorso.";
+  const contextText = activeStory ? `Sono mostrati i luoghi collegati alla leggenda “${activeStory.title}”. Gli altri punti BIMARIS restano disponibili nei filtri della mappa.` : activeCulture ? `Hai aperto la mappa da ${activeCulture.title}. Il luogo resta come riferimento, mentre tutti gli altri punti BIMARIS rimangono disponibili nei filtri.` : activeVillage ? `Sulla mappa sono state aggiunte le singole tappe da vedere a ${activeVillage.name}, insieme agli altri punti BIMARIS.` : "Monumenti e cultura, miti e leggende, sapori e territori, borghi ed esperienze sono organizzati anche geograficamente. Puoi filtrare la mappa e combinare le singole tappe nel tuo percorso.";
 
   return <>
     <section className="section map-page-section map-page-unified">
@@ -59,7 +59,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       {activeStory && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#87642d", fontWeight: 700 }}>Leggenda attiva: {activeStory.title}</span><Link className="button" href="/mappa">Mappa generale</Link><Link className="button" href={`/storie-miti-leggende/${activeStory.slug}`}>Torna alla leggenda</Link></div>}
       {!activeStory && activeCulture && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#87642d", fontWeight: 700 }}>Luogo culturale attivo: {activeCulture.title}</span><Link className="button" href="/mappa">Mappa generale</Link><Link className="button" href={`/cultura/${activeCulture.slug}`}>Torna alla scheda</Link></div>}
       {!activeStory && !activeCulture && activeVillage && <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}><span style={{ color: "#87642d", fontWeight: 700 }}>Contesto borgo attivo: {activeVillage.name}</span><Link className="button" href="/mappa">Mappa generale</Link></div>}
-      <BimarisGoogleMap points={points} />
+      <BimarisGoogleMap points={allPoints} initialVisiblePointKeys={activeStory ? activeStoryPointKeys : undefined} />
     </section>
   </>;
 }
