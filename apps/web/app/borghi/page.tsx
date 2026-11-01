@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPublishedVillages, massesContext } from "@/data/villages";
+import { getPublishedVillages } from "@/data/villages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,13 +32,6 @@ export default async function VillagesPage() {
           <div><div className="kicker">Borghi</div><h2>Scopri i luoghi e le loro storie.</h2></div>
           <p>Ogni borgo ha una scheda dedicata per conoscere la sua identità, la sua storia e i luoghi più significativi da vedere.</p>
         </div>
-
-        <section id="le-masse-di-messina" style={{maxWidth:920,margin:"0 auto 46px",padding:"28px 30px",border:"1px solid #dfe4e8",borderRadius:18,background:"#fff"}}>
-          <div className="kicker">Contesto comune</div>
-          <h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(1.8rem,4vw,2.45rem)",margin:"8px 0 4px"}}>Le Masse di Messina</h2>
-          <h3 style={{fontFamily:"Georgia,serif",fontSize:"clamp(1.15rem,2.5vw,1.45rem)",margin:"0 0 20px",fontWeight:500}}>{massesContext.title}</h3>
-          {massesContext.paragraphs.map((paragraph,index)=><p key={index} style={{fontSize:17,lineHeight:1.75,color:"#4d5962"}}>{paragraph}</p>)}
-        </section>
 
         {villages.length > 0 ? (
           <div className="cards village-cards">
