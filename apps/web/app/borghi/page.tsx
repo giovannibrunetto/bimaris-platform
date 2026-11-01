@@ -40,6 +40,11 @@ export default async function VillagesPage() {
                 {village.imageUrl && (
                   <div className="village-card-media">
                     <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
+                    {village.slug === "san-marco-d-alunzio" && (
+                      <div style={{ fontSize: "0.72rem", lineHeight: 1.35, padding: "0.35rem 0.55rem", color: "#5f6368" }}>
+                        Fonte immagine: <a href="https://www.comune.sanmarcodalunzio.me.it/vivere-il-comune/territorio/la-storia/" target="_blank" rel="noreferrer">Comune di San Marco d’Alunzio</a> — CC BY 4.0
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="card-body">
