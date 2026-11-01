@@ -56,6 +56,18 @@
   line-height: 1.5 !important;
 }
 
+/* Borghi intentionally retains the dark territorial hero. Keep its text
+   contrast local so the shared light-hero system cannot override it. */
+.discovery-page-hero:not(.bimaris-ambient-hero) > .kicker {
+  color: #e0bd78 !important;
+}
+.discovery-page-hero:not(.bimaris-ambient-hero) > h1 {
+  color: #ffffff !important;
+}
+.discovery-page-hero:not(.bimaris-ambient-hero) > p {
+  color: #e2e8ed !important;
+}
+
 /* All discovery-section headers use the same tortora environment.
    Cultura previously retained the old dark hero and therefore looked like
    a different generation of the product. */
