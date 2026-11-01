@@ -112,6 +112,7 @@ export type AnalyticsEventName =
   | "map_marker_click"
   | "map_custom_route_open_google"
   | "map_route_open_google"
+  | "route_open"
   | "village_custom_route_open_google"
   | "search"
   | "filter_used"
