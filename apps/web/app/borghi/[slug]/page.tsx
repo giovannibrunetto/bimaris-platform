@@ -44,7 +44,16 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         {narrative?<section><div className="kicker">Il racconto</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{narrative.title}</h2>{narrative.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>:<><div className="kicker">Il borgo</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>Identità e territorio</h2><p style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{village.description}</p>{village.identity&&<><h3>Perché è unico</h3><p>{village.identity}</p></>}{village.history&&<><h3>Storia</h3><p>{village.history}</p></>}</>}
         {points.length>0&&<VillageRouteBuilder villageName={village.name} points={points}/>} 
       </article>
-      <aside className="detail-panel" style={{alignSelf:"start",height:"auto",minHeight:0}}><div className="kicker">Organizza la visita</div><h3>{village.name}</h3>{village.address&&<p>{village.address}</p>}{points.length>0&&<p style={{color:"#6e7680",lineHeight:1.55}}>Scegli i luoghi nella sezione “Cosa vedere” per creare il tuo itinerario nel borgo.</p>}<a className="button" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi il borgo con Google Maps</a><div style={{borderTop:"1px solid #dfe4e8",marginTop:30,paddingTop:26}}><div className="kicker">Esplora il territorio</div><h3 style={{marginTop:8,marginBottom:10}}>Continua il viaggio da {village.name}</h3><p style={{color:"#6e7680",lineHeight:1.55,marginTop:0}}>Apri la mappa BIMARIS per scoprire e combinare altri luoghi, sapori ed esperienze del territorio.</p><div className="actions" style={{marginTop:20}}><Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora sulla mappa BIMARIS</Link><Link className="button ghost" href="/borghi">Tutti i borghi</Link></div></div></aside>
+      <aside className="detail-panel" style={{alignSelf:"start",height:"auto",minHeight:0}}>
+        <div className="kicker">Esplora il territorio</div>
+        <h3 style={{marginTop:8,marginBottom:10}}>Continua il viaggio da {village.name}</h3>
+        <p style={{color:"#6e7680",lineHeight:1.55,marginTop:0}}>Scopri il borgo e continua a esplorare luoghi, sapori ed esperienze del territorio.</p>
+        <div className="actions" style={{marginTop:20}}>
+          <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora sulla mappa BIMARIS</Link>
+          <a className="button ghost" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi con Google Maps</a>
+          <Link className="text-link" href="/borghi">Scopri gli altri borghi →</Link>
+        </div>
+      </aside>
     </section>
   </>;
 }
