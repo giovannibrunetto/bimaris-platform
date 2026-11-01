@@ -42,7 +42,7 @@ export default async function VillagesPage() {
                     <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
                     {village.slug === "san-marco-d-alunzio" && (
                       <div style={{ fontSize: "0.72rem", lineHeight: 1.35, padding: "0.35rem 0.55rem", color: "#5f6368" }}>
-                        Foto: <a href="https://commons.wikimedia.org/wiki/File:Panorama_di_San_Marco_d%27Alunzio.jpg" target="_blank" rel="noreferrer">Davide Mauro / Wikimedia Commons</a> — CC BY-SA 4.0
+                        Fonte immagine: <a href="https://www.comune.sanmarcodalunzio.me.it/" target="_blank" rel="noreferrer">Comune di San Marco d’Alunzio</a>
                       </div>
                     )}
                   </div>
