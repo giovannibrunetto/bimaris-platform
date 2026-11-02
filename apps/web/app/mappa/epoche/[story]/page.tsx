@@ -23,8 +23,8 @@ export default async function StoryPage({ params }: { params: Promise<{ story: s
 
   const entries = await getPublishedCultureEntries();
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
-  const chapters = definition.chapters.map(chapter => ({ chapter, place: bySlug.get(chapter.slug) }));
-  if (chapters.some(item => !item.place)) notFound();
+  const chapters = definition.chapters.map(chapter => ({ chapter, place: chapter.slug ? bySlug.get(chapter.slug) : undefined }));
+  if (chapters.some(item => item.chapter.slug && !item.place)) notFound();
 
   return <div className="story-detail-page">
     <section className="page-hero bimaris-ambient-hero story-detail-hero">
@@ -40,21 +40,20 @@ export default async function StoryPage({ params }: { params: Promise<{ story: s
     </section>
 
     <section className="story-chapters">
-      {chapters.map(({chapter,place},index)=>{
-        const resolvedPlace=place!;
-        return <div className="story-chapter-block" key={chapter.slug}>
+      {chapters.map(({chapter,place})=>{
+        return <div className="story-chapter-block" key={chapter.number}>
           <article className="story-chapter">
             <div className="story-chapter-number">{String(chapter.number).padStart(2,"0")}</div>
             <div className="story-chapter-copy">
-              <div className="kicker">Capitolo {chapter.number} · {chapter.placeTitle}</div>
+              <div className="kicker">Capitolo {chapter.number}{chapter.placeTitle ? ` · ${chapter.placeTitle}` : ""}</div>
               <h2>{chapter.title}</h2>
               <div className="story-public-copy story-chapter-text">{chapter.paragraphs.map((paragraph,pIndex)=><p key={pIndex}>{paragraph}</p>)}</div>
-              <div className="story-chapter-actions">
-                <Link className="text-link" href={`/cultura/${resolvedPlace.slug}`}>Scopri il luogo →</Link>
-                {resolvedPlace.googleMapsQuery && <a className="text-link story-map-link" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resolvedPlace.googleMapsQuery)}`} target="_blank" rel="noreferrer">Trovalo sulla mappa ↗</a>}
-              </div>
+              {place && <div className="story-chapter-actions">
+                <Link className="text-link" href={`/cultura/${place.slug}`}>Scopri il luogo →</Link>
+                {place.googleMapsQuery && <a className="text-link story-map-link" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.googleMapsQuery)}`} target="_blank" rel="noreferrer">Trovalo sulla mappa ↗</a>}
+              </div>}
             </div>
-            {resolvedPlace.imageUrl && <Link className="story-chapter-media" href={`/cultura/${resolvedPlace.slug}`}><img src={resolvedPlace.imageUrl} alt={resolvedPlace.imageAlt??resolvedPlace.title} loading="lazy" decoding="async"/></Link>}
+            {place?.imageUrl && <Link className="story-chapter-media" href={`/cultura/${place.slug}`}><img src={place.imageUrl} alt={place.imageAlt??place.title} loading="lazy" decoding="async"/></Link>}
           </article>
           {chapter.transition.length>0 && <aside className="story-transition" aria-label={`Transizione dal capitolo ${chapter.number} al capitolo ${chapter.number+1}`}>
             <div className="kicker">Il filo continua</div>
