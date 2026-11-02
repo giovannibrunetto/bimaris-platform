@@ -45,13 +45,13 @@ export default async function HistoricalMapPage() {
         </div>
 
         <div className="storytelling-grid">
-          {stories.map((story,index)=><article className="storytelling-card" key={story.key}>
+          {stories.map((story,index)=><Link className="storytelling-card" href={`/mappa/epoche/${story.key}`} key={story.key} aria-label={`Entra nel racconto: ${story.title}`}>
             <div className="storytelling-number">0{index+1}</div>
             <div className="kicker">{STORY_CHOICE_PERIODS[story.key] ?? story.theme}</div>
             <h3>{story.title}</h3>
             <p className="storytelling-card-summary">{story.subtitle}</p>
-            <Link className="text-link" href={`/mappa/epoche/${story.key}`}>Entra nel racconto →</Link>
-          </article>)}
+            <span className="text-link" aria-hidden="true">Entra nel racconto →</span>
+          </Link>)}
         </div>
       </section>
 
