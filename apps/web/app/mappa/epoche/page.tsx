@@ -12,12 +12,6 @@ export const metadata: Metadata = {
   description: "Tre racconti per conoscere Messina attraverso i luoghi del catalogo Cultura BIMARIS.",
 };
 
-const STORY_CHOICE_SUMMARIES: Record<string, string> = {
-  medioevo: "Chiese, comunità e relazioni mediterranee nella Messina medievale.",
-  cinquecento: "Acqua, mito e difesa del porto nella Messina del Rinascimento.",
-  "1908-rinascita": "Dal terremoto del 1908 alla ricostruzione della città moderna.",
-};
-
 const STORY_CHOICE_PERIODS: Record<string, string> = {
   medioevo: "Messina medievale · XII–XIII secolo",
   cinquecento: "Messina rinascimentale · XVI secolo",
@@ -27,10 +21,15 @@ const STORY_CHOICE_PERIODS: Record<string, string> = {
 export default async function HistoricalMapPage() {
   const entries = await getPublishedCultureEntries();
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
-  const stories = CULTURE_STORIES.map(story => ({
-    ...story,
-    places: story.chapters.map(chapter => bySlug.get(chapter.slug)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)),
-  })).filter(story => story.places.length === story.chapters.length);
+  const stories = CULTURE_STORIES.map(story => {
+    const resolvedChapters = story.chapters.map(chapter => ({ chapter, place: chapter.slug ? bySlug.get(chapter.slug) : undefined }));
+    const hasInvalidSlug = resolvedChapters.some(({ chapter, place }) => chapter.slug && !place);
+    return {
+      ...story,
+      hasInvalidSlug,
+      places: resolvedChapters.map(item => item.place).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)),
+    };
+  }).filter(story => !story.hasInvalidSlug);
 
   return (
     <div className="storytelling-page">
@@ -50,7 +49,7 @@ export default async function HistoricalMapPage() {
             <div className="storytelling-number">0{index+1}</div>
             <div className="kicker">{STORY_CHOICE_PERIODS[story.key] ?? story.theme}</div>
             <h3>{story.title}</h3>
-            <p className="storytelling-card-summary">{STORY_CHOICE_SUMMARIES[story.key] ?? story.subtitle}</p>
+            <p className="storytelling-card-summary">{story.subtitle}</p>
             <Link className="text-link" href={`/mappa/epoche/${story.key}`}>Entra nel racconto →</Link>
           </article>)}
         </div>
