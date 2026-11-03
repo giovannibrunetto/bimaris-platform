@@ -9,6 +9,9 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Storia, miti e leggende di Messina | BIMARIS",
   description: "Scopri miti e leggende di Messina e dello Stretto: Colapesce, Mata e Grifone, Fata Morgana, Scilla e Cariddi e i luoghi reali cui sono legati.",
+  alternates: {
+    canonical: "/storie-miti-leggende",
+  },
 };
 
 const editorialIllustrations: Record<string, string> = {
