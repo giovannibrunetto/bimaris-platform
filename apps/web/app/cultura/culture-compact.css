@@ -173,14 +173,14 @@
   .culture-page .page-hero h1 {
     margin-top: 0;
     margin-bottom: 10px;
-    color: var(--bimaris-abyssal-teal);
+    color: var(--bimaris-abyssal-teal) !important;
   }
 
   .culture-page .page-hero p {
     margin-top: 0;
     margin-bottom: 0;
     line-height: 1.45;
-    color: #344448;
+    color: #344448 !important;
   }
 
   .culture-page .culture-entry-section.discovery-page-first {
