@@ -21,6 +21,12 @@ const editorialIllustrations: Record<string, string> = {
   "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
 };
 
+const cardImagePositions: Record<string, string> = {
+  orione: "center 35%",
+  "crono-e-la-falce": "center 80%",
+  "truvatura-via-cardines": "center 25%",
+};
+
 function storyTypeLabel(storyType: string) {
   const normalized = storyType.trim().toLowerCase();
   if (normalized.includes("fenomeno naturale")) return "Leggenda naturale";
@@ -59,10 +65,11 @@ export default async function StoriesPage() {
             {stories.map(story => {
               const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
               const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
+              const cardImagePosition = cardImagePositions[story.slug] ?? "center";
               return (
                 <Link className="card story-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
                   <div className="card-media story-card-media" style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
-                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />}
+                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", objectPosition: cardImagePosition }} />}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body story-card-body" style={{ padding: "18px 20px 20px" }}>
