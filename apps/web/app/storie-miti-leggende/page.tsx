@@ -29,8 +29,8 @@ const editorialIllustrations: Record<string, string> = {
 };
 
 const cardImagePositions: Record<string, string> = {
-  "orione-origini-mitiche-messina": "center 35%",
-  "crono-falce-porto": "center 80%",
+  orione: "center 35%",
+  "crono-e-la-falce": "center 80%",
   "truvatura-via-cardines": "center 25%",
 };
 
