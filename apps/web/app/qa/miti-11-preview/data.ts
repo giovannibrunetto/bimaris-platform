@@ -45,9 +45,9 @@ export const qaStories: QaStory[] = [
     title: "Dina e Clarenza",
     storyType: "Racconto storico-leggendario e memoria civica",
     excerpt: "Sul campanile del Duomo, due donne scandiscono ancora il tempo della città. Sono Dina e Clarenza: nei loro nomi Messina conserva la memoria della partecipazione femminile alla difesa durante il Vespro.",
-    image: "/qa/miti-copertine/Dina_e_Clarenza_copertina_v1.png",
+    image: "/qa/miti-copertine/Dina_e_Clarenza_card_v2.svg",
     imagePosition: "center center",
-    imageMode: "contain-framed",
+    imageMode: "cover",
     body: [
       "Sul campanile del Duomo, ai lati del gallo, compaiono Dina e Clarenza. Le loro figure appartengono all'orologio realizzato nel 1933, ma richiamano una memoria molto più antica: la resistenza di Messina all'assedio angioino del 1282.",
       "L'assedio è un evento storico della guerra del Vespro. Nelle cronache, la difesa della città coinvolge anche le donne, impegnate a trasportare pietre e materiali per le fortificazioni. Dentro questa partecipazione collettiva prendono rilievo i nomi delle due protagoniste.",
