@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1122 631" role="img" aria-labelledby="title desc">
+  <title id="title">Dina e Clarenza — composizione card panoramica</title>
+  <desc id="desc">Composizione QA ottenuta dall'illustrazione approvata, adattata al formato panoramico standard della card senza modificare il componente.</desc>
+  <defs>
+    <clipPath id="left"><rect width="585" height="631"/></clipPath>
+    <clipPath id="right"><rect x="537" width="585" height="631"/></clipPath>
+    <linearGradient id="blend" x1="0" x2="1"><stop offset="0" stop-color="#c9aa78" stop-opacity="0"/><stop offset=".5" stop-color="#c9aa78" stop-opacity=".22"/><stop offset="1" stop-color="#c9aa78" stop-opacity="0"/></linearGradient>
+  </defs>
+  <g clip-path="url(#left)">
+    <image href="/qa/miti-copertine/Dina_e_Clarenza_copertina_v1.png" x="0" y="-310" width="650" height="812" preserveAspectRatio="xMidYMax slice"/>
+  </g>
+  <g clip-path="url(#right)">
+    <image href="/qa/miti-copertine/Dina_e_Clarenza_copertina_v1.png" x="472" y="0" width="650" height="812" preserveAspectRatio="xMidYMin slice"/>
+  </g>
+  <rect x="510" y="0" width="104" height="631" fill="url(#blend)"/>
+</svg>
