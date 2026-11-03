@@ -7,6 +7,14 @@
   padding:10px;
 }
 
+.story-detail-figure--contain figcaption{
+  color:#1f2d31;
+  background:rgba(255,255,255,.96);
+  font-weight:600;
+  line-height:1.4;
+  padding:9px 12px;
+}
+
 .story-detail-internal-heading{
   font-family:Georgia,serif;
   font-size:24px;
