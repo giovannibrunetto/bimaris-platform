@@ -72,6 +72,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
     ["Interpretazioni", story.editorial?.interpretationsText],
     ["Cosa non è verificabile", story.editorial?.unverifiableText],
   ].filter((item): item is [string, string] => Boolean(item[1]));
+  const hasContextDetails = contextItems.length > 0 || Boolean(story.editorial?.originText);
 
   return <>
     <UserBehaviorSignal contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={0.5} />
@@ -106,14 +107,14 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
     </section>
 
     <section className="section sand story-detail-context" style={{ paddingTop: 20, paddingBottom: 20 }}>
-      <div className="story-detail-context-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0,1.62fr) minmax(270px,.5fr)", gap: 18, alignItems: "start" }}>
-        <div className="story-detail-context-main">
+      <div className="story-detail-context-grid" style={{ display: "grid", gridTemplateColumns: hasContextDetails ? "minmax(0,1.62fr) minmax(270px,.5fr)" : "minmax(270px,420px)", justifyContent: hasContextDetails ? undefined : "end", gap: 18, alignItems: "start" }}>
+        {hasContextDetails && <div className="story-detail-context-main">
           <div style={{ marginBottom: 10 }}><div className="kicker">Approfondisci</div><h2 style={{ fontFamily:"Georgia,serif", fontSize: 32, fontWeight:500, margin:"3px 0 0" }}>Dettagli del racconto</h2></div>
           {contextItems.length > 0 && <div className="cards story-detail-context-cards" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 10 }}>
             {contextItems.map(([label, text]) => <article className="card" key={label}><div className="card-body" style={{ padding: 12 }}><div className="eyebrow">{label}</div><p style={{ margin: "5px 0 0", fontSize: 13.5, lineHeight: 1.35 }}>{text}</p></div></article>)}
           </div>}
           {story.editorial?.originText && <div className="story-detail-origin" style={{ marginTop: 10, padding: "10px 12px", background: "rgba(255,255,255,.72)", borderRadius: 14 }}><div className="eyebrow">Origine della tradizione</div><p style={{ margin:"5px 0 0", fontSize:13.5, lineHeight:1.35 }}>{story.editorial.originText}</p>{story.editorial.periodLabel && <p className="muted" style={{ margin: "4px 0 0", fontSize: 12.5 }}>{story.editorial.periodLabel}</p>}</div>}
-        </div>
+        </div>}
 
         <aside className="detail-panel story-detail-places" style={{ padding: 16 }}>
           <div className="kicker">Nel territorio</div>
@@ -123,7 +124,7 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
             const hasCoordinates = Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
             const destination = hasCoordinates ? `${place.latitude},${place.longitude}` : place.googleMapsQuery;
             const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-            return <li key={`${place.position}-${place.googleMapsQuery}`} style={{ fontSize:13.5 }}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}<div style={{ marginTop: 5 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div></li>;
+            return <li key={`${place.position}-${place.googleMapsQuery}`} style={{ fontSize:13.5 }}><strong>{place.label ?? place.name}</strong>{place.address && <><br />{place.address}</>}{place.note && <><br /><span className="muted">{place.note}</span></>}{<div style={{ marginTop: 5 }}><BehaviorTrackedLink className="text-link" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "story", content_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={2}>Come arrivare →</BehaviorTrackedLink></div>}</li>;
           })}</ul> : <p className="muted">Il racconto è legato a un’area o a una tradizione diffusa.</p>}
           <div className="story-detail-place-actions" style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:10 }}>{story.places.length > 0 && <BehaviorTrackedLink className="button" href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="directions_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Mappa BIMARIS</BehaviorTrackedLink>}<Link className="button ghost" href="/storie-miti-leggende">Torna alle storie</Link></div>
         </aside>
