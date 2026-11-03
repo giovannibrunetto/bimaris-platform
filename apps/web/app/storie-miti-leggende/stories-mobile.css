@@ -33,7 +33,9 @@
 
 .story-card-media--contain img{
   box-sizing:border-box;
-  padding:6px;
+  padding:0;
+  transform:scale(1.08);
+  transform-origin:center;
 }
 
 @media (max-width:760px){
@@ -57,7 +59,10 @@
   }
   .story-card-media{height:170px!important}
   .story-card-media img{max-width:100%}
-  .story-card-media--contain img{padding:8px}
+  .story-card-media--contain img{
+    padding:0;
+    transform:scale(1.08);
+  }
   .story-card-body{padding:15px 18px 17px!important;min-width:0}
   .story-card-body h3{font-size:27px;line-height:1.04;margin:7px 0 8px!important;overflow-wrap:anywhere}
   .story-card-body .eyebrow{font-size:10px;line-height:1.25}
