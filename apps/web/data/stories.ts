@@ -21,7 +21,7 @@ type RawStory = { id: string; slug: string; title: string; excerpt: string | nul
 type StoryTextOverride = Pick<StoryEntry, "title" | "excerpt" | "body">;
 
 // Editorial freeze v3.0 approved by Direzione Strategica on 2026-11-03.
-// Staging-only source override: database records, visual assets and the seven original stories remain untouched.
+// Staging-only source override: database records and visual assets remain untouched.
 const approvedStoryTextV3: Record<string, StoryTextOverride> = {
   orione: {
     title: "Orione e le origini mitiche di Messina",
@@ -88,6 +88,123 @@ La promessa dipendeva tutta da quella prova. Ciò che non si riusciva a leggere 
 Qui si arresta la leggenda raccolta da Giuseppe Pitrè e pubblicata nel 1904. Non compare un cavaliere che tenti l’impresa, né qualcuno che porti alla luce il tesoro. Rimangono la scrittura sconosciuta e la condizione per raggiungere ciò che nasconderebbe.
 
 Via Cardines è il luogo al quale il racconto appartiene. Percorrendola oggi, puoi riportare la leggenda alla strada di cui conserva il nome; non possiamo però indicarti una pietra sulla quale tentare di leggere quegli stessi segni. La fonte ci consegna una promessa di ricchezza nascosta, non una mappa per ritrovarla.`,
+  },
+  "fata-morgana-stretto": {
+    title: "La Fata Morgana dello Stretto",
+    excerpt: "L’isola che sembrava a portata di mano",
+    body: `Il conquistatore era arrivato fino alla riva calabrese. Davanti a lui c’era la Sicilia; per raggiungerla mancava una barca.
+
+Comincia così una leggenda dello Stretto: un re senza nome, giunto dal continente, si trova fermato dal mare. Dall’altra parte vede la terra che vorrebbe conquistare, ma non può passarvi.
+
+Gli appare una donna. Con un incantesimo gli mostra la Sicilia vicinissima: distingue le campagne e il porto di Messina, le navi e chi lavora ai carichi. La distanza sembra scomparsa. Il re lascia il cavallo e si getta in acqua, convinto di poter raggiungere l’isola a nuoto.
+
+Ma l’immagine si dissolve. Il mare che lo separa dalla Sicilia è ancora lì, e il conquistatore annega. La donna che gli aveva mostrato quella terra era Morgana: la sua offerta era stata un inganno.
+
+Questa è una delle storie nate attorno alla Fata Morgana. Il suo teatro è il tratto d’acqua fra Reggio e Messina: per seguirla, guarda la città siciliana dalla sponda calabrese e considera lo spazio che la separa da chi la osserva.
+
+Il miraggio che porta quel nome esiste davvero. Strati d’aria con temperature e densità differenti deviano la luce e possono deformare o spostare le immagini della costa. La leggenda affida invece a una fata il potere di avvicinare l’isola.
+
+Le due cose si incontrano nello sguardo di chi rimane sulla riva. La Sicilia sembra raggiungibile in pochi passi, ma fra le sponde continua a scorrere lo Stretto.`,
+  },
+  colapesce: {
+    title: "Colapesce: il giovane che regge la Sicilia",
+    excerpt: "L’immersione dalla quale non tornò",
+    body: `A Messina chiamavano Nicola «Colapesce», perché in mare sapeva fare ciò che agli altri sembrava impossibile. Si immergeva tanto a lungo che la sua fama arrivò al re di Sicilia.
+
+Il sovrano volle metterlo alla prova. Nello Stretto gettò una coppa preziosa e gli ordinò di recuperarla. Nicola scese e tornò con l’oggetto. Il re ripeté la prova in acque più profonde; anche questa volta il giovane risalì.
+
+Poi la coppa venne lanciata ancora più giù. Colapesce si immerse per la terza volta e scomparve.
+
+La versione messinese che racconta il suo sacrificio prosegue sotto la superficie: laggiù il giovane vide le tre colonne sulle quali poggiava la Sicilia. Quella sotto Messina stava cedendo. Colapesce rimase a sostenerla con il proprio corpo, impedendo che l’isola sprofondasse.
+
+Per chi era sopra, l’ultima immersione si era conclusa con un’assenza. Per il racconto, invece, Nicola non aveva smesso di agire: continuava a reggere la terra sotto Capo Peloro.
+
+Guardando il mare da Torre Faro, ti trovi davanti al paesaggio al quale questa versione della leggenda lega la sua discesa. Non c’è un punto degli abissi da indicare come luogo del ritrovamento: la colonna appartiene al racconto.
+
+La città ha però dato una forma visibile a quella storia. Nel Teatro Vittorio Emanuele, Renato Guttuso ha rappresentato Colapesce sul soffitto della sala. Il giovane delle profondità torna così sopra gli spettatori: il teatro conserva nell’immagine ciò che la leggenda lascia per sempre sotto il mare.`,
+  },
+  "scilla-e-cariddi": {
+    title: "Scilla e Cariddi: i mostri dello Stretto",
+    excerpt: "Il passaggio di Ulisse",
+    body: `Prima di riprendere il viaggio, Ulisse aveva ricevuto da Circe un avvertimento: avrebbe incontrato due pericoli, e avvicinarsi all’uno significava allontanarsi dall’altro.
+
+Da una parte abitava Scilla, nascosta in una caverna, con sei teste pronte ad afferrare chi passava. Dall’altra Cariddi inghiottiva il mare e lo rigettava. Finire nel suo gorgo avrebbe significato perdere la nave intera. Circe gli aveva consigliato di tenersi dalla parte di Scilla.
+
+Quando il passaggio apparve davanti ai naviganti, il fragore dell’acqua fece cadere i remi dalle mani dei compagni. Ulisse li richiamò ai loro posti e ordinò al timoniere di accostarsi alla rupe. Non disse loro quale minaccia vi si nascondesse.
+
+Mentre tutti guardavano Cariddi, Scilla afferrò sei uomini dalla nave. Ulisse non riuscì a salvarli. L’imbarcazione superò il passaggio, ma lo fece lasciando quei compagni al mostro.
+
+L’episodio dell’Odissea si conclude così: una nave prosegue, sei uomini non tornano. L’avvertimento di Circe non aveva promesso una traversata senza perdite.
+
+La tradizione ha riconosciuto questo paesaggio mitico nello Stretto di Messina, collocando Scilla sul lato calabrese e Cariddi su quello siciliano. Da Capo Peloro puoi guardare verso la costa opposta e ritrovare la relazione fra le due rive che ha dato una geografia al racconto.
+
+Il mare che attraversi con gli occhi non custodisce due creature da localizzare: custodisce il paesaggio al quale generazioni di lettori e naviganti hanno legato la scelta di Ulisse, costretto a cercare un’uscita fra due minacce.`,
+  },
+  "mata-e-grifone": {
+    title: "Mata e Grifone, i Giganti di Messina",
+    excerpt: "Il gigante che dovette cambiare",
+    body: `A Camaro viveva Mata. Nella leggenda, un guerriero moro di dimensioni gigantesche, venuto a saccheggiare il territorio messinese, la vide e volle sposarla.
+
+La famiglia si oppose e nascose la giovane. Gli uomini del guerriero scoprirono il rifugio, la rapirono e la portarono al loro capo. Ma avere Mata accanto non significava averne ottenuto il consenso: la ragazza non accettava quell’unione.
+
+Il racconto cambia direzione quando il guerriero si converte al cristianesimo e assume il nome di Grifone. Nella variante che prosegue fino al matrimonio, Mata diventa sua sposa; la tradizione non chiarisce come si passi dal precedente rifiuto alle nozze. Nella memoria cittadina i due diventano i progenitori simbolici dei messinesi.
+
+È questa una delle vicende attribuite ai Giganti, non la biografia accertata di due fondatori. La storia del rapimento resta parte della variante: non scompare dietro il lieto fine delle nozze.
+
+Quando incontri Mata e Grifone nelle celebrazioni di agosto, riconosci entrambi a cavallo, innalzati ben oltre l’altezza di chi li accompagna. La leggenda dà nomi e vicende a quelle figure; la loro presenza nella festa ha una storia documentata propria.
+
+Un pagamento del 1548 ricorda guanti per la Gigantessa e uno stendardo per il Gigante. L’assetto equestre è attestato dal 1723. Non sono date della vita della coppia: sono tracce della costruzione e della trasformazione delle figure festive.
+
+Camaro resta il luogo che lega Mata al territorio, e la passeggiata riporta i due personaggi nelle strade cittadine. Messina continua a incontrarli insieme, conservando in una festa la coppia alla quale ha affidato uno dei racconti della propria origine.`,
+  },
+  "madonna-della-lettera": {
+    title: "La Madonna della Lettera e la promessa a Messina",
+    excerpt: "Il viaggio degli ambasciatori",
+    body: `Il viaggio comincia a Messina, dopo la predicazione di Paolo. Secondo la tradizione devozionale, alcuni cittadini, convertiti al cristianesimo, desiderano incontrare Maria, la madre di Gesù, e chiedere la sua protezione per la città.
+
+Gli ambasciatori partono per Gerusalemme. Il racconto li colloca nell’anno 42: Maria è ancora in vita e li accoglie. Alla richiesta risponde con una lettera destinata ai messinesi, nella quale benedice loro e la città.
+
+La tradizione data il messaggio al 3 giugno e lo accompagna a una ciocca dei capelli della Vergine. Gli inviati riportano a Messina il segno di quella promessa. Il viaggio nato da una richiesta si conclude con una benedizione da consegnare a tutta la comunità.
+
+Da questo racconto viene il titolo di Madonna della Lettera. La devozione ha legato la promessa a luoghi e immagini che puoi incontrare ancora oggi: il Duomo, centro del culto cittadino, e le rappresentazioni dell’ambasceria conservate nel patrimonio artistico messinese.
+
+Il Museo regionale Accascina ne custodisce testimonianze particolari: dipinti dedicati all’incontro con Maria e persino una versione cinese del testo della lettera, eseguita nel Seicento su tessuto di lino. Sono opere e documenti della diffusione del culto, non testimonianze contemporanee al viaggio narrato.
+
+L’ambasceria appartiene alla tradizione religiosa; la devozione che ne è cresciuta appartiene anche alla storia della città. Nella festa del 3 giugno Messina rinnova quel rapporto: il messaggio affidato a pochi ambasciatori viene ricordato come una promessa rivolta a tutti.`,
+  },
+  "leggende-madonna-dinnammare": {
+    title: "Le due leggende della Madonna di Dinnammare",
+    excerpt: "L’immagine che tornava sul monte",
+    body: `Un pastore di Larderia trovò sul monte una tavoletta di marmo con l’immagine di Maria e la portò a casa. La mattina seguente era scomparsa. Cercandola, la ritrovò sulla montagna, nello stesso punto.
+
+Il parroco volle custodirla nella chiesa di Larderia. Ma anche da lì l’immagine scomparve e tornò sul monte. Il ritorno indicava, secondo la leggenda, il luogo al quale era destinata: vi sarebbe stata costruita una chiesa.
+
+L’immagine arrivata dal mare
+
+Un’altra leggenda comincia sulla costa. Due creature marine trasportarono l’immagine sacra fino alla spiaggia di Maregrosso. I pescatori iniziarono a venerarla; poi la portarono sul monte Dinnammare, dove sarebbe sorto il luogo di culto.
+
+Sono due racconti diversi: nel primo l’immagine torna da sola alla montagna; nel secondo sono i pescatori a condurvela dal mare.
+
+Nel santuario, il rilievo marmoreo ottocentesco raffigura la Madonna col Bambino sostenuta da due creature marine: una testimonianza della devozione, non una prova del miracolo.
+
+Larderia, Maregrosso e la vetta appartengono a due itinerari della tradizione. Nel santuario entrambi trovano il loro punto di arrivo.`,
+  },
+  "risa-citta-sommersa-ganzirri": {
+    title: "Risa, la città sommersa di Ganzirri",
+    excerpt: "La campana sotto il lago",
+    body: `Prima del lago, dice la leggenda, c’era Risa.
+
+Dove oggi si distende il Lago Grande di Ganzirri sorgeva una città dalle mura chiare. Un terremoto la distrusse e fece sprofondare il terreno. Nella voragine si raccolsero le acque, e il luogo delle case diventò un lago.
+
+Il racconto avrebbe potuto finire con la scomparsa della città. Continua invece con qualcosa che, secondo la credenza, non ha smesso di farsi sentire: la campana della sua chiesa.
+
+La torre era stata abbattuta dal sisma, ma la campana sommersa avrebbe continuato a suonare all’arrivo delle burrasche. I rintocchi avvertivano i pescatori di non mettersi in mare. La città scomparsa restava così legata alla vita di chi abitava sulle rive.
+
+La raccolta locale che tramanda questa versione attribuisce il racconto ai pescatori e agli anziani di Ganzirri. Non ci consegna un superstite con un nome, né la cronaca di un giorno preciso: ci consegna la città inghiottita e il suono che la richiamerebbe alla memoria.
+
+Per ritrovare il luogo della leggenda, fermati davanti al Lago Grande. È qui che il racconto colloca Risa, non nel vicino Lago Piccolo. Non ci sono rovine verificate della città da indicarti sul fondo. Lo specchio d’acqua è un paesaggio reale, la città sommersa è la presenza che la tradizione vi immagina.
+
+In questa storia la fine di Risa non interrompe ogni rapporto con la riva: la campana continua a rivolgersi a chi sta per uscire, trasformando il ricordo di una catastrofe in un avvertimento.`,
   },
 };
 
