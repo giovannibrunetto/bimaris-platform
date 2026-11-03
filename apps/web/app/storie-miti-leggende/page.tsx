@@ -19,6 +19,10 @@ const editorialIllustrations: Record<string, string> = {
   "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
   "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
   "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
+  orione: "/stories/orione-cover.png",
+  "crono-e-la-falce": "/stories/crono-cover.png",
+  "dina-e-clarenza": "/stories/dina-e-clarenza-cover.png",
+  "truvatura-via-cardines": "/stories/cardines-cover.png",
 };
 
 const cardImagePositions: Record<string, string> = {
