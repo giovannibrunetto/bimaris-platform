@@ -57,6 +57,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   const heroImage = narrativeIllustration ?? story.imageUrl;
   const heroAlt = narrativeIllustration ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
   const heroObjectPosition = slug === "mata-e-grifone" ? "center top" : "center center";
+  const heroObjectFit: "cover" | "contain" = slug === "dina-e-clarenza" ? "contain" : "cover";
+  const heroContainClass = heroObjectFit === "contain" ? " story-detail-figure--contain" : "";
   const typeLabel = shortStoryType(story.storyType);
   const actionStyle = { width: "100%", height: 48, minHeight: 48, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 12px", textAlign: "center" as const, whiteSpace: "nowrap" as const, fontSize: 14 };
   const paragraphStyle = { fontSize: 15, lineHeight: 1.5, color: "#344448" };
@@ -73,8 +75,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
     <section className="section story-detail-hero" style={{ paddingTop: 24, paddingBottom: 20 }}>
       <div className="story-detail-hero-grid" style={{ display: "grid", gridTemplateColumns: "minmax(280px,.72fr) minmax(0,1.38fr)", gap: 30, alignItems: "start" }}>
         <div className="story-detail-media-column">
-          {heroImage && <figure className="culture-hero-figure story-detail-figure" style={{ margin: 0, overflow: "hidden" }}>
-            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: "cover", objectPosition: heroObjectPosition, display: "block" }} />
+          {heroImage && <figure className={`culture-hero-figure story-detail-figure${heroContainClass}`} style={{ margin: 0, overflow: "hidden" }}>
+            <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: heroObjectFit, objectPosition: heroObjectPosition, display: "block" }} />
             {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
           </figure>}
           <div className="story-detail-actions" style={{ display: "grid", gridTemplateColumns: story.places.length > 0 ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 10, marginTop: 12 }}>
@@ -88,7 +90,12 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
           <h1 style={{ fontFamily: "Georgia,serif", fontSize: "clamp(34px,3.2vw,48px)", lineHeight: 1.02, margin: "7px 0 9px" }}>{story.title}</h1>
           <p style={{ fontSize: 16.5, lineHeight: 1.4, color: "#4d5962", margin: "0 0 12px" }}>{story.excerpt}</p>
           <div className="kicker" style={{ marginBottom: 6 }}>Il racconto</div>
-          {visibleParagraphs.map((paragraph, index) => <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>)}
+          {visibleParagraphs.map((paragraph, index) => {
+            const isDinnammareHeading = slug === "leggende-madonna-dinnammare" && paragraph === "L’immagine arrivata dal mare";
+            return isDinnammareHeading
+              ? <h2 className="story-detail-internal-heading" key={index}>{paragraph}</h2>
+              : <p key={index} style={{ ...paragraphStyle, margin: index === 0 ? 0 : "8px 0 0" }}>{paragraph}</p>;
+          })}
           {hiddenParagraphs.length > 0 && <ExpandableStoryText paragraphs={hiddenParagraphs} />}
         </article>
       </div>
