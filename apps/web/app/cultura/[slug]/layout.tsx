@@ -29,7 +29,7 @@ export default async function CultureSeoLayout({ children, params }: Readonly<{ 
     image,
     address: entry.address ? { "@type": "PostalAddress", streetAddress: entry.address, addressLocality: "Messina", addressCountry: "IT" } : undefined,
     geo: Number.isFinite(entry.latitude) && Number.isFinite(entry.longitude) ? { "@type": "GeoCoordinates", latitude: entry.latitude, longitude: entry.longitude } : undefined,
-    isPartOf: { "@id": "https://bimarisnet.it/#website" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
   const breadcrumbSchema = {
     "@context": "https://schema.org",
