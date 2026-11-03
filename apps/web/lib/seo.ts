@@ -4,6 +4,7 @@ export const SITE_URL = "https://bimarisnet.it";
 export const SITE_NAME = "BIMARIS";
 
 export function absoluteUrl(path = "/") {
+  if (/^https?:\/\//i.test(path)) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return new URL(normalized, SITE_URL).toString();
 }
