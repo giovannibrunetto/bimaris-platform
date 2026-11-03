@@ -10,6 +10,9 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Monumenti e luoghi culturali di Messina | BIMARIS",
   description: "Esplora liberamente monumenti, musei, architetture e luoghi culturali di Messina selezionati da BIMARIS.",
+  alternates: {
+    canonical: "/cultura/monumenti",
+  },
 };
 
 export default async function CultureMonumentsPage() {
