@@ -5,6 +5,9 @@ import "./culture-compact.css";
 export const metadata: Metadata = {
   title: "Cultura a Messina | BIMARIS",
   description: "Lasciati raccontare Messina attraverso epoche e storie collegate, oppure esplora liberamente monumenti, musei e luoghi culturali selezionati da BIMARIS.",
+  alternates: {
+    canonical: "/cultura",
+  },
 };
 
 export default function CulturePage() {
