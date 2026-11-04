@@ -24,6 +24,19 @@ export async function POST(request:NextRequest){
  if(!supabase)return back(request,"action-error");
  try{
   if(action==="create")return back(request,"legacy-create-disabled");
+  if(action==="set-territory"){
+   const territoryId=text(form.get("territory_id"),80);
+   if(!/^[0-9a-f-]{36}$/i.test(experienceId)||!/^[0-9a-f-]{36}$/i.test(territoryId))return back(request,"invalid-data");
+   const [{data:territory},{data:experience}]=await Promise.all([
+    supabase.from("territories").select("id").eq("id",territoryId).eq("active",true).maybeSingle(),
+    supabase.from("experiences").select("id,review_status,published").eq("id",experienceId).maybeSingle()
+   ]);
+   if(!territory||!experience||experience.published||!["draft","pending","rejected"].includes(experience.review_status))return back(request,"invalid-review-state");
+   const {error}=await supabase.from("experiences").update({territory_id:territoryId,territory_assignment_status:"editorial"}).eq("id",experienceId);
+   if(error)throw error;
+   return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=territory-assigned`,request.url),303);
+  }
+
   if(!experienceId)return back(request,"invalid-data");
   if(action==="approve"||action==="request-changes"){
    const generalNote=text(form.get("review_notes"),2000),sections=reviewSections(form),reviewNotes=action==="request-changes"?reviewSummary(sections,generalNote):generalNote;
