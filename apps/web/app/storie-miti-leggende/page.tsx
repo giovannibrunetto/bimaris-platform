@@ -67,7 +67,7 @@ export default async function StoriesPage() {
 
       <section className="section discovery-page-first bimaris-ambient-section stories-page-first">
         <div className="section-head">
-          <div><div className="kicker stories-section-kicker">Tra racconto e territorio</div><h2>Le storie dello Stretto</h2></div>
+          <div><div className="kicker stories-section-kicker ux-brand-05-section-kicker">Tra racconto e territorio</div><h2>Le storie dello Stretto</h2></div>
           <p>Ogni scheda collega il racconto ai luoghi di Messina che permettono di leggerlo direttamente nel paesaggio.</p>
         </div>
 
