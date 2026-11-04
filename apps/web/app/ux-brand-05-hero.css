@@ -95,11 +95,11 @@
 /* UX-BRAND-05 follow-up: compact Borghi's transition without altering the shared hero. */
 @media (min-width: 761px) {
   .ux-brand-05-hero--standard + .ux-brand-05-borghi-first { padding-top: 22px !important; }
-  .ux-brand-05-hero--standard:has(+ .ux-brand-05-borghi-first) { padding-bottom: 22px !important; }
+  .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-borghi-hero { padding-bottom: 22px !important; }
 }
 @media (max-width: 760px) {
   .ux-brand-05-hero--standard + .ux-brand-05-borghi-first { padding-top: 16px !important; }
-  .ux-brand-05-hero--standard:has(+ .ux-brand-05-borghi-first) { padding-bottom: 18px !important; }
+  .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-borghi-hero { padding-bottom: 18px !important; }
 }
 /* Rete: introduction is one editorial unit; two options fill a genuine two-column grid. */
 .ux-brand-05-rete-first .ux-brand-05-rete-intro {
