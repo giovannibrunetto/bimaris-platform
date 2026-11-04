@@ -51,8 +51,7 @@ export default function AccediPage(){
   feedback("Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
  }
 
- return <div className="container access-gateway">
-  <h1>Come vuoi usare BIMARIS?</h1><p className="access-gateway-intro">Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati.</p>
+ return <><section className="ux-brand-05-hero ux-brand-05-hero--compact"><h1>Come vuoi usare BIMARIS?</h1><p>Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati.</p></section><div className="container access-gateway">
   <div className="access-gateway-grid">
    <section className="card access-gateway-card">
     <div><div className="kicker">Per te</div><h2>Utente</h2><p>Salva luoghi ed esperienze, costruisci il tuo BIMARIS e ricevi suggerimenti più vicini ai tuoi interessi.</p></div>
@@ -66,5 +65,5 @@ export default function AccediPage(){
     <p className="access-gateway-note">Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
   </div><p className="access-gateway-back"><Link href="/">← Torna a BIMARIS</Link></p>
- </div>;
+ </div></>;
 }
