@@ -15,14 +15,39 @@ const optionalLabel=(label:string)=>`${label} (facoltativo)`;
 
 async function ensurePlaces(){
  const apiKey=process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;if(!apiKey)throw new Error("missing_maps_key");
- if(!window.google?.maps?.importLibrary){
+ const maps=window.google?.maps;
+ if(typeof maps?.importLibrary==="function"){
+  const places=await maps.importLibrary("places");
+  if(places?.AutocompleteSuggestion&&places?.AutocompleteSessionToken)return places;
+ }
+ if(maps?.places?.AutocompleteSuggestion&&maps.places.AutocompleteSessionToken)return maps.places;
+ if(maps&&!document.getElementById("bimaris-google-maps"))throw new Error("places_library_unavailable");
+ if(!maps){
   await new Promise<void>((resolve,reject)=>{
    const existing=document.getElementById("bimaris-google-maps") as HTMLScriptElement|null;
-   if(existing){let tries=0;const timer=window.setInterval(()=>{if(window.google?.maps?.importLibrary){clearInterval(timer);resolve()}else if(++tries>100){clearInterval(timer);reject(new Error("maps_load_timeout"))}},50);return}
-   const script=document.createElement("script");script.id="bimaris-google-maps";script.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly&loading=async`;script.async=true;script.onload=()=>resolve();script.onerror=()=>reject(new Error("maps_load_failed"));document.head.appendChild(script);
+   if(existing){
+    let tries=0;
+    const timer=window.setInterval(()=>{
+     if(window.google?.maps?.places?.AutocompleteSuggestion||typeof window.google?.maps?.importLibrary==="function"){window.clearInterval(timer);resolve()}
+     else if(++tries>100){window.clearInterval(timer);reject(new Error("maps_load_timeout"))}
+    },50);
+    return;
+   }
+   const script=document.createElement("script");script.id="bimaris-google-maps";
+   script.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly&libraries=places`;
+   script.async=true;
+   script.onload=()=>resolve();
+   script.onerror=()=>reject(new Error("maps_load_failed"));
+   document.head.appendChild(script);
   });
  }
- return window.google.maps.importLibrary("places");
+ if(typeof window.google?.maps?.importLibrary==="function"){
+  const places=await window.google.maps.importLibrary("places");
+  if(places?.AutocompleteSuggestion&&places?.AutocompleteSessionToken)return places;
+ }
+ const places=window.google?.maps?.places;
+ if(places?.AutocompleteSuggestion&&places?.AutocompleteSessionToken)return places;
+ throw new Error("places_library_unavailable");
 }
 
 export default function ApplicationPage(){
