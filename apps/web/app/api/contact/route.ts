@@ -14,6 +14,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "invalid_body" }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json({ ok: false, error: "invalid_body" }, { status: 400 });
+  }
+  if (body.privacy_consent !== "yes" && body.privacy_consent !== true) {
+    return NextResponse.json({ ok: false, error: "privacy_consent_required" }, { status: 400 });
+  }
+
   const payload = {
     name: text(body.name, 200),
     email: text(body.email, 320),
