@@ -68,6 +68,22 @@
 .ux-brand-05-hero + .access-gateway {
   background: #E7E0D3 !important;
 }
+/* UX-BRAND-05 — first section editorial kickers only; never cards or controls. */
+.ux-brand-05-section-kicker.ux-brand-05-section-kicker.ux-brand-05-section-kicker {
+  margin: 0 0 10px !important;
+  color: #705D39 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+}
+@media (max-width: 760px) {
+  .ux-brand-05-section-kicker.ux-brand-05-section-kicker.ux-brand-05-section-kicker {
+    margin-bottom: 8px !important;
+    font-size: 12px !important;
+  }
+}
 /* Keep the existing map controls visible below the compact introduction. */
 @media (min-width: 761px) {
   .map-page-section.ux-brand-05-map-content { padding-top: 24px; }
