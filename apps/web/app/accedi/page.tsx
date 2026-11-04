@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FormEvent,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
+import PasswordAccess from "./PasswordAccess";
 
 export default function AccediPage(){
  const [operatorEmail,setOperatorEmail]=useState("");
@@ -62,6 +63,7 @@ export default function AccediPage(){
     <div><div className="kicker">Per gli operatori</div><h2>Operatore</h2><p>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
     <div className="access-gateway-actions"><button className="button" type="button" disabled={operatorLoading} aria-expanded={showOperatorLogin} aria-controls="operator-access-form" onClick={()=>showOperatorLogin?setShowOperatorLogin(false):void openOperatorAccess()}>{operatorLoading?"Verifica accesso…":showOperatorLogin?"Chiudi accesso operatore":"Accedi come operatore"}</button><Link className="button ghost" href="/operatori/candidatura">Registrati e proponi un'esperienza</Link></div>
     {showOperatorLogin&&<form id="operator-access-form" onSubmit={sendOperatorMagicLink} className="operator-access-form" aria-busy={operatorLoading}><label htmlFor="operator-email"><strong>Email associata all'attività</strong></label><input id="operator-email" name="email" type="email" autoComplete="email" inputMode="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it"/><button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>{operatorMessage&&<p role={operatorMessageError?"alert":"status"} aria-live="polite" className="access-status">{operatorMessage}</p>}<p className="access-gateway-note">Se sei già autenticato e il tuo account è abilitato come operatore, BIMARIS apre direttamente l'Area Operatore senza inviare un nuovo link.</p></form>}
+    {showOperatorLogin&&<PasswordAccess context="operator"/>}
     <p className="access-gateway-note">Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
   </div><p className="access-gateway-back"><Link href="/">← Torna a BIMARIS</Link></p>
