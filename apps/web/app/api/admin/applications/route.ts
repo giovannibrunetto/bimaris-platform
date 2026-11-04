@@ -43,10 +43,13 @@ async function linkOperatorMembership(supabase: ServiceClient, operatorId: strin
 async function sendOperatorAccess(supabase: ServiceClient, applicationId: string, operatorId: string, request: NextRequest) {
   const { data: application, error: applicationError } = await supabase
     .from("operator_applications")
-    .select("email,business_name")
+    .select("email,business_name,operator_id,status")
     .eq("id", applicationId)
     .single();
   if (applicationError) throw applicationError;
+  if (application?.status !== "accepted" || application.operator_id !== operatorId) {
+    throw new Error("Application is not accepted for the requested operator");
+  }
   const email = application?.email?.trim().toLowerCase();
   if (!email) return "account-required" as const;
 
@@ -70,12 +73,6 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
   });
   if (otpError) throw otpError;
   return "access-sent" as const;
-}
-
-async function ensureOperatorAccount(supabase: ServiceClient, applicationId: string, slug: string, request: NextRequest) {
-  const { data: operator, error: operatorError } = await supabase.from("operators").select("id").eq("slug", slug).single();
-  if (operatorError) throw operatorError;
-  return sendOperatorAccess(supabase, applicationId, operator.id, request);
 }
 
 export async function POST(request: NextRequest) {
@@ -105,11 +102,12 @@ export async function POST(request: NextRequest) {
     if ((action === "accept" || action === "accept_publish") && applicationId) {
       const slug = slugify(requestedSlug || businessName);
       if (!slug) return back(request, "invalid-slug");
-      const { error } = await supabase.rpc("accept_operator_application", { p_application_id: applicationId, p_slug: slug, p_why_selected: notes, p_publish: action === "accept_publish" });
+      const { data: acceptedOperatorId, error } = await supabase.rpc("accept_operator_application", { p_application_id: applicationId, p_slug: slug, p_why_selected: notes, p_publish: action === "accept_publish" });
       if (error) throw error;
+      if (typeof acceptedOperatorId !== "string" || !acceptedOperatorId) throw new Error("Missing approved operator id");
       const base = action === "accept_publish" ? "published" : "accepted";
       try {
-        const access = await ensureOperatorAccount(supabase, applicationId, slug, request);
+        const access = await sendOperatorAccess(supabase, applicationId, acceptedOperatorId, request);
         return back(request, access === "invited" ? `${base}-access-invited` : access === "access-sent" ? `${base}-access-sent` : `${base}-account-required`);
       } catch (accessError) {
         console.error("BIMARIS operator approved but access email failed", accessError);
