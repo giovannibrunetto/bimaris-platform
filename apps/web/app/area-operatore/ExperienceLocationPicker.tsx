@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect,useRef,useState} from "react";
 
 declare global {interface Window {google?:any}}
 
@@ -43,6 +43,46 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
  const [results,setResults]=useState<Candidate[]>([]);
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
+ const [mapOpen,setMapOpen]=useState(false);
+ const [mapError,setMapError]=useState("");
+ const [pending,setPending]=useState<{latitude:number;longitude:number}|null>(null);
+ const mapElement=useRef<HTMLDivElement|null>(null);
+ const mapInstance=useRef<any>(null);
+ const markerInstance=useRef<any>(null);
+ const [mapLoading,setMapLoading]=useState(false);
+
+ useEffect(()=>{
+  if(!mapOpen)return;
+  let cancelled=false,listener:any=null;
+  setMapLoading(true);setMapError("");
+  (async()=>{
+   try{
+    const maps=await googleMaps();
+    if(cancelled||!mapElement.current)return;
+    const lat=Number(value.latitude),lng=Number(value.longitude);
+    const hasSaved=value.latitude!==""&&value.longitude!==""&&Number.isFinite(lat)&&Number.isFinite(lng);
+    const center=hasSaved?{lat,lng}:{lat:38.1938,lng:15.5540};
+    const map=new maps.Map(mapElement.current,{center,zoom:hasSaved?16:12,streetViewControl:false,mapTypeControl:false,fullscreenControl:true});
+    mapInstance.current=map;
+    const marker=new maps.Marker({map,position:hasSaved?center:undefined,draggable:true,title:"Punto da confermare"});
+    markerInstance.current=marker;
+    if(hasSaved)setPending({latitude:lat,longitude:lng});
+    const update=(position:any)=>{const point={latitude:position.lat(),longitude:position.lng()};setPending(point);marker.setPosition(position)};
+    listener=map.addListener("click",(event:any)=>{if(event.latLng)update(event.latLng)});
+    marker.addListener("dragend",(event:any)=>{if(event.latLng)update(event.latLng)});
+   }catch(e){if(!cancelled)setMapError(e instanceof Error?e.message:"Mappa non disponibile.")}
+   finally{if(!cancelled)setMapLoading(false)}
+  })();
+  return()=>{cancelled=true;if(listener)listener.remove();if(markerInstance.current){markerInstance.current.setMap(null);markerInstance.current=null}mapInstance.current=null};
+ },[mapOpen]);
+ const confirmManual=()=>{
+  if(!pending)return setMapError("Tocca la mappa per indicare il punto.");
+  const name=query.trim();
+  if(!name)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
+  onChange({...value,meetingPoint:name,googleMapsPlaceId:"",latitude:String(pending.latitude),longitude:String(pending.longitude)});
+  setResults([]);setMapOpen(false);setMapError("");
+ };
+
  const confirmed=value.latitude!==""&&value.longitude!==""&&Number.isFinite(Number(value.latitude))&&Number.isFinite(Number(value.longitude));
  const changeQuery=(next:string)=>{setQuery(next);setResults([]);setError("");onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""})};
  const verify=async()=>{
@@ -70,7 +110,18 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   <label>Nome del luogo o indirizzo
    <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)}/>
   </label>
-  <button type="button" onClick={verify} disabled={busy}>{busy?"Ricerca in corso…":"Verifica su Google Maps"}</button>
+  <div className="location-actions">
+   <button type="button" onClick={verify} disabled={busy}>{busy?"Ricerca in corso…":"Verifica su Google Maps"}</button>
+   <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Seleziona il punto sulla mappa"}</button>
+  </div>
+  {mapOpen&&<div className="manual-location">
+   <p>Individua il luogo reale, tocca la mappa e, se necessario, trascina il segnaposto. Per un trekking scegli il punto di partenza o ritrovo, non il centro della località.</p>
+   <div ref={mapElement} className="manual-location-map" role="region" aria-label="Mappa per selezionare il punto geografico"/>
+   {mapLoading&&<p role="status">Caricamento mappa…</p>}
+   {pending&&<p role="status">Punto da confermare: {pending.latitude.toFixed(6)}, {pending.longitude.toFixed(6)}</p>}
+   {mapError&&<p role="alert">{mapError}</p>}
+   <button type="button" onClick={confirmManual} disabled={!pending||mapLoading}>Conferma questo punto</button>
+  </div>}
   {error&&<p role="alert">{error}</p>}
   {results.length>0&&<div className="location-results" aria-label="Risultati Google Maps"><p>Conferma il punto corretto:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);setResults([])}}>{item.address} — Conferma</button>)}</div>}
   {confirmed&&<p className="location-confirmed" role="status">Punto confermato: {value.meetingPoint} ({Number(value.latitude).toFixed(5)}, {Number(value.longitude).toFixed(5)})</p>}
@@ -79,7 +130,14 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    .experience-location-picker strong{font-size:17px}
    .experience-location-picker p{margin:0;line-height:1.5;font-size:13px}
    .location-choice{display:flex;flex-wrap:wrap;gap:14px}
-   .location-choice label{display:flex;align-items:center;gap:7px;font-size:14px}
+   .location-choice label{display:inline-flex;align-items:center;gap:9px;flex:0 1 auto;max-width:100%;font-size:14px;white-space:normal}
+   .location-choice input{flex:0 0 auto}
+   .location-actions{display:flex;flex-wrap:wrap;gap:10px}
+   .location-actions button{flex:1 1 210px}
+   .manual-location{display:grid;gap:12px}
+   .manual-location-map{height:340px;width:100%;border:1px solid #aa9978;border-radius:12px;overflow:hidden}
+   @media(max-width:600px){.manual-location-map{height:290px}.location-choice{display:grid;gap:12px}}
+
    .experience-location-picker>label{display:grid;gap:7px;font-weight:600;font-size:14px}
    .experience-location-picker input[type=text]{width:100%;padding:12px;border:1px solid #afa38a;border-radius:9px;background:#fff;color:#173136}
    .experience-location-picker button{padding:12px 15px;text-align:left;border:1px solid #84704a;border-radius:10px;background:#fff;color:#153038;cursor:pointer}
