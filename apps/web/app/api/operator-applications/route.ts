@@ -23,6 +23,7 @@ function number(value: unknown) { const parsed=typeof value==="number"?value:Num
 
 export async function POST(request: NextRequest) {
   let body:any;try{body=await request.json()}catch{return NextResponse.json({ok:false,error:"invalid_body"},{status:400})}
+  if(!body||typeof body!=="object"||Array.isArray(body))return NextResponse.json({ok:false,error:"invalid_body"},{status:400});
   const privacyConsent=body.privacy_consent===true||body.privacy_consent==="yes";
   const operatingMode=["fixed","itinerant","both"].includes(body.operating_mode)?body.operating_mode:null;
   const requestedCategory=text(body.category,100);
