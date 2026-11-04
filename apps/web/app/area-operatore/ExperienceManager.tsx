@@ -127,18 +127,42 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
  async function classifyLocation(){
   const lat=draft.location.latitude===""?NaN:Number(draft.location.latitude);
   const lon=draft.location.longitude===""?NaN:Number(draft.location.longitude);
-  if(!Number.isFinite(lat)||!Number.isFinite(lon))return {territoryId:null as string|null,status:"review",code:null as string|null};
+  type Assignment={territoryId:string|null;status:string|null;code:string|null};
+  let existing:{territory_id:string|null;territory_assignment_status:string|null;territory_municipality_code:string|null;latitude:number|null;longitude:number|null}|null=null;
+  try{
+   let sourceId=editingId;
+   if(!sourceId&&revisionId){
+    const {data:revision}=await supabase.from("experience_revisions").select("experience_id").eq("id",revisionId).single();
+    sourceId=revision?.experience_id??null;
+   }
+   if(sourceId){
+    const {data}=await supabase.from("experiences").select("territory_id,territory_assignment_status,territory_municipality_code,latitude,longitude").eq("id",sourceId).maybeSingle();
+    existing=data;
+   }
+  }catch{/* A lookup failure must not generate a false classification. */}
+  const samePoint=existing?.latitude!=null&&existing.longitude!=null&&
+   Number.isFinite(lat)&&Number.isFinite(lon)&&
+   Math.abs(Number(existing.latitude)-lat)<0.0000001&&Math.abs(Number(existing.longitude)-lon)<0.0000001;
+  const previous:Assignment={territoryId:existing?.territory_id??null,status:existing?.territory_assignment_status??null,code:existing?.territory_municipality_code??null};
+  // Preserve an editorial decision for exactly the same point, and avoid discarding
+  // a previously valid classification when an external polygon service is unavailable.
+  if(samePoint&&previous.status==="editorial"&&previous.territoryId)return previous;
+  if(!Number.isFinite(lat)||!Number.isFinite(lon))return {territoryId:null,status:"review",code:null};
   try{
    const response=await fetch("/api/operator/territory-classify",{
     method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({operatorId,latitude:lat,longitude:lon})
    });
-   if(!response.ok)return {territoryId:null,status:"unavailable",code:null};
+   if(!response.ok)throw new Error("Classification API unavailable");
    const data=await response.json() as {status:string;municipalityCode:string|null;territorySlug:string|null};
    const label=data.territorySlug==="messina"?"Messina":data.territorySlug==="area-ionica"?"Area Ionica":data.territorySlug==="area-tirrenica"?"Area Tirrenica":null;
    const territoryId=label?territories.find(t=>t.name===label)?.id??null:null;
+   if(data.status==="unavailable"&&samePoint&&previous.territoryId)return previous;
    return {territoryId,status:territoryId?"automatic":data.status==="outside"?"outside":data.status==="unavailable"?"unavailable":"review",code:data.municipalityCode};
-  }catch{return {territoryId:null,status:"unavailable",code:null}}
+  }catch{
+   if(samePoint&&previous.territoryId)return previous;
+   return {territoryId:null,status:"unavailable",code:null};
+  }
  }
  async function saveDraft():Promise<string|null>{setBusy(true);setMessage("");try{
  const {data:{user},error:authError}=await supabase.auth.getUser();
