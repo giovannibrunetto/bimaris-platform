@@ -18,7 +18,7 @@ export default async function VillagesPage() {
       <section
         className="page-hero discovery-page-hero"
         style={{
-          background: "linear-gradient(135deg, #0b3040 0%, #061624 58%, #02090f 100%)",
+          background: "radial-gradient(circle at 82% 16%, rgba(202, 168, 106, .16), transparent 25%), linear-gradient(135deg, #07343b 0%, #032126 62%, #02171b 100%)",
           color: "#ffffff",
         }}
       >
