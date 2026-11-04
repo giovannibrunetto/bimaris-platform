@@ -276,3 +276,45 @@
  .operator-area-shell .operator-profile-card,
  .operator-area-shell .collaboration-inbox{border-radius:15px!important}
 }
+
+
+/* BIMARIS operator visual alignment v4 — 2026-11-04 */
+/* One centered layout axis for the hero and management workspace. */
+.operator-area-hero>.container{
+ width:100%;
+ max-width:1180px!important;
+ margin-inline:auto!important;
+ box-sizing:border-box;
+}
+.operator-area-shell>.container{
+ width:100%;
+ max-width:1180px!important;
+ margin-inline:auto!important;
+}
+.operator-area-shell .operator-area-grid{
+ border:1px solid rgba(216,169,79,.22);
+ box-shadow:0 22px 58px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.48);
+ gap:15px;
+}
+.operator-area-shell .experience-manager,
+.operator-area-shell .operator-impact,
+.operator-area-shell .operator-profile-card,
+.operator-area-shell .collaboration-inbox{
+ border-color:rgba(22,61,63,.075)!important;
+ box-shadow:0 4px 16px rgba(22,49,49,.045)!important;
+}
+.operator-area-shell .operator-summary{
+ box-shadow:0 6px 18px rgba(7,38,42,.09)!important;
+}
+.operator-area-shell .experience-manager__card{
+ border-color:#E5E4DE!important;
+ box-shadow:none!important;
+}
+.operator-area-shell .operator-impact__metrics>div{
+ box-shadow:none!important;
+ border-color:#E7E5DF!important;
+}
+@media(max-width:650px){
+ .operator-area-hero>.container{width:100%;margin-inline:auto!important}
+ .operator-area-shell .operator-area-grid{gap:12px}
+}
