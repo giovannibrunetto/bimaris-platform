@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated, isAdminConfigured, isAdminTotpEnabled } from "@/lib/admin-auth";
+import "./admin-login.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -12,33 +13,35 @@ export default async function AdminLoginPage({ searchParams }: { searchParams: P
   const totpEnabled = isAdminTotpEnabled();
 
   return (
-    <section className="section" style={{ maxWidth: 720, margin: "0 auto" }}>
-      <div className="detail-panel">
-        <div className="kicker">Area privata</div>
-        <h1 style={{ fontFamily: "Georgia,serif", marginBottom: 8 }}>Amministrazione BIMARIS</h1>
-        <p className="muted">Accesso riservato alla gestione di candidature, operatori e analytics.</p>
+    <section className="admin-login" aria-labelledby="admin-login-title">
+      <div className="admin-login__card">
+        <div className="admin-login__eyebrow">Area riservata · BIMARIS</div>
+        <h1 id="admin-login-title">Amministrazione</h1>
+        <p className="admin-login__description">Accedi per gestire candidature, operatori e contenuti in revisione.</p>
 
         {!configured && (
-          <div style={{ padding: 14, borderRadius: 12, background: "#fff4df", margin: "18px 0" }}>
+          <div className="admin-login__notice" role="alert">
             <strong>Accesso non ancora configurato.</strong>
-            <p style={{ marginBottom: 0 }}>Imposta <code>BIMARIS_ADMIN_PASSWORD</code> (almeno 12 caratteri) e <code>BIMARIS_ADMIN_SESSION_SECRET</code> (almeno 32 caratteri) nelle variabili private Vercel.</p>
+            <p>Configura le credenziali amministrative nelle variabili private dell'ambiente.</p>
           </div>
         )}
 
-        {error === "otp" && <p role="alert" style={{ color: "#9d2626" }}>Codice di autenticazione non valido o scaduto.</p>}
-        {error === "invalid" && <p style={{ color: "#9d2626" }}>Password non corretta.</p>}
-        {error === "not-configured" && <p style={{ color: "#9d2626" }}>Password amministratore non configurata.</p>}
+        {error === "otp" && <p className="admin-login__error" role="alert">Codice di autenticazione non valido o scaduto.</p>}
+        {error === "invalid" && <p className="admin-login__error" role="alert">Password non corretta.</p>}
+        {error === "not-configured" && <p className="admin-login__error" role="alert">Password amministratore non configurata.</p>}
 
-        <form method="post" action="/api/admin/login" className="form" style={{ gridTemplateColumns: "1fr" }}>
-          <label className="wide">
-            Password
-            <input name="password" type="password" autoComplete="current-password" required minLength={12} disabled={!configured} />
-          </label>
-          {totpEnabled && <label className="wide">Codice Google Authenticator<input name="otp" type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required placeholder="6 cifre" disabled={!configured} /></label>}
-          <div className="wide">
-            <button className="button" type="submit" disabled={!configured}>Accedi</button>
-          </div>
+        <form method="post" action="/api/admin/login" className="admin-login__form">
+          <label htmlFor="admin-password">Password amministratore</label>
+          <input id="admin-password" name="password" type="password" autoComplete="current-password" required minLength={12} disabled={!configured} />
+          {totpEnabled && (
+            <>
+              <label htmlFor="admin-otp">Codice di autenticazione</label>
+              <input id="admin-otp" name="otp" type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required placeholder="Codice a 6 cifre" disabled={!configured} />
+            </>
+          )}
+          <button type="submit" disabled={!configured}>Accedi all'amministrazione</button>
         </form>
+        <div className="admin-login__footnote">Accesso consentito esclusivamente agli amministratori autorizzati.</div>
       </div>
     </section>
   );
