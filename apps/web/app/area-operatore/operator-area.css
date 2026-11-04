@@ -407,3 +407,25 @@
 @media(prefers-reduced-motion:reduce){
  .operator-area-shell .experience-manager__card{transition:none;transform:none!important}
 }
+
+
+/* QA VIEWER-01: readable read-only notice — 2026-11-04 */
+.operator-area-shell .operator-experiences[aria-label="Accesso in sola lettura"] .detail-panel {
+  background:#F8F8F5 !important;
+  border:1px solid #D8C8A9 !important;
+  border-radius:18px;
+  padding:22px 26px;
+  color:#10383A !important;
+}
+.operator-area-shell .operator-experiences[aria-label="Accesso in sola lettura"] .detail-panel h2 {
+  color:#10383A !important;
+}
+.operator-area-shell .operator-experiences[aria-label="Accesso in sola lettura"] .detail-panel p {
+  color:#526568 !important;
+  line-height:1.55;
+}
+@media(max-width:650px){
+  .operator-area-shell .operator-experiences[aria-label="Accesso in sola lettura"] .detail-panel {
+    padding:20px 19px;
+  }
+}
