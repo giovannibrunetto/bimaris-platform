@@ -1,0 +1,69 @@
+/* UX-BRAND-05 — common top-level public page opening; scoped to eight authorized heroes only. */
+.ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 40px clamp(18px, 6vw, 108px) 38px !important;
+  background: linear-gradient(135deg, #07343B 0%, #032126 100%) !important;
+  color: #F8F8F5 !important;
+}
+.ux-brand-05-hero.ux-brand-05-hero h1 {
+  margin: 0 0 16px !important;
+  color: #F8F8F5 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: clamp(40px, 3.2vw, 54px) !important;
+  font-weight: 700 !important;
+  line-height: 1.06 !important;
+  letter-spacing: -.025em !important;
+}
+.ux-brand-05-hero.ux-brand-05-hero p {
+  max-width: 1180px !important;
+  margin: 0 !important;
+  color: #F8F8F5 !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+}
+.ux-brand-05-hero.ux-brand-05-hero .kicker {
+  margin: 0 0 14px !important;
+  color: #CAA86A !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+}
+.ux-brand-05-hero.ux-brand-05-hero--compact.ux-brand-05-hero {
+  padding-top: 24px !important;
+  padding-bottom: 24px !important;
+}
+.ux-brand-05-hero .ux-brand-05-hero-content {
+  max-width: 1180px;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero {
+    padding: 28px 18px !important;
+  }
+  .ux-brand-05-hero.ux-brand-05-hero--compact.ux-brand-05-hero {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+  .ux-brand-05-hero.ux-brand-05-hero h1 {
+    font-size: clamp(32px, 9vw, 40px) !important;
+  }
+  .ux-brand-05-hero.ux-brand-05-hero p {
+    font-size: 15px !important;
+  }
+  .ux-brand-05-hero.ux-brand-05-hero .kicker {
+    font-size: 12px !important;
+  }
+}
+/* Keep the existing map controls visible below the compact introduction. */
+@media (min-width: 761px) {
+  .map-page-section.ux-brand-05-map-content { padding-top: 24px; }
+}
+@media (max-width: 760px) {
+  .map-page-section.ux-brand-05-map-content { padding-top: 20px; }
+}
