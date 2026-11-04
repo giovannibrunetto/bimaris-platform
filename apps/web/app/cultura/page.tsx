@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CulturePage() {
   return (
     <div className="culture-page culture-landing-page">
-      <section className="page-hero discovery-page-hero">
+      <section className="page-hero discovery-page-hero ux-brand-05-hero ux-brand-05-hero--standard">
         <h1>Cultura</h1>
         <p>
           Non solo luoghi da visitare. Scegli se farti accompagnare nella storia di Messina oppure esplorare liberamente monumenti, musei e architetture della città.
