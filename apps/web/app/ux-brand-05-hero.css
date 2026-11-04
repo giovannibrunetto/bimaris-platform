@@ -138,3 +138,28 @@
 @media (max-width: 760px) {
   .ux-brand-05-map-content .bimaris-map-card-head .map-card-eyebrow { font-size: 12px; }
 }
+
+
+/* BIMARIS Rete: premium card hover and keyboard focus — 2026-11-04 */
+.ux-brand-05-rete-first .ux-brand-05-rete-cards > .card {
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ux-brand-05-rete-first .ux-brand-05-rete-cards > .card:hover {
+    border-color: #B78C43;
+    background-color: #FFFCF5;
+    box-shadow: 0 9px 24px rgba(7,36,41,.09), 0 0 0 2px rgba(202,168,106,.3);
+    transform: translateY(-2px);
+  }
+}
+.ux-brand-05-rete-first .ux-brand-05-rete-cards > .card:focus-within {
+  border-color: #B78C43;
+  background-color: #FFFCF5;
+  box-shadow: 0 9px 24px rgba(7,36,41,.09), 0 0 0 2px rgba(202,168,106,.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ux-brand-05-rete-first .ux-brand-05-rete-cards > .card {
+    transition: none;
+    transform: none !important;
+  }
+}
