@@ -10,8 +10,7 @@ export default function ReteBimarisPage() {
   return (
     <>
       <section
-        className="page-hero discovery-page-hero"
-        style={{ background: "#07343B", color: "#ffffff" }}
+        className="page-hero discovery-page-hero ux-brand-05-hero ux-brand-05-hero--standard"
       >
         <div className="kicker" style={{ color: "#e0bd78" }}>La rete BIMARIS</div>
         <h1 style={{ color: "#ffffff" }}>Esplora la rete BIMARIS</h1>
