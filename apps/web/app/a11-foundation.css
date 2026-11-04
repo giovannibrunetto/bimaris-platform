@@ -45,6 +45,7 @@ body { background:var(--color-bg); color:var(--color-text); }
 .bimaris-ambient-hero p { color:#4f5e60 !important; }
 .bimaris-ambient-hero .kicker { color:#87642d !important; }
 .bimaris-ambient-section { background:var(--bimaris-tortora) !important; }
+.stories-page-first .stories-section-kicker { color:#1d1915 !important; }
 body:has(.access-gateway) { background:var(--bimaris-tortora); }
 .access-gateway { background:transparent; }
 
@@ -117,7 +118,6 @@ body:has(.access-gateway) { background:var(--bimaris-tortora); }
   .stories-page-hero { padding-top:38px !important; padding-bottom:30px !important; }
   .stories-page-first { padding-top:24px !important; }
   .stories-page-first .section-head { margin-bottom:22px; }
-  .stories-section-kicker { color:#87642d !important; }
   .culture-card-media { height:185px; }
   .culture-card .card-body { padding:15px 20px 17px; }
   .culture-card .card-body h3 { margin-top:5px; margin-bottom:8px; }
