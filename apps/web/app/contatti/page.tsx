@@ -29,7 +29,7 @@ export default function ContactPage(){
   }
 
   return <>
-    <section className="page-hero"><div className="kicker">Contatti</div><h1>Parla con BIMARIS</h1><p>Per informazioni sul progetto, collaborazioni o segnalazioni puoi scriverci direttamente da qui.</p></section>
+    <section className="page-hero ux-brand-05-hero ux-brand-05-hero--standard"><div className="kicker">Contatti</div><h1>Parla con BIMARIS</h1><p>Per informazioni sul progetto, collaborazioni o segnalazioni puoi scriverci direttamente da qui.</p></section>
     <section className="section contact-section">
       {sent ? <div className="detail-panel"><h3>Messaggio inviato</h3><p>Abbiamo ricevuto il tuo messaggio.</p></div> :
       <form className="form contact-form" onSubmit={submit}>
