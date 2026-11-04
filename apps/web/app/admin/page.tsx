@@ -33,49 +33,81 @@ export default async function AdminPage() {
   const onlineExperiences = onlineExpsRes.count ?? 0;
   const onlineItineraries = onlineItinsRes.count ?? 0;
 
-  const metrics=[
-    {href:"/admin/candidature",label:"Candidature da gestire",value:pendingApps,attention:true},
-    {href:"/admin/operatori",label:"Operatori / Esperienze da gestire",value:pendingOperatorArea,attention:true},
-    {href:"/admin/eventi",label:"Eventi da verificare",value:pendingEvents,attention:true},
-    {href:"/admin/operatori",label:"Operatori online",value:onlineOperators,attention:false},
-    {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences,attention:false},
-    {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries,attention:false},
+  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
+  const workItems=[
+    {href:"/admin/operatori",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
+    {href:"/admin/eventi",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
+    {href:"/admin/candidature",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
+  ];
+  const liveItems=[
+    {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
+    {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences},
+    {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries},
   ];
 
   return <div className="admin-dashboard">
     <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
-      <div className="admin-dashboard__container">
-        <span className="admin-dashboard__eyebrow">Area privata · Amministrazione</span>
-        <div className="admin-dashboard__intro-layout">
-          <div>
-            <h1 id="admin-dashboard-title">Dashboard BIMARIS</h1>
-            <p>Il centro operativo della piattaforma. Qui trovi le attività da esaminare e gli indicatori principali.</p>
-          </div>
-          <div className="admin-dashboard__intro-actions">
-            <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
-            <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
-          </div>
+      <div className="admin-dashboard__container admin-dashboard__intro-layout">
+        <div className="admin-dashboard__intro-copy">
+          <span className="admin-dashboard__eyebrow">BIMARIS / Pannello di controllo</span>
+          <h1 id="admin-dashboard-title">Centro operativo</h1>
+          <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
+        </div>
+        <div className="admin-dashboard__intro-actions">
+          <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
+          <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
         </div>
       </div>
     </section>
-    <section className="admin-dashboard__overview" aria-labelledby="admin-dashboard-overview-title">
+
+    <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
-        <div className="admin-dashboard__section-head">
-          <span className="admin-dashboard__eyebrow">Quadro operativo</span>
-          <h2 id="admin-dashboard-overview-title">Gestione BIMARIS</h2>
-          <p>Le attività in attesa di intervento sono evidenziate. Ogni riquadro apre la relativa sezione amministrativa.</p>
+        <div className="admin-dashboard__summary">
+          <div className="admin-dashboard__summary-copy">
+            <span className="admin-dashboard__eyebrow">Riepilogo operativo</span>
+            <h2>Le priorità di oggi</h2>
+            <p>{pendingTotal===0?"Nessuna attività attualmente in attesa nei tre ambiti monitorati.":"Attività in attesa di valutazione nei tre ambiti monitorati."}</p>
+          </div>
+          <div className="admin-dashboard__total" aria-label={`${pendingTotal} attività in attesa`}>
+            <strong>{pendingTotal}</strong>
+            <span>Da gestire</span>
+          </div>
         </div>
-        <div className="admin-dashboard__metrics">
-          {metrics.map(m=><Link key={m.label} href={m.href} className={`admin-dashboard__metric${m.attention&&m.value>0?" admin-dashboard__metric--attention":""}`} aria-label={`Apri ${m.label}`}>
-            <strong>{m.value}</strong><span>{m.label}</span>
-            {m.attention&&m.value>0&&<small>Da esaminare</small>}
-          </Link>)}
+
+        <div className="admin-dashboard__workspace">
+          <section className="admin-dashboard__workpanel" aria-labelledby="admin-work-heading">
+            <div className="admin-dashboard__panel-heading">
+              <div><span className="admin-dashboard__overline">01 / Azioni richieste</span><h3 id="admin-work-heading">In attesa di intervento</h3></div>
+              <span className="admin-dashboard__count-label">{pendingTotal} complessive</span>
+            </div>
+            <div className="admin-dashboard__tasklist">
+              {workItems.map((item,i)=><Link key={item.href} href={item.href} className="admin-dashboard__task">
+                <span className="admin-dashboard__task-index">{String(i+1).padStart(2,"0")}</span>
+                <span className="admin-dashboard__task-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                <span className={`admin-dashboard__task-count${item.value>0?" admin-dashboard__task-count--pending":""}`}>{item.value}</span>
+                <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
+              </Link>)}
+            </div>
+            <p className="admin-dashboard__panel-footnote">I conteggi indicano elementi in attesa, non il numero di operatori complessivi.</p>
+          </section>
+
+          <aside className="admin-dashboard__sidepanel" aria-labelledby="admin-status-heading">
+            <div className="admin-dashboard__panel-heading"><div><span className="admin-dashboard__overline">02 / Stato piattaforma</span><h3 id="admin-status-heading">Contenuti online</h3></div></div>
+            <div className="admin-dashboard__live-list">
+              {liveItems.map(item=><Link key={item.label} href={item.href} className="admin-dashboard__live-item">
+                <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">↗</span>
+              </Link>)}
+            </div>
+            <div className="admin-dashboard__workflow"><span className="admin-dashboard__overline">Regola di pubblicazione</span><p>L'approvazione non rende automaticamente pubblica un'esperienza.</p><div><span>Approva</span><span aria-hidden="true">→</span><span>Verifica</span><span aria-hidden="true">→</span><span>Pubblica</span></div></div>
+          </aside>
         </div>
-        <nav className="admin-dashboard__quicklinks" aria-label="Accesso rapido alla gestione">
-          <Link href="/admin/candidature">Candidature</Link>
-          <Link href="/admin/operatori">Operatori ed Esperienze</Link>
-          <Link href="/admin/eventi">Eventi</Link>
-          <Link href="/admin/itinerari">Itinerari</Link>
+
+        <nav className="admin-dashboard__quicklinks" aria-label="Sezioni amministrative">
+          <div><span className="admin-dashboard__overline">Accesso rapido</span><strong>Strumenti di gestione</strong></div>
+          <Link href="/admin/candidature">Candidature <span aria-hidden="true">↗</span></Link>
+          <Link href="/admin/operatori">Operatori ed esperienze <span aria-hidden="true">↗</span></Link>
+          <Link href="/admin/eventi">Eventi <span aria-hidden="true">↗</span></Link>
+          <Link href="/admin/itinerari">Itinerari <span aria-hidden="true">↗</span></Link>
         </nav>
       </div>
     </section>
