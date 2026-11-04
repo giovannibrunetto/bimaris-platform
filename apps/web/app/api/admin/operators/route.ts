@@ -20,6 +20,11 @@ export async function POST(request:NextRequest){
     const linkedUserId=members?.[0]?.user_id;
     if(linkedUserId){
      const {data:linkedAuth,error:getAuthError}=await db.auth.admin.getUserById(linkedUserId); if(getAuthError)throw getAuthError;
+     const {count:sharedMembershipCount,error:sharedMembershipError}=await db.from("operator_memberships").select("operator_id",{count:"exact",head:true}).eq("user_id",linkedUserId);
+     if(sharedMembershipError)throw sharedMembershipError;
+     if((sharedMembershipCount??0)>1&&linkedAuth.user?.email?.toLowerCase()!==nextEmail.toLowerCase()){
+      throw new Error("Shared operator identity: contact email changes require a separate access reconciliation");
+     }
      if(linkedAuth.user?.email!==nextEmail){
       const {data:users,error:listError}=await db.auth.admin.listUsers({page:1,perPage:1000}); if(listError)throw listError;
       const existing=users.users.find((u)=>u.email?.toLowerCase()===nextEmail.toLowerCase());
