@@ -15,7 +15,7 @@ export default async function OperatorsPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero operators-directory-hero">
         <div className="kicker">Selezione BIMARIS</div>
         <h1>Operatori del territorio</h1>
         <p>
