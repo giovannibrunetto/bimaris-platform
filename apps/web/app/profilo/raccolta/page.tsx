@@ -66,7 +66,31 @@ export default async function RaccoltaPage(){
  @media(max-width:850px){.collection-page{padding:12px 11px 45px}.collection-hero{padding:27px 19px;border-radius:20px}.collection-workspace{padding:25px 20px 28px;margin-top:14px;border-radius:20px}.collection-grid{gap:12px;margin-top:17px}.saved-card{min-height:0}.collection-workspace__head{align-items:flex-start}}
  @media(max-width:480px){.collection-workspace{padding-left:16px;padding-right:16px}.collection-workspace__head h2{font-size:29px}}
  @media(prefers-reduced-motion:reduce){.saved-card{transition:none;transform:none!important}}
-  `}</style><div className="collection-shell"><section className="collection-hero"><div className="kicker">Il tuo BIMARIS</div><h1>La tua raccolta</h1><p>Luoghi, storie, sapori ed esperienze che hai scelto di conservare. Ritrovali qui senza doverli cercare di nuovo.</p><div className="collection-nav"><Link className="back-profile" href="/profilo">← Torna al profilo</Link><Link className="explore" href="/mappa">Esplora BIMARIS →</Link></div></section>
+ 
+ /* COLLECTION-BUTTON-HOVER-01: restrained premium interactions */
+ .collection-page .collection-nav a{
+   border:1px solid rgba(202,168,106,.55);
+   box-shadow:0 4px 12px rgba(0,0,0,.09);
+   transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background-color .2s ease,color .2s ease;
+ }
+ @media(hover:hover) and (pointer:fine){
+   .collection-page .collection-nav a:hover{
+     border-color:#CAA86A;
+     box-shadow:0 9px 23px rgba(0,0,0,.21),0 0 0 2px rgba(202,168,106,.25);
+     transform:translateY(-2px) scale(1.015);
+   }
+   .collection-page .collection-nav .back-profile:hover{background:#E5BE78}
+   .collection-page .collection-nav .explore:hover{background:rgba(202,168,106,.12);color:#FFE2A6}
+ }
+ .collection-page .collection-nav a:focus-visible{
+   outline:2px solid #CAA86A;
+   outline-offset:4px;
+   box-shadow:0 0 0 2px rgba(202,168,106,.25);
+ }
+ @media(prefers-reduced-motion:reduce){
+   .collection-page .collection-nav a{transition:none;transform:none!important}
+ }
+ `}</style><div className="collection-shell"><section className="collection-hero"><div className="kicker">Il tuo BIMARIS</div><h1>La tua raccolta</h1><p>Luoghi, storie, sapori ed esperienze che hai scelto di conservare. Ritrovali qui senza doverli cercare di nuovo.</p><div className="collection-nav"><Link className="back-profile" href="/profilo">← Torna al profilo</Link><Link className="explore" href="/mappa">Esplora BIMARIS →</Link></div></section>
  <section className="collection-workspace"><div className="collection-workspace__head"><div><div className="saved-kind">I tuoi contenuti</div><h2>Da ritrovare, quando vuoi.</h2></div><span className="collection-count">{cards.length} {cards.length===1?"contenuto salvato":"contenuti salvati"}</span></div>
  {cards.length?<section className="collection-grid">{cards.map(card=><article className="saved-card" key={`${card.itemType}:${card.itemId}`}><div className="saved-kind">{card.kind}</div><h2>{card.title}</h2><p>{card.copy}</p><div className="saved-actions"><Link href={card.href}>Apri →</Link><form action="/profilo/raccolta/rimuovi" method="post"><input type="hidden" name="item_type" value={card.itemType}/><input type="hidden" name="item_id" value={card.itemId}/><button className="remove-button" type="submit">Rimuovi</button></form></div></article>)}</section>:<section className="empty"><h2>La raccolta è ancora vuota.</h2><p>Quando salverai un contenuto BIMARIS, lo ritroverai qui.</p><Link className="text-link" href="/mappa">Inizia a esplorare →</Link></section>}</section>
  </div></main>;
