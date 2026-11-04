@@ -70,7 +70,46 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
  async function loadMedia(id:string){const {data}=await supabase.from("experience_media").select("id,storage_path,is_cover").eq("experience_id",id).order("sort_order");const items:ExperienceMediaItem[]=(data??[]).map(x=>({kind:"existing",key:existingMediaKey(x.id),id:x.id,storagePath:x.storage_path,url:supabase.storage.from("experience-media").getPublicUrl(x.storage_path).data.publicUrl}));setMedia(items);const c=(data??[]).find(x=>x.is_cover)??data?.[0];setCoverKey(c?existingMediaKey(c.id):null)}
  async function loadRevisionMedia(id:string){const {data,error}=await supabase.from("experience_revision_media").select("id,source_media_id,storage_path,is_cover").eq("revision_id",id).order("sort_order");if(error){setMessage("Impossibile caricare le fotografie della revisione.");return}const rows:Record<string,{id:string;sourceMediaId:string|null}>={},items:ExperienceMediaItem[]=[];for(const x of data??[]){const key=existingMediaKey(x.id);rows[key]={id:x.id,sourceMediaId:x.source_media_id};let url="";if(x.source_media_id){url=supabase.storage.from("experience-media").getPublicUrl(x.storage_path).data.publicUrl}else{const signed=await supabase.storage.from("experience-revision-media").createSignedUrl(x.storage_path,300);if(signed.error||!signed.data?.signedUrl){setMessage("Impossibile autorizzare una fotografia privata della revisione.");continue}url=signed.data.signedUrl}items.push({kind:"existing",key,id:x.id,storagePath:x.storage_path,url})}setRevisionRows(rows);setMedia(items);const loadedKeys=new Set(items.map(i=>i.key));const c=(data??[]).find(x=>x.is_cover&&loadedKeys.has(existingMediaKey(x.id)))??(data??[]).find(x=>loadedKeys.has(existingMediaKey(x.id)));setCoverKey(c?existingMediaKey(c.id):null)}
  async function loadCollaboration(id:string){const {data}=await supabase.from("experience_operators").select("operator_id,activity_label,approval_status,operators(name)").eq("experience_id",id).eq("role","participant").limit(1).maybeSingle();if(!data){resetCollaboration();return}const related=data.operators as {name?:string}|{name?:string}[]|null;const name=Array.isArray(related)?related[0]?.name:related?.name;const status:ExperienceCollaboration["status"]=data.approval_status==="accepted"?"accepted":data.approval_status==="rejected"?"rejected":"pending";setCollaboration({operatorId:data.operator_id,operatorName:name??"Operatore BIMARIS",activity:data.activity_label??"",status});setCollaborationReady(status==="accepted")}
- async function edit(e:Experience){setDraft({...empty,name:e.name||"",excerpt:e.excerpt||"",description:e.description||"",duration:e.duration_minutes?String(e.duration_minutes):"",price:e.price_from!=null?String(e.price_from):"",territoryId:e.territory_id||""});resetMedia();resetCollaboration();setEditingId(e.id);setRevisionId(null);setStep(safeStep(e.draft_step));setOpen(true);setWizardScrollRequest(n=>n+1);clearLocal();await Promise.all([loadMedia(e.id),loadTaxonomy(e.id),loadProfile(e.id),loadCollaboration(e.id)])}
+ async function edit(e:Experience){
+  setBusy(true);setMessage("");
+  try{
+   // Always retrieve the current persisted draft. Do not rely on potentially stale
+   // server-rendered list props or independently racing setDraft updates.
+   const [experienceResult,intentResult,activityResult,profileResult]=await Promise.all([
+    supabase.from("experiences").select("id,name,excerpt,description,duration_minutes,price_from,territory_id,draft_step").eq("id",e.id).eq("operator_id",operatorId).single(),
+    supabase.from("experience_discovery_intents").select("intent_key").eq("experience_id",e.id),
+    supabase.from("experience_activity_links").select("activity_key").eq("experience_id",e.id).eq("operator_id",operatorId),
+    supabase.from("experience_discovery_profiles").select("booking_requirement,booking_notice_hours,booking_cutoff_day_offset,booking_cutoff_time,weather_dependency,weather_constraints").eq("experience_id",e.id).maybeSingle()
+   ]);
+   if(experienceResult.error||!experienceResult.data)throw experienceResult.error??new Error("Bozza non trovata");
+   if(intentResult.error||activityResult.error||profileResult.error)throw intentResult.error??activityResult.error??profileResult.error;
+   const savedExperience=experienceResult.data,profile=profileResult.data;
+   const restored:Draft={
+    ...empty,
+    name:savedExperience.name??"",
+    excerpt:savedExperience.excerpt??"",
+    description:savedExperience.description??"",
+    duration:savedExperience.duration_minutes==null?"":String(savedExperience.duration_minutes),
+    price:savedExperience.price_from==null?"":String(savedExperience.price_from),
+    territoryId:savedExperience.territory_id??"",
+    interestKeys:(intentResult.data??[]).map(item=>item.intent_key),
+    activityKeys:(activityResult.data??[]).map(item=>item.activity_key),
+    bookingRequirement:(profile?.booking_requirement??"none") as BookingRequirement,
+    bookingNoticeDays:String(profile?.booking_cutoff_day_offset??Math.ceil((profile?.booking_notice_hours??0)/24)),
+    bookingCutoffTime:profile?.booking_cutoff_time?String(profile.booking_cutoff_time).slice(0,5):"",
+    weatherDependency:(profile?.weather_dependency??"none") as WeatherDependency,
+    weatherConstraints:Array.isArray(profile?.weather_constraints)?profile.weather_constraints:[]
+   };
+   setDraft(restored);
+   resetMedia();resetCollaboration();
+   setEditingId(e.id);setRevisionId(null);setStep(safeStep(savedExperience.draft_step));setSaved(true);
+   clearLocal();
+   setOpen(true);setWizardScrollRequest(n=>n+1);
+   await Promise.all([loadMedia(e.id),loadCollaboration(e.id)]);
+  }catch(error){
+   setMessage("Impossibile ripristinare tutti i dettagli della bozza. "+errorMessage(error,"Riprova."));
+  }finally{setBusy(false)}
+ }
  async function proposeRevision(e:Experience){setBusy(true);const {data:existing}=await supabase.from("experience_revisions").select("id,status,draft_step,content").eq("experience_id",e.id).in("status",["draft","pending","rejected","approved"]).maybeSingle();if(existing&&["pending","approved"].includes(existing.status)){setMessage("Hai già una modifica in revisione per questa esperienza.");setBusy(false);return}let revision=existing;if(!revision){const created=await supabase.from("experience_revisions").insert({experience_id:e.id,operator_id:operatorId,status:"draft",draft_step:0,content:{name:e.name,excerpt:e.excerpt,description:e.description,duration_minutes:e.duration_minutes,price_from:e.price_from,territory_id:e.territory_id},media:[]}).select("id,status,draft_step,content").single();if(created.error||!created.data){setMessage(created.error?.message??"Creazione proposta non riuscita");setBusy(false);return}revision=created.data}setDraft({...empty,name:String(revision.content?.name??e.name),excerpt:String(revision.content?.excerpt??e.excerpt??""),description:String(revision.content?.description??e.description??""),duration:revision.content?.duration_minutes==null?String(e.duration_minutes??""):String(revision.content.duration_minutes),price:revision.content?.price_from==null?String(e.price_from??""):String(revision.content.price_from),territoryId:String(revision.content?.territory_id??e.territory_id??"")});resetCollaboration();setRevisionId(revision.id);setEditingId(null);setStep(safeStep(revision.draft_step));setOpen(true);setWizardScrollRequest(n=>n+1);await Promise.all([loadRevisionMedia(revision.id),loadTaxonomy(e.id),loadProfile(e.id)]);setBusy(false)}
 
  async function selectPhotos(files:File[]){const remaining=Math.max(0,6-media.length);if(!remaining)return;setOptimizing(true);setMessage("");try{const {optimized,rejected}=await optimizeExperienceImages(files,remaining);const incoming:NewExperienceMedia[]=optimized.map((file,index)=>({kind:"new",key:newMediaKey(file,index),file,url:URL.createObjectURL(file)}));if(incoming.length){setMedia(m=>[...m,...incoming].slice(0,6));setCoverKey(c=>c??incoming[0]?.key??null);setSaved(false)}if(rejected.length)setMessage(`Impossibile caricare ${rejected.join(", ")}. Verifica che le immagini siano leggibili e riprova.`)}catch(error){setMessage(error instanceof Error?error.message:"Caricamento delle fotografie non riuscito. Riprova.")}finally{setOptimizing(false)}}
