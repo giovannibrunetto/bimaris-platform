@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
+import "./experience-revision.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -40,8 +41,53 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     {state && <div style={{ padding: 12, marginBottom: 14, background: "#fff", border: "1px solid #d7c7b6" }}>{stateMessage[state] ?? state}</div>}
     {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel" style={{ padding: "clamp(16px,4vw,24px)" }}><div className="kicker">{operator?.name ?? "Operatore"} · modifica proposta</div><h2 style={{ marginTop: 6 }}>Confronto versione approvata / proposta</h2><p><small>Revisione inviata {revision.submitted_at ? new Date(revision.submitted_at).toLocaleString("it-IT") : "dall'operatore"}</small></p>
       <div style={{ display: "grid", gap: 10, margin: "18px 0" }}>{[["Nome", experience.name, next.name], ["Testo breve", experience.excerpt, next.excerpt], ["Descrizione", experience.description, next.description], ["Durata", experience.duration_minutes, next.duration_minutes], ["Prezzo da", experience.price_from, next.price_from], ["Punto di incontro", experience.meeting_point, next.meeting_point], ["Tipologia punto", experience.location_kind, next.location_kind], ["Latitudine", experience.latitude, next.latitude], ["Longitudine", experience.longitude, next.longitude], ["Codice ISTAT comune", experience.territory_municipality_code, next.territory_municipality_code]].map(([label, before, after]) => <div key={String(label)} style={{ padding: 12, border: "1px solid rgba(0,0,0,.12)", borderRadius: 10 }}><strong>{String(label)} · {changed(before, after) ? "modificato" : "invariato"}</strong>{changed(before, after) && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 12, marginTop: 8 }}><div><small>{currentLabel}</small><p style={{ whiteSpace: "pre-wrap" }}>{show(before)}</p></div><div><small>PROPOSTA</small><p style={{ whiteSpace: "pre-wrap" }}>{show(after)}</p></div></div>}</div>)}</div>
-      <h3>Confronto galleria fotografica</h3><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 16 }}>{[{ title: currentLabel, photos: ((livePhotos ?? []) as Photo[]).map(p => ({...p,url:publicMediaUrl(p.storage_path)})) }, { title: "PROPOSTA OPERATORE", photos: proposedPhotos }].map(group => <div key={group.title}><strong>{group.title} · {group.photos.length} foto</strong><div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 8, marginTop: 8 }}>{group.photos.map(photo => <figure key={photo.storage_path} style={{ margin: 0 }}>{photo.url ? <img src={photo.url} alt={photo.alt_text ?? "Fotografia esperienza"} style={{ width: "100%", aspectRatio: "4/3", objectFit: "cover", borderRadius: 8 }} /> : <div style={{aspectRatio:"4/3",display:"grid",placeItems:"center",background:"#eee",borderRadius:8}}>Anteprima non disponibile</div>}<figcaption style={{ fontSize: 11 }}>{photo.is_cover ? "★ Copertina" : "Foto"} · posizione {photo.sort_order + 1}</figcaption></figure>)}</div></div>)}</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 16, marginTop: 24 }}><form method="post" action="/api/admin/experience-revisions" className="form" style={{ padding: 0 }}><input type="hidden" name="revision_id" value={revision.id}/><label className="wide">Nota facoltativa<textarea name="review_notes" /></label><button className="button" name="action" value="approve-apply">Approva e applica</button></form><form method="post" action="/api/admin/experience-revisions" className="form" style={{ padding: 0 }}><input type="hidden" name="revision_id" value={revision.id}/><label className="wide">Informazioni principali<textarea name="review_basics" /></label><label className="wide">Descrizione<textarea name="review_description" /></label><label className="wide">Durata e prezzo<textarea name="review_details" /></label><label className="wide">Nota generale<textarea name="review_notes" /></label><button className="button ghost" name="action" value="request-changes">Richiedi correzioni</button></form></div>
+      <section className="revision-gallery" aria-label="Confronto galleria fotografica">
+        <div className="revision-section-heading">
+          <h3>Confronto galleria fotografica</h3>
+          <p>Controlla copertina, ordine e fotografie della versione approvata rispetto alla proposta.</p>
+        </div>
+        <div className="revision-gallery__comparison">
+          {[{ title: currentLabel, photos: ((livePhotos ?? []) as Photo[]).map(p => ({...p,url:publicMediaUrl(p.storage_path)})) }, { title: "PROPOSTA OPERATORE", photos: proposedPhotos }].map(group =>
+            <div className="revision-gallery__group" key={group.title}>
+              <div className="revision-gallery__group-head"><strong>{group.title}</strong><span>{group.photos.length} foto</span></div>
+              <div className="revision-gallery__photos">
+                {group.photos.length===0&&<p>Nessuna fotografia.</p>}
+                {group.photos.map((photo,i) =>
+                  <figure key={photo.storage_path+`-${i}`} className="revision-gallery__photo">
+                    {photo.url ? <img src={photo.url} alt={photo.alt_text ?? "Fotografia esperienza"} /> : <div className="revision-gallery__placeholder">Anteprima non disponibile</div>}
+                    <figcaption>{photo.is_cover?"★ Copertina":"Foto"} · posizione {photo.sort_order+1}</figcaption>
+                  </figure>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+      <section className="revision-decisions" aria-label="Esito revisione esperienza">
+        <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore.</p></div>
+        <div className="revision-decisions__grid">
+          <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
+            <h4>Approva la modifica</h4>
+            <p>Applica le modifiche dopo averne verificato la correttezza.</p>
+            <input type="hidden" name="revision_id" value={revision.id}/>
+            <label htmlFor="revision-approval-note">Nota facoltativa</label>
+            <textarea id="revision-approval-note" name="review_notes" rows={4} placeholder="Eventuali indicazioni sulla revisione approvata"/>
+            <button className="revision-decision-card__button revision-decision-card__button--approve" name="action" value="approve-apply">Approva e applica</button>
+          </form>
+          <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
+            <h4>Richiedi correzioni</h4>
+            <p>Specifica soltanto gli elementi che devono essere modificati prima di una nuova valutazione.</p>
+            <input type="hidden" name="revision_id" value={revision.id}/>
+            <div className="revision-decision-card__fields">
+              <label htmlFor="revision-basics">Informazioni principali<textarea id="revision-basics" name="review_basics" rows={3} placeholder="Nome, frase di presentazione, informazioni generali"/></label>
+              <label htmlFor="revision-description">Descrizione<textarea id="revision-description" name="review_description" rows={3} placeholder="Indica le modifiche richieste al testo"/></label>
+              <label htmlFor="revision-details">Durata e prezzo<textarea id="revision-details" name="review_details" rows={3} placeholder="Eventuali correzioni a durata o prezzo"/></label>
+              <label htmlFor="revision-general-note">Nota generale<textarea id="revision-general-note" name="review_notes" rows={3} placeholder="Altre indicazioni per l’operatore"/></label>
+            </div>
+            <button className="revision-decision-card__button revision-decision-card__button--changes" name="action" value="request-changes">Richiedi correzioni</button>
+          </form>
+        </div>
+      </section>
     </article>}
   </section></>;
 }
