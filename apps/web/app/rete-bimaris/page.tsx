@@ -18,15 +18,15 @@ export default function ReteBimarisPage() {
         </p>
       </section>
 
-      <section className="section sand discovery-page-first">
-        <div className="section-head">
+      <section className="section sand discovery-page-first ux-brand-05-rete-first">
+        <div className="section-head ux-brand-05-rete-intro">
           <div>
             <div className="kicker ux-brand-05-section-kicker">Due modi di scoprire la rete</div>
             <h2>Operatori ed esperienze.</h2>
           </div>
           <p>Le attività aderenti sono consultabili anche quando non propongono esperienze.</p>
         </div>
-        <div className="cards">
+        <div className="cards ux-brand-05-rete-cards">
           <article className="card">
             <div className="card-body">
               <div className="kicker">Realtà aderenti</div>
