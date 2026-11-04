@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
+import "./admin-dashboard.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,40 +33,52 @@ export default async function AdminPage() {
   const onlineExperiences = onlineExpsRes.count ?? 0;
   const onlineItineraries = onlineItinsRes.count ?? 0;
 
-  const metric = (href: string, label: string, value: number, attention = false) => (
-    <Link href={href} aria-label={`Apri ${label}`} style={{ display: "block", minWidth: 0, padding: "18px 16px", borderRadius: 18, background: attention && value > 0 ? "#fff7f4" : "rgba(255,255,255,.72)", border: attention && value > 0 ? "1px solid rgba(143,47,36,.35)" : "1px solid rgba(16,24,32,.08)", boxShadow: "0 8px 24px rgba(7,24,35,.04)", textDecoration: "none", color: "inherit", cursor: "pointer" }}>
-      <strong style={{ display: "block", fontFamily: "Georgia,serif", fontSize: 32, lineHeight: 1, color: attention && value > 0 ? "#8f2f24" : "#0b2638", marginBottom: 7 }}>{value}</strong>
-      <span style={{ fontSize: 13, lineHeight: 1.25, color: "#59636b", fontWeight: 700 }}>{label}</span>
-    </Link>
-  );
+  const metrics=[
+    {href:"/admin/candidature",label:"Candidature da gestire",value:pendingApps,attention:true},
+    {href:"/admin/operatori",label:"Operatori / Esperienze da gestire",value:pendingOperatorArea,attention:true},
+    {href:"/admin/eventi",label:"Eventi da verificare",value:pendingEvents,attention:true},
+    {href:"/admin/operatori",label:"Operatori online",value:onlineOperators,attention:false},
+    {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences,attention:false},
+    {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries,attention:false},
+  ];
 
-  return <>
-    <section style={{ position: "relative", overflow: "hidden", padding: "clamp(34px,6vw,66px) 6vw", background: "radial-gradient(circle at 88% 8%,rgba(202,168,106,.20),transparent 30%),linear-gradient(135deg,#0b2638,#061624 64%,#02090f)", color: "#fff", borderBottom: "1px solid rgba(202,168,106,.28)" }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div className="kicker">Area privata · Amministrazione</div>
-        <h1 style={{ fontFamily: "Georgia,serif", fontWeight: 500, fontSize: "clamp(38px,7vw,64px)", lineHeight: 1, letterSpacing: "-.02em", margin: "10px 0 12px", color: "#fff" }}>Dashboard BIMARIS</h1>
-        <p style={{ maxWidth: 650, margin: 0, color: "#c8d1d6", fontSize: "clamp(14px,2vw,17px)", lineHeight: 1.55 }}>Il centro operativo di BIMARIS. Le attività che richiedono attenzione sono raccolte qui.</p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 22 }}><Link className="button" href="/" style={{ padding: "11px 18px" }}>Apri il sito</Link><form method="post" action="/api/admin/logout"><button type="submit" style={{ padding: "10px 18px", borderRadius: 999, border: "1px solid #caa86a", background: "#fff", color: "#17110d", fontWeight: 800, cursor: "pointer" }}>Esci</button></form></div>
-      </div>
-    </section>
-    <section style={{ background: "var(--sand)", padding: "clamp(30px,5vw,54px) 6vw clamp(36px,6vw,66px)" }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
-        <div style={{ marginBottom: 22 }}><div className="kicker">Quadro operativo</div><h2 style={{ fontFamily: "Georgia,serif", fontWeight: 500, fontSize: "clamp(34px,5vw,50px)", margin: "7px 0 8px", lineHeight: 1 }}>Gestione BIMARIS</h2><p style={{ maxWidth: 650, color: "var(--muted)", lineHeight: 1.55, margin: 0 }}>Le voci evidenziate segnalano attività da esaminare. Ogni riquadro porta direttamente alla relativa area di gestione.</p></div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
-          {metric("/admin/candidature", "Candidature da gestire", pendingApps, true)}
-          {metric("/admin/operatori", "Operatori / Esperienze da gestire", pendingOperatorArea, true)}
-          {metric("/admin/eventi", "Eventi da verificare", pendingEvents, true)}
-          {metric("/admin/operatori", "Operatori online", onlineOperators)}
-          {metric("/admin/esperienze", "Esperienze online", onlineExperiences)}
-          {metric("/admin/itinerari", "Itinerari online", onlineItineraries)}
-        </div>
-        <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 18, paddingTop: 16, borderTop: "1px solid rgba(16,24,32,.10)" }}>
-          <Link className="text-link" href="/admin/candidature">Candidature →</Link>
-          <Link className="text-link" href="/admin/operatori">Operatori ed Esperienze →</Link>
-          <Link className="text-link" href="/admin/eventi">Eventi →</Link>
-          <Link className="text-link" href="/admin/itinerari">Itinerari →</Link>
+  return <div className="admin-dashboard">
+    <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
+      <div className="admin-dashboard__container">
+        <span className="admin-dashboard__eyebrow">Area privata · Amministrazione</span>
+        <div className="admin-dashboard__intro-layout">
+          <div>
+            <h1 id="admin-dashboard-title">Dashboard BIMARIS</h1>
+            <p>Il centro operativo della piattaforma. Qui trovi le attività da esaminare e gli indicatori principali.</p>
+          </div>
+          <div className="admin-dashboard__intro-actions">
+            <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
+            <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
+          </div>
         </div>
       </div>
     </section>
-  </>;
+    <section className="admin-dashboard__overview" aria-labelledby="admin-dashboard-overview-title">
+      <div className="admin-dashboard__container">
+        <div className="admin-dashboard__section-head">
+          <span className="admin-dashboard__eyebrow">Quadro operativo</span>
+          <h2 id="admin-dashboard-overview-title">Gestione BIMARIS</h2>
+          <p>Le attività in attesa di intervento sono evidenziate. Ogni riquadro apre la relativa sezione amministrativa.</p>
+        </div>
+        <div className="admin-dashboard__metrics">
+          {metrics.map(m=><Link key={m.label} href={m.href} className={`admin-dashboard__metric${m.attention&&m.value>0?" admin-dashboard__metric--attention":""}`} aria-label={`Apri ${m.label}`}>
+            <strong>{m.value}</strong><span>{m.label}</span>
+            {m.attention&&m.value>0&&<small>Da esaminare</small>}
+          </Link>)}
+        </div>
+        <nav className="admin-dashboard__quicklinks" aria-label="Accesso rapido alla gestione">
+          <Link href="/admin/candidature">Candidature</Link>
+          <Link href="/admin/operatori">Operatori ed Esperienze</Link>
+          <Link href="/admin/eventi">Eventi</Link>
+          <Link href="/admin/itinerari">Itinerari</Link>
+        </nav>
+      </div>
+    </section>
+  </div>;
+
 }
