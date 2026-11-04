@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FormEvent,useEffect,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
+import PasswordAccess from "../PasswordAccess";
 
 function getAuthCallback(){
  const origin=window.location.origin;
@@ -62,6 +63,7 @@ export default function AccessoUtentePage(){
       <button className="personal-email-button" type="submit" disabled={busy}>{loading?"Invio…":"Ricevi il link di accesso"}</button>
      </form>
      {message&&<p role="status" aria-live="polite" className="personal-access-message">{message}</p>}
+     <PasswordAccess context="utente"/>
      <p className="personal-access-note">Al primo accesso il tuo account personale viene creato automaticamente.</p>
     </div>
     <Link className="personal-access-back" href="/accedi">← Scegli un altro tipo di accesso</Link>
