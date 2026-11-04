@@ -318,3 +318,70 @@
  .operator-area-hero>.container{width:100%;margin-inline:auto!important}
  .operator-area-shell .operator-area-grid{gap:12px}
 }
+
+
+/* BIMARIS mobile hierarchy: immersive welcome, warm operational area — 2026-11-04 */
+@media(max-width:650px){
+ /* The first dark hero is the sole immersive identity block. */
+ .operator-area-hero{padding-bottom:20px!important}
+ .operator-area-hero>.container{
+  padding:24px 20px 22px!important;
+  background:linear-gradient(130deg,rgba(255,255,255,.075),rgba(255,255,255,.016))!important;
+  border-color:rgba(216,169,79,.27);
+ }
+ .operator-area-hero h1{font-size:clamp(33px,8.9vw,40px)!important;line-height:1.05!important}
+ .operator-area-hero p{margin-top:12px!important}
+ /* Below the hero, switch to a warm workspace instead of repeating dark green. */
+ .operator-area-shell{
+  background:linear-gradient(180deg,#E7E0D3 0%,#F3F0E9 45%,#F8F8F5 100%)!important;
+  color:#102E31!important;
+  padding-top:18px!important;
+ }
+ .operator-area-shell nav[aria-label="Seleziona attività"]{
+  background:transparent!important;
+  border:0!important;box-shadow:none!important;
+  padding:0 2px 17px!important;
+  gap:8px!important;
+ }
+ .operator-area-shell nav[aria-label="Seleziona attività"] strong{
+  color:#10383A!important;
+  font-size:.88rem;
+  margin:0 0 4px!important;
+ }
+ .operator-area-shell nav[aria-label="Seleziona attività"] a{
+  background:#F8F8F5!important;
+  border:1px solid #D6D6CB!important;
+  color:#10383A!important;
+  min-height:44px!important;
+  box-shadow:none!important;
+ }
+ .operator-area-shell nav[aria-label="Seleziona attività"] a[aria-current="page"]{
+  background:#0A3035!important;
+  border-color:#0A3035!important;
+  color:#fff!important;
+ }
+ .operator-area-shell .operator-area-grid{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  gap:12px!important;
+ }
+ .operator-area-shell .operator-summary{
+  background:#F0E9DD!important;
+  border:1px solid #D6CEBF!important;
+  border-radius:17px!important;
+  box-shadow:none!important;
+  color:#10383A!important;
+ }
+ .operator-area-shell .operator-summary__inner{padding:21px 19px!important}
+ .operator-area-shell .operator-summary h2{color:#10383A!important;font-size:2.05rem}
+ .operator-area-shell .operator-summary p{color:#526568!important}
+ .operator-area-shell .operator-summary .eyebrow{color:#85612B!important}
+ .operator-area-shell .operator-summary .button{width:100%;justify-content:center;text-align:center}
+ .operator-area-shell .experience-manager,
+ .operator-area-shell .operator-impact,
+ .operator-area-shell .operator-profile-card,
+ .operator-area-shell .collaboration-inbox{box-shadow:0 3px 14px rgba(16,46,49,.045)!important}
+}
