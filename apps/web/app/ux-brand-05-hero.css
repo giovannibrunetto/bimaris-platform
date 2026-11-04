@@ -91,3 +91,50 @@
 @media (max-width: 760px) {
   .map-page-section.ux-brand-05-map-content { padding-top: 20px; }
 }
+
+/* UX-BRAND-05 follow-up: compact Borghi's transition without altering the shared hero. */
+@media (min-width: 761px) {
+  .ux-brand-05-hero--standard + .ux-brand-05-borghi-first { padding-top: 22px !important; }
+  .ux-brand-05-hero--standard:has(+ .ux-brand-05-borghi-first) { padding-bottom: 22px !important; }
+}
+@media (max-width: 760px) {
+  .ux-brand-05-hero--standard + .ux-brand-05-borghi-first { padding-top: 16px !important; }
+  .ux-brand-05-hero--standard:has(+ .ux-brand-05-borghi-first) { padding-bottom: 18px !important; }
+}
+/* Rete: introduction is one editorial unit; two options fill a genuine two-column grid. */
+.ux-brand-05-rete-first .ux-brand-05-rete-intro {
+  display: block;
+  margin-bottom: 24px;
+}
+.ux-brand-05-rete-first .ux-brand-05-rete-intro > p {
+  max-width: 850px;
+  margin: 12px 0 0;
+}
+.ux-brand-05-rete-first .ux-brand-05-rete-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+.ux-brand-05-rete-first .ux-brand-05-rete-cards > .card {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .ux-brand-05-rete-first .ux-brand-05-rete-intro { margin-bottom: 18px; }
+  .ux-brand-05-rete-first .ux-brand-05-rete-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+/* Map's own eyebrow component adopts the same editorial kicker typography. */
+.ux-brand-05-map-content .bimaris-map-card-head .map-card-eyebrow {
+  color: #705D39;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .ux-brand-05-map-content .bimaris-map-card-head .map-card-eyebrow { font-size: 12px; }
+}
