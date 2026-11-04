@@ -13,3 +13,47 @@
 .recommendation-card:hover{border-color:rgba(216,169,79,.62)!important;box-shadow:0 34px 85px rgba(0,0,0,.25)!important}
 .recommendation-more summary,.empty-recommendations{background:rgba(255,255,255,.055)!important;border-color:rgba(216,169,79,.24)!important;color:#d8a94f!important}
 @media(max-width:850px){.overview-item+.overview-item{border-top-color:rgba(216,169,79,.13)!important}}
+
+/* PROFILE-IA-01: unified personal dashboard hierarchy — 2026-11-04 */
+.profile-page .profile-shell{max-width:1240px}
+.profile-page .profile-hero{border-radius:25px;padding:clamp(30px,4vw,52px);padding-right:145px;box-shadow:0 14px 44px rgba(0,0,0,.15)!important}
+.profile-page .profile-overview,
+.profile-page .profile-recommendations{box-sizing:border-box;background:rgba(255,255,255,.052);border-left:1px solid rgba(216,169,79,.19);border-right:1px solid rgba(216,169,79,.19);padding-left:clamp(24px,3vw,42px);padding-right:clamp(24px,3vw,42px)}
+.profile-page .profile-overview{margin-top:20px;padding-top:32px;padding-bottom:30px;border-top:1px solid rgba(216,169,79,.19);border-radius:25px 25px 0 0}
+.profile-page .profile-recommendations{margin-top:0;padding-top:30px;padding-bottom:36px;border-bottom:1px solid rgba(216,169,79,.19);border-radius:0 0 25px 25px}
+.profile-page .profile-recommendations:before{left:clamp(24px,3vw,42px);right:clamp(24px,3vw,42px);width:auto;background:rgba(216,169,79,.26)!important}
+.profile-page .overview-head{padding-bottom:18px}
+.profile-page .overview-head h2{font-size:clamp(29px,3vw,41px);line-height:1.15;max-width:900px}
+.profile-page .profile-preference-summary{padding-bottom:22px}
+.profile-page .overview-grid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(2,minmax(0,1fr));gap:14px;padding:0}
+.profile-page .overview-item,
+.profile-page .overview-item:first-child{min-width:0;padding:20px 20px 18px;flex:none;background:rgba(3,33,38,.42);border:1px solid rgba(216,169,79,.18);border-radius:17px}
+.profile-page .overview-item+.overview-item{border-top:1px solid rgba(216,169,79,.18)}
+.profile-page .overview-label{margin-bottom:10px}
+.profile-page .recommendation-head{gap:28px;align-items:end}
+.profile-page .recommendation-head h2{font-size:clamp(33px,3.7vw,46px)}
+.profile-page .recommendation-grid{margin-top:20px;gap:15px}
+.profile-page .recommendation-card{padding:22px 22px 24px}
+.profile-page .recommendation-card h3{font-size:clamp(20px,1.8vw,25px)}
+@media(max-width:850px){
+ .profile-page .profile-hero{padding:27px 19px 28px;padding-right:90px;border-radius:20px}
+ .profile-page .profile-overview,.profile-page .profile-recommendations{padding-left:20px;padding-right:20px}
+ .profile-page .profile-overview{margin-top:14px;padding-top:25px;padding-bottom:24px;border-radius:20px 20px 0 0}
+ .profile-page .profile-recommendations{padding-top:25px;padding-bottom:28px;border-radius:0 0 20px 20px}
+ .profile-page .profile-recommendations:before{left:20px;right:20px}
+ .profile-page .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .profile-page .overview-item:first-child{grid-column:1/-1}
+ .profile-page .overview-item{padding:17px}
+ .profile-page .recommendation-head{display:block}
+ .profile-page .recommendation-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+ .profile-page .profile-hero{padding-right:78px}
+ .profile-page .profile-overview,.profile-page .profile-recommendations{padding-left:16px;padding-right:16px}
+ .profile-page .profile-recommendations:before{left:16px;right:16px}
+ .profile-page .overview-grid{grid-template-columns:minmax(0,1fr)}
+ .profile-page .overview-item:first-child{grid-column:auto}
+ .profile-page .overview-head h2{font-size:29px}
+ .profile-page .recommendation-head h2{font-size:34px}
+}
+@media(prefers-reduced-motion:reduce){.profile-page .recommendation-card{transition:none;transform:none!important}}
