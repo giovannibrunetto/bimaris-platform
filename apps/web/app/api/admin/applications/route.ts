@@ -15,7 +15,7 @@ function back(request: NextRequest, state: string) {
 }
 
 function operatorAccessRedirect(request: NextRequest) {
-  return new URL(`/auth/callback?next=${encodeURIComponent("/area-operatore")}`, request.url).toString();
+  return new URL(`/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`, request.url).toString();
 }
 
 type ServiceClient = NonNullable<ReturnType<typeof createServiceClient>>;
@@ -35,7 +35,7 @@ async function findUserByEmail(supabase: ServiceClient, email: string) {
 async function linkOperatorMembership(supabase: ServiceClient, operatorId: string, userId: string) {
   const { error } = await supabase.from("operator_memberships").upsert(
     { operator_id: operatorId, user_id: userId, role: "owner" },
-    { onConflict: "operator_id,user_id" }
+    { onConflict: "operator_id,user_id", ignoreDuplicates: true }
   );
   if (error) throw error;
 }
