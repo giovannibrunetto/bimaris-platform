@@ -5,12 +5,12 @@
   min-height: 0 !important;
   margin: 0 !important;
   padding: 40px clamp(18px, 6vw, 108px) 38px !important;
-  background: linear-gradient(135deg, #07343B 0%, #032126 100%) !important;
-  color: #F8F8F5 !important;
+  background: #E7E0D3 !important;
+  color: #032126 !important;
 }
 .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero h1 {
   margin: 0 0 16px !important;
-  color: #F8F8F5 !important;
+  color: #032126 !important;
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: clamp(40px, 3.2vw, 54px) !important;
   font-weight: 700 !important;
@@ -20,14 +20,14 @@
 .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero p {
   max-width: 1180px !important;
   margin: 0 !important;
-  color: #F8F8F5 !important;
+  color: #4F5E60 !important;
   font-size: 17px !important;
   font-weight: 400 !important;
   line-height: 1.5 !important;
 }
 .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero .kicker {
   margin: 0 0 14px !important;
-  color: #CAA86A !important;
+  color: #705D39 !important;
   font-size: 13px !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
@@ -59,6 +59,14 @@
   .ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero.ux-brand-05-hero .kicker {
     font-size: 12px !important;
   }
+}
+/* Match the immediate page surface to the hero without changing cards, forms or maps.
+   Works only for the eight authorized entry points using the dedicated hero class. */
+.ux-brand-05-hero + .section {
+  background: #E7E0D3 !important;
+}
+.ux-brand-05-hero + .access-gateway {
+  background: #E7E0D3 !important;
 }
 /* Keep the existing map controls visible below the compact introduction. */
 @media (min-width: 761px) {
