@@ -1,0 +1,27 @@
+.revision-gallery,.revision-decisions{margin-top:28px}
+.revision-section-heading{margin-bottom:16px}
+.revision-section-heading h3{font-size:clamp(19px,2vw,24px);line-height:1.25;margin:0 0 5px;color:#173238}
+.revision-section-heading p{margin:0;color:#655e54;font-size:13px;line-height:1.55}
+.revision-gallery__comparison,.revision-decisions__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.revision-gallery__group,.revision-decision-card{min-width:0;background:#fff;border:1px solid #e1d3c0;border-radius:15px;padding:18px}
+.revision-gallery__group-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.revision-gallery__group-head strong{font-size:12px;line-height:1.4;letter-spacing:.055em;color:#28383b}
+.revision-gallery__group-head span{font-size:12px;color:#746658}
+.revision-gallery__photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.revision-gallery__photo{min-width:0;margin:0}
+.revision-gallery__photo img,.revision-gallery__placeholder{display:block;width:100%;max-height:180px;aspect-ratio:4/3;object-fit:cover;border-radius:9px;background:#f4f0e9}
+.revision-gallery__placeholder{display:grid;place-items:center;text-align:center;padding:12px;color:#796b5b;font-size:12px}
+.revision-gallery__photo figcaption{margin-top:7px;font-size:12px;line-height:1.45;color:#67584c;overflow-wrap:anywhere}
+.revision-decision-card{display:flex;flex-direction:column;gap:12px}
+.revision-decision-card h4{font-size:17px;line-height:1.25;margin:0;color:#153239}
+.revision-decision-card>p{margin:-3px 0 3px;color:#665f53;font-size:13px;line-height:1.5}
+.revision-decision-card label{display:grid;gap:7px;min-width:0;font-weight:750;font-size:13px;color:#24383d}
+.revision-decision-card textarea{box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0;min-height:96px;padding:12px 13px;background:#fff;color:#173136;border:1px solid #b5a994;border-radius:9px;resize:vertical;font:inherit;font-weight:400;font-size:14px;line-height:1.45}
+.revision-decision-card textarea:focus-visible{outline:3px solid #d7b56f;outline-offset:2px}
+.revision-decision-card__fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.revision-decision-card__button{display:block;box-sizing:border-box;width:100%;min-height:48px;margin-top:5px;padding:11px 15px;font-size:15px;font-weight:800;border-radius:11px;cursor:pointer}
+.revision-decision-card__button--approve{background:#cdaa6b;border:1px solid #b58d4e;color:#142d32}
+.revision-decision-card__button--changes{background:#edf1f2;border:1px solid #d0dadd;color:#153138}
+.revision-decision-card__button:hover{filter:brightness(.96)}
+@media(max-width:900px){.revision-gallery__comparison,.revision-decisions__grid{grid-template-columns:minmax(0,1fr)}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:240px}}
+@media(max-width:560px){.revision-gallery__group,.revision-decision-card{padding:14px}.revision-gallery__photos{gap:9px}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:160px}.revision-decision-card__fields{grid-template-columns:minmax(0,1fr)}}
