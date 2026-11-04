@@ -385,3 +385,25 @@
  .operator-area-shell .operator-profile-card,
  .operator-area-shell .collaboration-inbox{box-shadow:0 3px 14px rgba(16,46,49,.045)!important}
 }
+
+
+/* BIMARIS experience card premium hover/focus — 2026-11-04 */
+.operator-area-shell .experience-manager__card{
+ transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease,transform .2s ease;
+}
+@media(hover:hover) and (pointer:fine){
+ .operator-area-shell .experience-manager__card:hover{
+  border-color:#B78C43!important;
+  background:#FFFCF5!important;
+  box-shadow:0 9px 24px rgba(7,36,41,.09),0 0 0 2px rgba(202,168,106,.3)!important;
+  transform:translateY(-2px);
+ }
+}
+.operator-area-shell .experience-manager__card:focus-within{
+ border-color:#B78C43!important;
+ background:#FFFCF5!important;
+ box-shadow:0 9px 24px rgba(7,36,41,.09),0 0 0 2px rgba(202,168,106,.3)!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .operator-area-shell .experience-manager__card{transition:none;transform:none!important}
+}
