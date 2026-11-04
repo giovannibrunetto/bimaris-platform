@@ -78,7 +78,7 @@ export default async function AdminPage() {
           <section className="admin-dashboard__workpanel" aria-labelledby="admin-work-heading">
             <div className="admin-dashboard__panel-heading">
               <div><span className="admin-dashboard__overline">01 / Azioni richieste</span><h3 id="admin-work-heading">In attesa di intervento</h3></div>
-              <span className="admin-dashboard__count-label">{pendingTotal} complessive</span>
+              <span className="admin-dashboard__count-label">{pendingTotal} attività in attesa</span>
             </div>
             <div className="admin-dashboard__tasklist">
               {workItems.map((item,i)=><Link key={item.href} href={item.href} className="admin-dashboard__task">
@@ -98,7 +98,7 @@ export default async function AdminPage() {
                 <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">↗</span>
               </Link>)}
             </div>
-            <div className="admin-dashboard__workflow"><span className="admin-dashboard__overline">Regola di pubblicazione</span><p>L'approvazione non rende automaticamente pubblica un'esperienza.</p><div><span>Approva</span><span aria-hidden="true">→</span><span>Verifica</span><span aria-hidden="true">→</span><span>Pubblica</span></div></div>
+            <div className="admin-dashboard__workflow"><span className="admin-dashboard__overline">Regola di pubblicazione</span><p>L'approvazione non rende automaticamente pubblica un'esperienza.</p><div><span>Approva</span><span aria-hidden="true">→</span><span>Seleziona, quando previsto</span><span aria-hidden="true">→</span><span>Pubblica</span></div></div>
           </aside>
         </div>
 
