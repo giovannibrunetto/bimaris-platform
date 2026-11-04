@@ -2,17 +2,8 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
-const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
+import { authRedirectOrigin, safeAuthPath } from "@/lib/auth-redirect";
 
-function safePath(value: string | null) {
-  if(!value)return null;
-  if(value.startsWith("/")&&!value.startsWith("//"))return value;
-  try{
-    const url=new URL(value);
-    if(url.hostname==="bimarisnet.it"||url.hostname==="www.bimarisnet.it")return `${url.pathname}${url.search}${url.hash}`;
-  }catch{}
-  return null;
-}
 function esc(value:string){return value.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c));}
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
 
@@ -20,9 +11,9 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
-  const next = safePath(url.searchParams.get("next"));
+  const next = safeAuthPath(url.searchParams.get("next"));
   const operatorIntent=url.searchParams.get("operator")==="1";
-  if(!tokenHash||!type)return NextResponse.redirect(new URL("/accedi?errore=accesso",PUBLIC_SITE_URL));
+  if(!tokenHash||!type)return NextResponse.redirect(new URL("/accedi?errore=accesso",authRedirectOrigin(url)));
   const html=`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accedi a BIMARIS</title></head><body style="margin:0;background:#f6f1e8;color:#1f1b16;font-family:Arial,sans-serif"><main style="max-width:520px;margin:12vh auto;padding:24px"><section style="background:white;border:1px solid #ded6c9;border-radius:18px;padding:32px;box-shadow:0 12px 35px rgba(0,0,0,.08)"><div style="font-size:13px;letter-spacing:.14em;font-weight:700;color:#725b38">BIMARIS</div><h1 style="font-size:30px;margin:10px 0 12px">Conferma l'accesso</h1><p style="line-height:1.55;color:#5f584f">Il link è valido. Premi il pulsante per entrare in BIMARIS.</p><form method="post" action="/auth/confirm"><input type="hidden" name="token_hash" value="${esc(tokenHash)}"><input type="hidden" name="type" value="${esc(type)}">${next?`<input type="hidden" name="next" value="${esc(next)}">`:""}${operatorIntent?`<input type="hidden" name="operator" value="1">`:""}<button type="submit" style="width:100%;margin-top:12px;padding:14px 18px;border:0;border-radius:12px;background:#3f3020;color:white;font-size:16px;font-weight:700;cursor:pointer">Entra in BIMARIS</button></form></section></main></body></html>`;
   return new NextResponse(html,{status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store"}});
 }
@@ -31,16 +22,16 @@ export async function POST(request: Request) {
   const form=await request.formData();
   const tokenHash=typeof form.get("token_hash")==="string"?String(form.get("token_hash")):null;
   const type=(typeof form.get("type")==="string"?String(form.get("type")):null) as EmailOtpType|null;
-  const requestedNext=safePath(typeof form.get("next")==="string"?String(form.get("next")):null);
+  const requestedNext=safeAuthPath(typeof form.get("next")==="string"?String(form.get("next")):null);
   const operatorIntent=form.get("operator")==="1";
   const supabaseUrl=process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY??process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if(!tokenHash||!type||!supabaseUrl||!supabaseKey)return NextResponse.redirect(new URL("/accedi?errore=accesso",PUBLIC_SITE_URL),303);
+  if(!tokenHash||!type||!supabaseUrl||!supabaseKey)return NextResponse.redirect(new URL("/accedi?errore=accesso",authRedirectOrigin(new URL(request.url))),303);
 
   const cookiesToSet:CookieToSet[]=[];
   const supabase=createServerClient(supabaseUrl,supabaseKey,{cookies:{getAll(){return[];},setAll(values){cookiesToSet.push(...(values as CookieToSet[]));}}});
   const {data:verified,error}=await supabase.auth.verifyOtp({token_hash:tokenHash,type});
-  if(error||!verified.user)return NextResponse.redirect(new URL("/accedi?errore=link",PUBLIC_SITE_URL),303);
+  if(error||!verified.user)return NextResponse.redirect(new URL("/accedi?errore=link",authRedirectOrigin(new URL(request.url))),303);
 
   let destination=requestedNext&&requestedNext!=="/accedi"?requestedNext:"/profilo";
   if(operatorIntent){
@@ -48,7 +39,7 @@ export async function POST(request: Request) {
     destination=membership?"/area-operatore":"/accedi?errore=operatore";
   }
 
-  const response=NextResponse.redirect(new URL(destination,PUBLIC_SITE_URL),303);
+  const response=NextResponse.redirect(new URL(destination,authRedirectOrigin(new URL(request.url))),303);
   for(const {name,value,options} of cookiesToSet)response.cookies.set(name,value,options as Parameters<typeof response.cookies.set>[2]);
   return response;
 }
