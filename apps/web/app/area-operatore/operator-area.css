@@ -429,3 +429,25 @@
     padding:20px 19px;
   }
 }
+
+
+/* QA REVOKE-01: readable no-linked-operator state — 2026-11-04 */
+.operator-area-shell > .container > .detail-panel {
+  box-sizing:border-box;
+  background:#F8F8F5 !important;
+  border:1px solid #D8C8A9 !important;
+  border-radius:18px;
+  padding:24px 28px;
+  color:#10383A !important;
+  box-shadow:0 6px 22px rgba(7,36,41,.07);
+}
+.operator-area-shell > .container > .detail-panel h2 {
+  color:#10383A !important;
+}
+.operator-area-shell > .container > .detail-panel p {
+  color:#526568 !important;
+  line-height:1.55;
+}
+@media(max-width:650px){
+  .operator-area-shell > .container > .detail-panel {padding:21px 19px}
+}
