@@ -18,4 +18,5 @@ jobs:
       - run: pnpm --filter @bimaris/web lint
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
+      - run: pnpm test:auth
       - run: pnpm --filter @bimaris/web build
