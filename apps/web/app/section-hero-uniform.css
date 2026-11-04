@@ -110,3 +110,15 @@
     --section-intro-size: 15px;
   }
 }
+
+/* Operator directory retains the dark BIMARIS hero: restore readable text
+   without changing the shared header system or other pages. */
+.page-hero.operators-directory-hero > h1 {
+  color: #ffffff !important;
+}
+.page-hero.operators-directory-hero > p {
+  color: #e2e8ed !important;
+}
+.page-hero.operators-directory-hero > .kicker {
+  color: #e0bd78 !important;
+}
