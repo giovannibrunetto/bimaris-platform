@@ -21,7 +21,7 @@ export default function ReteBimarisPage() {
       <section className="section sand discovery-page-first">
         <div className="section-head">
           <div>
-            <div className="kicker">Due modi di scoprire la rete</div>
+            <div className="kicker ux-brand-05-section-kicker">Due modi di scoprire la rete</div>
             <h2>Operatori ed esperienze.</h2>
           </div>
           <p>Le attività aderenti sono consultabili anche quando non propongono esperienze.</p>
