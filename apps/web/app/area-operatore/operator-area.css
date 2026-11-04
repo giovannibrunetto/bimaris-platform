@@ -225,3 +225,54 @@
  .operator-area-shell .operator-profile-card,
  .operator-area-shell .collaboration-inbox{border-radius:17px!important}
 }
+
+
+/* BIMARIS operator workspace island v3 — 2026-11-04 */
+/* A distinct warm workspace gives management panels a physical surface and hierarchy. */
+.operator-area-shell>.container>div{gap:18px!important}
+.operator-area-shell .operator-area-grid{
+ position:relative;
+ padding:clamp(14px,2.1vw,30px);
+ border-radius:30px;
+ background:linear-gradient(165deg,#E8E2D6 0%,#F2EFE8 52%,#EDEAE2 100%);
+ border:1px solid rgba(216,169,79,.29);
+ box-shadow:0 28px 70px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.65);
+ gap:18px;
+}
+.operator-area-shell .operator-summary{
+ background:linear-gradient(112deg,#0B3438,#07252A)!important;
+ border:1px solid rgba(216,169,79,.25)!important;
+ border-radius:20px!important;
+ box-shadow:0 12px 30px rgba(7,38,42,.14)!important;
+}
+.operator-area-shell .operator-summary__inner{padding:23px 27px!important}
+.operator-area-shell .experience-manager,
+.operator-area-shell .operator-impact,
+.operator-area-shell .operator-profile-card,
+.operator-area-shell .collaboration-inbox{
+ background:#FFFEFB!important;
+ border:1px solid rgba(22,61,63,.11)!important;
+ border-radius:19px!important;
+ box-shadow:0 9px 30px rgba(22,49,49,.08),0 1px 3px rgba(22,49,49,.035)!important;
+}
+.operator-area-shell .experience-manager__card{
+ background:#F8F7F3!important;
+ border-color:#E3E2DA!important;
+ box-shadow:none!important;
+}
+.operator-area-shell .experience-manager__card:hover{border-color:#D6C5A6!important}
+.operator-area-shell .operator-impact__metrics>div{background:#F8F7F3!important}
+.operator-area-shell .operator-profile-submit{background:#F7F3EB!important}
+@media(max-width:650px){
+ .operator-area-shell .operator-area-grid{
+  padding:12px;
+  border-radius:22px;
+  gap:13px;
+ }
+ .operator-area-shell .operator-summary{border-radius:16px!important}
+ .operator-area-shell .operator-summary__inner{padding:18px 17px!important}
+ .operator-area-shell .experience-manager,
+ .operator-area-shell .operator-impact,
+ .operator-area-shell .operator-profile-card,
+ .operator-area-shell .collaboration-inbox{border-radius:15px!important}
+}
