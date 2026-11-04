@@ -16,16 +16,13 @@ export default async function VillagesPage() {
   return (
     <>
       <section
-        className="page-hero discovery-page-hero ux-brand-05-hero ux-brand-05-hero--standard"
-        style={{
-          
-        }}
+        className="page-hero discovery-page-hero ux-brand-05-hero ux-brand-05-hero--standard ux-brand-05-borghi-hero"
       >
         <h1 style={{ color: "#ffffff" }}>Borghi</h1>
         <p style={{ color: "#e2e8ed" }}>Storia, paesaggio, tradizioni e patrimonio dei borghi che raccontano le diverse identità del territorio messinese.</p>
       </section>
 
-      <section className="section sand discovery-page-first">
+      <section className="section sand discovery-page-first ux-brand-05-borghi-first">
         <div className="section-head">
           <div><h2>Scopri i luoghi e le loro storie.</h2></div>
           <p>Ogni borgo ha una scheda dedicata per conoscere la sua identità, la sua storia e i luoghi più significativi da vedere.</p>
