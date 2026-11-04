@@ -57,3 +57,35 @@
  .profile-page .recommendation-head h2{font-size:34px}
 }
 @media(prefers-reduced-motion:reduce){.profile-page .recommendation-card{transition:none;transform:none!important}}
+
+
+/* PROFILE-CARD-HOVER-01: premium golden hover and gentle scale — 2026-11-04 */
+.profile-page .overview-item,
+.profile-page .recommendation-card{
+  position:relative;
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease,background-color .2s ease;
+  transform-origin:center center;
+}
+@media (hover:hover) and (pointer:fine){
+  .profile-page .overview-item:hover,
+  .profile-page .recommendation-card:hover{
+    border-color:#CAA86A !important;
+    box-shadow:0 16px 38px rgba(0,0,0,.23),0 0 0 2px rgba(202,168,106,.32) !important;
+    transform:translateY(-3px) scale(1.012);
+    z-index:1;
+  }
+}
+.profile-page .overview-item:focus-within,
+.profile-page .recommendation-card:focus-visible{
+  border-color:#CAA86A !important;
+  box-shadow:0 16px 38px rgba(0,0,0,.23),0 0 0 2px rgba(202,168,106,.32) !important;
+  z-index:1;
+}
+.profile-page .recommendation-card:focus-visible{
+  outline:2px solid #CAA86A;
+  outline-offset:3px;
+}
+@media (prefers-reduced-motion:reduce){
+  .profile-page .overview-item,
+  .profile-page .recommendation-card{transition:none !important;transform:none !important}
+}
