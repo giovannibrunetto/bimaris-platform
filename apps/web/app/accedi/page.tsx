@@ -10,6 +10,7 @@ export default function AccediPage(){
  const [operatorMessageError,setOperatorMessageError]=useState(false);
  const [operatorLoading,setOperatorLoading]=useState(false);
  const [showOperatorLogin,setShowOperatorLogin]=useState(false);
+ const [showOperatorMagicLink,setShowOperatorMagicLink]=useState(false);
  function feedback(message:string,isError=false){setOperatorMessage(message);setOperatorMessageError(isError)}
 
  async function openOperatorAccess(){
@@ -70,8 +71,23 @@ export default function AccediPage(){
    <section className="card access-gateway-card">
     <div><div className="kicker">Per gli operatori</div><h2>Operatore</h2><p>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
     <div className="access-gateway-actions"><button className="button" type="button" disabled={operatorLoading} aria-expanded={showOperatorLogin} aria-controls="operator-access-form" onClick={()=>showOperatorLogin?setShowOperatorLogin(false):void openOperatorAccess()}>{operatorLoading?"Verifica accesso…":showOperatorLogin?"Chiudi accesso operatore":"Accedi come operatore"}</button><Link className="button ghost" href="/operatori/candidatura">Registrati e proponi un'esperienza</Link></div>
-    {showOperatorLogin&&<form id="operator-access-form" onSubmit={sendOperatorMagicLink} className="operator-access-form" aria-busy={operatorLoading}><label htmlFor="operator-email"><strong>Email associata all'attività</strong></label><input id="operator-email" name="email" type="email" autoComplete="email" inputMode="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it"/><button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>{operatorMessage&&<p role={operatorMessageError?"alert":"status"} aria-live="polite" className="access-status">{operatorMessage}</p>}<p className="access-gateway-note">Se sei già autenticato e il tuo account è abilitato come operatore, BIMARIS apre direttamente l'Area Operatore senza inviare un nuovo link.</p></form>}
-    {showOperatorLogin&&<><div className="operator-google-access"><button type="button" className="button ghost" disabled={operatorLoading} onClick={()=>void signInOperatorWithGoogle()}>Continua con Google</button><p className="access-gateway-note">Accedi con l'account Google già collegato a BIMARIS. La gestione delle attività richiede comunque un ruolo operatore attivo.</p></div><PasswordAccess context="operator"/></>}
+    {showOperatorLogin&&<div id="operator-access-form">
+     <div className="operator-google-access">
+      <button type="button" className="button" disabled={operatorLoading} onClick={()=>void signInOperatorWithGoogle()}>Continua con Google</button>
+      <p className="access-gateway-note">Usa l'account Google già collegato a BIMARIS. L'accesso alle attività resta riservato agli operatori abilitati.</p>
+     </div>
+     <PasswordAccess context="operator"/>
+     <div className="operator-alternative-login">
+      <button type="button" className="button ghost" aria-expanded={showOperatorMagicLink} aria-controls="operator-magic-link-form" onClick={()=>setShowOperatorMagicLink(v=>!v)}>{showOperatorMagicLink?"Nascondi accesso via email":"Oppure ricevi un link via email"}</button>
+      {showOperatorMagicLink&&<form id="operator-magic-link-form" onSubmit={sendOperatorMagicLink} className="operator-access-form" aria-busy={operatorLoading}>
+       <label htmlFor="operator-email"><strong>Email associata all'attività</strong></label>
+       <input id="operator-email" name="email" type="email" autoComplete="email" inputMode="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it"/>
+       <button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>
+       {operatorMessage&&<p role={operatorMessageError?"alert":"status"} aria-live="polite" className="access-status">{operatorMessage}</p>}
+       <p className="access-gateway-note">Se il servizio email raggiunge il limite di invio, utilizza Google o una password già impostata.</p>
+      </form>}
+     </div>
+    </div>}
     <p className="access-gateway-note">Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
   </div><p className="access-gateway-back"><Link href="/">← Torna a BIMARIS</Link></p>
