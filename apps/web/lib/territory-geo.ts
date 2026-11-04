@@ -13,23 +13,10 @@ type Municipality={name:string;code:string;bbox:number[]};
 type Geometry={type:"Polygon"|"MultiPolygon";coordinates:any};
 type FeatureCollection={features:Array<{geometry:Geometry}>};
 const BASE="https://l1n00.github.io/confini-comuni-istat/2026";
-const IONICA=new Set([
- "Alì","Alì Terme","Antillo","Casalvecchio Siculo","Castelmola",
- "Fiumedinisi","Forza d'Agrò","Furci Siculo","Gallodoro","Giardini-Naxos",
- "Itala","Letojanni","Limina","Mandanici","Mongiuffi Melia",
- "Nizza di Sicilia","Pagliara","Roccafiorita","Roccalumera",
- "Sant'Alessio Siculo","Santa Teresa di Riva","Savoca","Scaletta Zanclea",
- "Taormina","Gaggi","Graniti","Motta Camastra"
-].map(normalize));
-const TIRRENICA=new Set([
- "Acquedolci","Barcellona Pozzo di Gotto","Brolo","Capo d'Orlando","Capri Leone",
- "Caronia","Falcone","Ficarra","Furnari","Gioiosa Marea","Mazzarrà Sant'Andrea",
- "Merì","Milazzo","Mirto","Monforte San Giorgio","Montagnareale","Motta d'Affermo",
- "Naso","Oliveri","Pace del Mela","Patti","Pettineo","Piraino","Reitano",
- "Roccavaldina","Rodì Milici","Rometta","Sant'Agata di Militello",
- "Santo Stefano di Camastra","Saponara","Spadafora","Terme Vigliatore",
- "Torregrotta","Torrenova","Tusa","Valdina","Venetico","Villafranca Tirrena"
-].map(normalize));
+// Initial validated pilot points only. The rest of the municipality-to-macroarea
+// mapping requires editorial approval, particularly Nebrodi, Eolie and inland towns.
+const IONICA=new Set(["Taormina"].map(normalize));
+const TIRRENICA=new Set(["Milazzo"].map(normalize));
 function normalize(s:string){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function inRing(lon:number,lat:number,ring:number[][]):boolean{
  let inside=false;
