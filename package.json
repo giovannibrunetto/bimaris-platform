@@ -10,6 +10,7 @@
     "lint:web": "pnpm --filter @bimaris/web lint",
     "typecheck:web": "pnpm --filter @bimaris/web exec tsc --noEmit",
     "typecheck:mobile": "pnpm --filter @bimaris/mobile exec tsc --noEmit",
-    "check": "pnpm lint:web && pnpm typecheck:web && pnpm typecheck:mobile"
+    "check": "pnpm lint:web && pnpm typecheck:web && pnpm typecheck:mobile && pnpm test:auth",
+    "test:auth": "node --experimental-strip-types --test apps/web/tests/auth-redirect.test.mjs"
   }
 }
