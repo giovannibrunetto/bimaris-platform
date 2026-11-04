@@ -7,7 +7,8 @@ import { useRef } from "react";
 const primaryLinks = [
   { href: "/cultura", label: "Cultura" },
   { href: "/storie-miti-leggende", label: "Miti e leggende" },
-  { href: "/esperienze", label: "Esperienze" },
+  { href: "/borghi", label: "Borghi" },
+  { href: "/rete-bimaris", label: "Rete BIMARIS" },
   { href: "/mappa", label: "Mappa" },
 ];
 
