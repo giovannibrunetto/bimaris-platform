@@ -25,3 +25,110 @@
 .operator-area-shell .experience-manager__card>button:hover:not(:disabled){background:#E7E0D3}
 .operator-area-shell :is(a,button,input,textarea,select):focus-visible{outline:3px solid var(--op-gold);outline-offset:3px}
 @media(max-width:650px){.operator-area-shell .experience-manager__head{padding-bottom:13px}.operator-area-shell .experience-manager__card{gap:12px}}
+
+
+/* BIMARIS operator immersive reserved area — harmonized with /profilo */
+.operator-area-hero{
+ background:radial-gradient(circle at 7% 0%,rgba(34,91,94,.22),transparent 39%),linear-gradient(135deg,#071b1f,#0a292d 65%,#081d20)!important;
+ padding:34px 20px 12px!important;
+ border-bottom:0!important;
+}
+.operator-area-hero>.container{
+ max-width:1180px!important;
+ padding:33px 40px!important;
+ border:1px solid rgba(216,169,79,.26);
+ border-radius:30px;
+ background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.018));
+ box-shadow:0 25px 80px rgba(0,0,0,.18);
+}
+.operator-area-hero h1{font-weight:400;letter-spacing:-.025em}
+.operator-area-hero .kicker{color:#D8A94F!important}
+.operator-area-hero p{color:rgba(247,242,233,.75)!important}
+.operator-area-hero .operator-logout,.operator-area-hero button{border:1px solid rgba(216,169,79,.32);background:rgba(255,255,255,.08);color:#F7F2E9}
+.operator-area-shell{
+ --op-dark:#071b1f;--op-teal:#0a292d;--op-gold:#d8a94f;--op-paper:#f7f2e9;--op-muted:rgba(247,242,233,.68);
+ background:radial-gradient(circle at 8% 0%,rgba(34,91,94,.28),transparent 38%),radial-gradient(circle at 96% 82%,rgba(216,169,79,.055),transparent 34%),linear-gradient(135deg,#071b1f 0%,#0a292d 50%,#081d20 100%)!important;
+ color:#F7F2E9!important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"]{
+ background:rgba(255,255,255,.055)!important;
+ border:1px solid rgba(216,169,79,.24)!important;
+ box-shadow:none;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] strong{color:#F7F2E9}
+.operator-area-shell nav[aria-label="Seleziona attività"] a{
+ background:rgba(255,255,255,.06)!important;
+ border:1px solid rgba(216,169,79,.22)!important;
+ color:#F7F2E9!important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a[aria-current="page"]{
+ background:rgba(216,169,79,.19)!important;
+ border-color:#D8A94F!important;
+ color:#F7F2E9!important;
+}
+.operator-area-shell .operator-summary{
+ background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.018))!important;
+ border:1px solid rgba(216,169,79,.26);
+ border-radius:26px;
+ box-shadow:0 25px 70px rgba(0,0,0,.16);
+}
+.operator-area-shell .operator-summary h2{font-weight:400}
+.operator-area-shell .operator-summary .eyebrow{color:#D8A94F}
+.operator-area-shell .experience-manager,
+.operator-area-shell .operator-impact,
+.operator-area-shell .operator-profile-card,
+.operator-area-shell .collaboration-inbox{
+ background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018))!important;
+ border:1px solid rgba(216,169,79,.22)!important;
+ border-radius:24px;
+ box-shadow:0 20px 65px rgba(0,0,0,.13);
+ color:#F7F2E9;
+}
+.operator-area-shell .experience-manager__head{border-bottom-color:rgba(216,169,79,.18)}
+.operator-area-shell .experience-manager__head h2,
+.operator-area-shell .operator-impact h2,
+.operator-area-shell .operator-profile-card h2,
+.operator-area-shell .collaboration-inbox h2{color:#F7F2E9}
+.operator-area-shell .experience-manager__head p,
+.operator-area-shell .operator-profile-card p,
+.operator-area-shell .collaboration-inbox__head p{color:rgba(247,242,233,.72)}
+.operator-area-shell .experience-manager__head .eyebrow,
+.operator-area-shell .operator-impact .eyebrow,
+.operator-area-shell .operator-profile-card .eyebrow,
+.operator-area-shell .collaboration-inbox .eyebrow{color:#D8A94F}
+.operator-area-shell .experience-manager__card{
+ background:rgba(255,255,255,.075)!important;
+ border:1px solid rgba(216,169,79,.2)!important;
+ box-shadow:none;
+}
+.operator-area-shell .experience-manager__card strong{color:#F7F2E9}
+.operator-area-shell .experience-manager__card span{background:rgba(216,169,79,.18);color:#F0CE8E}
+.operator-area-shell .experience-manager__card small{color:rgba(247,242,233,.74)}
+.operator-area-shell .experience-manager__card>button{
+ background:rgba(216,169,79,.08);border-color:rgba(216,169,79,.58);color:#F7F2E9;
+}
+.operator-area-shell .experience-manager__card>button:hover:not(:disabled){background:rgba(216,169,79,.23);border-color:#D8A94F}
+.operator-area-shell .operator-impact__metrics>div{
+ background:rgba(255,255,255,.065)!important;
+ border:1px solid rgba(216,169,79,.18)!important;
+}
+.operator-area-shell .operator-impact__metrics strong{color:#F7F2E9}
+.operator-area-shell .operator-impact__metrics span,
+.operator-area-shell .operator-impact__head>span{color:rgba(247,242,233,.67)}
+.operator-area-shell .operator-impact__waiting{background:rgba(255,255,255,.06);color:#F7F2E9}
+.operator-area-shell .operator-profile-submit{background:rgba(255,255,255,.07);border:1px solid rgba(216,169,79,.18)}
+.operator-area-shell .operator-profile-card__form{border-top-color:rgba(216,169,79,.18)}
+.operator-area-shell .operator-profile-card label{color:#F7F2E9}
+.operator-area-shell .collaboration-request{background:rgba(255,255,255,.065);border-color:rgba(216,169,79,.18)}
+.operator-area-shell .collaboration-request h3,.operator-area-shell .collaboration-request__activity strong{color:#F7F2E9}
+.operator-area-shell .collaboration-request__activity span{color:rgba(247,242,233,.7)}
+.operator-area-shell .collaboration-inbox__count{background:rgba(216,169,79,.18);color:#F7F2E9}
+.operator-area-shell .experience-wizard{background:linear-gradient(145deg,#09272a,#061a1d)!important;border:1px solid rgba(216,169,79,.23)}
+.operator-area-shell .operator-experiences .detail-panel:not(.experience-manager__card){border-color:rgba(216,169,79,.2)}
+@media(max-width:650px){
+ .operator-area-hero{padding:15px 14px 6px!important}
+ .operator-area-hero>.container{padding:22px 18px!important;border-radius:22px}
+ .operator-area-hero h1{font-size:clamp(31px,8vw,42px)!important;line-height:1.04!important}
+ .operator-area-shell .operator-summary,.operator-area-shell .experience-manager,.operator-area-shell .operator-impact,.operator-area-shell .operator-profile-card,.operator-area-shell .collaboration-inbox{border-radius:19px}
+ .operator-area-shell .experience-manager__card{gap:12px}
+}
