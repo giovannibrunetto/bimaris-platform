@@ -16,10 +16,9 @@ export default async function VillagesPage() {
   return (
     <>
       <section
-        className="page-hero discovery-page-hero"
+        className="page-hero discovery-page-hero ux-brand-05-hero ux-brand-05-hero--standard"
         style={{
-          background: "radial-gradient(circle at 82% 16%, rgba(202, 168, 106, .16), transparent 25%), linear-gradient(135deg, #07343b 0%, #032126 62%, #02171b 100%)",
-          color: "#ffffff",
+          
         }}
       >
         <div className="kicker" style={{ color: "#e0bd78" }}>Scopri il territorio</div>
