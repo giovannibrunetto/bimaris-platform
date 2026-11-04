@@ -77,17 +77,20 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "update_role") {
-      const { error } = await db.from("operator_memberships").update({ role })
-        .eq("operator_id", operatorId).eq("user_id", userId);
+      const { data, error } = await db.from("operator_memberships").update({ role })
+        .eq("operator_id", operatorId).eq("user_id", userId).select("user_id");
       if (error) throw error;
-      return back(request, "membership-role-updated");
+      return back(request, data?.length ? "membership-role-updated" : "membership-not-found");
     }
-    const { error } = await db.from("operator_memberships").delete()
-      .eq("operator_id", operatorId).eq("user_id", userId);
+    const { data, error } = await db.from("operator_memberships").delete()
+      .eq("operator_id", operatorId).eq("user_id", userId).select("user_id");
     if (error) throw error;
     // Remove only the operator relationship, never the Supabase Auth account.
-    return back(request, "membership-revoked");
+    return back(request, data?.length ? "membership-revoked" : "membership-not-found");
   } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "23514") {
+      return back(request, "last-owner-protected");
+    }
     console.error("BIMARIS operator membership action failed", error);
     return back(request, "membership-error");
   }
