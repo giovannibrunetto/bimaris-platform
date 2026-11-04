@@ -24,7 +24,7 @@ export default function CulturePage() {
         <section className="section culture-entry-section discovery-page-first">
           <div className="culture-entry-head">
             <div>
-              <div className="kicker">Due modi di scoprire la città</div>
+              <div className="kicker ux-brand-05-section-kicker">Due modi di scoprire la città</div>
               <h2>Da dove vuoi iniziare?</h2>
             </div>
             <p>BIMARIS può raccontarti Messina collegando luoghi e periodi storici, oppure lasciarti libero di scegliere direttamente cosa approfondire.</p>
