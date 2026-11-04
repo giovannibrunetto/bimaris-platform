@@ -37,7 +37,7 @@ export default function PasswordAccess({context}:{context:"operator"|"utente"}){
    window.location.assign("/auth/callback?next="+encodeURIComponent("/profilo"));
   }finally{setBusy(false);setPassword("");}
  }
- return <section className="password-access" aria-label="Accesso con password">
+ return <section className={`password-access ${isOperator?"password-access--operator":""}`} aria-label="Accesso con password">
   <h3>{mode==="login"?"Accedi con email e password":"Imposta o recupera la password"}</h3>
   <p className="password-access__intro">{mode==="login"?"Hai già una password BIMARIS? Entra senza richiedere un nuovo link.":"Riceverai un collegamento di verifica per scegliere una password. Non viene creato un nuovo account."}</p>
   <form onSubmit={handleSubmit} aria-busy={busy}>
@@ -54,6 +54,12 @@ export default function PasswordAccess({context}:{context:"operator"|"utente"}){
   <style jsx>{`
    .password-access{margin-top:20px;padding:20px;border:1px solid rgba(202,168,106,.37);background:rgba(8,39,43,.06);border-radius:17px;color:inherit}
    .password-access h3{font:normal 25px Georgia,serif;margin:0 0 8px}
+   .password-access--operator{background:transparent;border:0;border-radius:0;padding:0;margin:0}
+   .password-access--operator h3{font:normal 22px Georgia,serif;margin-bottom:6px;color:#0b3035}
+   .password-access--operator .password-access__intro{font-size:13px;margin-bottom:15px;color:#4e6667}
+   .password-access--operator .password-access__switch{color:#80551f}
+   .password-access--operator .password-access__submit{width:100%;border-radius:13px;background:#caa86a;color:#08262b;box-shadow:none}
+   .password-access--operator input{border-color:#c9c4b8}
    .password-access__intro{font-size:14px;line-height:1.5;margin:0 0 15px}
    .password-access form{display:grid;gap:9px}
    .password-access label{font-size:14px;font-weight:750}
