@@ -2,38 +2,16 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_SITE_URL = "https://www.bimarisnet.it";
-const ALLOWED_HOSTS = new Set([
-  "bimarisnet.it",
-  "www.bimarisnet.it",
-  "bimaris-platform.vercel.app",
-  "bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app",
-  "bimaris-platform-git-feat-publis-affef4-giovannibrunetto84-1508.vercel.app",
-]);
-
-function isAllowedHost(hostname: string) {
-  if (ALLOWED_HOSTS.has(hostname)) return true;
-
-  // Vercel creates a new immutable hostname for every preview deployment.
-  // Accept only preview hosts belonging to this BIMARIS project/account so the
-  // callback stays on the deployment that initiated auth without opening the
-  // redirect to arbitrary hosts.
-  return /^bimaris-platform-[a-z0-9-]+-giovannibrunetto84-1508\.vercel\.app$/i.test(hostname);
-}
-
-function safePath(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
-}
+import { authRedirectOrigin, safeAuthPath } from "@/lib/auth-redirect";
 
 function publicUrl(path: string, requestUrl: URL) {
-  const origin = isAllowedHost(requestUrl.hostname) ? requestUrl.origin : PUBLIC_SITE_URL;
-  return new URL(path, origin);
+  return new URL(path, authRedirectOrigin(requestUrl));
 }
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = safePath(url.searchParams.get("next"));
+  const next = safeAuthPath(url.searchParams.get("next"));
   const operatorIntent = url.searchParams.get("operator") === "1";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
