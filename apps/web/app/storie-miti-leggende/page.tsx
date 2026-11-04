@@ -60,7 +60,7 @@ export default async function StoriesPage() {
   const stories = await getPublishedStories();
   return (
     <>
-      <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero" style={{ minHeight: 0 }}>
+      <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero ux-brand-05-hero ux-brand-05-hero--standard" style={{ minHeight: 0 }}>
         <h1 style={{ marginTop: 0, marginBottom: 14 }}>Storia, miti e leggende</h1>
         <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
