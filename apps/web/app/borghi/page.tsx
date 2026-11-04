@@ -21,7 +21,6 @@ export default async function VillagesPage() {
           
         }}
       >
-        <div className="kicker" style={{ color: "#e0bd78" }}>Scopri il territorio</div>
         <h1 style={{ color: "#ffffff" }}>Borghi</h1>
         <p style={{ color: "#e2e8ed" }}>Storia, paesaggio, tradizioni e patrimonio dei borghi che raccontano le diverse identità del territorio messinese.</p>
       </section>
