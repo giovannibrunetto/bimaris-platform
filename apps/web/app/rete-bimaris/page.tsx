@@ -11,7 +11,7 @@ export default function ReteBimarisPage() {
     <>
       <section
         className="page-hero discovery-page-hero"
-        style={{ background: "linear-gradient(135deg, #0b3040 0%, #061624 58%, #02090f 100%)", color: "#ffffff" }}
+        style={{ background: "#07343B", color: "#ffffff" }}
       >
         <div className="kicker" style={{ color: "#e0bd78" }}>La rete BIMARIS</div>
         <h1 style={{ color: "#ffffff" }}>Esplora la rete BIMARIS</h1>
