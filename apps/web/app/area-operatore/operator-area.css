@@ -132,3 +132,96 @@
  .operator-area-shell .operator-summary,.operator-area-shell .experience-manager,.operator-area-shell .operator-impact,.operator-area-shell .operator-profile-card,.operator-area-shell .collaboration-inbox{border-radius:19px}
  .operator-area-shell .experience-manager__card{gap:12px}
 }
+
+
+/* BIMARIS premium hybrid operator dashboard v2 — 2026-11-04 */
+/* The personal profile remains the identity reference; complex operator tools use light work surfaces. */
+.operator-area-hero{padding-bottom:22px!important}
+.operator-area-hero>.container{
+  border-radius:28px;
+  background:linear-gradient(125deg,rgba(255,255,255,.07),rgba(255,255,255,.016))!important;
+}
+.operator-area-shell{padding-top:16px!important}
+.operator-area-shell nav[aria-label="Seleziona attività"]{
+  padding:8px 4px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] strong{color:#F7F2E9;font-weight:650}
+.operator-area-shell nav[aria-label="Seleziona attività"] a{
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(216,169,79,.24)!important;
+  color:#F7F2E9!important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a[aria-current="page"]{
+  border-color:#D8A94F!important;background:rgba(216,169,79,.18)!important;
+  color:#F7F2E9!important;
+}
+.operator-area-shell .operator-summary{
+  border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+.operator-area-shell .operator-summary__inner{padding:18px 12px!important}
+.operator-area-shell .operator-summary h2{font-size:clamp(32px,3.6vw,46px)}
+.operator-area-shell .operator-summary p{color:rgba(247,242,233,.72)}
+.operator-area-shell .experience-manager,
+.operator-area-shell .operator-impact,
+.operator-area-shell .operator-profile-card,
+.operator-area-shell .collaboration-inbox{
+  background:#F8F8F5!important;
+  border:1px solid rgba(216,169,79,.22)!important;
+  color:#102E31!important;
+  box-shadow:0 22px 64px rgba(0,0,0,.15)!important;
+  border-radius:22px!important;
+}
+.operator-area-shell .experience-manager__head{border-bottom:1px solid #DDE2DB}
+.operator-area-shell .experience-manager__head h2,
+.operator-area-shell .operator-impact h2,
+.operator-area-shell .operator-profile-card h2,
+.operator-area-shell .collaboration-inbox h2{color:#102E31!important}
+.operator-area-shell .experience-manager__head p,
+.operator-area-shell .operator-profile-card p,
+.operator-area-shell .collaboration-inbox__head p{color:#58696B!important}
+.operator-area-shell .experience-manager__head .eyebrow,
+.operator-area-shell .operator-impact .eyebrow,
+.operator-area-shell .operator-profile-card .eyebrow,
+.operator-area-shell .collaboration-inbox .eyebrow{color:#83612B!important}
+.operator-area-shell .experience-manager__card{
+  background:#FFF!important;border:1px solid #E1E5DF!important;
+  box-shadow:0 3px 14px rgba(7,36,41,.035)!important;
+}
+.operator-area-shell .experience-manager__card strong{color:#102E31!important}
+.operator-area-shell .experience-manager__card span{background:#F0E6D3!important;color:#6A4A17!important}
+.operator-area-shell .experience-manager__card small{color:#53676B!important}
+.operator-area-shell .experience-manager__card>button{
+  background:#fff!important;border:1px solid #BD9C61!important;color:#102E31!important;
+}
+.operator-area-shell .experience-manager__card>button:hover:not(:disabled){background:#F2EADA!important}
+.operator-area-shell .operator-impact__metrics>div{
+  background:#FFF!important;border:1px solid #E1E5DF!important;
+}
+.operator-area-shell .operator-impact__metrics strong{color:#102E31!important}
+.operator-area-shell .operator-impact__metrics span,
+.operator-area-shell .operator-impact__head>span{color:#58696B!important}
+.operator-area-shell .operator-impact__waiting{background:#F2EEE5!important;color:#41565A!important}
+.operator-area-shell .operator-profile-submit{background:#F1EDE5!important;border:1px solid #E4DCCB}
+.operator-area-shell .operator-profile-card__form{border-top:1px solid #DFE2DC}
+.operator-area-shell .operator-profile-card label{color:#102E31!important}
+.operator-area-shell .collaboration-request{background:#FFF!important;border:1px solid #E1E5DF!important}
+.operator-area-shell .collaboration-request h3,
+.operator-area-shell .collaboration-request__activity strong{color:#102E31!important}
+.operator-area-shell .collaboration-request__activity span{color:#58696B!important}
+.operator-area-shell .collaboration-inbox__count{background:#102E31!important;color:#F8F8F5!important}
+.operator-area-shell .experience-manager__head>.button{box-shadow:none}
+@media(max-width:650px){
+ .operator-area-hero{padding-bottom:12px!important}
+ .operator-area-hero>.container{padding:25px 19px!important}
+ .operator-area-shell{padding-top:13px!important}
+ .operator-area-shell nav[aria-label="Seleziona attività"]{padding:0!important;gap:7px!important}
+ .operator-area-shell nav[aria-label="Seleziona attività"] a{min-height:44px}
+ .operator-area-shell .operator-summary__inner{padding:12px 3px!important}
+ .operator-area-shell .experience-manager,
+ .operator-area-shell .operator-impact,
+ .operator-area-shell .operator-profile-card,
+ .operator-area-shell .collaboration-inbox{border-radius:17px!important}
+}
