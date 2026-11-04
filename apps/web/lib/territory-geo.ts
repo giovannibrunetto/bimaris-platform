@@ -1,3 +1,5 @@
+import municipalityIndex from "@/data/municipalities-messina-2026.json";
+
 /**
  * BIMARIS pilot classification of geographic points.
  * Municipal borders: ISTAT 2026, WGS84; published as per-municipality GeoJSON
@@ -6,8 +8,8 @@
  * Unknown/ambiguous municipalities deliberately remain unclassified.
  */
 export type TerritorySlug="messina"|"area-ionica"|"area-tirrenica";
-type Municipality={name:string;code:string;territorialUnit:{code:string;name:string};bbox:number[]};
-type Index={municipalities:Municipality[]};
+type Municipality={name:string;code:string;bbox:number[]};
+
 type Geometry={type:"Polygon"|"MultiPolygon";coordinates:any};
 type FeatureCollection={features:Array<{geometry:Geometry}>};
 const BASE="https://l1n00.github.io/confini-comuni-istat/2026";
@@ -69,18 +71,19 @@ export async function classifyPoint(latitude:number,longitude:number):Promise<Te
   return {status:"unavailable",municipality:null,municipalityCode:null,territorySlug:null,evidence};
  }
  try{
-  const index=await loadJson<Index>(BASE+"/index.json");
-  const candidates=(index.municipalities??[]).filter(m=>{
+  const candidates=(municipalityIndex.municipalities as Municipality[]).filter(m=>{
    const b=m.bbox;
    return m.code.startsWith("083")&&b?.length===4&&longitude>=b[0]&&longitude<=b[2]&&latitude>=b[1]&&latitude<=b[3];
   });
+  let failedGeometry=false;
   const found=await Promise.all(candidates.map(async municipality=>{
    try{
     const collection=await loadJson<FeatureCollection>(BASE+"/comuni/"+municipality.code+".geojson");
     return collection.features?.some(f=>contains(longitude,latitude,f.geometry))?municipality:null;
-   }catch{return null}
+   }catch{failedGeometry=true;return null}
   }));
   const matches=found.filter((m):m is Municipality=>m!==null);
+  if(failedGeometry)return {status:"unavailable",municipality:null,municipalityCode:null,territorySlug:null,evidence};
   if(matches.length!==1)return {status:matches.length>1?"review":"outside",municipality:matches[0]?.name??null,municipalityCode:matches[0]?.code??null,territorySlug:null,evidence};
   const municipality=matches[0],territorySlug=classifyName(municipality.name);
   return {status:territorySlug?"assigned":"review",municipality:municipality.name,municipalityCode:municipality.code,territorySlug,evidence};
