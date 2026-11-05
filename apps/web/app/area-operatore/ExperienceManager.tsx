@@ -43,10 +43,22 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
  const supabase=useMemo(()=>createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!),[]),localKey=`bimaris:experience-draft:${operatorId}`;
  useEffect(()=>{
   if(!open||wizardScrollRequest===0)return;
+  // Scroll after React has rendered the new step. A smooth scroll can be
+  // interrupted by changing step heights and leave the heading off screen.
+  let nextFrame=0;
   const frame=window.requestAnimationFrame(()=>{
-   wizardRef.current?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+   nextFrame=window.requestAnimationFrame(()=>{
+    const target=wizardRef.current;
+    if(!target)return;
+    const header=document.querySelector("body > header, header");
+    const headerRect=header?.getBoundingClientRect();
+    const fixedHeaderOffset=headerRect&&headerRect.top<=1&&headerRect.bottom>0
+     ?Math.min(headerRect.bottom,140):76;
+    const position=Math.max(0,window.scrollY+target.getBoundingClientRect().top-fixedHeaderOffset-16);
+    window.scrollTo({top:position,behavior:"instant" as ScrollBehavior});
+   });
   });
-  return()=>window.cancelAnimationFrame(frame);
+  return()=>{window.cancelAnimationFrame(frame);window.cancelAnimationFrame(nextFrame);};
  },[open,wizardScrollRequest]);
  // Keep the active wizard step in view after forward/back navigation.
  function navigateStep(delta:number){
