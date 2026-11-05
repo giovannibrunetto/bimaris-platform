@@ -12,6 +12,10 @@ export default function AccediPage(){
  const [showOperatorLogin,setShowOperatorLogin]=useState(false);
  const [showOperatorMagicLink,setShowOperatorMagicLink]=useState(false);
  function feedback(message:string,isError=false){setOperatorMessage(message);setOperatorMessageError(isError)}
+ function operatorReturnPath(){
+  const requested=new URLSearchParams(window.location.search).get("next");
+  return requested&&(requested==="/area-operatore"||requested.startsWith("/area-operatore?")||requested.startsWith("/area-operatore/")||requested.startsWith("/area-operatore#"))?requested:"/area-operatore";
+ }
 
  async function openOperatorAccess(){
   const supabase=createBrowserSupabaseClient();
@@ -21,7 +25,7 @@ export default function AccediPage(){
   if(user){
    const {data:membership,error}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",user.id).limit(1).maybeSingle();
    setOperatorLoading(false);
-   if(!error&&membership){window.location.assign("/area-operatore");return;}
+   if(!error&&membership){window.location.assign(operatorReturnPath());return;}
    setShowOperatorLogin(true);
    feedback("Questo account non è ancora associato a un'attività BIMARIS. Puoi usare un'altra email abilitata oppure proporre una nuova attività.",true);
    return;
@@ -33,7 +37,7 @@ export default function AccediPage(){
   const supabase=createBrowserSupabaseClient();
   if(!supabase){feedback("Accesso Google non disponibile.",true);return;}
   setOperatorLoading(true);feedback("");
-  const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
+  const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent(operatorReturnPath())}`;
   const {error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:callbackUrl}});
   if(error){setOperatorLoading(false);feedback("Impossibile avviare l'accesso con Google. Riprova.",true);}
  }
@@ -45,11 +49,11 @@ export default function AccediPage(){
   if(user){
    const {data:membership,error:membershipError}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",user.id).limit(1).maybeSingle();
    setOperatorLoading(false);
-   if(!membershipError&&membership){window.location.assign("/area-operatore");return;}
+   if(!membershipError&&membership){window.location.assign(operatorReturnPath());return;}
    feedback("Questo account non è ancora associato a un'attività BIMARIS. Esci dall'account se vuoi accedere con un'altra email operatore.",true);
    return;
   }
-  const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent("/area-operatore")}`;
+  const callbackUrl=`${window.location.origin}/auth/callback?operator=1&next=${encodeURIComponent(operatorReturnPath())}`;
   const {error}=await supabase.auth.signInWithOtp({email:operatorEmail.trim(),options:{emailRedirectTo:callbackUrl,shouldCreateUser:false}});
   setOperatorLoading(false);
   if(error){
