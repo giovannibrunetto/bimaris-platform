@@ -53,7 +53,7 @@ export async function GET(request: Request) {
       .limit(1)
       .maybeSingle();
     if (!membership) return NextResponse.redirect(publicUrl("/accedi?errore=operatore", url));
-    return NextResponse.redirect(publicUrl("/area-operatore", url));
+    return NextResponse.redirect(publicUrl(next && (next === "/area-operatore" || next.startsWith("/area-operatore?") || next.startsWith("/area-operatore#") || next.startsWith("/area-operatore/")) ? next : "/area-operatore", url));
   }
 
   // Personal login never switches to operator context merely because this user
