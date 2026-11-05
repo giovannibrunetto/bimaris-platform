@@ -39,6 +39,8 @@
 
 /* The live wizard uses __progress / __actions, not the legacy __top / experience-actions. */
 .experience-manager .experience-wizard{padding:22px 26px;margin-top:20px}
+/* Step height changes must not trigger browser scroll anchoring. */
+.experience-manager .experience-wizard{overflow-anchor:none}
 .experience-wizard__progress{display:grid;gap:8px;margin-bottom:20px;color:#e7c37e;font-size:.78rem;font-weight:750;letter-spacing:.06em}
 .experience-wizard__progress>div{height:5px;background:rgba(255,255,255,.2);border-radius:100px;overflow:hidden}
 .experience-wizard__progress i{display:block;height:100%;background:#e3b45c;border-radius:100px}
