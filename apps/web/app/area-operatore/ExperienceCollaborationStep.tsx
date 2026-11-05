@@ -64,7 +64,7 @@ export default function ExperienceCollaborationStep({operatorId,experienceId,onC
   finally{setBusy(false);}
  }
  async function chooseSolo(){
-  if(savedPartnerId&&!await withdraw())return;
+  if(savedPartnerId){setMessage("Per realizzare l’esperienza senza partner, revoca prima la collaborazione esistente.");return;}
   setMode("solo");setPartnerId("");setActivity("");setInvited(false);setApprovalStatus(null);setMessage("");onChange(null);onReadyChange(true);
  }
  function choosePartner(){setMode("partner");setInvited(false);setApprovalStatus(null);setMessage("");onChange(null)}
