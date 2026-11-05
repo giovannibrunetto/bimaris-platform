@@ -31,7 +31,9 @@ export default function PasswordAccess({context}:{context:"operator"|"utente"}){
    if(isOperator){
     const {data:membership,error:membershipError}=await client.from("operator_memberships").select("operator_id").eq("user_id",data.user.id).limit(1).maybeSingle();
     if(membershipError||!membership){setMessage("Accesso personale riuscito, ma questo account non è collegato a un operatore BIMARIS.");setError(true);return;}
-    window.location.assign("/area-operatore");
+    const next=new URLSearchParams(window.location.search).get("next");
+    const operatorDestination=next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#"))?next:"/area-operatore";
+    window.location.assign(operatorDestination);
     return;
    }
    window.location.assign("/auth/callback?next="+encodeURIComponent("/profilo"));
