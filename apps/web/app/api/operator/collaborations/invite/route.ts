@@ -30,3 +30,23 @@ export async function POST(request:NextRequest){
  if(error)return NextResponse.json({error:error.message},{status:400});
  return NextResponse.json({ok:true,status:"pending"});
 }
+
+/** Explicitly withdraw an invitation while the experience is still editable. */
+export async function DELETE(request:NextRequest){
+ const db=await createUserServerClient();
+ if(!db)return NextResponse.json({error:"Accesso richiesto."},{status:401});
+ const {data:claims}=await db.auth.getClaims();
+ const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;
+ if(!userId)return NextResponse.json({error:"Accesso richiesto."},{status:401});
+ const body=await request.json().catch(()=>null) as {experience_id?:string;operator_id?:string}|null;
+ const experienceId=body?.experience_id?.trim()??"",operatorId=body?.operator_id?.trim()??"";
+ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+ if(!uuid.test(experienceId)||!uuid.test(operatorId))return NextResponse.json({error:"Richiesta non valida."},{status:400});
+ const {data:membership}=await db.from("operator_memberships").select("role").eq("operator_id",operatorId).eq("user_id",userId).maybeSingle();
+ if(!membership||!["owner","manager"].includes(membership.role))return NextResponse.json({error:"Non autorizzato."},{status:403});
+ const {data:experience}=await db.from("experiences").select("id,review_status,published").eq("id",experienceId).eq("operator_id",operatorId).maybeSingle();
+ if(!experience||experience.published||!["draft","rejected"].includes(experience.review_status))return NextResponse.json({error:"L'esperienza non può essere modificata in questo stato."},{status:409});
+ const {error}=await db.from("experience_operators").delete().eq("experience_id",experienceId).eq("role","participant");
+ if(error)return NextResponse.json({error:"Impossibile revocare la collaborazione."},{status:400});
+ return NextResponse.json({ok:true});
+}
