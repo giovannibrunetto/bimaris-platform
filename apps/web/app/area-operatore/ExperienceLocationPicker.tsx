@@ -51,6 +51,9 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
  const markerInstance=useRef<any>(null);
  const [mapLoading,setMapLoading]=useState(false);
 
+ // Recover the persisted location when an existing draft is reopened or loaded.
+ useEffect(()=>{setQuery(value.meetingPoint);},[value.meetingPoint]);
+
  useEffect(()=>{
   if(!mapOpen)return;
   let cancelled=false,listener:any=null;
@@ -84,7 +87,12 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
  };
 
  const confirmed=value.latitude!==""&&value.longitude!==""&&Number.isFinite(Number(value.latitude))&&Number.isFinite(Number(value.longitude));
- const changeQuery=(next:string)=>{setQuery(next);setResults([]);setError("");onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""})};
+ const changeQuery=(next:string)=>{
+  setQuery(next);setResults([]);setError("");
+  // Re-entering an unchanged saved address must not invalidate its confirmed coordinates.
+  if(next.trim()===value.meetingPoint.trim())return;
+  onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""});
+ };
  const verify=async()=>{
   if(!query.trim()){setError("Inserisci un nome o un indirizzo.");return}
   setBusy(true);setError("");setResults([]);
