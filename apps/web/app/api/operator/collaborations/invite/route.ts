@@ -14,7 +14,19 @@ export async function POST(request:NextRequest){
  const {data:partner}=await db.from("operators").select("id,published,selection_status").eq("id",partnerId).maybeSingle();
  if(!partner)return NextResponse.json({error:"Operatore partner non trovato."},{status:404});
  if(!partner.published||partner.selection_status!=="selected")return NextResponse.json({error:"Puoi collaborare solo con operatori approvati e pubblicati su BIMARIS."},{status:409});
+ // Do not silently overwrite a previously accepted agreement.
+ // A changed activity must be explicitly accepted again by the partner.
+ const {data:existingRows,error:existingError}=await db.from("experience_operators")
+  .select("operator_id,role,activity_label,approval_status")
+  .eq("experience_id",experienceId).eq("role","participant");
+ if(existingError)return NextResponse.json({error:"Impossibile verificare gli inviti esistenti."},{status:500});
+ const rows=existingRows??[];
+ if(rows.some(row=>row.operator_id!==partnerId))return NextResponse.json({error:"Esiste già un partner per questa esperienza. Revoca prima l'invito precedente."},{status:409});
+ const existing=rows.find(row=>row.operator_id===partnerId);
+ if(existing&&existing.activity_label===activity&&["accepted","pending"].includes(existing.approval_status)){
+  return NextResponse.json({ok:true,status:existing.approval_status,unchanged:true});
+ }
  const {error}=await db.from("experience_operators").upsert({experience_id:experienceId,operator_id:partnerId,role:"participant",activity_label:activity,approval_status:"pending",approved_at:null,invited_by_operator_id:operatorId,updated_at:new Date().toISOString()},{onConflict:"experience_id,operator_id"});
  if(error)return NextResponse.json({error:error.message},{status:400});
- return NextResponse.json({ok:true});
+ return NextResponse.json({ok:true,status:"pending"});
 }
