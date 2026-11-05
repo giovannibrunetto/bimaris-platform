@@ -13,9 +13,12 @@ type Municipality={name:string;code:string;bbox:number[]};
 type Geometry={type:"Polygon"|"MultiPolygon";coordinates:any};
 type FeatureCollection={features:Array<{geometry:Geometry}>};
 const BASE="https://l1n00.github.io/confini-comuni-istat/2026";
-// Initial validated pilot points only. The rest of the municipality-to-macroarea
+// Validated pilot points only. The rest of the municipality-to-macroarea
 // mapping requires editorial approval, particularly Nebrodi, Eolie and inland towns.
-const IONICA=new Set(["Taormina"].map(normalize));
+// Validated locality: Motta Camastra belongs to the Alcantara/Taormina ionian district.
+// Sources: Comune di Motta Camastra, territorial data (Colline litoranee di Taormina),
+// Citta Metropolitana di Messina, 2024, SP6 "arteria stradale ionica".
+const IONICA=new Set(["Taormina","Motta Camastra"].map(normalize));
 const TIRRENICA=new Set(["Milazzo"].map(normalize));
 function normalize(s:string){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function inRing(lon:number,lat:number,ring:number[][]):boolean{
