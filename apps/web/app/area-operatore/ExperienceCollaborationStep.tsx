@@ -31,7 +31,7 @@ export default function ExperienceCollaborationStep({operatorId,experienceId,onC
   setMode("partner");setSavedPartnerId(data.operator_id);setPartnerId(data.operator_id);setActivity(data.activity_label??"");setApprovalStatus(status);onChange(value);
   if(status==="rejected"){
    setInvited(false);onReadyChange(false);
-   setMessage("Il partner ha rifiutato la collaborazione. Puoi modificare il partner o l'attività e inviare un nuovo invito.");
+   setMessage("Il partner ha rifiutato la collaborazione. Puoi modificare l'attività e inviare nuovamente l'invito allo stesso partner, oppure revocare l'invito per scegliere un altro partner.");
   }else{
    setInvited(true);onReadyChange(status==="accepted");
    setMessage(status==="accepted"?"Collaborazione confermata dal partner.":"Invito già inviato. Puoi verificare l'anteprima, ma l'esperienza potrà essere inviata a BIMARIS solo dopo la conferma del partner.");
