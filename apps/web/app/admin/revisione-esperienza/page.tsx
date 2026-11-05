@@ -19,5 +19,5 @@ export default async function LegacyExperienceReviewPage({
   if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();
 
   const query = state ? `?state=${encodeURIComponent(state)}` : "";
-  redirect(`/admin/esperienze/${encodeURIComponent(id)}/revisione${query}`);
+  redirect(`/admin/esperienze/${encodeURIComponent(id)}/revisione${query}#admin-review-decision`);
 }
