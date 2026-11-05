@@ -65,7 +65,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           )}
         </div>
       </section>
-      <section className="revision-decisions" aria-label="Esito revisione esperienza">
+      <section id="admin-review-decision" className="revision-decisions" aria-label="Esito revisione esperienza" style={{scrollMarginTop:112}}>
         <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore.</p></div>
         <div className="revision-decisions__grid">
           <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
