@@ -32,5 +32,5 @@ export async function POST(request:NextRequest){
     p_operator_id:operatorId,
     p_decision:decision
   });
-  return NextResponse.redirect(new URL(`/area-operatore?collaboration=${error?"error":decision}`,request.url),303);
+  return NextResponse.redirect(new URL(`/area-operatore?operatore=${encodeURIComponent(operatorId)}&collaboration=${error?"error":decision}#collaboration-inbox`,request.url),303);
 }
