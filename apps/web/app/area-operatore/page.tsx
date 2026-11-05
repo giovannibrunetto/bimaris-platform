@@ -14,7 +14,14 @@ function relatedOperator(v:Operator|Operator[]|null){return Array.isArray(v)?v[0
 function correctionStep(sections:ReviewSections|null,fallback:number){if(!sections)return fallback;if(sections.name||sections.excerpt||sections.basics)return 0;if(sections.description)return 1;if(sections.details||sections.location)return 2;if(sections.media)return 3;return fallback;}
 function cleanReviewNote(note:string|null){return note?.replace(/^Nota generale:\s*/i,"")??null;}
 const metricCard={padding:"20px 18px",border:"1px solid rgba(202,168,106,.22)",borderRadius:16,background:"#fbfaf7",display:"grid",gap:7,minWidth:0};
-export default async function OperatorAreaPage({searchParams}:{searchParams:Promise<{operatore?:string;collaboration?:string;experience?:string;step?:string;invito?:string}>}){const userClient=await createUserServerClient();if(!userClient)redirect("/accedi");const {data:claimsData}=await userClient.auth.getClaims();const userId=typeof claimsData?.claims?.sub==="string"?claimsData.claims.sub:null;if(!userId)redirect("/accedi");
+export default async function OperatorAreaPage({searchParams}:{searchParams:Promise<{operatore?:string;collaboration?:string;experience?:string;step?:string;invito?:string}>}){const requestedParams=await searchParams;
+ const returnQuery=new URLSearchParams();
+ for(const [key,value] of Object.entries(requestedParams)){
+  if(typeof value==="string"&&["operatore","experience","step","collaboration","invito"].includes(key))returnQuery.set(key,value);
+ }
+ const returnPath="/area-operatore"+(returnQuery.size?"?"+returnQuery.toString():"");
+ const signInUrl="/accedi?next="+encodeURIComponent(returnPath);
+ const userClient=await createUserServerClient();if(!userClient)redirect(signInUrl);const {data:claimsData}=await userClient.auth.getClaims();const userId=typeof claimsData?.claims?.sub==="string"?claimsData.claims.sub:null;if(!userId)redirect(signInUrl);
  const {data:membershipsData}=await userClient.from("operator_memberships").select("role,operator_id,operators(id,slug,name,category,published,selection_status,address,phone,whatsapp,email,website,instagram)").eq("user_id",userId);const memberships=(membershipsData??[]) as Membership[];const rows=memberships.map(r=>({role:r.role,operator_id:r.operator_id,operator:relatedOperator(r.operators)})).filter(r=>r.operator!==null) as {role:string;operator_id:string;operator:Operator}[];
  const params=await searchParams;const requested=params.operatore;
  const matchedRow=requested?rows.find(r=>r.operator_id===requested||r.operator.slug===requested):null;
