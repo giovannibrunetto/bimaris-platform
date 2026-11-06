@@ -116,3 +116,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Errori nel controllo/session logout individuale sono restituiti come HTTP 503 senza affermare che la sessione sia stata invalidata. Nessun token o segreto viene registrato.
 - **LIMITAZIONE**: signOut locale non garantisce revoca immediata degli access JWT già emessi; servono controlli server-side di sessione/revoca e test autorizzati. Non classificare B2 come concluso.
 - Build automatica Preview del commit `3416595` rilevata inizialmente in stato INITIALIZING; verifica finale ancora necessaria.
+
+
+## Analisi revoca immediata — decisione tecnica preliminare
+- Ispezione **read-only** di `auth.sessions` in Supabase Staging: colonne `id`, `user_id`, `aal`, `not_after`, `factor_id` disponibili. Non sono stati letti o divulgati ID/token delle sessioni.
+- `has_table_privilege('service_role','auth.sessions','SELECT') = false`; anche `authenticated` e `anon` non hanno SELECT. **Non** tentare accesso diretto dalla API service-role né concedere SELECT sulla tabella Auth.
+- Proposta per B2: RPC ristretta, `SECURITY DEFINER`, proprietario privilegiato, con `search_path=''`, `EXECUTE` solo `service_role`, per controllare esistenza sessione `auth.sessions` associata all'utente, `aal='aal2'`, `not_after` valido e `security.admin_members.active=true`. Il server deve derivare `session_id` da JWT verificato, mai da input client arbitrario. Verificare semantica di revoca Supabase e testare in staging prima di applicare.
+- **Nessuna migration o modifica al guard effettuata in questa fase**: servono verifica documentale del ciclo di vita delle sessioni e test negativi prima di dichiarare revoca immediata PASS. Legacy cookie continua a bypassare il percorso MFA fino a B8 autorizzato.
