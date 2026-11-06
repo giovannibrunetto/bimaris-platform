@@ -1,0 +1,72 @@
+/* BIMARIS — Operator shared navigation and responsive internal pages.
+   Applies to Area Operatore, Importa calendario, Network B2B. */
+.operator-section-nav {
+  background: #032126;
+  border-bottom: 1px solid rgba(202,168,106,.52);
+  color: #f8f8f5;
+}
+.operator-section-nav__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+}
+.operator-section-nav__link {
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 999px;
+  border: 1px solid rgba(202,168,106,.28);
+  background: rgba(255,255,255,.04);
+  color: #f8f8f5;
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+  text-decoration: none;
+}
+.operator-section-nav__link[aria-current="page"] {
+  background: #caa86a;
+  border-color: #caa86a;
+  color: #032126;
+}
+.operator-section-nav__link:focus-visible {
+  outline: 3px solid #caa86a;
+  outline-offset: 3px;
+}
+.operator-section-nav__link:not([aria-current="page"]):hover {
+  background: rgba(202,168,106,.14);
+}
+.operator-calendar-grid {
+  display: grid;
+  grid-template-columns: minmax(0,2fr) minmax(280px,1fr);
+  gap: 16px;
+  align-items: start;
+}
+.operator-calendar-grid > * { min-width: 0; }
+@media (max-width: 760px) {
+  .operator-section-nav__inner {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 8px;
+    padding: 10px 16px;
+  }
+  .operator-section-nav__link {
+    font-size: 12px;
+    padding: 9px 8px;
+    border-radius: 12px;
+  }
+  .operator-section-nav__link:last-child {
+    grid-column: 1 / -1;
+  }
+  .operator-calendar-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+  .operator-calendar-grid > aside {
+    position: static !important;
+  }
+}
