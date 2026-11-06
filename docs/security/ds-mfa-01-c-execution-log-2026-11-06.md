@@ -109,3 +109,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Test prebuild `apps/web/scripts/mfa-staging-smoke.mjs` eseguito solo se `VERCEL_ENV=preview` e `VERCEL_GIT_COMMIT_REF=feature/admin-individual-mfa`. Verifica hostname Staging `nzdeoimwikhoidtladnu.supabase.co`, usa `SUPABASE_SECRET_KEY` server-side per chiamare `public.is_active_super_admin` con UUID inesistente, richiede HTTP OK e risposta JSON `false`.
 - **PASS** credenziale server/RPC Staging **nell'ambiente di build Vercel**. Non ancora provata la stessa chiamata durante l'esecuzione di una funzione server runtime né il percorso MFA AAL2 con account reale.
 - Non sono stati esposti valori di chiavi, creati utenti, modificati record o toccata Production. B2–B4 non ancora chiusi.
+
+
+## Implementazione transitoria logout individuale
+- `apps/web/app/api/admin/logout/route.ts` modificato su branch MFA, commit correttivo `3416595`. Il POST cancella il cookie legacy; se è presente una sessione Supabase Auth nel client server, chiama `auth.signOut({scope:"local"})`. Se non c'è sessione individuale, preserva il flusso legacy.
+- Errori nel controllo/session logout individuale sono restituiti come HTTP 503 senza affermare che la sessione sia stata invalidata. Nessun token o segreto viene registrato.
+- **LIMITAZIONE**: signOut locale non garantisce revoca immediata degli access JWT già emessi; servono controlli server-side di sessione/revoca e test autorizzati. Non classificare B2 come concluso.
+- Build automatica Preview del commit `3416595` rilevata inizialmente in stato INITIALIZING; verifica finale ancora necessaria.
