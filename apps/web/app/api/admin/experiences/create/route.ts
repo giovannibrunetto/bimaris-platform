@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from "next/server";
-import {isAdminAuthenticated} from "@/lib/admin-auth";
+import {isAuthorizedAdmin} from "@/lib/admin-access";
 import {createServiceClient} from "@/lib/supabase/server";
 
 function text(v:FormDataEntryValue|null,max:number){return typeof v==="string"?v.trim().slice(0,max):""}
