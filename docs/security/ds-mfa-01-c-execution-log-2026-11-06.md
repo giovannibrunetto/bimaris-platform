@@ -80,3 +80,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Totale pagine verificate con redirect anonimo: **11**. Test di sola lettura, nessuna mutazione.
 - Decisione sul diagnostico service-role: **non introdurre endpoint pubblico di verifica** che possa esporre informazioni di configurazione o accesso privilegiato. Serve una verifica autenticata server-side su ambiente isolato, con osservabilità sicura e rimozione del codice diagnostico; non simulare un PASS sulla sola presenza della variabile.
 - Build documentale `ac3fbc2` READY; l'esito build non equivale a test della chiave server.
+
+
+## Riconferma SQL autorizzazioni Staging
+- Query di sola lettura sul progetto Supabase **nzdeoimwikhoidtladnu**: `security.admin_members` 0 righe; USAGE schema `security` negato a `anon` e `authenticated`; EXECUTE `public.is_active_super_admin(uuid)` negato a entrambi; EXECUTE consentito a `service_role`; UUID inesistente restituisce `false`.
+- **PASS** per isolamento SQL e caso negativo; **NON TESTATO** l'uso effettivo della chiave server Vercel né la sessione AAL2, perché mancano identità amministrative autorizzate e non è stato introdotto un endpoint diagnostico pubblico.
+- Analisi statica: `apps/web/app/api/admin/login/route.ts` invoca il rate limit prima di controllare la password e nega in caso `unavailable` (HTTP 503). Il segreto HMAC indipendente è configurato ma la RPC non è ancora stata testata dal runtime Vercel.
+- Mantenere il fallback password legacy in `api-rate-limit.ts` fino a test funzionale e autorizzazione al taglio; nessun bypass della modalità prelaunch.
