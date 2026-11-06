@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendReviewNotification } from "@/lib/review-notifications";
 
@@ -18,7 +18,7 @@ function filename(path:string){return path.split("/").filter(Boolean).pop()||"me
 type PromotedMedia={id:string;privatePath:string;livePath:string};
 
 export async function POST(request:NextRequest){
- if(!(await isAdminAuthenticated()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
+ if(!(await isAuthorizedAdmin()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
  const form=await request.formData(); const action=text(form.get("action"),40); const revisionId=text(form.get("revision_id"),80); const supabase=createServiceClient();
  if(!supabase||!revisionId)return back(request,"invalid-data");
  try{
