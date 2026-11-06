@@ -82,7 +82,10 @@ export default async function StoriesPage() {
               return (
                 <Link className="card story-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
                   <div className={`card-media story-card-media${containClass}`} style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
-                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />}
+                    {cardImage && cardImageFit === "contain" && (
+                      <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
+                    )}
+                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ position: "relative", width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body story-card-body" style={{ padding: "18px 20px 20px" }}>
