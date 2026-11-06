@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
-import {isAdminAuthenticated} from "@/lib/admin-auth";
+import {isAuthorizedAdmin} from "@/lib/admin-access";
 import {createServiceClient} from "@/lib/supabase/server";
 import AdminExperienceWizard from "./AdminExperienceWizard";
 export const dynamic="force-dynamic";export const revalidate=0;
