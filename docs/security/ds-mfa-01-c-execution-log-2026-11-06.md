@@ -52,3 +52,14 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Vercel non riporta env branch-specific per `feature/admin-individual-mfa` nel filtro verificato; la configurazione `BIMARIS_RATE_LIMIT_HMAC_SECRET` non è stata attestata.
 - SQL Staging `is_active_super_admin` su UUID inesistente: `false`; non equivale a prova HTTP RPC con service client.
 - Non dichiarare B2/B3/B4 completati fino a test runtime, revoca sessioni, audit e rate-limit.
+
+
+## Gate di separazione ambienti — BLOCCO OPERATIVO
+- Verifica Vercel `filter_project_envs(decrypt=false)`: `SUPABASE_SECRET_KEY` Preview limitata a branch `staging`; un'altra `SUPABASE_SECRET_KEY` solo Production.
+- `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` genericamente Preview: il metadata non prova che corrispondano al progetto Staging.
+- `BIMARIS_RATE_LIMIT_HMAC_SECRET` assente.
+- Nessun custom environment Vercel configurato (verifica `list_project_custom_environments`).
+- Preview feature commit `fe0a141` READY, ma build riuscita non implica connessione a Staging.
+- Decisione: **NO-GO per test runtime e mutazioni su Preview feature** fino a mapping verificato di URL, publishable key e service secret verso `nzdeoimwikhoidtladnu`. Non copiare mai il segreto Production e non cambiare valori Preview generici senza analisi dell'impatto.
+- Soluzione ammessa: variabili Preview branch-specific per `feature/admin-individual-mfa`, verificate tramite identificativo progetto e controllo applicativo non sensibile. Richiede materiale credenziale Staging recuperato da canale sicuro, non da documenti o log.
+- Nessun valore segreto letto, scritto o pubblicato in questa verifica.
