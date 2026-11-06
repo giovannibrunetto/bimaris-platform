@@ -101,3 +101,11 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Audit `apps/web/app/api/admin/logout/route.ts`: il POST invoca esclusivamente `clearAdminSession()` per il cookie legacy. **GAP B2**: manca la chiusura esplicita della sessione Supabase per il futuro percorso MFA individuale. Non dichiarare logout/revoca MFA PASS.
 - Audit `apps/web/lib/admin-auth.ts`: il cookie legacy firmato rimane valido fino alla scadenza (12 ore) salvo rotazione del segreto; non offre revoca per singola sessione. Il percorso legacy resta autorizzato nella transizione, ma impedisce di definire la MFA obbligatoria.
 - Nessuna modifica al logout eseguita in questa fase; necessaria progettazione e collaudo compatibili con B5/B8 non autorizzati.
+
+
+## PASS verificato: credenziale server Preview → Supabase Staging
+- Commit `15d8f3a`, deployment Vercel Preview `dpl_9c8AXaTYYbuhKqCh4fx6WFQY5a2e`, stato **READY**.
+- Build log verificato: `DS-MFA staging smoke: PASS (service RPC reachable; unknown user denied)`.
+- Test prebuild `apps/web/scripts/mfa-staging-smoke.mjs` eseguito solo se `VERCEL_ENV=preview` e `VERCEL_GIT_COMMIT_REF=feature/admin-individual-mfa`. Verifica hostname Staging `nzdeoimwikhoidtladnu.supabase.co`, usa `SUPABASE_SECRET_KEY` server-side per chiamare `public.is_active_super_admin` con UUID inesistente, richiede HTTP OK e risposta JSON `false`.
+- **PASS** credenziale server/RPC Staging **nell'ambiente di build Vercel**. Non ancora provata la stessa chiamata durante l'esecuzione di una funzione server runtime né il percorso MFA AAL2 con account reale.
+- Non sono stati esposti valori di chiavi, creati utenti, modificati record o toccata Production. B2–B4 non ancora chiusi.
