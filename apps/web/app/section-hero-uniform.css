@@ -122,3 +122,15 @@
 .page-hero.operators-directory-hero > .kicker {
   color: #e0bd78 !important;
 }
+
+/* Experience details retain the dark hero. Override the shared light-header
+   typography only here to preserve accessible contrast on mobile and desktop. */
+.page-hero.experience-detail-hero > .kicker {
+  color: #e0bd78 !important;
+}
+.page-hero.experience-detail-hero > h1 {
+  color: #ffffff !important;
+}
+.page-hero.experience-detail-hero > p {
+  color: #e2e8ed !important;
+}
