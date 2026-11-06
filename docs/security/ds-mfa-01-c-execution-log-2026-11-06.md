@@ -73,3 +73,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Codice esaminato: le route POST `/api/admin/applications`, `/api/admin/experiences`, `/api/admin/experience-revisions` controllano `isAuthorizedAdmin()` prima delle operazioni privilegiate. Verifica statica, non runtime.
 - **Non verificato:** validità effettiva della secret key Staging dal runtime Vercel, revoca immediata, AAL2 e ruolo attivo, comportamento POST non autenticato, rate limiting end-to-end, regressioni editoriali.
 - Nessuna POST amministrativa eseguita, nessuna modifica ai dati, nessun account B5 creato. Production NO-GO.
+
+
+## Estensione test anonimi — 11 pagine
+- GET anonime sulla Preview `dpl_HfEH4cz8Md1kL3BGJK9BsBCBBA6X` alle ulteriori route `/admin/itinerari`, `/admin/eventi`, `/admin/revisioni-esperienze`, `/admin/operatori/accessi`, `/admin/esperienze/nuova`, `/admin/revisione-esperienza`: tutte presentano `NEXT_REDIRECT;replace;/admin/login` nel payload Next.js.
+- Totale pagine verificate con redirect anonimo: **11**. Test di sola lettura, nessuna mutazione.
+- Decisione sul diagnostico service-role: **non introdurre endpoint pubblico di verifica** che possa esporre informazioni di configurazione o accesso privilegiato. Serve una verifica autenticata server-side su ambiente isolato, con osservabilità sicura e rimozione del codice diagnostico; non simulare un PASS sulla sola presenza della variabile.
+- Build documentale `ac3fbc2` READY; l'esito build non equivale a test della chiave server.
