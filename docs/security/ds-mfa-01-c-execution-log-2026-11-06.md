@@ -40,3 +40,15 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 3. Integrare B2/B3 senza interrompere l'accesso legacy in attesa di B8.
 4. Configurare segreto rate-limit solo in Preview/Staging, poi testare e rimuovere il fallback.
 5. Consegnare rapporto intermedio con commit e prove reali.
+
+
+## Aggiornamento tecnico — controllo build e copertura
+- 10 API amministrative operative aggiornate al gate transitorio; login/logout legacy rimangono separati.
+- 16 pagine amministrative e il layout aggiornati; corretto import nella pagina `admin/esperienze/nuova`.
+- Vercel Preview build del commit `bba4eb6`: **ERROR**, TypeScript `TS2304 Cannot find name 'isAuthorizedAdmin'` in `app/api/admin/experiences/create/route.ts:13`.
+- Correzione commit `40a0c13` nella route interessata. **Nessun PASS build successivo ancora disponibile**.
+- L'integrazione dual-path mantiene intenzionalmente il legacy; MFA non è ancora obbligatoria e B8 resta non autorizzato.
+- Il deployment Preview automatico del branch feature non equivale a deployment Staging approvato.
+- Vercel non riporta env branch-specific per `feature/admin-individual-mfa` nel filtro verificato; la configurazione `BIMARIS_RATE_LIMIT_HMAC_SECRET` non è stata attestata.
+- SQL Staging `is_active_super_admin` su UUID inesistente: `false`; non equivale a prova HTTP RPC con service client.
+- Non dichiarare B2/B3/B4 completati fino a test runtime, revoca sessioni, audit e rate-limit.
