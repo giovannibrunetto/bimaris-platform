@@ -59,12 +59,6 @@ export default function MfaStagingClient() {
       if (factors?.totp?.some(f => f.status === "verified")) {
         setStatus("Fattore già verificato. Utilizza la verifica TOTP."); return;
       }
-      // Replace only unfinished factors owned by this dedicated test identity.
-      // Never remove a verified factor as part of enrollment.
-      for (const pending of factors?.totp?.filter(f => f.status === "unverified") ?? []) {
-        const { error: removeError } = await supabase.auth.mfa.unenroll({ factorId: pending.id });
-        if (removeError) throw removeError;
-      }
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "BIMARIS Staging Test" });
       if (error || !data?.id || !data.totp?.qr_code) throw error ?? new Error("enroll");
       setFactorId(data.id);
