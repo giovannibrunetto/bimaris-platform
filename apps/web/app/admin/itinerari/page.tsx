@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +55,7 @@ function stopLabel(stop: NonNullable<ItineraryRow["stops"]>[number]) {
 }
 
 export default async function AdminItinerariesPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
 
   const supabase = createServiceClient();
   if (!supabase) throw new Error("Supabase service client non configurato");
