@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   };
   if(!payload.business_name||!payload.contact_name||!payload.email||!payload.category||!payload.description||!payload.location||!operatingMode||!privacyConsent)return NextResponse.json({ok:false,error:"missing_fields"},{status:400});
   if((operatingMode==="fixed"||operatingMode==="both")&&!payload.address)return NextResponse.json({ok:false,error:"missing_address"},{status:400});
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email))return NextResponse.json({ok:false,error:"invalid_email"},{status:400});
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))return NextResponse.json({ok:false,error:"invalid_email"},{status:400});
   const hasLatitude=payload.latitude!==null,hasLongitude=payload.longitude!==null;
   if(hasLatitude!==hasLongitude||hasLatitude&&(!Number.isFinite(payload.latitude)||!Number.isFinite(payload.longitude)||payload.latitude! < -90||payload.latitude! > 90||payload.longitude! < -180||payload.longitude! > 180))return NextResponse.json({ok:false,error:"invalid_coordinates"},{status:400});
 
