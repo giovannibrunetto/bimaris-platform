@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic="force-dynamic";
@@ -10,7 +10,7 @@ type Row={id:string;title:string;description:string|null;starts_at:string;source
 function operatorName(v:Row["operators"]){return Array.isArray(v)?v[0]?.name??"Operatore":v?.name??"Operatore";}
 
 export default async function AdminEventsPage(){
- if(!(await isAdminAuthenticated()))redirect("/admin/login");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login");
  const db=createServiceClient();if(!db)throw new Error("Supabase non configurato");
  const {data}=await db.from("events").select("id,title,description,starts_at,source_label,operators(name)").eq("verification_status","pending").order("starts_at",{ascending:true});
  const rows=(data??[]) as Row[];
