@@ -4,6 +4,8 @@ import { createAdminSession, isAdminConfigured, verifyAdminPassword, verifyAdmin
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return NextResponse.json({ok:false,error:"invalid_site"},{status:403});
   if (origin) {
     try {
       if (new URL(origin).origin !== new URL(request.url).origin) {
