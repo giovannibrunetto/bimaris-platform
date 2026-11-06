@@ -32,11 +32,10 @@ const cardImagePositions: Record<string, string> = {
   "orione-origini-mitiche-messina": "center 35%",
   "crono-falce-porto": "center 80%",
   "truvatura-via-cardines": "center 25%",
+  "dina-e-clarenza": "center 32%",
 };
 
-const cardImageFits: Record<string, "cover" | "contain"> = {
-  "dina-e-clarenza": "contain",
-};
+const cardImageFits: Record<string, "cover" | "contain"> = {};
 
 function storyTypeLabel(storyType: string) {
   const normalized = storyType.trim().toLowerCase();
