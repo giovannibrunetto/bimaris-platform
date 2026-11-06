@@ -89,6 +89,14 @@ export async function POST(request: NextRequest) {
   if (!supabase) return back(request, "service-error");
 
   try {
+    if (["reviewing", "reject", "accept", "accept_publish"].includes(action) && applicationId) {
+      const { data: current, error: statusError } = await supabase.from("operator_applications")
+        .select("status,operator_id").eq("id",applicationId).maybeSingle();
+      if (statusError) throw statusError;
+      if (!current || !["new","reviewing"].includes(current.status) || current.operator_id) {
+        return back(request,"invalid-transition");
+      }
+    }
     if (action === "reviewing" && applicationId) {
       const { error } = await supabase.from("operator_applications").update({ status: "reviewing", reviewed_at: new Date().toISOString(), review_notes: notes }).eq("id", applicationId).in("status", ["new", "reviewing"]);
       if (error) throw error;
