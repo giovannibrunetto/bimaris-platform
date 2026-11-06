@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -13,7 +13,7 @@ export default async function LegacyExperienceReviewPage({
 }: {
   searchParams: Promise<{ id?: string; state?: string }>;
 }) {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
 
   const { id, state } = await searchParams;
   if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();
