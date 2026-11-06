@@ -19,7 +19,7 @@ function email(value: unknown) { return text(value, 320).toLowerCase(); }
 function phone(value: unknown) { const raw=text(value,80);if(!raw)return null;const hasPlus=raw.startsWith("+");const digits=raw.replace(/\D/g,"");return digits?`${hasPlus?"+":""}${digits}`:null; }
 function url(value: unknown) { const raw=text(value,500);return raw?raw.replace(/\s+/g,""):null; }
 function instagram(value: unknown) { const raw=text(value,500);return raw?raw.replace(/\s+/g,""):null; }
-function number(value: unknown) { const parsed=typeof value==="number"?value:Number(value);return Number.isFinite(parsed)?parsed:null; }
+function number(value: unknown) { if(value===null||value===undefined||typeof value==="string"&&!value.trim())return null;const parsed=typeof value==="number"?value:Number(value);return Number.isFinite(parsed)?parsed:null; }
 
 export async function POST(request: NextRequest) {
   let body:any;try{body=await request.json()}catch{return NextResponse.json({ok:false,error:"invalid_body"},{status:400})}
