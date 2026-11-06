@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function text(value: FormDataEntryValue | null, max: number) {
@@ -24,7 +24,7 @@ async function findUserByEmail(db: ServiceClient, email: string) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
+  if (!(await isAuthorizedAdmin())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
   const origin = request.headers.get("origin");
   if (origin) {
     try {
