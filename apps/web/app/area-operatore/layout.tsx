@@ -1,20 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import {useSearchParams} from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import "./correction-actions.css";
+import "./operator-navigation.css";
 
-export default function AreaOperatoreLayout({children}:{children:React.ReactNode}){
-  const searchParams=useSearchParams();
-  const operator=searchParams.get("operatore");
-  const suffix=operator?`?operatore=${encodeURIComponent(operator)}`:"";
+const sections = [
+  { href: "/area-operatore", label: "Area operatore" },
+  { href: "/area-operatore/calendario", label: "Importa calendario" },
+  { href: "/area-operatore/network-b2b", label: "Network B2B" },
+] as const;
+
+export default function AreaOperatoreLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const operator = searchParams.get("operatore");
+  const suffix = operator ? `?operatore=${encodeURIComponent(operator)}` : "";
+
   return <>
-    <nav aria-label="Navigazione area operatore" style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center",padding:"10px 6vw",background:"#071b28",borderBottom:"1px solid rgba(202,168,106,.24)"}}>
-      <Link href={`/area-operatore${suffix}`} style={{color:"#fff",textDecoration:"none",fontSize:13,fontWeight:800}}>Area operatore</Link>
-      <span style={{color:"rgba(255,255,255,.35)"}}>·</span>
-      <Link href={`/area-operatore/calendario${suffix}`} style={{color:"#caa86a",textDecoration:"none",fontSize:13,fontWeight:800}}>Importa calendario</Link>
-      <span style={{color:"rgba(255,255,255,.35)"}}>·</span>
-      <Link href={`/area-operatore/network-b2b${suffix}`} style={{color:"#caa86a",textDecoration:"none",fontSize:13,fontWeight:800}}>Network B2B</Link>
+    <nav className="operator-section-nav" aria-label="Navigazione area operatore">
+      <div className="operator-section-nav__inner">
+        {sections.map(section => {
+          const selected = pathname === section.href || (section.href === "/area-operatore" && pathname === "/area-operatore/");
+          return (
+            <Link
+              key={section.href}
+              href={`${section.href}${suffix}`}
+              className="operator-section-nav__link"
+              aria-current={selected ? "page" : undefined}
+            >
+              {section.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
     {children}
   </>;
