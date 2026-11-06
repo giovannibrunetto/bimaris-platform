@@ -22,15 +22,15 @@ const editorialIllustrations: Record<string, string> = {
   "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
   "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
   "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
-  orione: "/stories/orione-cover.png",
-  "crono-e-la-falce": "/stories/crono-cover.png",
+  "orione-origini-mitiche-messina": "/stories/orione-cover.png",
+  "crono-falce-porto": "/stories/crono-cover.png",
   "dina-e-clarenza": "/stories/dina-e-clarenza-cover.png",
   "truvatura-via-cardines": "/stories/cardines-cover.png",
 };
 
 const cardImagePositions: Record<string, string> = {
-  orione: "center 35%",
-  "crono-e-la-falce": "center 80%",
+  "orione-origini-mitiche-messina": "center 35%",
+  "crono-falce-porto": "center 80%",
   "truvatura-via-cardines": "center 25%",
 };
 
