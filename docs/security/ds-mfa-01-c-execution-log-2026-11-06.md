@@ -94,3 +94,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Tentativo GET anonimo su `/api/admin/experiences/00000000-0000-0000-0000-000000000000/collaboration` bloccato dalla protezione Preview Vercel con `deployment_authentication_required` dopo redirect. **NON TESTATO** l'esito applicativo; non disattivare protezione per aggirare il blocco.
 - Ispezione SQL Staging della funzione `public.consume_api_rate_limit(text,text,integer,integer)`: `SECURITY INVOKER`; EXECUTE `anon=false`, `authenticated=false`, `service_role=true`. Controlla scope, hash di 64 caratteri, limiti 1..100, finestra 60..86400 s; aggiorna `public.api_rate_limits`. **PASS statico/privilegi**, non prova end-to-end.
 - Nessuna chiamata mutante al rate limiter, nessun dato o account creato. Production NO-GO.
+
+
+## Test funzionale SQL rate limit e gap logout
+- Test Staging eseguito in transazione con `ROLLBACK` e hash fittizio dedicato, scope `contact`, limite `1` su finestra `60` secondi: prima chiamata `true`, seconda `false`. **PASS comportamento SQL**. La transazione è stata annullata, senza persistenza dei contatori di test. Non è un test end-to-end Vercel.
+- Audit `apps/web/app/api/admin/logout/route.ts`: il POST invoca esclusivamente `clearAdminSession()` per il cookie legacy. **GAP B2**: manca la chiusura esplicita della sessione Supabase per il futuro percorso MFA individuale. Non dichiarare logout/revoca MFA PASS.
+- Audit `apps/web/lib/admin-auth.ts`: il cookie legacy firmato rimane valido fino alla scadenza (12 ore) salvo rotazione del segreto; non offre revoca per singola sessione. Il percorso legacy resta autorizzato nella transizione, ma impedisce di definire la MFA obbligatoria.
+- Nessuna modifica al logout eseguita in questa fase; necessaria progettazione e collaudo compatibili con B5/B8 non autorizzati.
