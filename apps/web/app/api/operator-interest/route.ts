@@ -10,6 +10,7 @@ const email = (value: unknown) => text(value, 320).toLowerCase();
 export async function POST(request: NextRequest) {
   let body: any;
   try { body = await request.json(); } catch { return NextResponse.json({ok:false,error:"invalid_body"},{status:400}); }
+  if(!body||typeof body!=="object"||Array.isArray(body))return NextResponse.json({ok:false,error:"invalid_body"},{status:400});
 
   if (text(body.website_url, 200)) return NextResponse.json({ok:true},{status:201});
 
