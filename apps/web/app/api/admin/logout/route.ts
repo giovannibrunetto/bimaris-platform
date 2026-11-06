@@ -16,10 +16,17 @@ export async function POST(request: NextRequest) {
   if (userClient) {
     // Server-side signOut revokes the current refresh token; existing JWTs
     // can remain valid until expiry. Do not claim immediate global revocation.
-    const { error } = await userClient.auth.signOut({ scope: "local" });
-    if (error) {
-      console.error("Admin individual logout failed");
+    const { data: sessionData, error: sessionError } = await userClient.auth.getSession();
+    if (sessionError) {
+      console.error("Admin individual session inspection failed");
       return NextResponse.json({ ok: false, error: "individual_logout_failed" }, { status: 503 });
+    }
+    if (sessionData.session) {
+      const { error } = await userClient.auth.signOut({ scope: "local" });
+      if (error) {
+        console.error("Admin individual logout failed");
+        return NextResponse.json({ ok: false, error: "individual_logout_failed" }, { status: 503 });
+      }
     }
   }
 
