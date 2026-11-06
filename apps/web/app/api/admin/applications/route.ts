@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function text(value: FormDataEntryValue | null, max: number) {
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     try{if(new URL(origin).origin!==new URL(request.url).origin)return NextResponse.json({ok:false,error:"invalid_origin"},{status:403});}
     catch{return NextResponse.json({ok:false,error:"invalid_origin"},{status:403});}
   }
-  if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
+  if (!(await isAuthorizedAdmin())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
 
   const form = await request.formData();
   const action = text(form.get("action"), 40);
