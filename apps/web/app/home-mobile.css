@@ -160,7 +160,8 @@
   .site-header .brand-image { width:132px; height:40px; object-fit:cover; border-radius:9px; }
   .site-header > .nav { display:none !important; }
   .site-header .mobile-menu { display:block !important; margin-left:auto; }
-  .mobile-menu summary { padding:8px 12px; font-size:13px; }
+  .mobile-menu summary { display:flex; align-items:center; justify-content:center; min-height:44px; padding:8px 12px; font-size:13px; }
+  .mobile-menu summary:focus-visible { outline:3px solid #caa86a; outline-offset:3px; }
   .mobile-nav { position:fixed; top:64px; left:12px; right:12px; width:auto; min-width:0; max-height:calc(100dvh - 80px); overflow-y:auto; z-index:100; }
 
   .brand-hero { width:100%; max-width:100%; padding-bottom:24px; overflow:hidden; }
