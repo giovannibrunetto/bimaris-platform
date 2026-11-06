@@ -63,7 +63,7 @@ export default function MfaStagingClient() {
       if (error || !data?.id || !data.totp?.qr_code) throw error ?? new Error("enroll");
       setFactorId(data.id);
       // QR remains in browser memory; never sent to application logs or documents.
-      setQr("data:image/svg+xml;base64," + btoa(data.totp.qr_code));
+      setQr(data.totp.qr_code);
       setStatus("Scansiona il QR con un'app Authenticator. Non condividere QR o codice.");
     });
   }
