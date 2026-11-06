@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 export const dynamic="force-dynamic"; export const revalidate=0;
 type Operator={id:string;slug:string;name:string;category:string|null;published:boolean;selection_status:string};
@@ -10,7 +10,7 @@ type OperatorRevision={id:string;operator_id:string;status:string;created_at:str
 function label(v:string){return ({draft:"Bozza",pending:"Da esaminare",submitted:"Da esaminare",approved:"Approvata",rejected:"Da correggere"} as Record<string,string>)[v]??v;}
 function operatorCategory(v:string|null){const c=v?.trim();return !c||c.toLowerCase()==="esperienze"?"Operatore":c;}
 export default async function Page(){
- if(!(await isAdminAuthenticated()))redirect("/admin/login");const db=createServiceClient();if(!db)throw new Error("Supabase non configurato");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login");const db=createServiceClient();if(!db)throw new Error("Supabase non configurato");
  const [{data:operatorData},{data:experienceData},{data:revisionData},{data:operatorRevisionData}]=await Promise.all([db.from("operators").select("id,slug,name,category,published,selection_status").order("created_at",{ascending:false}),db.from("experiences").select("id,operator_id,name,published,review_status,experience_origin").order("created_at",{ascending:false}),db.from("experience_revisions").select("id,experience_id,status").eq("status","pending"),db.from("operator_revisions").select("id,operator_id,status,created_at").eq("status","pending").order("created_at",{ascending:false})]);
  const operators=(operatorData??[]) as Operator[],experiences=(experienceData??[]) as Experience[],operatorExperiences=experiences.filter(e=>e.experience_origin!=="bimaris"),bimarisExperiences=experiences.filter(e=>e.experience_origin==="bimaris"),revisions=(revisionData??[]) as Revision[],operatorRevisions=(operatorRevisionData??[]) as OperatorRevision[];const hasPendingRevision=(id:string)=>revisions.some(r=>r.experience_id===id);const needsReview=(e:Experience)=>e.review_status==="pending"||e.review_status==="submitted"||hasPendingRevision(e.id);const pendingInitial=operatorExperiences.filter(e=>e.review_status==="pending"||e.review_status==="submitted").length,pendingRevisions=revisions.filter(r=>operatorExperiences.some(e=>e.id===r.experience_id)).length,pendingProfiles=operatorRevisions.length,totalPending=pendingInitial+pendingRevisions+pendingProfiles;const onlineOperators=operators.filter(o=>o.published).length,onlineExperiences=experiences.filter(e=>e.published).length;const pendingForOperator=(id:string)=>operatorExperiences.filter(e=>e.operator_id===id&&needsReview(e)).length+(operatorRevisions.some(r=>r.operator_id===id)?1:0);const orderedOperators=[...operators].sort((a,b)=>pendingForOperator(b.id)-pendingForOperator(a.id));
  return <>
