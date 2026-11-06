@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound,redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic="force-dynamic"; export const revalidate=0;
@@ -10,7 +10,7 @@ function modeLabel(v?:string|null){return ({fixed:"Sede fisica",physical:"Sede f
 const fieldStyle={display:"grid",gap:6,fontSize:13,fontWeight:700,color:"#26343d"} as const;
 const inputStyle={width:"100%",minHeight:44,border:"1px solid #d8d3ca",borderRadius:10,padding:"0 12px",background:"#fff",color:"#101820"} as const;
 export default async function Page({params}:{params:Promise<{id:string}>}){
- if(!(await isAdminAuthenticated()))redirect("/admin/login"); const {id}=await params; const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login"); const {id}=await params; const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
  const {data:a}=await db.from("operator_applications").select("*").eq("id",id).maybeSingle(); if(!a)notFound();
  const facts=[["Referente",a.contact_name],["Email",a.email],["Telefono",a.phone??"—"],["WhatsApp",a.whatsapp??"—"],["Modalità operativa",modeLabel(a.operating_mode)],["Comune / località",a.location??"—"],["Indirizzo sede",a.address??"—"],["Sito / Instagram",a.website??a.instagram??"—"]];
  return <section style={{padding:"42px 20px 72px",background:"#f5eddf",minHeight:"75vh"}}><div style={{maxWidth:1050,margin:"0 auto"}}>
