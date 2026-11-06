@@ -123,3 +123,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - `has_table_privilege('service_role','auth.sessions','SELECT') = false`; anche `authenticated` e `anon` non hanno SELECT. **Non** tentare accesso diretto dalla API service-role né concedere SELECT sulla tabella Auth.
 - Proposta per B2: RPC ristretta, `SECURITY DEFINER`, proprietario privilegiato, con `search_path=''`, `EXECUTE` solo `service_role`, per controllare esistenza sessione `auth.sessions` associata all'utente, `aal='aal2'`, `not_after` valido e `security.admin_members.active=true`. Il server deve derivare `session_id` da JWT verificato, mai da input client arbitrario. Verificare semantica di revoca Supabase e testare in staging prima di applicare.
 - **Nessuna migration o modifica al guard effettuata in questa fase**: servono verifica documentale del ciclo di vita delle sessioni e test negativi prima di dichiarare revoca immediata PASS. Legacy cookie continua a bypassare il percorso MFA fino a B8 autorizzato.
+
+
+## Verifica build della RPC session-aware — PASS
+- Deployment Preview `dpl_GAiCDydSTQsgzHQvhmVqai5owhpb`, commit `1272674`, stato **READY**.
+- Log build: `DS-MFA staging smoke: PASS (session-aware service RPC reachable; unknown session denied)`.
+- Test automatico aggiornato per chiamare `public.is_active_super_admin_session(uuid,uuid)` con identificativi inesistenti. Risposta attesa e ottenuta `false`.
+- Build Next.js completata senza errori rilevati. **PASS** accessibilità RPC da build Preview e negazione sessione inesistente. Restano da testare sessioni AAL2 effettive, revoca/logout e autorizzazione runtime delle rotte protette. Il cookie legacy resta operativo e non equivale a MFA obbligatoria.
