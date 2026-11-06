@@ -34,3 +34,11 @@ Interrompere su accesso non autorizzato, revoca inefficace, esposizione di crede
 
 ## Chiusura
 **NON CHIUSO.** Nessun account di prova creato e nessuna pulizia dichiarata. Production NO-GO.
+
+
+## DS-MFA-01/D-INT01 — Implementazione autorizzata
+- Commit `0a455fb`: `apps/web/app/admin/mfa-staging/page.tsx`, pagina server-only con blocco 404 se `VERCEL_ENV` non è `preview`, se il branch non è `feature/admin-individual-mfa`, o se l'URL pubblico Supabase non corrisponde esattamente a Staging.
+- Commit `47899a8`: `apps/web/app/admin/mfa-staging/MfaStagingClient.tsx`, login password limitato all'email tecnica di collaudo, client browser Supabase SSR, enrollment TOTP, challengeAndVerify, indicatore AAL e logout locale. QR TOTP conservato solo in memoria del browser, mai registrato nei documenti.
+- Nessuna modifica al login legacy, al sistema di autorizzazione privilegiata, ai dati pubblici o a Production.
+- Deployment `dpl_GKvjECUrVKUpXUKCW5ZaXDNV9dQB` inizialmente BUILDING: **build e runtime non ancora attestati PASS**.
+- Test D-01–D-09 ancora da eseguire con identità tecnica; ruolo non assegnato. La sola pagina MFA non costituisce prova del controllo privilegiato.
