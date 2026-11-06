@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 const STAGING_URL = "https://nzdeoimwikhoidtladnu.supabase.co";
-const TEST_EMAIL = "mfa-collaudo@bimaris.invalid";
+const TEST_EMAIL = "mfa-int02-collaudo@bimaris.invalid";
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = key && process.env.NEXT_PUBLIC_SUPABASE_URL === STAGING_URL
   ? createBrowserClient(STAGING_URL, key) : null;
