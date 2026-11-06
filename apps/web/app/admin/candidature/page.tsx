@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic="force-dynamic"; export const revalidate=0;
@@ -10,7 +10,7 @@ function stateMessage(state?:string){const m:Record<string,string>={reviewing:"C
 const filters=[{key:"all",label:"Totali"},{key:"new",label:"Nuove"},{key:"reviewing",label:"In valutazione"},{key:"accepted",label:"Accettate"},{key:"rejected",label:"Rifiutate"}] as const;
 const statusTone:Record<string,{bg:string;color:string}>={new:{bg:"#f5e7c9",color:"#73531e"},reviewing:{bg:"#e8edf0",color:"#405563"},accepted:{bg:"#e4eee7",color:"#355c43"},rejected:{bg:"#f2e5e2",color:"#7b433b"}};
 export default async function Page({searchParams}:{searchParams:Promise<{state?:string;filter?:string}>}){
- if(!(await isAdminAuthenticated()))redirect("/admin/login"); const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login"); const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
  const {data}=await db.from("operator_applications").select("*").order("created_at",{ascending:false}).limit(200); const applications=data??[]; const {state,filter}=await searchParams; const message=stateMessage(state);
  const activeFilter=filters.some((x)=>x.key===filter)?filter??"all":"all"; const visibleApplications=activeFilter==="all"?applications:applications.filter((a:any)=>a.status===activeFilter);
  const counts=applications.reduce<Record<string,number>>((a:any,x:any)=>(a[x.status]=(a[x.status]??0)+1,a),{});
