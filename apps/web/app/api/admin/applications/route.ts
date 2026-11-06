@@ -76,6 +76,11 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
 }
 
 export async function POST(request: NextRequest) {
+  const origin=request.headers.get("origin");
+  if(origin){
+    try{if(new URL(origin).origin!==new URL(request.url).origin)return NextResponse.json({ok:false,error:"invalid_origin"},{status:403});}
+    catch{return NextResponse.json({ok:false,error:"invalid_origin"},{status:403});}
+  }
   if (!(await isAdminAuthenticated())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
 
   const form = await request.formData();
