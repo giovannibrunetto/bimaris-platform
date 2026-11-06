@@ -137,3 +137,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - La RPC `public.is_active_super_admin_session(s.user_id,s.id)` valutata su ciascuna delle tre sessioni esistenti restituisce sempre `false`: `sessions_checked=3`, `incorrectly_authorized=0`, `all_denied=true`. **PASS negativo su dati reali Staging**.
 - Nessun identificativo sessione/utente esposto, nessuna mutazione, nessun account creato.
 - Restano **NON TESTATI**: sessione AAL2 con ruolo attivo, disattivazione ruolo, cancellazione sessione/logout e verifica runtime della route con identità individuale. Non dichiarare revoca positiva PASS né MFA completa.
+
+
+## Matrice negativa user/session e hardening identità
+- Su una sessione esistente in Staging, RPC `is_active_super_admin_session`: coppia reale priva dei requisiti = `false`; user UUID inesistente + sessione reale = `false`; user reale + sessione UUID inesistente = `false`. **3/3 PASS negativi**. Query read-only.
+- `admin-mfa-guard.ts` commit `adfbc34`: controllo esplicito di uguaglianza tra `sessionData.session.user.id` e `identity.user.id`; in caso di discordanza fail closed.
+- Nuova build Preview `dpl_h4rVmnvx5Cmk6vNack1FtMdarnHJ` osservata inizialmente BUILDING. Il nuovo codice non è ancora considerato validato a runtime.
+- I test negativi non sostituiscono prove con account AAL2 attivo, revoca/logout effettivo e controllo delle rotte amministrative in sessione.
