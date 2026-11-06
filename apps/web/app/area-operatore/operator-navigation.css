@@ -70,3 +70,19 @@
     position: static !important;
   }
 }
+
+/* The calendar uses a dark BIMARIS hero. Shared light-hero typography must
+   never render dark text on this dark surface. */
+.page-hero.operator-calendar-hero {
+  background: linear-gradient(135deg, #07343b 0%, #032126 75%) !important;
+  color: #f8f8f5 !important;
+}
+.page-hero.operator-calendar-hero > .kicker {
+  color: #caa86a !important;
+}
+.page-hero.operator-calendar-hero > h1 {
+  color: #ffffff !important;
+}
+.page-hero.operator-calendar-hero > p {
+  color: #e2e8ed !important;
+}
