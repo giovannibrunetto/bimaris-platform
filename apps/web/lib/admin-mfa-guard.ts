@@ -40,6 +40,10 @@ export async function getVerifiedSuperAdmin(): Promise<{ userId: string } | null
   const { data: identity, error: identityError } = await userClient.auth.getUser(accessToken);
   if (identityError || !identity.user?.id) return null;
 
+  // A refresh between getSession and getUser must not silently switch the
+  // identity being authorized. The session RPC still validates session/user.
+  if (sessionData.session?.user.id !== identity.user.id) return null;
+
   const { data: assurance, error: assuranceError } =
     await userClient.auth.mfa.getAuthenticatorAssuranceLevel();
   if (assuranceError || assurance?.currentLevel !== "aal2") return null;
