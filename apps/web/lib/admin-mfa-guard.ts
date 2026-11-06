@@ -3,11 +3,21 @@ import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 
 /**
- * Proposed server-side Super Admin gate for the MFA migration.
- * NOT wired into routes yet. Requires a reviewed private admin role schema.
- * Fails closed until that schema is deployed and populated.
+ * Transitional server-side Super Admin gate for the MFA migration.
+ * Integrated behind a legacy-compatible adapter; not yet runtime-validated.
+ * Fail closed if staging isolation, identity, AAL2 or role lookup fails.
  */
 export async function getVerifiedSuperAdmin(): Promise<{ userId: string } | null> {
+  // DS-MFA-01/C: this feature branch must never query the production project
+  // for individual admin authorization. Check both client and service URLs.
+  const expectedHost = "nzdeoimwikhoidtladnu.supabase.co";
+  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!publicUrl) return null;
+  try {
+    if (new URL(publicUrl).hostname !== expectedHost) return null;
+  } catch {
+    return null;
+  }
   const userClient = await createUserServerClient();
   if (!userClient) return null;
 
