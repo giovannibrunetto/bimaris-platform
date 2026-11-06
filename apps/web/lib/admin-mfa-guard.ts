@@ -19,19 +19,14 @@ export async function getVerifiedSuperAdmin(): Promise<{ userId: string } | null
     await userClient.auth.mfa.getAuthenticatorAssuranceLevel();
   if (assuranceError || assurance?.currentLevel !== "aal2") return null;
 
-  // The security.admin_members table is intentionally not created by this commit.
-  // A missing table, missing role or revoked membership must deny access.
+  // Role lookup is performed via a service-role-only RPC in the exposed public schema.
+  // The underlying security.admin_members table remains in an unexposed private schema.
+  // No account is active by default; an absent role fails closed.
   const service = createServiceClient();
   if (!service) return null;
-  const { data: membership, error: membershipError } = await service
-    .schema("security")
-    .from("admin_members")
-    .select("user_id,role,active")
-    .eq("user_id", identity.user.id)
-    .eq("role", "super_admin")
-    .eq("active", true)
-    .maybeSingle();
-
-  if (membershipError || !membership) return null;
+  const { data: allowed, error: roleError } = await service.rpc("is_active_super_admin", {
+    p_user_id: identity.user.id,
+  });
+  if (roleError || allowed !== true) return null;
   return { userId: identity.user.id };
 }
