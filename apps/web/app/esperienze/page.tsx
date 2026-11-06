@@ -45,7 +45,7 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
             <div className="kicker">Cosa vuoi fare?</div>
             <h2>Scegli come vivere il territorio.</h2>
           </div>
-          <p>Le categorie definiscono il tipo di esperienza. Le singole proposte compariranno solo dopo la selezione degli operatori BIMARIS.</p>
+          <p>Esplora le categorie BIMARIS. Le proposte saranno visibili dopo la verifica e la pubblicazione delle singole esperienze.</p>
         </div>
 
         <div className="cards">
