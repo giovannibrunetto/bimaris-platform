@@ -63,3 +63,13 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Decisione: **NO-GO per test runtime e mutazioni su Preview feature** fino a mapping verificato di URL, publishable key e service secret verso `nzdeoimwikhoidtladnu`. Non copiare mai il segreto Production e non cambiare valori Preview generici senza analisi dell'impatto.
 - Soluzione ammessa: variabili Preview branch-specific per `feature/admin-individual-mfa`, verificate tramite identificativo progetto e controllo applicativo non sensibile. Richiede materiale credenziale Staging recuperato da canale sicuro, non da documenti o log.
 - Nessun valore segreto letto, scritto o pubblicato in questa verifica.
+
+
+## Preview aggiornata — test anonimi di sola lettura
+- Configurate per il solo branch feature le variabili Preview `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` (sensitive) e `BIMARIS_RATE_LIMIT_HMAC_SECRET` (sensitive). Nessuna credenziale inserita nel repository.
+- Deployment forzato da commit `c0961f5`: `dpl_HfEH4cz8Md1kL3BGJK9BsBCBBA6X`, stato READY, Preview (non Production).
+- Richieste GET anonime a `/admin`, `/admin/analytics`, `/admin/operatori`, `/admin/candidature`, `/admin/esperienze`: risposta Next.js contenente `NEXT_REDIRECT;replace;/admin/login`. Per le ultime quattro il fetch HTTP ha restituito 200 con redirect nel payload RSC: **PASS limitato** alla presenza del redirect server-side, non verifica browser.
+- GET anonimo a `/api/admin/operators`: HTTP 405, metodo non ammesso; **NON** costituisce test di autorizzazione POST.
+- Codice esaminato: le route POST `/api/admin/applications`, `/api/admin/experiences`, `/api/admin/experience-revisions` controllano `isAuthorizedAdmin()` prima delle operazioni privilegiate. Verifica statica, non runtime.
+- **Non verificato:** validità effettiva della secret key Staging dal runtime Vercel, revoca immediata, AAL2 e ruolo attivo, comportamento POST non autenticato, rate limiting end-to-end, regressioni editoriali.
+- Nessuna POST amministrativa eseguita, nessuna modifica ai dati, nessun account B5 creato. Production NO-GO.
