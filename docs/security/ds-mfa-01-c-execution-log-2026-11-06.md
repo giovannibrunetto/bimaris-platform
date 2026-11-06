@@ -87,3 +87,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - **PASS** per isolamento SQL e caso negativo; **NON TESTATO** l'uso effettivo della chiave server Vercel né la sessione AAL2, perché mancano identità amministrative autorizzate e non è stato introdotto un endpoint diagnostico pubblico.
 - Analisi statica: `apps/web/app/api/admin/login/route.ts` invoca il rate limit prima di controllare la password e nega in caso `unavailable` (HTTP 503). Il segreto HMAC indipendente è configurato ma la RPC non è ancora stata testata dal runtime Vercel.
 - Mantenere il fallback password legacy in `api-rate-limit.ts` fino a test funzionale e autorizzazione al taglio; nessun bypass della modalità prelaunch.
+
+
+## Audit API e rate-limit RPC
+- Audit statico di sette ulteriori API amministrative: `operator-memberships`, `itineraries`, `experiences/create`, `events/[id]/status`, `experiences/[id]/collaboration`, `operators`, `operator-revisions`. In ciascuna il controllo `isAuthorizedAdmin()` precede `createServiceClient()`; test runtime non equivalente.
+- Tentativo GET anonimo su `/api/admin/experiences/00000000-0000-0000-0000-000000000000/collaboration` bloccato dalla protezione Preview Vercel con `deployment_authentication_required` dopo redirect. **NON TESTATO** l'esito applicativo; non disattivare protezione per aggirare il blocco.
+- Ispezione SQL Staging della funzione `public.consume_api_rate_limit(text,text,integer,integer)`: `SECURITY INVOKER`; EXECUTE `anon=false`, `authenticated=false`, `service_role=true`. Controlla scope, hash di 64 caratteri, limiti 1..100, finestra 60..86400 s; aggiorna `public.api_rate_limits`. **PASS statico/privilegi**, non prova end-to-end.
+- Nessuna chiamata mutante al rate limiter, nessun dato o account creato. Production NO-GO.
