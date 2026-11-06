@@ -130,3 +130,10 @@ Stato: implementazione tecnica parziale sul branch `feature/admin-individual-mfa
 - Log build: `DS-MFA staging smoke: PASS (session-aware service RPC reachable; unknown session denied)`.
 - Test automatico aggiornato per chiamare `public.is_active_super_admin_session(uuid,uuid)` con identificativi inesistenti. Risposta attesa e ottenuta `false`.
 - Build Next.js completata senza errori rilevati. **PASS** accessibilità RPC da build Preview e negazione sessione inesistente. Restano da testare sessioni AAL2 effettive, revoca/logout e autorizzazione runtime delle rotte protette. Il cookie legacy resta operativo e non equivale a MFA obbligatoria.
+
+
+## Collaudo negativo su sessioni Staging esistenti
+- Query read-only: `auth.sessions` contiene **3** sessioni, di cui **0** AAL2; `security.admin_members` contiene **0** amministratori attivi.
+- La RPC `public.is_active_super_admin_session(s.user_id,s.id)` valutata su ciascuna delle tre sessioni esistenti restituisce sempre `false`: `sessions_checked=3`, `incorrectly_authorized=0`, `all_denied=true`. **PASS negativo su dati reali Staging**.
+- Nessun identificativo sessione/utente esposto, nessuna mutazione, nessun account creato.
+- Restano **NON TESTATI**: sessione AAL2 con ruolo attivo, disattivazione ruolo, cancellazione sessione/logout e verifica runtime della route con identità individuale. Non dichiarare revoca positiva PASS né MFA completa.
