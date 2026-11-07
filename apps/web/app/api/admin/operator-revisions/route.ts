@@ -1,3 +1,4 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -6,6 +7,8 @@ function text(form:FormData,key:string,max=2000){const v=form.get(key);return ty
 function back(request:NextRequest,operatorId:string,state:string){return NextResponse.redirect(new URL(`/admin/operatori/${operatorId}?tab=profilo&state=${encodeURIComponent(state)}`,request.url),303)}
 
 export async function POST(request:NextRequest){
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
  if(!(await isAuthorizedAdmin()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
  const form=await request.formData(); const revisionId=text(form,"revision_id",80); const operatorId=text(form,"operator_id",80); const action=text(form,"action",40); const notes=text(form,"review_notes",2000);
  if(!revisionId||!operatorId)return back(request,operatorId,"invalid");
