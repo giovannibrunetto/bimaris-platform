@@ -1,10 +1,17 @@
 /**
- * DS-MFA-01/C: build-time, read-only staging credential smoke test.
- * Runs only for the approved feature branch in Vercel Preview.
- * No HTTP endpoint, account creation, data mutation, or secret logging.
+ * DS-MFA-01/L-V27: opt-in, read-only staging credential smoke test.
+ * Normal builds never call Supabase. Run only with explicit consent in
+ * the approved Vercel Preview branch; never in Production.
  */
+const enabled = process.env.BIMARIS_MFA_SMOKE_TEST === "true";
 const branch = process.env.VERCEL_GIT_COMMIT_REF;
-if (process.env.VERCEL_ENV === "preview" && branch === "feature/admin-individual-mfa") {
+const approvedContext = process.env.VERCEL_ENV === "preview" && branch === "feature/admin-individual-mfa";
+
+if (enabled && !approvedContext) {
+  throw new Error("DS-MFA staging smoke: explicit test requested outside approved Preview branch");
+}
+
+if (enabled && approvedContext) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY;
   const expectedHost = "nzdeoimwikhoidtladnu.supabase.co";
