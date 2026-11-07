@@ -1,3 +1,4 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -24,6 +25,8 @@ async function findUserByEmail(db: ServiceClient, email: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
   if (!(await isAuthorizedAdmin())) return NextResponse.redirect(new URL("/admin/login", request.url), 303);
   const origin = request.headers.get("origin");
   if (origin) {
