@@ -1,3 +1,4 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -19,6 +20,8 @@ function requestedStep(sections:Record<string,string>,note:string,fallback:numbe
 function correctionSnapshot(experience:Record<string,unknown>,sections:Record<string,string>){const snapshot:Record<string,unknown>={};if(sections.name||sections.basics)snapshot.name=experience.name??null;if(sections.excerpt||sections.basics)snapshot.excerpt=experience.excerpt??null;if(sections.description)snapshot.description=experience.description??null;if(sections.details){snapshot.duration_minutes=experience.duration_minutes??null;snapshot.price_from=experience.price_from??null;snapshot.bookable=experience.bookable??false;}if(sections.location)snapshot.meeting_point=experience.meeting_point??null;return snapshot;}
 
 export async function POST(request:NextRequest){
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
  if(!(await isAuthorizedAdmin()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
  const form=await request.formData(),action=text(form.get("action"),40),experienceId=text(form.get("experience_id"),80),supabase=createServiceClient();
  if(!supabase)return back(request,"action-error");
