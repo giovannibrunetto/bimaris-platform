@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import ts from "typescript";
+import * as ts from "typescript";
 
 // Exercise the real TypeScript guard with a minimal NextResponse stand-in.
 // No network, Supabase account, or admin credentials required.
