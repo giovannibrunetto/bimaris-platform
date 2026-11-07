@@ -1,3 +1,4 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -6,6 +7,8 @@ function text(form:FormData,key:string,max=2000){const v=form.get(key);return ty
 function back(request:NextRequest,id:string,state:string){return NextResponse.redirect(new URL(`/admin/operatori/${id}?state=${encodeURIComponent(state)}`,request.url),303)}
 
 export async function POST(request:NextRequest){
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
  const origin=request.headers.get("origin");
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return NextResponse.json({ok:false,error:"invalid_site"},{status:403});
