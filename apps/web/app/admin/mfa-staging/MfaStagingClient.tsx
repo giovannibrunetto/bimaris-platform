@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 const STAGING_URL = "https://nzdeoimwikhoidtladnu.supabase.co";
-const TEST_EMAIL = "mfa-int02-collaudo@bimaris.invalid";
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = key && process.env.NEXT_PUBLIC_SUPABASE_URL === STAGING_URL
   ? createBrowserClient(STAGING_URL, key) : null;
 
 export default function MfaStagingClient() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState("");
@@ -22,8 +22,8 @@ export default function MfaStagingClient() {
   async function refresh() {
     if (!supabase) return;
     const { data: user } = await supabase.auth.getUser();
-    setLoggedIn(Boolean(user.user && user.user.email === TEST_EMAIL));
-    if (!user.user || user.user.email !== TEST_EMAIL) {
+    setLoggedIn(Boolean(user.user && user.user.email === email));
+    if (!user.user || user.user.email !== email) {
       setAal("none"); setFactorId(""); setQr(""); return;
     }
     const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -45,7 +45,8 @@ export default function MfaStagingClient() {
   async function login() {
     await run(async () => {
       if (!supabase) throw new Error("staging config");
-      const { error } = await supabase.auth.signInWithPassword({ email: TEST_EMAIL, password });
+      if (!/^[^\s@]+@bimaris\.invalid$/.test(email)) throw new Error("technical test identity required");
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       setPassword("");
       if (error) throw error;
       setStatus("Login Supabase riuscito. La sola autenticazione non conferisce privilegi amministrativi.");
@@ -94,6 +95,8 @@ export default function MfaStagingClient() {
     <p><strong>Ambiente:</strong> BIMARIS Staging · <strong>AAL:</strong> {aal}</p>
     <p role="status">{status}</p>
     {!supabase ? <p role="alert">Configurazione Staging non valida: operazioni disabilitate.</p> : !loggedIn ? <form onSubmit={e => { e.preventDefault(); void login(); }}>
+      <label htmlFor="test-email">Email dell’identità tecnica</label>
+      <input id="test-email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value.trim())} required style={{ display: "block", width: "100%", margin: "12px 0" }} />
       <label htmlFor="test-password">Password dell'identità tecnica</label>
       <input id="test-password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required style={{ display: "block", width: "100%", margin: "12px 0" }} />
       <button type="submit" disabled={busy}>Accedi come account tecnico</button>
