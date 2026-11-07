@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { clearAdminSession } from "@/lib/admin-auth";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 
 /**
  * DS-MFA-01/C transitional logout: clear the legacy admin cookie and
  * invalidate the individual Supabase Auth session when one exists.
- * No personal accounts are provisioned here; legacy login remains enabled.
+ * Shared-password login is disabled on this isolated V34 branch.
  */
 export async function POST(request: NextRequest) {
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
   // Always clear the legacy cookie, including when the individual Auth
   // session is absent or Supabase is temporarily unavailable.
   await clearAdminSession();
