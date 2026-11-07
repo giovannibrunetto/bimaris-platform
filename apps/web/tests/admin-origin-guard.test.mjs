@@ -5,6 +5,7 @@ const root = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, root), "utf8");
 const guarded = [
   "app/api/admin/applications/route.ts",
+  "app/api/admin/logout/route.ts",
   "app/api/admin/experience-revisions/route.ts",
   "app/api/admin/experiences/route.ts",
   "app/api/admin/experiences/create/route.ts",
@@ -28,7 +29,11 @@ for (const path of guarded) {
     const auth = source.indexOf("await isAuthorizedAdmin()");
     const body = source.indexOf("request.formData()");
     assert.ok(guard >= 0, "origin guard missing");
-    assert.ok(auth > guard, "admin auth must follow origin guard");
-    assert.ok(body > auth, "form must be parsed after authorization");
+    if (!path.endsWith("/logout/route.ts")) assert.ok(auth > guard, "admin auth must follow origin guard");
+    if (path.endsWith("/logout/route.ts")) {
+      assert.ok(source.indexOf("await clearAdminSession()") > guard, "logout must follow origin guard");
+    } else {
+      assert.ok(body > auth, "form must be parsed after authorization");
+    }
   });
 }
