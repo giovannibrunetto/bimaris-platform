@@ -11,6 +11,6 @@
     "typecheck:web": "pnpm --filter @bimaris/web exec tsc --noEmit",
     "typecheck:mobile": "pnpm --filter @bimaris/mobile exec tsc --noEmit",
     "check": "pnpm lint:web && pnpm typecheck:web && pnpm typecheck:mobile && pnpm test:auth",
-    "test:auth": "node --experimental-strip-types --test apps/web/tests/auth-redirect.test.mjs apps/web/tests/admin-origin-guard.test.mjs apps/web/tests/admin-origin-runtime.test.mjs"
+    "test:auth": "node --experimental-strip-types --test apps/web/tests/auth-redirect.test.mjs apps/web/tests/admin-origin-guard.test.mjs apps/web/tests/admin-origin-runtime.test.mjs apps/web/tests/admin-policy.test.mjs"
   }
 }
