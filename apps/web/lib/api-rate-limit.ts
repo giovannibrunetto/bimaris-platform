@@ -13,10 +13,8 @@ const limits: Record<Scope, [number, number]> = {
 
 export async function checkApiRateLimit(request: NextRequest, scope: Scope): Promise<"allow" | "limited" | "unavailable"> {
   const db = createServiceClient();
-  // Migration stage: prefer an independent secret. Legacy fallback is temporary and
-  // MUST be removed only after staging/preview has the dedicated secret configured
-  // and all rate-limit regression tests have passed.
-  const secret = process.env.BIMARIS_RATE_LIMIT_HMAC_SECRET || process.env.BIMARIS_ADMIN_PASSWORD;
+  // Dedicated rate-limit secret: never fall back to shared admin credentials.
+  const secret = process.env.BIMARIS_RATE_LIMIT_HMAC_SECRET;
   if (!db || !secret) return "unavailable";
   const ip = (request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-real-ip"))?.split(",")[0]?.trim();
   if (!ip) return "unavailable";
