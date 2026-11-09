@@ -377,3 +377,13 @@
   outline:3px solid #b58b45 !important;
   outline-offset:3px;
 }
+
+/* UX-B2B-01 — Three-step information hierarchy; no change to form semantics. */
+.b2b-network__panel { gap:24px; }
+.b2b-network__group { display:grid; gap:20px; min-width:0; padding:0 0 24px; border-bottom:1px solid #ded7cb; }
+.b2b-network__group:last-of-type { border-bottom:0; padding-bottom:0; }
+.b2b-network__group-heading { display:flex; align-items:flex-start; gap:14px; padding:0 0 4px; }
+.b2b-network__group-index { display:inline-flex; align-items:center; justify-content:center; flex:0 0 38px; height:38px; border-radius:12px; background:#e9e3d6; color:#07343b; font-size:14px; font-weight:800; }
+.b2b-network__group-heading h2 { margin:0 0 5px; color:#07343b; font-family:Georgia,serif; font-size:clamp(21px,2.3vw,27px); line-height:1.2; }
+.b2b-network__group-heading p { margin:0; color:#4b6463; font-size:14px; line-height:1.5; }
+@media(max-width:650px) { .b2b-network__group { gap:16px; padding-bottom:20px; } .b2b-network__group-heading { gap:10px; } .b2b-network__group-index { flex-basis:32px; height:32px; } }
