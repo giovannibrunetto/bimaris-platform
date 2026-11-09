@@ -341,3 +341,39 @@
   flex-wrap:wrap !important;
   gap:10px !important;
 }
+
+/* UX-B2B-01: B2B choice language reused by single-select activity links. */
+.operator-area-shell nav.operator-activity-selector a,
+.operator-calendar-workspace nav.operator-activity-selector a {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center;
+  min-height:46px;
+  padding:10px 16px !important;
+  border:1px solid #899b98 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  color:#07343b !important;
+  font-weight:700;
+  line-height:1.3;
+  text-decoration:none !important;
+  transition:background-color .15s,border-color .15s,box-shadow .15s;
+}
+.operator-area-shell nav.operator-activity-selector a[aria-current="page"],
+.operator-calendar-workspace nav.operator-activity-selector a[aria-current="page"] {
+  background:#07343b !important;
+  border-color:#07343b !important;
+  color:#fff !important;
+}
+@media(hover:hover) {
+  .operator-area-shell nav.operator-activity-selector a:hover,
+  .operator-calendar-workspace nav.operator-activity-selector a:hover {
+    border-color:#b58b45 !important;
+    box-shadow:0 0 0 2px rgba(181,139,69,.18);
+  }
+}
+.operator-area-shell nav.operator-activity-selector a:focus-visible,
+.operator-calendar-workspace nav.operator-activity-selector a:focus-visible {
+  outline:3px solid #b58b45 !important;
+  outline-offset:3px;
+}
