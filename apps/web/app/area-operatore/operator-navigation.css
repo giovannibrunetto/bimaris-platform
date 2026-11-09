@@ -175,3 +175,23 @@
 .b2b-network__hero p { max-width:760px; }
 .b2b-network__panel { gap: 24px; }
 .operator-calendar-workspace .operator-calendar-aside { background:#f8f8f5 !important; border-color:#d6cebf !important; }
+
+/* UX-B2B-01 — structural parity with the calendar workspace. */
+.b2b-page {
+  min-height: 65vh;
+  padding: 26px 20px 70px !important;
+  background: var(--operator-taupe) !important;
+}
+.b2b-page__container { max-width:1120px; }
+.b2b-network__panel,
+.b2b-network__matches {
+  border-radius: 20px;
+  padding: clamp(20px,3vw,30px);
+  gap: 24px;
+  background: var(--operator-ivory);
+}
+.page-hero.operator-b2b-hero h1 { font-family:inherit; font-weight:750; letter-spacing:-.025em; }
+@media(max-width:760px) {
+  .b2b-page { padding: 20px 14px 48px !important; }
+  .b2b-network__panel,.b2b-network__matches { border-radius:16px; padding:18px; }
+}
