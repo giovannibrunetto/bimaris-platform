@@ -25,6 +25,5 @@ export default async function B2BPage({searchParams}:{searchParams:Promise<{oper
   const operator = row ? one(row.operators) : null;
   if (!row || !operator) redirect(requested ? `/area-operatore?operatore=${encodeURIComponent(requested)}` : "/area-operatore");
 
-  const operatorParam = encodeURIComponent(operator.slug || row.operator_id);
-  return <section className="b2b-page"><div className="b2b-page__container"><a className="b2b-page__back" href={`/area-operatore?operatore=${operatorParam}`}>← Torna all'Area Operatore</a><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section>;
+  return <><section className="page-hero operator-calendar-hero operator-b2b-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}><div className="kicker">Area Operatore · Network B2B</div><h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Trova operatori compatibili con {operator.name}</h1><p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Indica cosa offri e cosa cerchi. BIMARIS individua opportunità di collaborazione tra gli operatori aderenti.</p></section><section className="b2b-page"><div className="b2b-page__container"><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section></>;
 }
