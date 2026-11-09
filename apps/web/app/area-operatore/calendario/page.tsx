@@ -15,7 +15,7 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
  const {data:claims}=await db.auth.getClaims();const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;if(!userId)redirect("/accedi");
  const {data}=await db.from("operator_memberships").select("role,operator_id,operators(id,name,slug)").eq("user_id",userId);
  const rows=((data??[]) as Membership[]).map(r=>({role:r.role,operator_id:r.operator_id,operator:related(r.operators)})).filter(r=>r.operator&&["owner","manager"].includes(r.role)) as {role:string;operator_id:string;operator:Operator}[];
- const params=await searchParams;const requested=params.operatore;const active=rows.find(r=>r.operator_id===requested||r.operator.slug===requested)??rows[0]??null;
+ const params=await searchParams;const requested=params.operatore;const active=requested?rows.find(r=>r.operator_id===requested||r.operator.slug===requested)??null:rows[0]??null;
  return <>
   <section className="page-hero operator-calendar-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}>
    <div className="operator-workspace-hero__inner"><div className="kicker">Area Operatore · Agenda</div>
@@ -24,7 +24,7 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
   </section>
   <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container operator-workspace-content" style={{maxWidth:1180,display:"grid",gap:16}}>
    {rows.length===0?<div className="detail-panel"><h2>Nessuna attività gestibile</h2><p>Questo account non risulta collegato come responsabile di un operatore.</p></div>:<>
-    <OperatorWorkspaceSwitcher activities={rows.map(r=>({id:r.operator_id,slug:r.operator.slug,name:r.operator.name}))} selectedSlug={active?.operator.slug??""}/>
+    {requested&&!active?<div className="detail-panel" role="alert"><h2>Attività non disponibile</h2><p>L'attività richiesta non è associata al tuo account con permessi di gestione del calendario. Seleziona un'attività autorizzata dall'Area operatore.</p><a className="button" href="/area-operatore">Torna all'Area operatore</a></div>:<OperatorWorkspaceSwitcher activities={rows.map(r=>({id:r.operator_id,slug:r.operator.slug,name:r.operator.name}))} selectedSlug={active?.operator.slug??""}/>} 
     {active&&<div className="operator-calendar-grid">
       <CalendarImporter operatorId={active.operator_id} operatorName={active.operator.name}/>
       <aside className="operator-calendar-aside" style={{margin:0,padding:"22px",position:"sticky",top:18,border:"1px solid rgba(202,168,106,.28)",borderRadius:22,background:"#fff",boxShadow:"0 14px 36px rgba(7,24,35,.05)"}}>
