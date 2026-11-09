@@ -19,11 +19,6 @@ export default function AccediPage(){
    setShowOperatorLogin(true);
   }
  },[]);
- useEffect(()=>{
-  if(!operatorDeepLink||!showOperatorLogin)return;
-  const frame=window.requestAnimationFrame(()=>document.getElementById("operator-access-form")?.scrollIntoView({behavior:"auto",block:"start"}));
-  return()=>window.cancelAnimationFrame(frame);
- },[operatorDeepLink,showOperatorLogin]);
  function feedback(message:string,isError=false){setOperatorMessage(message);setOperatorMessageError(isError)}
  function operatorReturnPath(){
   const requested=new URLSearchParams(window.location.search).get("next");
@@ -78,13 +73,13 @@ export default function AccediPage(){
   feedback("Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
  }
 
- return <><section className="ux-brand-05-hero ux-brand-05-hero--compact"><h1>{operatorDeepLink?"Accedi come operatore":"Come vuoi usare BIMARIS?"}</h1><p>{operatorDeepLink?"Accedi per continuare dall'operazione BIMARIS che hai aperto.":"Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati."}</p></section><div className="container access-gateway">
-  <div className="access-gateway-grid" style={operatorDeepLink?{gridTemplateColumns:"minmax(0,650px)",justifyContent:"center"}:undefined}>
-   {!operatorDeepLink&&<section className="card access-gateway-card">
+ return <><section className="ux-brand-05-hero ux-brand-05-hero--compact"><h1>Come vuoi usare BIMARIS?</h1><p>{operatorDeepLink?"Accedi per continuare dall'operazione BIMARIS che hai aperto.":"Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati."}</p></section><div className="container access-gateway">
+  <div className="access-gateway-grid">
+   <section className="card access-gateway-card">
     <div><div className="kicker">Per te</div><h2>Utente</h2><p>Salva luoghi ed esperienze, costruisci il tuo BIMARIS e ricevi suggerimenti più vicini ai tuoi interessi.</p></div>
     <div className="access-gateway-actions"><Link className="button" href="/accedi/utente">Accedi o registrati come utente</Link></div>
     <p className="access-gateway-note">Se è il tuo primo accesso, potrai creare automaticamente il tuo account personale.</p>
-   </section>}
+   </section>
    <section className="card access-gateway-card">
     <div><div className="kicker">Per gli operatori</div><h2>Operatore</h2><p>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
     <div className="access-gateway-actions operator-entry-actions">
