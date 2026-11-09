@@ -46,19 +46,7 @@
   background: rgba(255,255,255,.055);
   color: #ffffff;
 }
-@media (max-width: 760px) {
-  .operator-section-nav__inner {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-    padding: 6px 8px 0;
-  }
-  .operator-section-nav__link {
-    font-size: clamp(11px, 2.8vw, 13px);
-    min-height: 54px;
-    padding: 10px 3px 12px;
-    overflow-wrap: anywhere;
-  }
-  .operator-calendar-grid {
+.operator-calendar-grid {
     grid-template-columns: minmax(0,1fr);
   }
   .operator-calendar-grid > aside {
@@ -74,24 +62,18 @@
 .operator-calendar-grid > * { min-width: 0; }
 @media (max-width: 760px) {
   .operator-section-nav__inner {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 8px;
-    padding: 10px 16px;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 4px;
+    padding: 6px 8px 0;
   }
   .operator-section-nav__link {
-    font-size: 12px;
-    padding: 9px 8px;
-    border-radius: 12px;
+    min-height: 54px;
+    font-size: clamp(11px, 2.8vw, 13px);
+    padding: 10px 3px 12px;
+    overflow-wrap: anywhere;
   }
-  .operator-section-nav__link:last-child {
-    grid-column: 1 / -1;
-  }
-  .operator-calendar-grid {
-    grid-template-columns: minmax(0,1fr);
-  }
-  .operator-calendar-grid > aside {
-    position: static !important;
-  }
+  .operator-calendar-grid { grid-template-columns: minmax(0,1fr); }
+  .operator-calendar-grid > aside { position: static !important; }
 }
 
 /* The calendar uses a dark BIMARIS hero. Shared light-hero typography must
