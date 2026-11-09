@@ -487,3 +487,30 @@
     padding: 12px !important;
   }
 }
+
+/* UX-B2B-01 — definitive shared selector surface. This file contains legacy
+   high-specificity rules; the canonical selector must follow those rules. */
+.operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] {
+  box-sizing:border-box;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100%;
+  margin:0 !important;
+  padding:14px 18px !important;
+  border:1px solid #d6cebf !important;
+  border-radius:16px !important;
+  background:#f8f8f5 !important;
+  box-shadow:none !important;
+}
+.operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] strong {
+  color:#10383a !important;
+  margin:0 6px 0 0 !important;
+}
+@media(max-width:650px) {
+  .operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] {
+    display:flex !important;
+    padding:12px !important;
+  }
+}
