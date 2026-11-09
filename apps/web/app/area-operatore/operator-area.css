@@ -451,3 +451,39 @@
 @media(max-width:650px){
   .operator-area-shell > .container > .detail-panel {padding:21px 19px}
 }
+
+/* UX-B2B-01 / visual regression correction — explicit institutional contrasts.
+   This is intentionally last to supersede legacy dark-card rules. */
+.operator-area-shell nav[aria-label="Seleziona attività"] {
+  background: #f8f8f5 !important;
+  border: 1px solid #d6cebf !important;
+  padding: 14px 18px !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] strong {
+  color: #10383a !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a {
+  background: #f8f8f5 !important;
+  color: #10383a !important;
+  border: 1px solid #899b98 !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a[aria-current="page"] {
+  background: #07343b !important;
+  border-color: #07343b !important;
+  color: #fff !important;
+}
+.operator-area-shell .operator-summary {
+  background: #f8f8f5 !important;
+  border: 1px solid #d6cebf !important;
+  color: #10383a !important;
+}
+.operator-area-shell .operator-summary h2,
+.operator-area-shell .operator-summary p {
+  color: #10383a !important;
+}
+.operator-area-shell .operator-summary .eyebrow { color: #85612b !important; }
+@media(max-width:650px) {
+  .operator-area-shell nav[aria-label="Seleziona attività"] {
+    padding: 12px !important;
+  }
+}
