@@ -40,17 +40,23 @@ export default function B2BNetwork({ operatorId, operatorName, canManage }: Prop
   return <div className="b2b-network">
     <section className="b2b-network__panel">
       
+      <div className="b2b-network__group"><div className="b2b-network__group-heading"><span className="b2b-network__group-index">01</span><div><h2>Il tuo profilo nella rete</h2><p>Indica cosa puoi offrire agli altri operatori.</p></div></div>
       <label className="b2b-network__optin"><input type="checkbox" checked={profile.enabled} disabled={!canManage} onChange={e=>setProfile({...profile,enabled:e.target.checked})}/> Voglio comparire nel Network B2B BIMARIS</label>
       <Multi title="Cosa offri agli altri operatori?" options={B2B_TAGS} value={profile.offer_tags} onChange={v=>setProfile({...profile,offer_tags:v})}/>
       <label className="b2b-network__field"><strong>Descrivi ciò che offri</strong><textarea value={profile.offer_summary??""} onChange={e=>setProfile({...profile,offer_summary:e.target.value})} rows={4} className="b2b-network__input" placeholder="Es. escursioni guidate per piccoli gruppi, anche in inglese, con partenza da Messina…"/></label>
+      </div>
+      <div className="b2b-network__group"><div className="b2b-network__group-heading"><span className="b2b-network__group-index">02</span><div><h2>Collaborazioni che cerchi</h2><p>Descrivi le opportunità e i partner con cui vorresti lavorare.</p></div></div>
       <Multi title="Cosa cerchi dagli altri operatori?" options={B2B_TAGS} value={profile.seek_tags} onChange={v=>setProfile({...profile,seek_tags:v})}/>
       <label className="b2b-network__field"><strong>Descrivi la collaborazione che cerchi</strong><textarea value={profile.seek_summary??""} onChange={e=>setProfile({...profile,seek_summary:e.target.value})} rows={4} className="b2b-network__input" placeholder="Es. cerco strutture ricettive interessate a proporre escursioni ai propri ospiti…"/></label>
       <Multi title="Tipo di collaborazione" options={COLLABORATION_TYPES} value={profile.collaboration_types} onChange={v=>setProfile({...profile,collaboration_types:v})}/>
+      </div>
+      <div className="b2b-network__group"><div className="b2b-network__group-heading"><span className="b2b-network__group-index">03</span><div><h2>Disponibilità e condizioni</h2><p>Completa le informazioni utili a valutare una collaborazione.</p></div></div>
       <Multi title="Clientela con cui lavori" options={CUSTOMER_SEGMENTS} value={profile.customer_segments} onChange={v=>setProfile({...profile,customer_segments:v})}/>
       <Multi title="Lingue" options={LANGUAGES} value={profile.languages} onChange={v=>setProfile({...profile,languages:v})}/>
       <Multi title="Disponibilità" options={AVAILABILITY_MODES} value={profile.availability_modes} onChange={v=>setProfile({...profile,availability_modes:v})}/>
       <label className="b2b-network__field"><strong>Aree in cui vuoi collaborare</strong><input value={profile.areas.join(", ")} onChange={e=>setProfile({...profile,areas:e.target.value.split(",").map(x=>x.trim()).filter(Boolean)})} className="b2b-network__input" placeholder="Messina, Peloritani, Nebrodi, Eolie"/></label>
       <label className="b2b-network__field"><strong>Condizioni o informazioni importanti</strong><textarea value={profile.conditions_notes??""} onChange={e=>setProfile({...profile,conditions_notes:e.target.value})} rows={3} className="b2b-network__input" placeholder="Preavviso, minimi, limiti operativi o altre condizioni…"/></label>
+      </div>
       {canManage&&<div className="b2b-network__actions"><button className="button" onClick={save} disabled={saving}>{saving?"Salvataggio…":"Salva e trova compatibilità"}</button>{message&&<span style={{marginLeft:12}}>{message}</span>}</div>}
     </section>
 
