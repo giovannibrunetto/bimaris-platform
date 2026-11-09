@@ -17,11 +17,11 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
  const params=await searchParams;const requested=params.operatore;const active=rows.find(r=>r.operator_id===requested)??rows[0]??null;
  return <>
   <section className="page-hero operator-calendar-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}>
-   <div className="kicker">Area Operatore · Agenda</div>
+   <div className="operator-workspace-hero__inner"><div className="kicker">Area Operatore · Agenda</div>
    <h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Importa il tuo calendario</h1>
-   <p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p>
+   <p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p></div>
   </section>
-  <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container" style={{maxWidth:1120,display:"grid",gap:16}}>
+  <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container operator-workspace-content" style={{maxWidth:1180,display:"grid",gap:16}}>
    {rows.length===0?<div className="detail-panel"><h2>Nessuna attività gestibile</h2><p>Questo account non risulta collegato come responsabile di un operatore.</p></div>:<>
     <nav aria-label="Seleziona attività" style={{background:"#fff",border:"1px solid rgba(202,168,106,.28)",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,flexWrap:"wrap"}}><strong style={{marginRight:4}}>Stai importando per:</strong>{rows.map(r=><a key={r.operator_id} href={`/area-operatore/calendario?operatore=${encodeURIComponent(r.operator_id)}`} aria-current={active?.operator_id===r.operator_id?"page":undefined} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:999,textDecoration:"none",fontWeight:700,border:"1px solid rgba(202,168,106,.55)",background:active?.operator_id===r.operator_id?"#07343B":"#F8F8F5",color:active?.operator_id===r.operator_id?"#fff":"#10383A"}}>{r.operator.name}</a>)}</nav>
     {active&&<div className="operator-calendar-grid">
