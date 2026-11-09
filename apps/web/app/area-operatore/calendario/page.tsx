@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import CalendarImporter from "../CalendarImporter";
+import OperatorWorkspaceSwitcher from "../OperatorWorkspaceSwitcher";
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -23,8 +24,7 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
   </section>
   <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container operator-workspace-content" style={{maxWidth:1180,display:"grid",gap:16}}>
    {rows.length===0?<div className="detail-panel"><h2>Nessuna attività gestibile</h2><p>Questo account non risulta collegato come responsabile di un operatore.</p></div>:<>
-    <nav className="operator-activity-selector" aria-label="Seleziona attività"><strong style={{marginRight:4}}>Stai importando per:</strong>{rows.map(r=><a key={r.operator_id} href={`/area-operatore/calendario?operatore=${encodeURIComponent(r.operator_id)}`} aria-current={active?.operator_id===r.operator_id?"page":undefined} className="operator-activity-choice">{r.operator.name}</a>)}</nav>
-    <nav className="operator-section-nav" aria-label="Navigazione area operatore"><div className="operator-section-nav__inner"><a className="operator-section-nav__link" href={`/area-operatore?operatore=${encodeURIComponent(active?.operator.slug??"")}`}>Area operatore</a><a className="operator-section-nav__link" aria-current="page" href={`/area-operatore/calendario?operatore=${encodeURIComponent(active?.operator.slug??"")}`}>Importa calendario</a><a className="operator-section-nav__link" href={`/area-operatore/network-b2b?operatore=${encodeURIComponent(active?.operator.slug??"")}`}>Network B2B</a></div></nav>
+    <OperatorWorkspaceSwitcher activities={rows.map(r=>({id:r.operator_id,slug:r.operator.slug,name:r.operator.name}))} selectedSlug={active?.operator.slug??""}/>
     {active&&<div className="operator-calendar-grid">
       <CalendarImporter operatorId={active.operator_id} operatorName={active.operator.name}/>
       <aside className="operator-calendar-aside" style={{margin:0,padding:"22px",position:"sticky",top:18,border:"1px solid rgba(202,168,106,.28)",borderRadius:22,background:"#fff",boxShadow:"0 14px 36px rgba(7,24,35,.05)"}}>
