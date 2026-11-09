@@ -468,3 +468,65 @@
   .b2b-network__group-heading h2 { font-size:clamp(20px,5.8vw,25px); line-height:1.2; }
   .b2b-network__group-heading p { overflow-wrap:break-word; }
 }
+
+/* UX-B2B-01/FIX-02 — choose the operator before navigating its workspaces. */
+.operator-workspace-activities {
+ background:#07343b;
+ color:#f8f8f5;
+ border-bottom:1px solid rgba(202,168,106,.24);
+}
+.operator-workspace-activities__inner {
+ box-sizing:border-box;
+ max-width:1180px;
+ margin-inline:auto;
+ padding:14px 20px;
+ display:flex;
+ align-items:center;
+ gap:16px;
+ flex-wrap:wrap;
+}
+.operator-workspace-activities__inner > strong {
+ color:#e8c384;
+ font-size:14px;
+ font-weight:750;
+}
+.operator-workspace-activities__choices {
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+ min-width:0;
+}
+.operator-workspace-activities__choice {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ min-height:40px;
+ padding:8px 15px;
+ box-sizing:border-box;
+ border:1px solid rgba(248,248,245,.52);
+ border-radius:12px;
+ color:#f8f8f5;
+ background:transparent;
+ font-weight:650;
+ text-decoration:none;
+ line-height:1.25;
+}
+.operator-workspace-activities__choice[aria-current="true"] {
+ background:#caa86a;
+ border-color:#caa86a;
+ color:#032126;
+ font-weight:800;
+}
+.operator-workspace-activities__choice:hover:not([aria-current="true"]) {
+ border-color:#caa86a;
+ background:rgba(255,255,255,.09);
+}
+.operator-workspace-activities__choice:focus-visible {
+ outline:3px solid #e8c384;
+ outline-offset:3px;
+}
+@media(max-width:650px) {
+ .operator-workspace-activities__inner {padding:13px 14px;display:grid;gap:10px}
+ .operator-workspace-activities__choices {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));width:100%}
+ .operator-workspace-activities__choice {min-height:44px;padding:10px 8px;text-align:center;overflow-wrap:anywhere}
+}
