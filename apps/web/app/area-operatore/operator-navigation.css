@@ -195,3 +195,34 @@
   .b2b-page { padding: 20px 14px 48px !important; }
   .b2b-network__panel,.b2b-network__matches { border-radius:16px; padding:18px; }
 }
+
+/* UX-B2B-01 — common horizontal rhythm for all operator workspaces. */
+.operator-workspace-hero__inner {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  text-align: left;
+}
+.page-hero.operator-calendar-hero {
+  padding-inline: 20px !important;
+}
+.operator-calendar-workspace > .operator-workspace-content {
+  max-width: 1180px !important;
+  width: 100%;
+  margin-inline: auto !important;
+}
+.b2b-page__container {
+  max-width: 1180px !important;
+  width: 100%;
+  margin-inline: auto;
+}
+.operator-area-hero > .container,
+.operator-area-shell > .container {
+  max-width: 1180px !important;
+  width: 100%;
+  margin-inline: auto !important;
+}
+@media(max-width:760px) {
+  .page-hero.operator-calendar-hero { padding-inline: 16px !important; }
+  .operator-workspace-hero__inner { max-width: 100%; }
+}
