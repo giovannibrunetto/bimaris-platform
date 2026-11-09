@@ -21,12 +21,12 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
    <h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Importa il tuo calendario</h1>
    <p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p>
   </section>
-  <section className="section" style={{background:"var(--sand)",paddingTop:26}}><div className="container" style={{maxWidth:1120,display:"grid",gap:16}}>
+  <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container" style={{maxWidth:1120,display:"grid",gap:16}}>
    {rows.length===0?<div className="detail-panel"><h2>Nessuna attività gestibile</h2><p>Questo account non risulta collegato come responsabile di un operatore.</p></div>:<>
-    <nav aria-label="Seleziona attività" style={{background:"#fff",border:"1px solid rgba(202,168,106,.28)",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,flexWrap:"wrap"}}><strong style={{marginRight:4}}>Stai importando per:</strong>{rows.map(r=><a key={r.operator_id} href={`/area-operatore/calendario?operatore=${encodeURIComponent(r.operator_id)}`} aria-current={active?.operator_id===r.operator_id?"page":undefined} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:999,textDecoration:"none",fontWeight:700,border:"1px solid rgba(202,168,106,.55)",background:active?.operator_id===r.operator_id?"#0c3448":"#fbfaf7",color:active?.operator_id===r.operator_id?"#fff":"#152b38"}}>{r.operator.name}</a>)}</nav>
+    <nav aria-label="Seleziona attività" style={{background:"#fff",border:"1px solid rgba(202,168,106,.28)",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,flexWrap:"wrap"}}><strong style={{marginRight:4}}>Stai importando per:</strong>{rows.map(r=><a key={r.operator_id} href={`/area-operatore/calendario?operatore=${encodeURIComponent(r.operator_id)}`} aria-current={active?.operator_id===r.operator_id?"page":undefined} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:999,textDecoration:"none",fontWeight:700,border:"1px solid rgba(202,168,106,.55)",background:active?.operator_id===r.operator_id?"#07343B":"#F8F8F5",color:active?.operator_id===r.operator_id?"#fff":"#10383A"}}>{r.operator.name}</a>)}</nav>
     {active&&<div className="operator-calendar-grid">
       <CalendarImporter operatorId={active.operator_id} operatorName={active.operator.name}/>
-      <aside style={{margin:0,padding:"22px",position:"sticky",top:18,border:"1px solid rgba(202,168,106,.28)",borderRadius:22,background:"#fff",boxShadow:"0 14px 36px rgba(7,24,35,.05)"}}>
+      <aside className="operator-calendar-aside" style={{margin:0,padding:"22px",position:"sticky",top:18,border:"1px solid rgba(202,168,106,.28)",borderRadius:22,background:"#fff",boxShadow:"0 14px 36px rgba(7,24,35,.05)"}}>
        <div className="eyebrow">Come funziona</div>
        <h3 style={{margin:"7px 0 14px",fontSize:24}}>Prima bozza, poi verifica</h3>
        <div style={{display:"grid",gap:12}}>
@@ -35,7 +35,7 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
         <div><strong>3 · Salva come bozza</strong><p style={{margin:"3px 0 0",color:"var(--muted)"}}>I duplicati già presenti vengono ignorati.</p></div>
         <div><strong>4 · BIMARIS verifica</strong><p style={{margin:"3px 0 0",color:"var(--muted)"}}>L'amministrazione controlla i dati prima della visibilità pubblica.</p></div>
        </div>
-       <div style={{marginTop:18,padding:"12px 14px",borderRadius:12,background:"#f7f1e7",fontWeight:700,lineHeight:1.4}}>Nessun appuntamento viene pubblicato automaticamente.</div>
+       <div style={{marginTop:18,padding:"12px 14px",borderRadius:12,background:"#E7E0D3",fontWeight:700,lineHeight:1.4}}>Nessun appuntamento viene pubblicato automaticamente.</div>
       </aside>
     </div>}
    </>}
