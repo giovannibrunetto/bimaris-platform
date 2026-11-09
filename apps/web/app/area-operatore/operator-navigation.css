@@ -458,3 +458,13 @@
 .page-hero.operator-calendar-hero .operator-workspace-hero__inner h1 span {
   color:#caa86a !important;
 }
+
+/* UX-B2B-01 / mobile QA — prevent B2B section headings from clipping. */
+.b2b-network__group-heading { min-width:0; }
+.b2b-network__group-heading > div { flex:1 1 0; min-width:0; }
+.b2b-network__group-heading h2 { max-width:100%; overflow-wrap:break-word; }
+@media(max-width:760px) {
+  .b2b-network__group-heading { align-items:flex-start; }
+  .b2b-network__group-heading h2 { font-size:clamp(20px,5.8vw,25px); line-height:1.2; }
+  .b2b-network__group-heading p { overflow-wrap:break-word; }
+}
