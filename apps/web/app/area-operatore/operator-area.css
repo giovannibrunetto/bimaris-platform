@@ -538,3 +538,10 @@
 .experience-manager__collaboration a:hover{background:#dfc18a;transform:translateY(-1px)}
 .experience-manager__collaboration a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:600px){.experience-manager__collaboration{padding:21px 18px}.experience-manager__collaboration a{width:100%;text-align:center}}
+
+/* UX-B2B-01 / mobile QA — visual order must match semantic DOM order. */
+.operator-area-grid > .operator-status-strip{order:0}
+.operator-area-grid > .collaboration-inbox{order:1}
+.operator-area-grid > .operator-profile-card{order:2}
+.operator-area-grid > .operator-experiences{order:3}
+.operator-area-grid > .operator-impact{order:4}
