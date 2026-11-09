@@ -26,5 +26,5 @@ export default async function B2BPage({searchParams}:{searchParams:Promise<{oper
   if (!row || !operator) redirect(requested ? `/area-operatore?operatore=${encodeURIComponent(requested)}` : "/area-operatore");
 
   const operatorParam = encodeURIComponent(operator.slug || row.operator_id);
-  return <section style={{background:"var(--sand)",padding:"clamp(34px,6vw,70px) 20px",minHeight:"70vh"}}><div className="container" style={{maxWidth:1120}}><div style={{marginBottom:22}}><a href={`/area-operatore?operatore=${operatorParam}`}>← Torna all'area operatore</a></div><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section>;
+  return <section className="b2b-page"><div className="b2b-page__container"><a className="b2b-page__back" href={`/area-operatore?operatore=${operatorParam}`}>← Torna all'Area Operatore</a><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section>;
 }
