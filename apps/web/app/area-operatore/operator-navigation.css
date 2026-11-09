@@ -226,3 +226,93 @@
   .page-hero.operator-calendar-hero { padding-inline: 16px !important; }
   .operator-workspace-hero__inner { max-width: 100%; }
 }
+
+/* UX-B2B-01 / workspace visual system v2
+   Shared activity selection is one component treatment; B2B consent stays a
+   semantically distinct checkbox while sharing surface and spacing tokens. */
+.operator-area-shell .operator-activity-selector,
+.operator-calendar-workspace .operator-activity-selector {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  width:100%;
+  padding:14px 18px !important;
+  background:var(--operator-ivory) !important;
+  border:1px solid #d6cebf !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+}
+.operator-area-shell .operator-activity-selector strong,
+.operator-calendar-workspace .operator-activity-selector strong {
+  color:var(--operator-text) !important;
+  margin-right:6px;
+  font-weight:750;
+}
+.operator-area-shell .operator-activity-selector a,
+.operator-calendar-workspace .operator-activity-selector a {
+  border:1px solid var(--operator-border) !important;
+  color:var(--operator-text) !important;
+  background:#fff !important;
+  border-radius:999px !important;
+  padding:7px 12px !important;
+  line-height:1.35;
+}
+.operator-area-shell .operator-activity-selector a[aria-current="page"],
+.operator-calendar-workspace .operator-activity-selector a[aria-current="page"] {
+  background:var(--operator-petrol) !important;
+  color:#fff !important;
+  border-color:var(--operator-petrol) !important;
+}
+.operator-activity-selector a:focus-visible {
+  outline:3px solid var(--operator-gold);
+  outline-offset:2px;
+}
+.b2b-page {
+  width:100%;
+  box-sizing:border-box;
+}
+.b2b-page__container {
+  display:block;
+  width:min(100%,1180px) !important;
+  max-width:1180px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.b2b-network {
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin:0;
+}
+.b2b-network__panel,.b2b-network__matches {
+  width:100%;
+  box-sizing:border-box;
+  background:var(--operator-ivory) !important;
+  border:1px solid #d6cebf !important;
+  border-radius:20px !important;
+}
+.b2b-network__optin {
+  background:#fff !important;
+  border:1px solid #d6cebf !important;
+  border-radius:16px !important;
+  min-height:62px;
+  padding:14px 18px !important;
+  color:var(--operator-text);
+}
+.b2b-network__optin:has(input:checked) {
+  background:#f3ecdd !important;
+  border-color:var(--operator-gold) !important;
+}
+.b2b-network__optin input { accent-color:var(--operator-petrol); }
+.operator-calendar-workspace,
+.b2b-page,.operator-area-shell {
+  background:var(--operator-taupe) !important;
+}
+@media(max-width:760px) {
+  .operator-area-shell .operator-activity-selector,
+  .operator-calendar-workspace .operator-activity-selector {
+    padding:12px !important;
+  }
+  .b2b-network__panel,.b2b-network__matches { border-radius:16px !important; }
+}
