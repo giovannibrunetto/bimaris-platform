@@ -22,13 +22,14 @@
   align-items: center;
   text-align: center;
   border-radius: 999px;
-  border: 1px solid rgba(202,168,106,.28);
-  background: rgba(255,255,255,.04);
-  color: #f8f8f5;
+  border: 1px solid #caa86a;
+  background: #f3efe6;
+  color: #032126;
   font-size: 14px;
   line-height: 1.25;
   font-weight: 700;
   text-decoration: none;
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .operator-section-nav__link[aria-current="page"] {
   background: #caa86a;
@@ -40,7 +41,9 @@
   outline-offset: 3px;
 }
 .operator-section-nav__link:not([aria-current="page"]):hover {
-  background: rgba(202,168,106,.14);
+  background: #fffaf0;
+  border-color: #e0b95e;
+  box-shadow: 0 0 0 2px rgba(202,168,106,.2);
 }
 .operator-calendar-grid {
   display: grid;
