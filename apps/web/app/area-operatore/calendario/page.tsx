@@ -18,7 +18,7 @@ export default async function CalendarImportPage({searchParams}:{searchParams:Pr
  return <>
   <section className="page-hero operator-calendar-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}>
    <div className="operator-workspace-hero__inner"><div className="kicker">Area Operatore · Agenda</div>
-   <h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Importa il tuo calendario</h1>
+   <h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Importa il tuo <span>calendario</span></h1>
    <p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Porta in BIMARIS gli appuntamenti che già condividi su WhatsApp, senza riscriverli uno per uno.</p></div>
   </section>
   <section className="section operator-calendar-workspace" style={{background:"var(--sand)",paddingTop:26}}><div className="container operator-workspace-content" style={{maxWidth:1180,display:"grid",gap:16}}>
