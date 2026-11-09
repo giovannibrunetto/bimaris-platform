@@ -47,13 +47,6 @@
   color: #ffffff;
 }
 .operator-calendar-grid {
-    grid-template-columns: minmax(0,1fr);
-  }
-  .operator-calendar-grid > aside {
-    position: static !important;
-  }
-}
-.operator-calendar-grid {
   display: grid;
   grid-template-columns: minmax(0,2fr) minmax(280px,1fr);
   gap: 16px;
