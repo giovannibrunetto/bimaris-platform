@@ -1,20 +1,40 @@
-import { createUserServerClient } from "@/lib/supabase/user-server";
-import OperatorWorkspaceNavigation from "./OperatorWorkspaceNavigation";
+"use client";
+
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import "./correction-actions.css";
 import "./operator-navigation.css";
 
-type Operator = {id:string;slug:string;name:string};
-type Membership = {operator_id:string;operators:Operator|Operator[]|null};
-export default async function AreaOperatoreLayout({children}:{children:React.ReactNode}) {
- const db=await createUserServerClient();
- let activities:Operator[]=[];
- if(db){
-  const {data:claims}=await db.auth.getClaims();
-  const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;
-  if(userId){
-   const {data}=await db.from("operator_memberships").select("operator_id,operators(id,slug,name)").eq("user_id",userId);
-   activities=((data??[]) as Membership[]).map(m=>Array.isArray(m.operators)?m.operators[0]??null:m.operators).filter((v):v is Operator=>Boolean(v));
-  }
- }
- return <><OperatorWorkspaceNavigation activities={activities}/>{children}</>;
+const sections = [
+  { href: "/area-operatore", label: "Area operatore" },
+  { href: "/area-operatore/calendario", label: "Importa calendario" },
+  { href: "/area-operatore/network-b2b", label: "Network B2B" },
+] as const;
+
+export default function AreaOperatoreLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const operator = searchParams.get("operatore");
+  const suffix = operator ? `?operatore=${encodeURIComponent(operator)}` : "";
+
+  return <>
+    <nav className="operator-section-nav" aria-label="Navigazione area operatore">
+      <div className="operator-section-nav__inner">
+        {sections.map(section => {
+          const selected = pathname === section.href || (section.href === "/area-operatore" && pathname === "/area-operatore/");
+          return (
+            <Link
+              key={section.href}
+              href={`${section.href}${suffix}`}
+              className="operator-section-nav__link"
+              aria-current={selected ? "page" : undefined}
+            >
+              {section.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+    {children}
+  </>;
 }
