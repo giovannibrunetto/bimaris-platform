@@ -522,3 +522,10 @@
 .experience-manager__create{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:20px}
 .experience-manager__create p{margin:0;color:#526463;line-height:1.5}
 @media(max-width:600px){.operator-status-strip{align-items:flex-start}.operator-status-strip a{margin-left:0;width:100%}.experience-manager__create .button{width:100%;text-align:center}}
+
+/* UX-B2B-01 — secondary collaboration pathway beneath experience actions. */
+.experience-manager__collaboration{box-sizing:border-box;width:100%;margin-top:8px;padding:20px 22px;border-top:1px solid #d6cebf;background:#f8f8f5;border-radius:0 0 12px 12px;color:#07343b}
+.experience-manager__collaboration strong{display:block;font-size:16px;line-height:1.35}
+.experience-manager__collaboration p{margin:7px 0 10px;color:#526463;font-size:14px;line-height:1.5}
+.experience-manager__collaboration a{color:#07343b;font-size:14px;font-weight:700;text-underline-offset:3px}
+@media(max-width:600px){.experience-manager__collaboration{padding:16px}}
