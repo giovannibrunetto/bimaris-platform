@@ -39,7 +39,7 @@ export default function B2BNetwork({ operatorId, operatorName, canManage }: Prop
   if(loading)return <div className="detail-panel"><p>Caricamento Network B2B…</p></div>;
   return <div className="b2b-network">
     <section className="b2b-network__panel">
-      <header className="b2b-network__hero"><div className="eyebrow">NETWORK PROFESSIONALE · BIMARIS</div><h1>Trova operatori compatibili con {operatorName}</h1><p>Indica con precisione cosa offri e cosa cerchi. BIMARIS incrocia il tuo profilo con gli altri operatori che hanno scelto di partecipare al Network B2B.</p></header>
+      
       <label className="b2b-network__optin"><input type="checkbox" checked={profile.enabled} disabled={!canManage} onChange={e=>setProfile({...profile,enabled:e.target.checked})}/> Voglio comparire nel Network B2B BIMARIS</label>
       <Multi title="Cosa offri agli altri operatori?" options={B2B_TAGS} value={profile.offer_tags} onChange={v=>setProfile({...profile,offer_tags:v})}/>
       <label className="b2b-network__field"><strong>Descrivi ciò che offri</strong><textarea value={profile.offer_summary??""} onChange={e=>setProfile({...profile,offer_summary:e.target.value})} rows={4} className="b2b-network__input" placeholder="Es. escursioni guidate per piccoli gruppi, anche in inglese, con partenza da Messina…"/></label>
