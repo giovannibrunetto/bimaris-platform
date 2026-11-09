@@ -232,12 +232,12 @@
 .operator-area-shell>.container>div{gap:18px!important}
 .operator-area-shell .operator-area-grid{
  position:relative;
- padding:clamp(14px,2.1vw,30px);
- border-radius:30px;
- background:linear-gradient(165deg,#E8E2D6 0%,#F2EFE8 52%,#EDEAE2 100%);
- border:1px solid rgba(216,169,79,.29);
- box-shadow:0 28px 70px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.65);
- gap:18px;
+ padding:clamp(12px,1.6vw,22px);
+ border-radius:22px;
+ background:#f2efe8;
+ border:1px solid #d6cebf;
+ box-shadow:0 5px 18px rgba(7,36,41,.055);
+ gap:16px;
 }
 .operator-area-shell .operator-summary{
  background:linear-gradient(112deg,#0B3438,#07252A)!important;
@@ -293,8 +293,8 @@
 }
 .operator-area-shell .operator-area-grid{
  border:1px solid rgba(216,169,79,.22);
- box-shadow:0 22px 58px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.48);
- gap:15px;
+ box-shadow:0 5px 18px rgba(7,36,41,.055);
+ gap:16px;
 }
 .operator-area-shell .experience-manager,
 .operator-area-shell .operator-impact,
