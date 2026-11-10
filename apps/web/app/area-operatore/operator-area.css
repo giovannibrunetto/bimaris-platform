@@ -545,3 +545,7 @@
 .operator-area-grid > .operator-profile-card{order:2}
 .operator-area-grid > .operator-experiences{order:3}
 .operator-area-grid > .operator-impact{order:4}
+
+/* UX-OP-STATUS-01 — Explain publication state without implying approval workflow */
+.operator-status-strip__explanation{color:#526463;font-size:13px;line-height:1.5}
+@media(max-width:600px){.operator-status-strip__explanation{flex-basis:100%;font-size:12px}}
