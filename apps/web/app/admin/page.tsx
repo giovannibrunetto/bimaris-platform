@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
-import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
 
@@ -11,13 +10,6 @@ export const revalidate = 0;
 export default async function AdminPage() {
   const verifiedAdmin = await getVerifiedSuperAdmin();
   if (!verifiedAdmin) redirect("/admin/login");
-  const authClient = await createUserServerClient();
-  const { data: identity, error: identityError } = authClient
-    ? await authClient.auth.getUser()
-    : { data: { user: null }, error: null };
-  if (identityError || !identity.user || identity.user.id !== verifiedAdmin.userId) redirect("/admin/login");
-  const profileName = identity.user.user_metadata?.full_name;
-  const adminName = (typeof profileName === "string" && profileName.trim()) || identity.user.email || "Amministratore";
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
@@ -55,24 +47,6 @@ export default async function AdminPage() {
   ];
 
   return <div className="admin-dashboard">
-    <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
-      <div className="admin-dashboard__container admin-dashboard__intro-layout">
-        <div className="admin-dashboard__intro-copy">
-          <span className="admin-dashboard__eyebrow">BIMARIS / Pannello di controllo</span>
-          <h1 id="admin-dashboard-title">Centro operativo</h1>
-          <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
-        </div>
-        <div className="admin-dashboard__intro-actions">
-          <div aria-label="Amministratore connesso" style={{ color: "#fff", textAlign: "right", padding: "6px 0" }}>
-            <strong style={{ display: "block", fontSize: 14 }}>{adminName}</strong>
-            <span style={{ display: "block", fontSize: 12, color: "#c8d1d6" }}>Super Admin · MFA verificata</span>
-          </div>
-          <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
-          <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
-        </div>
-      </div>
-    </section>
-
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
         <div className="admin-dashboard__summary">
