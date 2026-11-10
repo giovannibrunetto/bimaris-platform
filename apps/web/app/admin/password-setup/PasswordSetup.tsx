@@ -20,7 +20,9 @@ export default function PasswordSetup() {
     if(!supabase) { setMessage("Ambiente Staging non disponibile."); return; }
     let live=true;
     // Supabase SSR processes the PKCE code in the callback route.
-    supabase.auth.getUser().then(({data}) => { if(live && data.user) setMode("update"); });
+    supabase.auth.getUser().then(({data}) => { if(live && data.user && new URLSearchParams(window.location.search).get("recovery")==="verified") setMode("update"); });
+    const reason=new URLSearchParams(window.location.search).get("error");
+    if(reason) setMessage("Collegamento non valido o scaduto. Richiedine uno nuovo.");
     return () => {live=false;};
   },[]);
   async function request(event:React.FormEvent) {
