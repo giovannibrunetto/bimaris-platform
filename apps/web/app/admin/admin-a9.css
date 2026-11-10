@@ -8,3 +8,24 @@
 .admin-operator-grid{display:grid;grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(150px,1fr) auto;gap:18px;align-items:center}.admin-operator-card-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.admin-operator-card-actions a,.admin-operator-card-actions button{min-height:44px}
 .admin-page .detail-panel{overflow-wrap:anywhere}.admin-page .detail-panel[role="alert"],.admin-page [role="alert"].detail-panel{border-color:rgba(164,60,50,.3)!important;background:var(--color-error-bg,#fff1ef)!important;color:var(--color-error,#a43c32)!important}.admin-page .detail-panel[role="status"],.admin-page [role="status"].detail-panel{border-color:rgba(35,100,71,.28)!important;background:var(--color-success-bg,#edf7f1)!important;color:var(--color-success,#236447)!important}
 @media(max-width:760px){.admin-shell-nav__inner{gap:16px}.admin-status-guide{margin-inline:var(--page-gutter);font-size:12px}.admin-status-guide__steps{display:grid;grid-template-columns:1fr;gap:5px}.admin-status-guide__arrow{display:none}.admin-operator-grid{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:12px!important}.admin-operator-grid>span:nth-child(2)::before{content:"Stato: ";font-weight:800;color:var(--text)}.admin-operator-grid>span:nth-child(3)::before{content:"Pubblicazione: ";font-weight:800;color:var(--text)}.admin-operator-grid>span:last-child,.admin-operator-grid>a:last-child{justify-self:start}.admin-operator-card-actions{justify-content:flex-start;width:100%}.admin-operator-card-actions a,.admin-operator-card-actions form,.admin-operator-card-actions button{width:100%}.admin-operator-card-actions a,.admin-operator-card-actions button{justify-content:center}.admin-page .actions{width:100%}.admin-page .actions>a,.admin-page .actions>form,.admin-page .actions>form>button{width:100%}.admin-page .actions>a,.admin-page .actions>form>button{justify-content:center;min-height:44px}.admin-page form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),.admin-page form textarea,.admin-page form select{font-size:16px;max-width:100%}}
+
+/* DS-MFA-01 UX: shared header precedes the section tabs across admin pages. */
+.admin-shell-header{background:#0d2d30;color:#fff;border-bottom:3px solid #c6a465;padding:29px clamp(18px,5vw,58px)}
+.admin-shell-header__inner{max-width:1180px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.admin-shell-header__eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:#ddbf82}
+.admin-shell-header h1{font:normal clamp(30px,3.7vw,47px)/1.12 Georgia,serif;color:#fff;margin:9px 0}
+.admin-shell-header p{margin:0;color:#d4dfe0;font-size:15px;line-height:1.5}
+.admin-shell-header__actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.admin-shell-header__identity{display:grid;gap:3px;text-align:right;font-size:14px}
+.admin-shell-header__identity span{font-size:12px;color:#c8d1d6}
+.admin-shell-header__actions form{margin:0}
+.admin-shell-header__actions a,.admin-shell-header__actions button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border:1px solid #9cb2b0;border-radius:9px;background:transparent;color:#fff;font-size:14px;font-weight:750;text-decoration:none;cursor:pointer}
+.admin-shell-header__actions .admin-shell-header__site{background:#d0a85e;color:#122b2d;border-color:#d0a85e}
+.admin-shell-nav{background:#f5f2ec;border-bottom:1px solid #d8ccbb}
+.admin-shell-nav__inner{max-width:1180px;padding:12px 18px 0;gap:8px}
+.admin-shell-nav a.admin-shell-nav__tab{padding:11px 19px;border:1px solid transparent;border-bottom:3px solid transparent;border-radius:10px 10px 0 0;color:#365153;text-decoration:none;background:transparent;min-height:48px}
+.admin-shell-nav a.admin-shell-nav__tab:hover{background:#e9e2d7}
+.admin-shell-nav a.admin-shell-nav__tab--active{background:#fffaf0;border-color:#d3b778;border-bottom-color:#a77c31;color:#3d2b10;box-shadow:0 -2px 8px rgba(38,30,15,.06)}
+.admin-shell-nav__badge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;margin-left:7px;border-radius:999px;background:#8f2f24;color:#fff;font-size:11px;font-weight:800}
+.admin-status-guide{max-width:1180px;margin:16px auto;padding:12px 18px}
+@media(max-width:650px){.admin-shell-header{padding:25px 18px}.admin-shell-header__actions{width:100%}.admin-shell-header__identity{width:100%;text-align:left}.admin-shell-nav__inner{padding:8px 12px 0;gap:4px}.admin-shell-nav a.admin-shell-nav__tab{padding:10px 13px}.admin-status-guide{margin:12px 15px}}
