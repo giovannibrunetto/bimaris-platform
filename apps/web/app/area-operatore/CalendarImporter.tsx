@@ -1,9 +1,22 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Props={operatorId:string;operatorName:string};
 
 export default function CalendarImporter({operatorId,operatorName}:Props){
+ const panelRef=useRef<HTMLElement>(null);
+ useEffect(()=>{
+  let secondFrame=0;
+  const firstFrame=requestAnimationFrame(()=>{
+   secondFrame=requestAnimationFrame(()=>{
+    const panel=panelRef.current;
+    if(!panel)return;
+    const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    panel.scrollIntoView({behavior:reducedMotion?"instant":"smooth",block:"start"});
+   });
+  });
+  return()=>{cancelAnimationFrame(firstFrame);cancelAnimationFrame(secondFrame)};
+ },[]);
  const [text,setText]=useState("");
  const [state,setState]=useState<"idle"|"loading"|"ok"|"error">("idle");
  const [message,setMessage]=useState("");
@@ -21,7 +34,7 @@ export default function CalendarImporter({operatorId,operatorName}:Props){
    setState("ok");setMessage(`${createdText}${skippedText} Le nuove bozze passeranno dalla verifica BIMARIS prima della pubblicazione.`);setText("");
   }catch(error){setState("error");setMessage(error instanceof Error?error.message:"Importazione non riuscita");}
  }
- return <section className="operator-calendar-panel" style={{border:"1px solid rgba(202,168,106,.28)",borderRadius:18,background:"#fff",padding:"clamp(20px,3vw,26px)",boxShadow:"0 12px 30px rgba(7,24,35,.045)"}}>
+ return <section ref={panelRef} className="operator-calendar-panel" style={{scrollMarginTop:"clamp(90px, 12vh, 132px)",border:"1px solid rgba(202,168,106,.28)",borderRadius:18,background:"#fff",padding:"clamp(20px,3vw,26px)",boxShadow:"0 12px 30px rgba(7,24,35,.045)"}}>
   <div className="eyebrow">Calendario attività</div>
   <h2 style={{fontFamily:"Georgia,serif",fontWeight:500,fontSize:"clamp(26px,3vw,34px)",margin:"6px 0 6px",color:"#10383A"}}>Incolla il calendario</h2>
   <p style={{maxWidth:700,color:"var(--muted)",lineHeight:1.5,margin:"0 0 14px"}}>Da WhatsApp a BIMARIS: incolla qui il messaggio di {operatorName}. Ogni appuntamento deve avere data e orario espliciti. Se il testo contiene scadenze o date ambigue, l'importazione viene bloccata senza creare bozze.</p>
