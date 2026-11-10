@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAuthorizedAdmin } from "@/lib/admin-access";
+import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
+import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
 
@@ -8,7 +9,15 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminPage() {
-  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
+  const verifiedAdmin = await getVerifiedSuperAdmin();
+  if (!verifiedAdmin) redirect("/admin/login");
+  const authClient = await createUserServerClient();
+  const { data: identity, error: identityError } = authClient
+    ? await authClient.auth.getUser()
+    : { data: { user: null }, error: null };
+  if (identityError || !identity.user || identity.user.id !== verifiedAdmin.userId) redirect("/admin/login");
+  const profileName = identity.user.user_metadata?.full_name;
+  const adminName = (typeof profileName === "string" && profileName.trim()) || identity.user.email || "Amministratore";
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
@@ -54,6 +63,10 @@ export default async function AdminPage() {
           <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
         </div>
         <div className="admin-dashboard__intro-actions">
+          <div aria-label="Amministratore connesso" style={{ color: "#fff", textAlign: "right", padding: "6px 0" }}>
+            <strong style={{ display: "block", fontSize: 14 }}>{adminName}</strong>
+            <span style={{ display: "block", fontSize: 12, color: "#c8d1d6" }}>Super Admin · MFA verificata</span>
+          </div>
           <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
           <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
         </div>
