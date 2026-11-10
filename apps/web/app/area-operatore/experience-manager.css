@@ -87,3 +87,14 @@
  .experience-wizard__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .experience-wizard__actions button{min-width:0;padding:10px 9px;white-space:normal}
 }
+
+/* UX-MOBILE-03 — Mobile experience list progressive disclosure */
+.experience-manager__create-primary{margin:18px 0 14px}
+.experience-manager__create-primary .button{min-height:46px}
+.experience-manager__show-all{display:none}
+@media(max-width:600px){
+ .experience-manager__create-primary .button{width:100%}
+ .experience-manager__list:not(.experience-manager__list--expanded)>.experience-manager__card:nth-child(n+3){display:none}
+ .experience-manager__show-all{display:block;width:100%;margin:12px 0 18px;padding:12px 15px;border:1px solid #caa86a;border-radius:999px;background:#fffaf1;color:#07343b;font:inherit;font-weight:700;cursor:pointer}
+ .experience-manager__show-all:focus-visible{outline:2px solid #caa86a;outline-offset:3px}
+}
