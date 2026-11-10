@@ -77,7 +77,7 @@ export function Header() {
           </Link>
         ))}
         {accessLinks.map(link=><Link key={link.href} href={link.href} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
-        {utilityLinks.map(link => (
+        {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
           <Link
             href={link.href}
             key={link.href}
@@ -102,7 +102,7 @@ export function Header() {
             </Link>
           ))}
           {accessLinks.map(link=><Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
-          {utilityLinks.map(link => (
+          {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
             <Link
               href={link.href}
               key={link.href}
