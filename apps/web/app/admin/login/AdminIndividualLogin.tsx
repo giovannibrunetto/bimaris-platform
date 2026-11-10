@@ -33,11 +33,23 @@ export default function AdminIndividualLogin() {
       setBusy(false);
     }
   }
+  async function googleLogin() {
+    if (busy) return;
+    setBusy(true); setError("");
+    const supabase = client();
+    if (!supabase) { setError("Ambiente Staging non configurato."); setBusy(false); return; }
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/admin/login/oauth-callback" },
+    });
+    if (oauthError) { setError("Accesso Google non disponibile."); setBusy(false); }
+  }
   return <form className="admin-login__form" onSubmit={login}>
     <label htmlFor="individual-email">Email individuale</label>
     <input id="individual-email" name="email" type="email" autoComplete="username" required />
     <label htmlFor="individual-password">Password individuale</label>
     <input id="individual-password" name="password" type="password" autoComplete="current-password" required />
+    <button type="button" disabled={busy} onClick={googleLogin}>Continua con Google (Staging)</button>
     {error && <p className="admin-login__error" role="alert">{error}</p>}
     <button type="submit" disabled={busy}>{busy ? "Verifica in corso…" : "Continua con MFA"}</button>
   </form>;
