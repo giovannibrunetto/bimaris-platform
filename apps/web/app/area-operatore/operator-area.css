@@ -549,3 +549,6 @@
 /* UX-OP-STATUS-01 — Explain publication state without implying approval workflow */
 .operator-status-strip__explanation{color:#526463;font-size:13px;line-height:1.5}
 @media(max-width:600px){.operator-status-strip__explanation{flex-basis:100%;font-size:12px}}
+
+/* UX-OP-PROFILE-02 — Visible result of profile revision submission */
+.operator-profile-feedback{padding:16px 18px;border:1px solid rgba(154,111,41,.4);border-left:4px solid #b98b43;border-radius:12px;background:#fffaf0;color:#14393d;font-size:14px;line-height:1.55;font-weight:600;overflow-wrap:anywhere}
