@@ -145,3 +145,18 @@
  .profile-page .recommendation-card p{font-size:12px;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 }
 @media(max-width:350px){.profile-page .profile-preference-tag{padding:10px 6px}.profile-page .profile-preference-tag strong{font-size:11px}.profile-page .overview-item,.profile-page .overview-item:first-child{padding:12px 9px}}
+
+/* UX-MOBILE-01/R3 — Two recommendations initially on mobile */
+.profile-page .recommendation-grid--more-mobile{display:none}
+@media(min-width:481px){.profile-page .recommendation-more--mobile-only{display:none}}
+@media(max-width:480px){
+ .profile-page .profile-hero p,.profile-page .recommendation-head p{color:rgba(247,242,233,.85)!important}
+ .profile-page .profile-preference-tags{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.25fr)}
+ .profile-page .profile-preference-tag{padding:11px 7px}
+ .profile-page .profile-preference-tag strong{font-size:12px;overflow-wrap:normal;word-break:normal;hyphens:none}
+ .profile-page .recommendation-grid--primary>.recommendation-card:nth-child(n+3){display:none}
+ .profile-page .recommendation-grid--more-desktop{display:none}
+ .profile-page .recommendation-more[open] .recommendation-grid--more-mobile{display:grid}
+ .profile-page .recommendation-card p{-webkit-line-clamp:2}
+}
+@media(max-width:350px){.profile-page .profile-preference-tag strong{font-size:11px}}
