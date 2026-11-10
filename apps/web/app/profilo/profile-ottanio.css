@@ -99,3 +99,14 @@
 .profile-page .profile-preference-tag strong{display:block;font-size:17px;line-height:1.35;font-weight:650;overflow-wrap:anywhere}
 .profile-page .profile-preference-summary .overview-action{display:inline-flex;align-items:center;min-height:36px;font-weight:700}
 @media(max-width:700px){.profile-page .profile-preference-tags{grid-template-columns:1fr;gap:10px;margin-bottom:16px}.profile-page .profile-preference-tag{padding:14px 17px;gap:5px}.profile-page .profile-preference-tag strong{font-size:16px}}
+
+/* UX-VIS-02/R2 — Interest chips: spacing and premium interaction */
+.profile-page .interest-tags{display:flex;flex-wrap:wrap;align-items:center;gap:12px 13px;margin:15px 0 20px;overflow:visible}
+.profile-page .interest-tag{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border-radius:999px;border:1px solid rgba(216,169,79,.27)!important;background:rgba(255,255,255,.075)!important;color:#f7f2e9!important;line-height:1.3;font-weight:650;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background-color .2s ease;transform-origin:center;position:relative}
+@media(hover:hover) and (pointer:fine){
+ .profile-page .interest-tag:hover{transform:translateY(-2px) scale(1.065);border-color:#CAA86A!important;box-shadow:0 10px 25px rgba(0,0,0,.23),0 0 0 2px rgba(202,168,106,.34)!important;background:rgba(216,169,79,.15)!important;z-index:2}
+ .profile-page .profile-preference-tag:hover{transform:translateY(-2px) scale(1.018);border-color:#CAA86A!important;box-shadow:0 12px 28px rgba(0,0,0,.2),0 0 0 2px rgba(202,168,106,.3)!important}
+}
+.profile-page .profile-preference-tag{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+@media(max-width:480px){.profile-page .interest-tags{gap:10px;margin:14px 0 19px}.profile-page .interest-tag{min-height:40px;padding:9px 13px}}
+@media(prefers-reduced-motion:reduce){.profile-page .interest-tag,.profile-page .profile-preference-tag{transition:none!important;transform:none!important}}
