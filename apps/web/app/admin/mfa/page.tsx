@@ -17,7 +17,8 @@ export default async function AdminMfaPage() {
   const service = createServiceClient();
   if (!service) { console.warn("[DS-MFA-01] mfa_redirect: service_client_unavailable"); redirect("/admin/login"); }
   const { data: allowed, error: roleError } = await service.rpc("is_active_super_admin", { p_user_id: data.user.id });
-  if (roleError || allowed !== true) { console.warn("[DS-MFA-01] mfa_redirect: authorization_denied"); redirect("/admin/login"); }
+  if (roleError) { console.warn("[DS-MFA-01] mfa_redirect: authorization_rpc_error"); redirect("/admin/login"); }
+  if (allowed !== true) { console.warn("[DS-MFA-01] mfa_redirect: authorization_not_granted"); redirect("/admin/login"); }
   return <section className="admin-login" aria-labelledby="admin-mfa-title">
     <div className="admin-login__card">
       <div className="admin-login__eyebrow">Sicurezza · BIMARIS</div>
