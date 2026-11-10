@@ -29,11 +29,11 @@ export default function PasswordSetup() {
     event.preventDefault(); if(busy) return;
     const supabase=getClient(); if(!supabase) return;
     setBusy(true);setMessage("");
-    await supabase.auth.resetPasswordForEmail(email.trim(),{
+    const {error:sendError}=await supabase.auth.resetPasswordForEmail(email.trim(),{
       redirectTo: `${window.location.origin}/admin/password-setup/callback`
     });
     // Same response regardless of account existence.
-    setMessage("Se l'indirizzo è abilitato, riceverai un collegamento. Controlla anche lo spam.");
+    setMessage(sendError ? (sendError.status===429 ? "Limite temporaneo di invio email raggiunto. Riprova più tardi." : "Richiesta non completata. Riprova più tardi.") : "Se l'indirizzo è abilitato, riceverai un collegamento. Controlla anche lo spam.");
     setBusy(false);
   }
   async function update(event:React.FormEvent) {
