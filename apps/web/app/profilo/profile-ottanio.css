@@ -110,3 +110,38 @@
 .profile-page .profile-preference-tag{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
 @media(max-width:480px){.profile-page .interest-tags{gap:10px;margin:14px 0 19px}.profile-page .interest-tag{min-height:40px;padding:9px 13px}}
 @media(prefers-reduced-motion:reduce){.profile-page .interest-tag,.profile-page .profile-preference-tag{transition:none!important;transform:none!important}}
+
+/* UX-MOBILE-01 — Compact, coherent mobile personal dashboard */
+@media(max-width:480px){
+ .profile-page{padding:12px 10px 38px}
+ .profile-page .profile-hero{padding:22px 16px 21px;padding-right:76px;border-radius:18px}
+ .profile-page .profile-hero h1{font-size:clamp(29px,9vw,36px);line-height:1.05;margin-bottom:12px}
+ .profile-page .profile-hero p{font-size:13px;line-height:1.5}
+ .profile-page .profile-overview{margin-top:12px;padding:20px 14px 18px}
+ .profile-page .overview-head{padding-bottom:13px}
+ .profile-page .overview-head h2{font-size:clamp(24px,7vw,29px);line-height:1.15}
+ .profile-page .profile-preference-summary{padding-bottom:20px}
+ .profile-page .profile-preference-summary>.overview-label{margin-bottom:11px}
+ .profile-page .profile-preference-tags{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+ .profile-page .profile-preference-tag{padding:12px 8px;gap:6px;min-height:70px;border-radius:12px}
+ .profile-page .profile-preference-tag small{font-size:9px;letter-spacing:.05em}
+ .profile-page .profile-preference-tag strong{font-size:12px;line-height:1.3}
+ .profile-page .profile-preference-summary .overview-action{min-height:30px}
+ .profile-page .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .profile-page .overview-item,.profile-page .overview-item:first-child{padding:14px 12px;border-radius:14px}
+ .profile-page .overview-item:first-child{grid-column:1/-1}
+ .profile-page .overview-item .overview-label{margin-bottom:8px}
+ .profile-page .overview-item .overview-value{font-size:24px}
+ .profile-page .overview-item .overview-copy{font-size:12px;line-height:1.4}
+ .profile-page .overview-item .text-link{font-size:12px}
+ .profile-page .interest-tags{gap:9px;margin:12px 0 14px}
+ .profile-page .interest-tag{min-height:38px;padding:8px 12px;font-size:12px}
+ .profile-page .profile-recommendations{padding:22px 14px 25px}
+ .profile-page .recommendation-head h2{font-size:29px}
+ .profile-page .recommendation-head p{font-size:12px;line-height:1.5;margin-top:8px}
+ .profile-page .recommendation-grid{gap:10px;margin-top:15px}
+ .profile-page .recommendation-card{padding:16px 16px 17px;border-radius:16px}
+ .profile-page .recommendation-card h3{font-size:19px;line-height:1.25}
+ .profile-page .recommendation-card p{font-size:12px;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+}
+@media(max-width:350px){.profile-page .profile-preference-tag{padding:10px 6px}.profile-page .profile-preference-tag strong{font-size:11px}.profile-page .overview-item,.profile-page .overview-item:first-child{padding:12px 9px}}
