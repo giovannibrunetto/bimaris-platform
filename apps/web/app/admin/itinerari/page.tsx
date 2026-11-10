@@ -83,8 +83,8 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
         <h1>Gestione itinerari</h1>
         <p>Crea percorsi ordinati collegando cultura, miti e leggende, esperienze e operatori già verificati.</p>
         <div className="actions">
-          <Link className="button ghost" href="/admin">Dashboard</Link>
-          <Link className="button" href="/itinerari" target="_blank" rel="noreferrer">Apri itinerari pubblici ↗</Link>
+          
+          <Link className="button" href="/itinerari" target="_blank" rel="noreferrer">Visualizza itinerari pubblici ↗</Link>
         </div>
       </section>
 
