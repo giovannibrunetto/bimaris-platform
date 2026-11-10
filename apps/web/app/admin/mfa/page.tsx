@@ -10,14 +10,14 @@ export const revalidate = 0;
 
 export default async function AdminMfaPage() {
   if (await isAuthorizedAdmin()) redirect("/admin");
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://nzdeoimwikhoidtladnu.supabase.co") redirect("/admin/login");
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://nzdeoimwikhoidtladnu.supabase.co") { console.warn("[DS-MFA-01] mfa_redirect: staging_url_mismatch"); redirect("/admin/login"); }
   const client = await createUserServerClient();
   const { data, error } = client ? await client.auth.getUser() : { data: { user: null }, error: null };
-  if (error || !data.user) redirect("/admin/login");
+  if (error || !data.user) { console.warn("[DS-MFA-01] mfa_redirect: session_unavailable"); redirect("/admin/login"); }
   const service = createServiceClient();
-  if (!service) redirect("/admin/login");
+  if (!service) { console.warn("[DS-MFA-01] mfa_redirect: service_client_unavailable"); redirect("/admin/login"); }
   const { data: allowed, error: roleError } = await service.rpc("is_active_super_admin", { p_user_id: data.user.id });
-  if (roleError || allowed !== true) redirect("/admin/login");
+  if (roleError || allowed !== true) { console.warn("[DS-MFA-01] mfa_redirect: authorization_denied"); redirect("/admin/login"); }
   return <section className="admin-login" aria-labelledby="admin-mfa-title">
     <div className="admin-login__card">
       <div className="admin-login__eyebrow">Sicurezza · BIMARIS</div>
