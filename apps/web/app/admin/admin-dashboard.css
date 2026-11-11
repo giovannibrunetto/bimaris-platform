@@ -74,3 +74,27 @@ body:has(.admin-dashboard) .admin-shell-nav{display:none}
 .admin-dashboard__task:hover{background:#f8f1e4}
 .admin-dashboard__total{background:#f4e9d4}
 @media(max-width:650px){.admin-dashboard__section-nav{padding:0 10px}.admin-dashboard__section-nav-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.admin-dashboard__section-nav a{padding:10px 12px;min-height:48px}}
+
+/* DS-UX-ADMIN-02: compact operational dashboard, lighter navigation and controlled contrast. */
+.admin-dashboard{background:#f0ede7}
+.admin-dashboard__intro{padding:19px clamp(22px,5vw,58px) 21px;background:#103337;border-bottom:1px solid #bba06c}
+.admin-dashboard__intro-layout{gap:16px}
+.admin-dashboard__intro .admin-dashboard__eyebrow{font-size:10px;letter-spacing:.11em}
+.admin-dashboard h1{font-size:clamp(28px,3vw,36px);line-height:1.15;margin:5px 0 5px}
+.admin-dashboard__intro p{font-size:13px;line-height:1.4}
+.admin-dashboard__intro-actions a,.admin-dashboard__intro-actions button{min-height:38px;padding:8px 13px;font-size:12px}
+.admin-dashboard__section-nav{background:#e6e3dc;border-bottom:1px solid #d1ccc2;padding:0 clamp(22px,5vw,58px)}
+.admin-dashboard__section-nav-inner{gap:4px}
+.admin-dashboard__section-nav a{min-height:44px;padding:10px 15px;font-size:13px;color:#244346;border-bottom:2px solid transparent}
+.admin-dashboard__section-nav a[aria-current="page"]{color:#173c3e;border-bottom-color:#a17b3b;background:#d9d6ce}
+.admin-dashboard__section-nav a:hover{background:#d9d6ce}
+.admin-dashboard__section-nav a:focus-visible{outline-color:#9d752f}
+.admin-dashboard__overview{background:#f0ede7;padding-top:25px}
+.admin-dashboard__summary{padding-bottom:19px}
+.admin-dashboard__summary h2{font-size:clamp(25px,2.7vw,32px)}
+.admin-dashboard__workspace{margin-top:18px}
+.admin-dashboard__workpanel,.admin-dashboard__sidepanel{background:#fcfaf6;border-color:#d9d5cb;box-shadow:0 3px 12px rgba(14,47,50,.035)}
+.admin-dashboard__task{background:#f5f2ec;border-color:#e2ddd4}
+.admin-dashboard__task:hover{background:#fdf7ea}
+.admin-dashboard__total{background:#f5ead6}
+@media(max-width:650px){.admin-dashboard__intro{padding:18px 18px 20px}.admin-dashboard__section-nav{padding:0 12px}.admin-dashboard__section-nav-inner{display:flex;flex-wrap:wrap;gap:0}.admin-dashboard__section-nav a{min-height:44px;padding:10px 12px}.admin-dashboard__overview{padding-top:21px}}
