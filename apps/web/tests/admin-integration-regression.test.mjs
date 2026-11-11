@@ -29,3 +29,15 @@ test("candidature responsive controls remain present", () => {
   assert.match(source, /bimaris-candidature-row/);
   assert.match(source, /@media\(max-width:430px\)/);
 });
+
+test("operator mutation API requires MFA and rejects cross-site requests", () => {
+  const source = readFileSync(new URL("../app/api/admin/operators/route.ts", import.meta.url), "utf8");
+  assert.match(source, /rejectCrossSiteAdminMutation\(request\)/);
+  assert.match(source, /await isAuthorizedAdmin\(\)/);
+  assert.doesNotMatch(source, /isAdminAuthenticated/);
+});
+test("operator contact email is not an authorization identity", () => {
+  const source = readFileSync(new URL("../app/api/admin/operators/route.ts", import.meta.url), "utf8");
+  assert.match(source, /operator contact email is editorial\/public data only/i);
+  assert.doesNotMatch(source, /auth\.admin\.createUser|auth\.admin\.updateUserById/);
+});
