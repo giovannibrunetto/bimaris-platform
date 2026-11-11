@@ -52,3 +52,12 @@ test("missing travel estimate fails closed", () => {
 test("intent mismatch is excluded", () => {
   assert.equal(matchDiscovery([candidate()], { intent: "sea" }).accepted.length, 0);
 });
+
+test("unknown child age cannot bypass a minimum age restriction", () => {
+  const result = matchDiscovery([candidate({ minimumAge: 12 })], { children: true });
+  assert.equal(result.accepted.length, 0);
+  assert.equal(result.excluded[0].reasons.includes("child_age_required"), true);
+});
+test("unknown child age is allowed when no minimum applies", () => {
+  assert.equal(matchDiscovery([candidate({ minimumAge: null })], { children: true }).accepted.length, 1);
+});
