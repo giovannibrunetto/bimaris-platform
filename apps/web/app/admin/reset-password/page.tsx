@@ -51,7 +51,7 @@ export default function AdminPasswordRecovery() {
     setBusy(true); setMessage("");
     const email = String(new FormData(event.currentTarget).get("email") ?? "").trim();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/admin/reset-password?flow=recovery",
+      redirectTo: window.location.origin + "/admin/reset-password",
     });
     if (error?.status === 429 || error?.code === "over_email_send_rate_limit") {
       setRateLimited(true);
