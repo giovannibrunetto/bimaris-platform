@@ -53,3 +53,14 @@ test("search forwards candidates and query to matcher without writes", async () 
   assert.equal(result.accepted[0].id, "test");
   assert.equal(result.query.intent, "nature");
 });
+
+test("dated search without trusted reference is forced to fail closed", async () => {
+  const { search } = createSearch([{ id: "candidate" }]);
+  const result = await search({ when: "2026-11-11T12:00:00+01:00" });
+  assert.equal(result.query.when, "invalid");
+});
+test("dated search in the past is forced to fail closed", async () => {
+  const { search } = createSearch([{ id: "candidate" }]);
+  const result = await search({ when: "2026-11-11T10:00:00+01:00" }, "2026-11-11T12:00:00+01:00");
+  assert.equal(result.query.when, "invalid");
+});
