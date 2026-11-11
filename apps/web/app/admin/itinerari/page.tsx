@@ -82,9 +82,8 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
         <div className="kicker">Area privata</div>
         <h1>Gestione itinerari</h1>
         <p>Crea percorsi ordinati collegando cultura, miti e leggende, esperienze e operatori già verificati.</p>
-        <div className="actions">
-          <Link className="button ghost" href="/admin">Dashboard</Link>
-          <Link className="button" href="/itinerari" target="_blank" rel="noreferrer">Apri itinerari pubblici ↗</Link>
+        <div className="actions" style={{marginTop:18}}>
+          <Link href="/itinerari" target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minHeight:44,padding:"10px 18px",borderRadius:10,background:"#f5e7c9",color:"#183439",fontWeight:750,textDecoration:"none",border:"1px solid #d3ae6e"}}>Visualizza itinerari pubblici ↗</Link>
         </div>
       </section>
 
