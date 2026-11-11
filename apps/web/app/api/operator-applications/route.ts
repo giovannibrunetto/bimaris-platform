@@ -29,13 +29,14 @@ export async function POST(request: NextRequest) {
   const requestedCategory=text(body.category,100);
   const category=OPERATOR_CATEGORIES.includes(requestedCategory as (typeof OPERATOR_CATEGORIES)[number])?requestedCategory:null;
   const payload={
-    business_name:text(body.business_name,200),contact_name:text(body.contact_name,200),email:email(body.email),phone:phone(body.phone),whatsapp:phone(body.whatsapp),category,
+    vat_number:text(body.vat_number,20)||null,business_name:text(body.business_name,200),contact_name:text(body.contact_name,200),email:email(body.email),phone:phone(body.phone),whatsapp:phone(body.whatsapp),category,
     operating_mode:operatingMode,location:text(body.location,200)||null,address:text(body.address,300)||null,google_place_id:text(body.google_place_id,250)||null,latitude:number(body.latitude),longitude:number(body.longitude),
     website:url(body.website),instagram:instagram(body.instagram),description:text(body.description,5000),privacy_consent:privacyConsent,status:"new",
   };
   if(!payload.business_name||!payload.contact_name||!payload.email||!payload.category||!payload.description||!payload.location||!operatingMode||!privacyConsent)return NextResponse.json({ok:false,error:"missing_fields"},{status:400});
   if((operatingMode==="fixed"||operatingMode==="both")&&!payload.address)return NextResponse.json({ok:false,error:"missing_address"},{status:400});
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))return NextResponse.json({ok:false,error:"invalid_email"},{status:400});
+  if(payload.vat_number&&!/^\d{11}$/.test(payload.vat_number))return NextResponse.json({ok:false,error:"invalid_vat_number"},{status:400});
   const hasLatitude=payload.latitude!==null,hasLongitude=payload.longitude!==null;
   if(hasLatitude!==hasLongitude||hasLatitude&&(!Number.isFinite(payload.latitude)||!Number.isFinite(payload.longitude)||payload.latitude! < -90||payload.latitude! > 90||payload.longitude! < -180||payload.longitude! > 180))return NextResponse.json({ok:false,error:"invalid_coordinates"},{status:400});
 
@@ -43,6 +44,33 @@ export async function POST(request: NextRequest) {
   if(rateLimit==="limited")return NextResponse.json({ok:false,error:"rate_limited"},{status:429,headers:{"Retry-After":"900"}});
   if(rateLimit==="unavailable")return NextResponse.json({ok:false,error:"rate_limit_unavailable"},{status:503});
   const supabase=createServiceClient();if(!supabase)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+  // The same contact may legitimately manage multiple distinct businesses.
+  // Email is a contact channel, never an operator uniqueness key.
+  const normalizeName=(value:string)=>value.normalize("NFKC").trim().replace(/\s+/g," ").toLocaleLowerCase("it");
+  const sameBusiness=(name:string)=>normalizeName(name)===normalizeName(payload.business_name);
+  const [{data:existingApplications,error:lookupError},{data:registeredOperators,error:operatorLookupError}]=await Promise.all([
+    supabase.from("operator_applications").select("id,business_name,vat_number,google_place_id").ilike("email",payload.email).in("status",["new","reviewing","accepted"]),
+    supabase.from("operators").select("id,name,vat_number,place_id").ilike("email",payload.email)
+  ]);
+  if(lookupError||operatorLookupError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+  if((existingApplications??[]).some(a=>sameBusiness(a.business_name)&&
+      (!payload.vat_number||!a.vat_number||a.vat_number===payload.vat_number)))return NextResponse.json({ok:true});
+  if((registeredOperators??[]).some(o=>sameBusiness(o.name)&&
+      (!payload.vat_number||!o.vat_number||o.vat_number===payload.vat_number)))return NextResponse.json({ok:true});
+
+  // VAT alone is not a unique operator key: one legal entity may manage
+  // multiple distinct activities. Match the declared business as well.
+  if(payload.vat_number){
+    const [{data:vatApplications,error:vatApplicationError},{data:vatOperators,error:vatOperatorError}]=await Promise.all([
+      supabase.from("operator_applications").select("id,business_name").eq("vat_number",payload.vat_number).in("status",["new","reviewing","accepted"]),
+      supabase.from("operators").select("id,name").eq("vat_number",payload.vat_number)
+    ]);
+    if(vatApplicationError||vatOperatorError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+    const name=normalizeName(payload.business_name);
+    if((vatApplications??[]).some(a=>normalizeName(a.business_name)===name)||
+       (vatOperators??[]).some(o=>normalizeName(o.name)===name))return NextResponse.json({ok:true});
+  }
+
   const {error}=await supabase.from("operator_applications").insert(payload);if(error)return NextResponse.json({ok:false,error:"write_failed"},{status:500});
   return NextResponse.json({ok:true});
 }
