@@ -17,6 +17,7 @@ export default function AdminPasswordRecovery() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [recovery, setRecovery] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
 
   useEffect(() => {
     const supabase = authClient();
@@ -34,7 +35,7 @@ export default function AdminPasswordRecovery() {
   async function requestReset(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const supabase = authClient();
-    if (!supabase || busy) return;
+    if (!supabase || busy || rateLimited) return;
     setBusy(true); setMessage("");
     const email = String(new FormData(event.currentTarget).get("email") ?? "").trim();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -68,7 +69,7 @@ export default function AdminPasswordRecovery() {
       <button disabled={busy} type="submit">Aggiorna password</button>
     </form> : <form onSubmit={requestReset}>
       <label>Email account di test <input name="email" type="email" autoComplete="email" required /></label>
-      <button disabled={!ready || busy} type="submit">Invia link di recupero</button>
+      <button disabled={!ready || busy || rateLimited} type="submit">Invia link di recupero</button>
     </form>}
     {message && <p role="status">{message}</p>}
   </main>;
