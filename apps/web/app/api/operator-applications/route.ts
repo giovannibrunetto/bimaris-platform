@@ -29,13 +29,14 @@ export async function POST(request: NextRequest) {
   const requestedCategory=text(body.category,100);
   const category=OPERATOR_CATEGORIES.includes(requestedCategory as (typeof OPERATOR_CATEGORIES)[number])?requestedCategory:null;
   const payload={
-    business_name:text(body.business_name,200),contact_name:text(body.contact_name,200),email:email(body.email),phone:phone(body.phone),whatsapp:phone(body.whatsapp),category,
+    vat_number:text(body.vat_number,20)||null,business_name:text(body.business_name,200),contact_name:text(body.contact_name,200),email:email(body.email),phone:phone(body.phone),whatsapp:phone(body.whatsapp),category,
     operating_mode:operatingMode,location:text(body.location,200)||null,address:text(body.address,300)||null,google_place_id:text(body.google_place_id,250)||null,latitude:number(body.latitude),longitude:number(body.longitude),
     website:url(body.website),instagram:instagram(body.instagram),description:text(body.description,5000),privacy_consent:privacyConsent,status:"new",
   };
   if(!payload.business_name||!payload.contact_name||!payload.email||!payload.category||!payload.description||!payload.location||!operatingMode||!privacyConsent)return NextResponse.json({ok:false,error:"missing_fields"},{status:400});
   if((operatingMode==="fixed"||operatingMode==="both")&&!payload.address)return NextResponse.json({ok:false,error:"missing_address"},{status:400});
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))return NextResponse.json({ok:false,error:"invalid_email"},{status:400});
+  if(payload.vat_number&&!/^\d{11}$/.test(payload.vat_number))return NextResponse.json({ok:false,error:"invalid_vat_number"},{status:400});
   const hasLatitude=payload.latitude!==null,hasLongitude=payload.longitude!==null;
   if(hasLatitude!==hasLongitude||hasLatitude&&(!Number.isFinite(payload.latitude)||!Number.isFinite(payload.longitude)||payload.latitude! < -90||payload.latitude! > 90||payload.longitude! < -180||payload.longitude! > 180))return NextResponse.json({ok:false,error:"invalid_coordinates"},{status:400});
 
