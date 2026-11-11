@@ -29,16 +29,10 @@ export default async function Page({params}:{params:Promise<{id:string}>}){
      <p style={{margin:0,fontSize:13,color:"#59646d"}}>Consulta e modifica il profilo dell’operatore approvato.</p>
      <div><Link className="button ghost" href={`/admin/operatori/${a.operator_id}?tab=profilo`} style={{display:"inline-flex",alignItems:"center",minHeight:44,textDecoration:"none"}}>Apri profilo operatore ↗</Link></div>
     </section>
-    <section style={{border:"1px solid #e5dbce",borderRadius:14,padding:"16px 18px",display:"grid",gap:9}}>
-     <div style={{fontWeight:800,color:"#26343d"}}>Accesso all’area riservata</div>
-     <p style={{margin:0,fontSize:13,color:"#59646d"}}>Invia all’operatore un’email per accedere alla propria area BIMARIS. L’invio è indipendente dalla gestione del profilo.</p>
-     <details style={{maxWidth:"100%"}}><summary style={{cursor:"pointer",fontWeight:700,color:"#26343d",padding:"10px 14px",border:"1px solid #dfd6c8",borderRadius:999,background:"#faf8f4",display:"inline-block"}}>Gestisci invio accesso ▾</summary>
-      <div style={{padding:"14px 0 0",display:"grid",gap:10}}>
-       <p style={{margin:0,fontSize:13,color:"#35434c"}}>L’operazione invia un’email di invito o un nuovo collegamento di accesso. Da questa schermata non è verificabile un eventuale invio precedente.</p>
-       <div style={{fontSize:13,overflowWrap:"anywhere"}}><strong>Destinatario:</strong> {a.email??"Indirizzo email non disponibile"}</div>
-       <form method="post" action="/api/admin/applications"><input type="hidden" name="application_id" value={a.id}/><input type="hidden" name="operator_id" value={a.operator_id}/><button className="button" name="action" value="send_operator_access" disabled={!a.email}>Conferma invio email di accesso</button></form>
-      </div>
-     </details>
+    <section style={{border:"1px solid #e5dbce",borderRadius:14,padding:"16px 18px",display:"grid",gap:10}}>
+     <div style={{fontWeight:800,color:"#26343d"}}>Invito all’area riservata</div>
+     <p style={{margin:0,fontSize:13,color:"#59646d",overflowWrap:"anywhere"}}>Invia l’invito a: <strong>{a.email??"Email non disponibile"}</strong></p>
+     <form method="post" action="/api/admin/applications"><input type="hidden" name="application_id" value={a.id}/><input type="hidden" name="operator_id" value={a.operator_id}/><button className="button" name="action" value="send_operator_access" disabled={!a.email}>Invia email di invito</button></form>
     </section>
    </div>}
   </article>
