@@ -25,6 +25,9 @@ export function matchDiscovery(items: Candidate[], query: DiscoveryQuery = {}) {
     if (item.discoveryActive !== true) reasons.push("discovery_inactive");
     if (query.intent && !item.intents?.includes(query.intent)) reasons.push("intent_mismatch");
     if (query.children === true && item.childrenAllowed !== true) reasons.push("children_incompatible");
+    if (query.children === true && query.age == null && item.minimumAge != null && item.minimumAge > 0) {
+      reasons.push("child_age_required");
+    }
     if (query.age != null) {
       if (!Number.isInteger(query.age) || query.age < 0 ||
         (item.minimumAge != null && (!Number.isInteger(item.minimumAge) || query.age < item.minimumAge))) {
