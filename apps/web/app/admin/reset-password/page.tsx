@@ -26,17 +26,25 @@ export default function AdminPasswordRecovery() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (active && event === "PASSWORD_RECOVERY") { setRecovery(true); setReady(true); }
     });
-    // A recovery event can fire before React subscribes. The redirect marker
-    // preserves recovery intent across that race; it is NOT an authorization grant.
-    // Only a server-validated Supabase identity for the synthetic test account
-    // can use this temporary Staging-only form.
-    if (new URLSearchParams(window.location.search).get("flow") === "recovery") {
-      void supabase.auth.getUser().then(({ data, error }) => {
+    // PKCE returns an authorization code in the URL. Exchange it explicitly
+    // before exposing the password form. A normal authenticated session
+    // never grants recovery intent.
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code) {
+      window.history.replaceState({}, "", window.location.pathname);
+      void supabase.auth.exchangeCodeForSession(code).then(async ({ error }) => {
         if (!active) return;
-        if (!error && data.user?.email?.toLowerCase() === "giovannibrunetto84+bimaris-test2@gmail.com") {
+        if (error) {
+          setMessage("Collegamento di recupero non valido o scaduto.");
+          return;
+        }
+        const { data, error: identityError } = await supabase.auth.getUser();
+        if (!active) return;
+        if (!identityError && data.user?.email?.toLowerCase() === "giovannibrunetto84+bimaris-test2@gmail.com") {
           setRecovery(true);
         } else {
-          setMessage("Collegamento di recupero non valido o scaduto. Richiedine uno nuovo.");
+          setMessage("Recupero non autorizzato per questo account di collaudo.");
         }
       });
     }
