@@ -7,11 +7,11 @@ export const dynamic="force-dynamic"; export const revalidate=0;
 function fmt(v:string){return new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(new Date(v));}
 function statusLabel(v:string){return ({new:"Nuova",reviewing:"In valutazione",accepted:"Accettata",rejected:"Rifiutata"} as Record<string,string>)[v]??v;}
 function stateMessage(state?:string){const m:Record<string,string>={reviewing:"Candidatura messa in valutazione.",rejected:"Candidatura rifiutata.",accepted:"Candidatura approvata.",published:"Candidatura approvata e operatore pubblicato.","accepted-access-invited":"Candidatura approvata. Invito all'area operatore inviato.","published-access-invited":"Operatore pubblicato. Invito all'area operatore inviato.","access-invited":"Invito all'area operatore inviato.","access-sent":"Link di accesso inviato.","access-email-failed":"Invio email non riuscito.","action-error":"Operazione non riuscita."};return state?(m[state]??state):null;}
-const filters=[{key:"all",label:"Totali"},{key:"pending",label:"Da esaminare"},{key:"new",label:"Nuove"},{key:"reviewing",label:"In valutazione"},{key:"accepted",label:"Accettate"},{key:"rejected",label:"Rifiutate"}] as const;
+const filters=[{key:"all",label:"Totali"},{key:"pending",label:"Da esaminare"},{key:"new",label:"Nuove"},{key:"reviewing",label:"In valutazione"}] as const;
 const statusTone:Record<string,{bg:string;color:string}>={new:{bg:"#f5e7c9",color:"#73531e"},reviewing:{bg:"#e8edf0",color:"#405563"},accepted:{bg:"#167347",color:"#ffffff"},rejected:{bg:"#f2e5e2",color:"#7b433b"}};
 export default async function Page({searchParams}:{searchParams:Promise<{state?:string;filter?:string}>}){
  if(!(await isAdminAuthenticated()))redirect("/admin/login"); const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
- const {data}=await db.from("operator_applications").select("*").order("created_at",{ascending:false}).limit(200); const applications=data??[]; const {state,filter}=await searchParams; const message=stateMessage(state);
+ const {data}=await db.from("operator_applications").select("*").order("created_at",{ascending:false}).limit(200); const applications=(data??[]).filter((a:any)=>a.status==="new"||a.status==="reviewing"); const {state,filter}=await searchParams; const message=stateMessage(state);
  const activeFilter=filters.some((x)=>x.key===filter)?filter??"all":"all"; const visibleApplications=activeFilter==="all"?applications:applications.filter((a:any)=>activeFilter==="pending"?a.status==="new"||a.status==="reviewing":a.status===activeFilter);
  const counts=applications.reduce<Record<string,number>>((a:any,x:any)=>(a[x.status]=(a[x.status]??0)+1,a),{});
  return <>
