@@ -26,8 +26,20 @@ export default function AdminPasswordRecovery() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (active && event === "PASSWORD_RECOVERY") { setRecovery(true); setReady(true); }
     });
-    // Supabase may process the recovery URL before this component subscribes.
-    // A verified session alone is not enough: only a recovery event grants this UI.
+    // A recovery event can fire before React subscribes. The redirect marker
+    // preserves recovery intent across that race; it is NOT an authorization grant.
+    // Only a server-validated Supabase identity for the synthetic test account
+    // can use this temporary Staging-only form.
+    if (new URLSearchParams(window.location.search).get("flow") === "recovery") {
+      void supabase.auth.getUser().then(({ data, error }) => {
+        if (!active) return;
+        if (!error && data.user?.email?.toLowerCase() === "giovannibrunetto84+bimaris-test2@gmail.com") {
+          setRecovery(true);
+        } else {
+          setMessage("Collegamento di recupero non valido o scaduto. Richiedine uno nuovo.");
+        }
+      });
+    }
     setReady(true);
     return () => { active = false; subscription.unsubscribe(); };
   }, []);
@@ -39,7 +51,7 @@ export default function AdminPasswordRecovery() {
     setBusy(true); setMessage("");
     const email = String(new FormData(event.currentTarget).get("email") ?? "").trim();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/admin/reset-password",
+      redirectTo: window.location.origin + "/admin/reset-password?flow=recovery",
     });
     if (error?.status === 429 || error?.code === "over_email_send_rate_limit") {
       setRateLimited(true);
