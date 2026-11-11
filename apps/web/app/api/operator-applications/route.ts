@@ -43,6 +43,13 @@ export async function POST(request: NextRequest) {
   if(rateLimit==="limited")return NextResponse.json({ok:false,error:"rate_limited"},{status:429,headers:{"Retry-After":"900"}});
   if(rateLimit==="unavailable")return NextResponse.json({ok:false,error:"rate_limit_unavailable"},{status:503});
   const supabase=createServiceClient();if(!supabase)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+  // A contact already admitted or awaiting review must not submit a second application.
+  // Return a neutral response to avoid disclosing registration status through the public API.
+  const {data:existingApplications,error:lookupError}=await supabase.from("operator_applications")
+    .select("id,status").eq("email",payload.email).in("status",["new","reviewing","accepted"]).limit(1);
+  if(lookupError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+  if((existingApplications??[]).length>0)return NextResponse.json({ok:true});
+
   const {error}=await supabase.from("operator_applications").insert(payload);if(error)return NextResponse.json({ok:false,error:"write_failed"},{status:500});
   return NextResponse.json({ok:true});
 }
