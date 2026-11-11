@@ -70,3 +70,18 @@ test("dated search in the past is forced to fail closed", async () => {
   assert.equal(result.accepted.length, 0);
   assert.ok(result.inputErrors.length > 0);
 });
+
+test("invalid dated request never queries Supabase", async () => {
+  const { search, calls } = createSearch([{ id: "candidate" }]);
+  const result = await search({ when: "not-a-date" }, "2026-11-11T09:00:00Z");
+  assert.equal(calls.length, 0);
+  assert.equal(result.accepted.length, 0);
+  assert.ok(result.inputErrors.length > 0);
+});
+test("past dated request never queries Supabase", async () => {
+  const { search, calls } = createSearch([{ id: "candidate" }]);
+  const result = await search({ when: "2026-11-11T08:00:00Z" }, "2026-11-11T09:00:00Z");
+  assert.equal(calls.length, 0);
+  assert.equal(result.accepted.length, 0);
+  assert.ok(result.inputErrors.length > 0);
+});
