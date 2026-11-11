@@ -10,6 +10,12 @@ export type DiscoveryQuery = {
   maxTotalMinutes?: number; originVerified?: boolean;
   travelByExperience?: Record<string, { verified: boolean; outboundMinutes: number; returnMinutes: number }>;
 };
+const instantPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/;
+function instant(value: string): number | null {
+  if (!instantPattern.test(value)) return null;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
 export function matchDiscovery(items: Candidate[], query: DiscoveryQuery = {}) {
   const accepted: { id: string; totalMinutes: number | null; editorialWeight: number }[] = [];
   const excluded: { id: string; reasons: string[] }[] = [];
@@ -19,16 +25,23 @@ export function matchDiscovery(items: Candidate[], query: DiscoveryQuery = {}) {
     if (item.discoveryActive !== true) reasons.push("discovery_inactive");
     if (query.intent && !item.intents?.includes(query.intent)) reasons.push("intent_mismatch");
     if (query.children === true && item.childrenAllowed !== true) reasons.push("children_incompatible");
-    if (Number.isFinite(query.age) && (!Number.isFinite(item.minimumAge) || query.age! < item.minimumAge!)) reasons.push("age_unverified_or_incompatible");
+    if (query.age != null) {
+      if (!Number.isInteger(query.age) || query.age < 0 ||
+        (item.minimumAge != null && (!Number.isInteger(item.minimumAge) || query.age < item.minimumAge))) {
+        reasons.push("age_unverified_or_incompatible");
+      }
+    }
     const duration = item.durationMinutes;
     if (!Number.isFinite(duration) || duration! <= 0) reasons.push("duration_unverified");
-    if (query.when) {
-      // Require resolved ISO instants; local clock/DST resolution belongs to the adapter.
-      const when = Date.parse(query.when);
-      if (!Number.isFinite(when) || !Array.isArray(item.slots) || !item.slots.some(s =>
-        Number.isFinite(Date.parse(s.start)) && Number.isFinite(Date.parse(s.end)) &&
-        Date.parse(s.start) <= when && when + duration! * 60000 <= Date.parse(s.end)
-      )) reasons.push("availability_unconfirmed");
+    if (query.when != null) {
+      // Local wall-clock times are deliberately rejected; adapter resolves Europe/Rome/DST.
+      const when = instant(query.when);
+      if (when == null || !Array.isArray(item.slots) || !item.slots.some(s => {
+        const start = instant(s.start);
+        const end = instant(s.end);
+        return start != null && end != null && Number.isFinite(duration) &&
+          duration! > 0 && start <= when && when + duration! * 60000 <= end;
+      })) reasons.push("availability_unconfirmed");
     }
     let totalMinutes: number | null = null;
     if (query.maxTotalMinutes != null) {
