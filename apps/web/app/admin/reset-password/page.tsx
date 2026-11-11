@@ -41,7 +41,14 @@ export default function AdminPasswordRecovery() {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + "/admin/reset-password",
     });
-    setMessage(error ? "Richiesta non completata. Verificare la configurazione dei redirect Staging." : "Se l'indirizzo è registrato, riceverai un link per reimpostare la password.");
+    if (error?.status === 429 || error?.code === "over_email_send_rate_limit") {
+      setRateLimited(true);
+      setMessage("Limite email raggiunto (HTTP 429). Non ripetere la richiesta.");
+    } else if (error) {
+      setMessage("Errore Supabase: " + (error.code ?? String(error.status ?? "sconosciuto")) + ". Richiesta non completata.");
+    } else {
+      setMessage("Se l'indirizzo è registrato, riceverai un link per reimpostare la password.");
+    }
     setBusy(false);
   }
 
