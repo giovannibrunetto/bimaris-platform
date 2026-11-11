@@ -9,7 +9,7 @@ function authClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key || new URL(url).hostname !== STAGING_HOST) return null;
-  return createBrowserClient(url, key);
+  return createBrowserClient(url, key, { auth: { detectSessionInUrl: false } });
 }
 
 export default function AdminPasswordRecovery() {
@@ -23,9 +23,8 @@ export default function AdminPasswordRecovery() {
     const supabase = authClient();
     if (!supabase) { setMessage("Recupero disponibile solo in Staging."); return; }
     let active = true;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (active && event === "PASSWORD_RECOVERY") { setRecovery(true); setReady(true); }
-    });
+    // This page handles the PKCE code explicitly. Automatic URL detection
+    // is disabled to prevent consuming the one-time code twice.
     // PKCE returns an authorization code in the URL. Exchange it explicitly
     // before exposing the password form. A normal authenticated session
     // never grants recovery intent.
@@ -49,7 +48,7 @@ export default function AdminPasswordRecovery() {
       });
     }
     setReady(true);
-    return () => { active = false; subscription.unsubscribe(); };
+    return () => { active = false; };
   }, []);
 
   async function requestReset(event: React.FormEvent<HTMLFormElement>) {
