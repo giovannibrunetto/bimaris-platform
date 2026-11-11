@@ -23,5 +23,10 @@ export async function searchDiscovery(query: DiscoveryQuery = {}, nowIso?: strin
       }).format(new Date(when))
     : undefined;
   const candidates = await loadDiscoveryCandidates(date, validNow ? nowIso : undefined);
+  // A dated search requires a trusted reference instant and cannot target the past.
+  // Otherwise the matching engine could accept a historical slot as available.
+  if (when != null && (!validInstant || !validNow || Date.parse(when) < Date.parse(nowIso!))) {
+    return matchDiscovery(candidates, { ...query, when: "invalid" });
+  }
   return matchDiscovery(candidates, query);
 }
