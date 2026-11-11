@@ -1,6 +1,7 @@
 import "server-only";
 import { loadDiscoveryCandidates } from "./load-candidates";
 import { matchDiscovery, type DiscoveryQuery } from "./match";
+import { validateDiscoveryInput } from "./validate-input";
 
 /**
  * Server-side discovery orchestration.
@@ -9,6 +10,8 @@ import { matchDiscovery, type DiscoveryQuery } from "./match";
  * Travel estimates must be provided by a verified routing integration.
  */
 export async function searchDiscovery(query: DiscoveryQuery = {}, nowIso?: string) {
+  const input = validateDiscoveryInput(query, nowIso);
+  if (!input.ok) return { accepted: [], excluded: [], inputErrors: input.reasons };
   const when = query.when;
   const validInstant = typeof when === "string" &&
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(when) &&
