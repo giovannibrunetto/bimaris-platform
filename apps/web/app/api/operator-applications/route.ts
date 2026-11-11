@@ -51,6 +51,27 @@ export async function POST(request: NextRequest) {
   if(lookupError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
   if((existingApplications??[]).length>0)return NextResponse.json({ok:true});
 
+  // Also block contacts who already have an operator profile, including profiles
+  // created administratively rather than through an application.
+  const {data:registeredOperators,error:operatorLookupError}=await supabase.from("operators")
+    .select("id").ilike("email",payload.email).limit(1);
+  if(operatorLookupError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+  if((registeredOperators??[]).length>0)return NextResponse.json({ok:true});
+
+  // VAT alone is not a unique operator key: one legal entity may manage
+  // multiple distinct activities. Match the declared business as well.
+  if(payload.vat_number){
+    const [{data:vatApplications,error:vatApplicationError},{data:vatOperators,error:vatOperatorError}]=await Promise.all([
+      supabase.from("operator_applications").select("id,business_name").eq("vat_number",payload.vat_number).in("status",["new","reviewing","accepted"]),
+      supabase.from("operators").select("id,name").eq("vat_number",payload.vat_number)
+    ]);
+    if(vatApplicationError||vatOperatorError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
+    const normalizeName=(value:string)=>value.normalize("NFKC").trim().replace(/\\s+/g," ").toLocaleLowerCase("it");
+    const name=normalizeName(payload.business_name);
+    if((vatApplications??[]).some(a=>normalizeName(a.business_name)===name)||
+       (vatOperators??[]).some(o=>normalizeName(o.name)===name))return NextResponse.json({ok:true});
+  }
+
   const {error}=await supabase.from("operator_applications").insert(payload);if(error)return NextResponse.json({ok:false,error:"write_failed"},{status:500});
   return NextResponse.json({ok:true});
 }
