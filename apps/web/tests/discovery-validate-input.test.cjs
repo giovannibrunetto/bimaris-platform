@@ -5,11 +5,11 @@ const path = require("node:path");
 const vm = require("node:vm");
 const ts = require("typescript");
 const source = fs.readFileSync(path.join(__dirname, "../lib/discovery/validate-input.ts"), "utf8");
-const exports = {};
+const moduleExports = {};
 vm.runInNewContext(ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 }
-}).outputText, { exports, Number, Date });
-const validate = exports.validateDiscoveryInput;
+}).outputText, { exports: moduleExports, Number, Date });
+const validate = moduleExports.validateDiscoveryInput;
 test("undated discovery query is allowed", () => {
   assert.equal(validate({ intent: "nature" }).ok, true);
 });
