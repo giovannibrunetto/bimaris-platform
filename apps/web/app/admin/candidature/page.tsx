@@ -16,15 +16,15 @@ export default async function Page({searchParams}:{searchParams:Promise<{state?:
  const counts=applications.reduce<Record<string,number>>((a:any,x:any)=>(a[x.status]=(a[x.status]??0)+1,a),{});
  return <>
   <style>{`
-.bimaris-candidature-row{display:grid;grid-template-columns:minmax(0,1fr) 140px 340px;gap:16px;align-items:center}
+.bimaris-candidature-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:16px;align-items:center}
 .bimaris-candidature-status{display:flex;justify-content:center}
-.bimaris-candidature-actions{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-.bimaris-candidature-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:180px;padding:11px 20px;text-align:center;white-space:nowrap;text-decoration:none}
+.bimaris-candidature-actions{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:nowrap}
+.bimaris-candidature-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:0;padding:10px 16px;font-size:13px;text-align:center;white-space:nowrap;text-decoration:none}
 .bimaris-candidature-action--secondary{background:transparent;color:var(--navy);border:1px solid var(--navy)}
 .bimaris-candidature-action--primary{background:var(--gold);color:#10202b;border:1px solid var(--gold)}
 .bimaris-candidature-action:hover{filter:brightness(.96)}
 .bimaris-candidature-action:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-@media(max-width:850px){.bimaris-candidature-row{grid-template-columns:minmax(0,1fr) auto}.bimaris-candidature-status{justify-content:end}.bimaris-candidature-actions{grid-column:1/-1;justify-content:start}}
+@media(max-width:850px){.bimaris-candidature-row{grid-template-columns:minmax(0,1fr) auto}.bimaris-candidature-status{justify-content:end}.bimaris-candidature-actions{grid-column:1/-1;justify-content:flex-start;flex-wrap:wrap}}
 @media(max-width:430px){.bimaris-candidature-row{grid-template-columns:minmax(0,1fr)}.bimaris-candidature-status{justify-content:start}.bimaris-candidature-actions{flex-direction:column;align-items:stretch;width:100%}.bimaris-candidature-action{width:100%;min-width:0;white-space:normal}}
 `}</style>
   <section style={{background:"#f5eddf",padding:"24px 20px 12px"}}><div style={{maxWidth:1180,margin:"0 auto"}}><div className="kicker">Area privata · Amministrazione</div><div style={{display:"flex",alignItems:"end",justifyContent:"space-between",gap:18,flexWrap:"wrap"}}><div><h1 style={{margin:"4px 0 4px",font:"500 clamp(34px,4vw,48px)/1 Georgia,serif"}}>Candidature</h1><p style={{margin:0,color:"#667078",fontSize:14,lineHeight:1.45}}>Esamina e gestisci l’ingresso degli operatori nella piattaforma.</p></div><Link className="text-link" href="/admin">← Dashboard</Link></div></div></section>
@@ -35,7 +35,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{state?:
    <div style={{display:"grid",gap:7}}>{visibleApplications.map((a:any)=>{const tone=statusTone[a.status]??statusTone.reviewing;return <article key={a.id} className="bimaris-candidature-row" style={{background:"#fff",border:"1px solid #dfd6c8",borderRadius:13,padding:"11px 14px"}}>
     <div style={{minWidth:0}}><div className="eyebrow" style={{fontSize:10}}>{a.category??"Categoria non indicata"}</div><h3 style={{margin:"2px 0 3px",font:"500 22px Georgia,serif",overflowWrap:"anywhere"}}>{a.business_name}</h3><div style={{color:"#727b82",fontSize:12}}>{a.location??"Località non indicata"} · {fmt(a.created_at)}</div></div>
     <div className="bimaris-candidature-status"><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:94,padding:"6px 10px",borderRadius:999,background:tone.bg,fontSize:11,fontWeight:800,color:tone.color}}>{statusLabel(a.status)}</span></div>
-    <div className="bimaris-candidature-actions">{a.operator_id?<><Link className="button bimaris-candidature-action bimaris-candidature-action--secondary" href={`/admin/candidature/${a.id}`}>Candidatura →</Link><Link className="button bimaris-candidature-action bimaris-candidature-action--primary" href={`/admin/operatori/${a.operator_id}`}>Dossier operatore →</Link></>:<Link className="button bimaris-candidature-action bimaris-candidature-action--secondary" href={`/admin/candidature/${a.id}`}>Esamina →</Link>}</div>
+    <div className="bimaris-candidature-actions">{a.operator_id?<><Link className="button bimaris-candidature-action bimaris-candidature-action--primary" href={`/admin/candidature/${a.id}`}>Esamina candidatura →</Link><Link className="button bimaris-candidature-action bimaris-candidature-action--secondary" href={`/admin/operatori/${a.operator_id}`}>Dossier operatore</Link></>:<Link className="button bimaris-candidature-action bimaris-candidature-action--primary" href={`/admin/candidature/${a.id}`}>Esamina candidatura →</Link>}</div>
    </article>})}{visibleApplications.length===0&&<div style={{background:"#fff",border:"1px solid #dfd6c8",borderRadius:13,padding:20}}>Nessuna candidatura in questa sezione.</div>}</div>
   </div></section>
  </>;
