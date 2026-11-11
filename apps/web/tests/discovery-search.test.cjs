@@ -20,6 +20,10 @@ function createSearch(candidates) {
         loadDiscoveryCandidates: async (date, now) => { calls.push({ date, now }); return candidates; }
       };
       if (id === "./match") return { matchDiscovery };
+      if (id === "./validate-input") return { validateDiscoveryInput: (query, now) => {
+        if (query.when && (!now || !/Z|[+-]\\d\\d:\\d\\d$/.test(query.when) || Date.parse(query.when) < Date.parse(now))) return { ok: false, reasons: ["invalid_requested_instant"] };
+        return { ok: true, query };
+      } };
       throw Error("Unexpected dependency: " + id);
     }
   });
@@ -39,12 +43,12 @@ test("summer DST conversion uses Rome local date", async () => {
 test("unqualified local timestamp cannot resolve availability", async () => {
   const { search, calls } = createSearch([]);
   await search({ when: "2026-11-11T12:00:00" }, "2026-11-11T08:00:00Z");
-  assert.equal(calls[0].date, undefined);
+  assert.equal(calls.length, 0);
 });
 test("missing trusted reference time cannot resolve availability", async () => {
   const { search, calls } = createSearch([]);
   await search({ when: "2026-11-11T12:00:00+01:00" });
-  assert.equal(calls[0].now, undefined);
+  assert.equal(calls.length, 0);
 });
 test("search forwards candidates and query to matcher without writes", async () => {
   const candidate = { id: "test" };
@@ -57,7 +61,8 @@ test("search forwards candidates and query to matcher without writes", async () 
 test("dated search without trusted reference is forced to fail closed", async () => {
   const { search } = createSearch([{ id: "candidate" }]);
   const result = await search({ when: "2026-11-11T12:00:00+01:00" });
-  assert.equal(result.query.when, "invalid");
+  assert.equal(result.accepted.length, 0);
+  assert.ok(result.inputErrors.length > 0);
 });
 test("dated search in the past is forced to fail closed", async () => {
   const { search } = createSearch([{ id: "candidate" }]);
