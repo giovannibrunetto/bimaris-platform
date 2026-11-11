@@ -67,5 +67,6 @@ test("dated search without trusted reference is forced to fail closed", async ()
 test("dated search in the past is forced to fail closed", async () => {
   const { search } = createSearch([{ id: "candidate" }]);
   const result = await search({ when: "2026-11-11T10:00:00+01:00" }, "2026-11-11T12:00:00+01:00");
-  assert.equal(result.query.when, "invalid");
+  assert.equal(result.accepted.length, 0);
+  assert.ok(result.inputErrors.length > 0);
 });
