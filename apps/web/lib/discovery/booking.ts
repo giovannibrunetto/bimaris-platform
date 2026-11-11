@@ -35,7 +35,12 @@ export function evaluateAvailability(
   }
   const now = Date.parse(nowIso);
   const minStart = now + (rules.noticeHours ?? 0) * 3600000;
-  const eligible = slots.filter(s => Date.parse(s.start) >= minStart);
+  // Availability rows represent continuous windows, not individual bookable start times.
+  // Preserve the remaining portion of a window after the notice threshold.
+  const eligible = slots.flatMap(s => {
+    const start = Math.max(Date.parse(s.start), Math.ceil(minStart / 60000) * 60000);
+    return start < Date.parse(s.end) ? [{ start: new Date(start).toISOString(), end: s.end }] : [];
+  });
   return eligible.length
     ? { slots: eligible, status: "eligible" }
     : { slots: [], status: "unconfirmed", reason: "notice_not_met" };
