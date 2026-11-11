@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       supabase.from("operators").select("id,name").eq("vat_number",payload.vat_number)
     ]);
     if(vatApplicationError||vatOperatorError)return NextResponse.json({ok:false,error:"service_unavailable"},{status:503});
-    const normalizeName=(value:string)=>value.normalize("NFKC").trim().replace(/\\s+/g," ").toLocaleLowerCase("it");
+    const normalizeName=(value:string)=>value.normalize("NFKC").trim().replace(/\s+/g," ").toLocaleLowerCase("it");
     const name=normalizeName(payload.business_name);
     if((vatApplications??[]).some(a=>normalizeName(a.business_name)===name)||
        (vatOperators??[]).some(o=>normalizeName(o.name)===name))return NextResponse.json({ok:true});
