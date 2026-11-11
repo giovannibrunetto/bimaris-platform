@@ -46,8 +46,8 @@ function nextDate(date: string): string {
 export function resolveWeeklySlots(date: string, rows: WeeklyAvailability[]): { start: string; end: string }[] {
   if (!validDate(date)) return [];
   const [y, m, d] = date.split("-").map(Number);
-  // PostgreSQL day_of_week convention must be confirmed by DB constraint.
-  const dayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  // ISO weekday: Monday=1 through Sunday=7 (observed in current DB).
+  const dayOfWeek = new Date(Date.UTC(y, m - 1, d)).getUTCDay() || 7;
   const slots: { start: string; end: string }[] = [];
   for (const row of rows) {
     if (row.active !== true || row.dayOfWeek !== dayOfWeek ||
