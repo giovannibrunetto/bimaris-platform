@@ -61,6 +61,13 @@ export default function AdminPasswordRecovery() {
     const confirm = String(form.get("confirm") ?? "");
     if (password.length < 12 || password !== confirm) { setMessage("Usa almeno 12 caratteri e conferma la stessa password."); return; }
     setBusy(true); setMessage("");
+    // DS-MFA-01: this temporary recovery page is authorized for the synthetic test account only.
+    const { data: identity, error: identityError } = await supabase.auth.getUser();
+    if (identityError || identity.user?.email?.toLowerCase() !== "giovannibrunetto84+bimaris-test2@gmail.com") {
+      setMessage("Recupero non autorizzato per questo account di collaudo.");
+      setBusy(false);
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password });
     if (error) { setMessage("Impossibile aggiornare la password. Richiedi un nuovo link."); setBusy(false); return; }
     const { error: signOutError } = await supabase.auth.signOut({ scope: "global" });
