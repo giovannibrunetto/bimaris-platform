@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, staging, feature/admin-individual-mfa]
+    branches: [main, staging, feature/admin-individual-mfa, integration/ds-mfa-ux-identity-20261111]
   pull_request:
 
 jobs:
