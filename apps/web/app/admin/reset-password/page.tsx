@@ -63,7 +63,12 @@ export default function AdminPasswordRecovery() {
     setBusy(true); setMessage("");
     const { error } = await supabase.auth.updateUser({ password });
     if (error) { setMessage("Impossibile aggiornare la password. Richiedi un nuovo link."); setBusy(false); return; }
-    await supabase.auth.signOut({ scope: "global" });
+    const { error: signOutError } = await supabase.auth.signOut({ scope: "global" });
+    if (signOutError) {
+      setMessage("Password aggiornata, ma la chiusura delle sessioni non è riuscita. Non utilizzare questa sessione; contatta la Direzione Tecnica.");
+      setBusy(false);
+      return;
+    }
     window.location.replace("/admin/login");
   }
 
