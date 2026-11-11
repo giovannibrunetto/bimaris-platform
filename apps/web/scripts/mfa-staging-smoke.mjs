@@ -5,7 +5,8 @@
  */
 const enabled = process.env.BIMARIS_MFA_SMOKE_TEST === "true";
 const branch = process.env.VERCEL_GIT_COMMIT_REF;
-const approvedContext = process.env.VERCEL_ENV === "preview" && branch === "feature/admin-individual-mfa";
+const approvedBranches = new Set(["feature/admin-individual-mfa", "integration/ds-mfa-ux-identity-20261111"]);
+const approvedContext = process.env.VERCEL_ENV === "preview" && approvedBranches.has(branch);
 
 if (enabled && !approvedContext) {
   throw new Error("DS-MFA staging smoke: explicit test requested outside approved Preview branch");
