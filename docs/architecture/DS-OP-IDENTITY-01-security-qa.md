@@ -22,3 +22,12 @@ Stato: PARZIALE — NO-GO RILASCIO
 3. Controllare log, transazioni e isolamento.
 4. Implementare endpoint amministrativo server-side con autenticazione forte e audit.
 5. Testare UI e regressione; richiedere approvazione separata per merge e Production.
+
+## Test transazionale aggiuntivo
+- Due account temporanei creati nella stessa transazione; utilizzate membership owner preesistenti come fixture e un secondo utente.
+- Contesto service_role simulato con request.jwt.claim.role in sessione SQL, NON JWT API effettivo.
+- PASS: proprietario dell'account diverso da quello dell'operatore rifiutato.
+- PASS: stesso owner di account e operatore accettato.
+- PASS: tentativo successivo di collegare l'operatore ad altro account rifiutato.
+- ROLLBACK esplicito; nessun dato di test persistente.
+- Resta NO-GO end-to-end: verificare JWT reale, API, audit, concorrenza e UI.
