@@ -25,9 +25,10 @@ test("available Monday slot after reference time", () => {
   assert.equal(result.status, "eligible");
   assert.equal(result.slots.length, 1);
 });
-test("minimum booking notice blocks too-soon slot", () => {
+test("minimum booking notice preserves later portion of an open window", () => {
   const result = evaluateAvailability("2026-11-09", monday, { ...rules, noticeHours: 3 }, "2026-11-09T07:00:00Z");
-  assert.equal(result.status, "unconfirmed");
+  assert.equal(result.status, "eligible");
+  assert.equal(result.slots[0].start, "2026-11-09T10:00:00.000Z");
 });
 test("booking cutoff is conservatively blocked", () => {
   const result = evaluateAvailability("2026-11-09", monday, { ...rules, cutoffTime: "18:00:00" }, "2026-11-08T10:00:00Z");
@@ -44,4 +45,10 @@ test("missing verified slots cannot be promoted", () => {
 test("reference time without timezone is rejected", () => {
   const result = evaluateAvailability("2026-11-09", monday, rules, "2026-11-08T10:00:00");
   assert.equal(result.reason, "invalid_reference_instant");
+});
+
+test("notice threshold after closing excludes the entire window", () => {
+  const result = evaluateAvailability("2026-11-09", monday, { ...rules, noticeHours: 5 }, "2026-11-09T07:00:00Z");
+  assert.equal(result.status, "unconfirmed");
+  assert.equal(result.slots.length, 0);
 });
