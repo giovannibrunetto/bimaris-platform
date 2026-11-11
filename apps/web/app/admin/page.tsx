@@ -60,6 +60,15 @@ export default async function AdminPage() {
       </div>
     </section>
 
+    <nav className="admin-dashboard__section-nav" aria-label="Navigazione amministrativa">
+      <div className="admin-dashboard__container admin-dashboard__section-nav-inner">
+        <Link href="/admin" aria-current="page">Dashboard</Link>
+        <Link href="/admin/candidature">Candidature{pendingApps>0&&<span className="admin-dashboard__nav-badge">{pendingApps}</span>}</Link>
+        <Link href="/admin/operatori">Operatori{pendingOperatorArea>0&&<span className="admin-dashboard__nav-badge">{pendingOperatorArea}</span>}</Link>
+        <Link href="/admin/itinerari">Itinerari</Link>
+      </div>
+    </nav>
+
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
         <div className="admin-dashboard__summary">
