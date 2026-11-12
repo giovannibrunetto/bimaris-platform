@@ -78,10 +78,10 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
 
   return (
     <>
-      <section className="page-hero admin-itinerary-hero">
-        <div className="kicker">Area privata</div>
-        <h1>Gestione itinerari</h1>
-        <p>Crea percorsi ordinati collegando cultura, miti e leggende, esperienze e operatori già verificati.</p>
+      <section className="admin-itineraries-hero">
+        <div className="kicker">BIMARIS / PANNELLO DI CONTROLLO</div>
+        <h1>Itinerari</h1>
+        <p>Gestisci i percorsi creati, organizza le tappe e prepara nuovi itinerari.</p>
         <div className="actions" style={{marginTop:18}}>
           <Link href="/itinerari" target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minHeight:44,padding:"10px 18px",borderRadius:10,background:"#f5e7c9",color:"#183439",fontWeight:750,textDecoration:"none",border:"1px solid #d3ae6e"}}>Visualizza itinerari pubblici ↗</Link>
         </div>
@@ -93,39 +93,17 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
         </section>
       )}
 
-      <section className="section sand">
+      <section className="admin-itineraries-managed" id="itinerari-gestiti">
         <div className="section-head">
-          <div><div className="kicker">Nuovo percorso</div><h2>Crea una bozza</h2></div>
-          <p>Inserisci le informazioni principali. Dopo aver creato la bozza potrai selezionare i luoghi precisi, aggiungere le tappe e ordinarle prima della pubblicazione.</p>
-        </div>
-
-        <form className="form" method="post" action="/api/admin/itineraries">
-          <input type="hidden" name="action" value="create" />
-          <label>Titolo<input required name="title" placeholder="Es. Messina tra miti e monumenti" /></label>
-          <label>Slug<input name="slug" placeholder="Generato dal titolo se lasciato vuoto" /></label>
-          <label>Durata in minuti<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
-          <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
-          <label className="wide">Area geografica generale<input name="territory" placeholder="Es. Messina e Stretto" /><small>Non indica le singole tappe: le aggiungerai alla bozza nella fase successiva.</small></label>
-          <label className="wide">Testo breve<input required name="excerpt" maxLength={320} placeholder="Una frase chiara per la card" /></label>
-          <label className="wide">Descrizione<textarea required name="description" /></label>
-          <label className="wide">URL immagine<input name="image_url" placeholder="https://..." /></label>
-          <label className="wide">Descrizione dell’immagine (accessibilità)<input name="image_alt" placeholder="Descrivi brevemente ciò che mostra la copertina" /><small>Aiuta chi usa un lettore di schermo a comprendere la fotografia.</small></label>
-          
-          <div className="wide"><button className="button" type="submit">Crea bozza itinerario</button></div>
-        </form>
-      </section>
-
-      <section className="section">
-        <div className="section-head">
-          <div><div className="kicker">Percorsi amministrabili</div><h2>Itinerari gestiti</h2></div>
-          <p>{itineraries.filter(item => item.published).length} pubblicati su {itineraries.length} itinerari gestiti. I percorsi storici editoriali e quelli personali sulla mappa non rientrano in questo conteggio.</p>
+          <div><div className="kicker">01 / GESTIONE</div><h2>Itinerari gestiti</h2></div>
+          <p><strong>{itineraries.length} itinerari</strong> nel gestionale · <strong>{itineraries.filter(item => item.published).length} online</strong>. I percorsi storici e personali sono gestiti separatamente.</p>
         </div>
 
         <div style={{ display: "grid", gap: 22 }}>
           {itineraries.map(itinerary => {
             const stops = [...(itinerary.stops ?? [])].sort((a, b) => a.position - b.position);
             return (
-              <article className="detail-panel" key={itinerary.id}>
+              <article className="detail-panel admin-itinerary-card" key={itinerary.id}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
                   <div>
                     <div className="eyebrow">{itinerary.territory ?? "Territorio non indicato"} · {itinerary.published ? "Online" : "Bozza"}</div>
@@ -173,7 +151,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                 </div>
 
                 <div style={{ marginTop: 22, paddingTop: 20, borderTop: "1px solid var(--line)" }}>
-                  <strong>Tappe</strong>
+                  <strong>Luoghi e tappe del percorso</strong><p className="muted" style={{margin:"6px 0 14px"}}>Seleziona i luoghi già presenti in BIMARIS oppure aggiungi una tappa personalizzata. Le tappe sono elencate nell’ordine del percorso.</p>
                   {stops.length > 0 ? (
                     <ol style={{ paddingLeft: 22, marginBottom: 20 }}>
                       {stops.map(stop => (
@@ -191,7 +169,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                   <form className="form" method="post" action="/api/admin/itineraries" style={{ marginTop: 16 }}>
                     <input type="hidden" name="action" value="add_stop" />
                     <input type="hidden" name="itinerary_id" value={itinerary.id} />
-                    <label className="wide">Aggiungi contenuto
+                    <label className="wide">Seleziona il luogo o il contenuto
                       <select required name="source_key" defaultValue="">
                         <option value="" disabled>Seleziona una tappa</option>
                         {cultures.length > 0 && <optgroup label="Cultura">{cultures.map(item => <option key={`culture-${item.id}`} value={`culture:${item.id}`}>{item.label}</option>)}</optgroup>}
@@ -214,6 +192,29 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
           {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
         </div>
       </section>
+      <section className="admin-itineraries-create" id="nuovo-itinerario">
+        <div className="section-head">
+          <div><div className="kicker">02 / NUOVO ITINERARIO</div><h2>Crea un itinerario</h2></div>
+          <p>Inserisci le informazioni principali. Dopo aver creato la bozza potrai selezionare i luoghi precisi, aggiungere le tappe e ordinarle prima della pubblicazione.</p>
+        </div>
+
+        <div className="admin-itineraries-steps" aria-label="Fasi di creazione"><span><b>1</b> Informazioni</span><span><b>2</b> Luoghi e tappe</span><span><b>3</b> Pubblicazione</span></div>
+        <form className="form admin-itineraries-form" method="post" action="/api/admin/itineraries">
+          <input type="hidden" name="action" value="create" />
+          <label>Titolo<input required name="title" placeholder="Es. Messina tra miti e monumenti" /></label>
+          <details className="wide admin-itineraries-advanced"><summary>Impostazioni avanzate (facoltative)</summary><label>Indirizzo web (slug)<input name="slug" placeholder="Generato automaticamente dal titolo" /></label></details>
+          <label>Durata indicativa (minuti)<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
+          <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
+          <label className="wide">Area geografica generale<input name="territory" placeholder="Es. Messina e Stretto" /><small>Non indica le singole tappe: le aggiungerai alla bozza nella fase successiva.</small></label>
+          <label className="wide">Testo breve<input required name="excerpt" maxLength={320} placeholder="Una frase chiara per la card" /></label>
+          <label className="wide">Descrizione<textarea required name="description" /></label>
+          <details className="wide admin-itineraries-advanced"><summary>Copertina da URL (facoltativa)</summary><label>URL immagine<input name="image_url" placeholder="https://..." /></label><label>Descrizione dell’immagine (accessibilità)<input name="image_alt" placeholder="Descrivi brevemente ciò che mostra la copertina" /></label></details>
+          
+          <div className="wide"><button className="button" type="submit">Salva bozza e passa alle tappe</button></div>
+        </form>
+      </section>
+
+
     </>
   );
 }
