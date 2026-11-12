@@ -8,7 +8,7 @@ export default function AdminItineraryCreate(){
          <form className="form admin-itineraries-form" method="post" action="/api/admin/itineraries">
           <input type="hidden" name="action" value="create" />
           <label>Titolo<input required name="title" placeholder="Es. Messina tra miti e monumenti" /></label>
-          <details className="wide admin-itineraries-advanced"><summary>Impostazioni avanzate (facoltative)</summary><label>Indirizzo web (slug)<input name="slug" placeholder="Generato automaticamente dal titolo" /></label></details>
+          <details className="wide admin-itineraries-advanced"><summary>Personalizza l’indirizzo dell’itinerario (facoltativo)</summary><p className="admin-itineraries-advanced__help">L’indirizzo viene creato automaticamente dal titolo. Modificalo solo se desideri un indirizzo personalizzato.</p><label>Indirizzo personalizzato<input name="slug" placeholder="Generato automaticamente dal titolo" /></label></details>
           <label>Durata indicativa (minuti)<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
           <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
           <label className="wide">Area geografica generale<input name="territory" placeholder="Es. Messina e Stretto" /><small>Non indica le singole tappe: le aggiungerai alla bozza nella fase successiva.</small></label>
