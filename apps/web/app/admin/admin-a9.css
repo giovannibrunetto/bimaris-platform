@@ -128,3 +128,10 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
 .admin-itineraries-public-status{font-size:11px;font-weight:800;letter-spacing:.06em;color:#8c632b}
 .admin-itineraries-public-note{font-size:12px!important}
 @media(max-width:760px){.admin-itineraries-public{padding:24px 20px}}
+
+/* Reliable admin guide styling independent of public-site design tokens */
+.admin-status-guide{box-sizing:border-box;width:calc(100% - 40px);max-width:1280px;margin:16px auto;padding:13px 18px;border:1px solid #d8cbb9;border-radius:12px;background:#fffaf4;color:#45585a;font-size:13px;line-height:1.5}
+.admin-status-guide strong{color:#173338}
+.admin-status-guide__step{border-color:#e0d5c5;background:#f6efe5;color:#173338}
+.admin-status-guide__arrow{color:#85683b}
+@media(max-width:600px){.admin-status-guide{width:calc(100% - 28px);padding:12px 14px}}
