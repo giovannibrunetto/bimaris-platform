@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   const code = url.searchParams.get("code");
   const next = safeAuthPath(url.searchParams.get("next"));
   const operatorIntent = url.searchParams.get("operator") === "1";
+  const adminIntent = url.searchParams.get("admin") === "1";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -41,6 +42,16 @@ export async function GET(request: Request) {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id ?? null;
   if (!userId) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
+
+  // Admin context is explicit and never inferred from an ordinary user login.
+  // The MFA page independently checks active Super Admin membership, and the
+  // protected admin routes still require AAL2 plus a valid individual session.
+  if (adminIntent) {
+    if (operatorIntent || supabaseUrl !== "https://nzdeoimwikhoidtladnu.supabase.co") {
+      return NextResponse.redirect(publicUrl("/admin/login", url));
+    }
+    return NextResponse.redirect(publicUrl("/admin/mfa", url));
+  }
 
   // The selected entry point defines the application context. The same identity
   // may be both a personal BIMARIS user and an operator without either role
