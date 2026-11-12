@@ -74,3 +74,24 @@ body:has(.admin-itineraries-local-nav) > * .admin-shell-nav{display:none!importa
 .admin-itineraries-new-button:focus-visible{outline:3px solid #a17b3b;outline-offset:3px}
 .admin-itineraries-create #admin-itinerary-create-form{margin-top:24px}
 @media(max-width:700px){.admin-itineraries-create__intro{align-items:flex-start;flex-direction:column}.admin-itineraries-new-button{width:100%}.admin-itineraries-hero{padding:20px!important}.admin-itineraries-local-nav a{padding:10px 12px}}
+
+
+/* Itinerari: full-width administrative surface, source-aware editorial routes. */
+.admin-page:has(.admin-itineraries-hero){width:100%!important;max-width:none!important;margin:0!important}
+body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:none!important}
+.admin-page:has(.admin-itineraries-hero) .admin-itineraries-hero,
+.admin-page:has(.admin-itineraries-hero) .admin-itineraries-managed,
+.admin-page:has(.admin-itineraries-hero) .admin-itineraries-create,
+.admin-page:has(.admin-itineraries-hero) .admin-itineraries-public,
+.admin-page:has(.admin-itineraries-hero) .admin-itineraries-local-nav{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box}
+.admin-itineraries-public{background:#f9f7f2;padding:34px max(24px,calc((100% - 1140px)/2)) 40px;border-top:1px solid #e5dbce}
+.admin-itineraries-public .kicker{color:#996d2f;font-size:11px;font-weight:800;letter-spacing:.12em}
+.admin-itineraries-public h2{font:normal clamp(28px,3vw,36px)/1.15 Georgia,serif;color:#132f32;margin:7px 0 12px}
+.admin-itineraries-public>p{font-size:14px;line-height:1.6;color:#52656a;max-width:850px}
+.admin-itineraries-public-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:14px;margin:22px 0 16px}
+.admin-itineraries-public-card{background:#fff;border:1px solid #dfd3c1;border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.admin-itineraries-public-card h3{font-size:19px;color:#17383b;margin:9px 0}
+.admin-itineraries-public-card p{font-size:13px;color:#56666a;line-height:1.5;margin:0}
+.admin-itineraries-public-status{font-size:11px;font-weight:800;letter-spacing:.06em;color:#8c632b}
+.admin-itineraries-public-note{font-size:12px!important}
+@media(max-width:760px){.admin-itineraries-public{padding:24px 20px}}
