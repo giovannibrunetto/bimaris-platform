@@ -8,3 +8,16 @@
 .admin-operator-grid{display:grid;grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(150px,1fr) auto;gap:18px;align-items:center}.admin-operator-card-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.admin-operator-card-actions a,.admin-operator-card-actions button{min-height:44px}
 .admin-page .detail-panel{overflow-wrap:anywhere}.admin-page .detail-panel[role="alert"],.admin-page [role="alert"].detail-panel{border-color:rgba(164,60,50,.3)!important;background:var(--color-error-bg,#fff1ef)!important;color:var(--color-error,#a43c32)!important}.admin-page .detail-panel[role="status"],.admin-page [role="status"].detail-panel{border-color:rgba(35,100,71,.28)!important;background:var(--color-success-bg,#edf7f1)!important;color:var(--color-success,#236447)!important}
 @media(max-width:760px){.admin-shell-nav__inner{gap:16px}.admin-status-guide{margin-inline:var(--page-gutter);font-size:12px}.admin-status-guide__steps{display:grid;grid-template-columns:1fr;gap:5px}.admin-status-guide__arrow{display:none}.admin-operator-grid{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:12px!important}.admin-operator-grid>span:nth-child(2)::before{content:"Stato: ";font-weight:800;color:var(--text)}.admin-operator-grid>span:nth-child(3)::before{content:"Pubblicazione: ";font-weight:800;color:var(--text)}.admin-operator-grid>span:last-child,.admin-operator-grid>a:last-child{justify-self:start}.admin-operator-card-actions{justify-content:flex-start;width:100%}.admin-operator-card-actions a,.admin-operator-card-actions form,.admin-operator-card-actions button{width:100%}.admin-operator-card-actions a,.admin-operator-card-actions button{justify-content:center}.admin-page .actions{width:100%}.admin-page .actions>a,.admin-page .actions>form,.admin-page .actions>form>button{width:100%}.admin-page .actions>a,.admin-page .actions>form>button{justify-content:center;min-height:44px}.admin-page form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),.admin-page form textarea,.admin-page form select{font-size:16px;max-width:100%}}
+
+/* DS-UX-ADMIN-02: consistent operational navigation across admin sections. */
+.admin-shell-nav{background:#e6e3dc;border-bottom:1px solid #d1ccc2}
+.admin-shell-nav__inner{width:min(100%,1180px);padding:0 15px;gap:4px}
+.admin-shell-nav a{padding:10px 15px;min-height:44px;border-bottom:2px solid transparent;color:#244346;text-decoration:none;font-size:13px}
+.admin-shell-nav a:hover,.admin-shell-nav a[aria-current="page"]{background:#d9d6ce;border-bottom-color:#a17b3b}
+.admin-page .admin-itinerary-hero{background:#103337;color:#fff;padding:27px clamp(22px,5vw,58px);border-bottom:1px solid #bba06c}
+.admin-page .admin-itinerary-hero h1{color:#fff!important;font:normal clamp(30px,3vw,38px)/1.16 Georgia,serif}
+.admin-page .admin-itinerary-hero p{color:#d4dfe0!important;max-width:850px;line-height:1.5}
+.admin-page .admin-itinerary-hero .kicker{color:#ddbf82!important}
+.admin-page [id="pending-operators"],.admin-page [id="pending-events"],.admin-page [id="pending-candidatures"]{scroll-margin-top:110px!important}
+.admin-page .form label small{display:block;font-size:12px;font-weight:400;line-height:1.5;color:#617174;margin-top:5px}
+@media(max-width:650px){.admin-shell-nav__inner{padding:0 12px;gap:0}.admin-shell-nav a{padding:10px 12px}}
