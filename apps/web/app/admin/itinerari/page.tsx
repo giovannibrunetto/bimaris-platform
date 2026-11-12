@@ -191,9 +191,10 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
               </article>
             );
           })}
-          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili      <AdminItineraryCreate />lle tappe</button></div>
-        </form>
+          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
+        </div>
       </section>
+      <AdminItineraryCreate />
 
 
     </>
