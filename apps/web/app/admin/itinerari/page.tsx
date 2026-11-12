@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminItineraryCreate from "./AdminItineraryCreate";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -86,6 +87,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
           <Link href="/itinerari" target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minHeight:44,padding:"10px 18px",borderRadius:10,background:"#f5e7c9",color:"#183439",fontWeight:750,textDecoration:"none",border:"1px solid #d3ae6e"}}>Visualizza itinerari pubblici ↗</Link>
         </div>
       </section>
+      <nav className="admin-itineraries-local-nav" aria-label="Navigazione amministrativa"><div><Link href="/admin">Dashboard</Link><Link href="/admin/candidature">Candidature</Link><Link href="/admin/operatori">Operatori</Link><Link href="/admin/itinerari" aria-current="page">Itinerari</Link></div></nav>
 
       {message && (
         <section style={{ padding: "22px 6vw 0" }}>
@@ -189,28 +191,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
               </article>
             );
           })}
-          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
-        </div>
-      </section>
-      <section className="admin-itineraries-create" id="nuovo-itinerario">
-        <div className="section-head">
-          <div><div className="kicker">02 / NUOVO ITINERARIO</div><h2>Crea un itinerario</h2></div>
-          <p>Inserisci le informazioni principali. Dopo aver creato la bozza potrai selezionare i luoghi precisi, aggiungere le tappe e ordinarle prima della pubblicazione.</p>
-        </div>
-
-        <div className="admin-itineraries-steps" aria-label="Fasi di creazione"><span><b>1</b> Informazioni</span><span><b>2</b> Luoghi e tappe</span><span><b>3</b> Pubblicazione</span></div>
-        <form className="form admin-itineraries-form" method="post" action="/api/admin/itineraries">
-          <input type="hidden" name="action" value="create" />
-          <label>Titolo<input required name="title" placeholder="Es. Messina tra miti e monumenti" /></label>
-          <details className="wide admin-itineraries-advanced"><summary>Impostazioni avanzate (facoltative)</summary><label>Indirizzo web (slug)<input name="slug" placeholder="Generato automaticamente dal titolo" /></label></details>
-          <label>Durata indicativa (minuti)<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
-          <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
-          <label className="wide">Area geografica generale<input name="territory" placeholder="Es. Messina e Stretto" /><small>Non indica le singole tappe: le aggiungerai alla bozza nella fase successiva.</small></label>
-          <label className="wide">Testo breve<input required name="excerpt" maxLength={320} placeholder="Una frase chiara per la card" /></label>
-          <label className="wide">Descrizione<textarea required name="description" /></label>
-          <details className="wide admin-itineraries-advanced"><summary>Copertina da URL (facoltativa)</summary><label>URL immagine<input name="image_url" placeholder="https://..." /></label><label>Descrizione dell’immagine (accessibilità)<input name="image_alt" placeholder="Descrivi brevemente ciò che mostra la copertina" /></label></details>
-          
-          <div className="wide"><button className="button" type="submit">Salva bozza e passa alle tappe</button></div>
+          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili      <AdminItineraryCreate />lle tappe</button></div>
         </form>
       </section>
 
