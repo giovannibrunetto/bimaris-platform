@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 export const dynamic="force-dynamic"; export const revalidate=0;
 const fields:[string,string][]=[["name","Nome"],["category","Categoria"],["address","Indirizzo"],["phone","Telefono"],["whatsapp","WhatsApp"],["email","Email"],["website","Sito web"],["instagram","Instagram"]];
 function val(v:unknown){return v===null||v===undefined||v===""?"—":String(v)}
 export default async function Page({params}:{params:Promise<{id:string}>}){
- if(!(await isAdminAuthenticated()))redirect("/admin/login"); const {id}=await params; const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login"); const {id}=await params; const db=createServiceClient(); if(!db)throw new Error("Supabase non configurato");
  const {data:o}=await db.from("operators").select("id,name,category,address,phone,whatsapp,email,website,instagram").eq("id",id).maybeSingle(); if(!o)notFound();
  const {data:r}=await db.from("operator_revisions").select("id,status,proposed_data,review_notes,created_at").eq("operator_id",o.id).eq("status","pending").order("created_at",{ascending:false}).limit(1).maybeSingle();
  const proposed=(r?.proposed_data??{}) as Record<string,unknown>; const changed=fields.filter(([k])=>Object.prototype.hasOwnProperty.call(proposed,k)&&val((o as any)[k])!==val(proposed[k]));

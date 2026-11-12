@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic="force-dynamic"; export const revalidate=0;
@@ -12,7 +12,7 @@ const headerButton={padding:"8px 13px",minHeight:0,fontSize:12,background:"#2a21
 function stateMessage(state?:string){const map:Record<string,string>={"approved-applied":"Modifica approvata e applicata.","changes-requested":"Correzioni inviate all'operatore.","review-note-required":"Indica almeno una correzione prima di rinviare la proposta.","invalid-review-state":"La proposta non è più in attesa di revisione.","invalid-source-state":"La versione pubblicata o l'operatore non sono più in uno stato compatibile con l'applicazione.","invalid-data":"Dati della proposta non validi.","action-error":"Operazione non riuscita."};return state?(map[state]??state):null;}
 function changed(current:unknown,next:unknown){return String(current??"")!==String(next??"");}
 export default async function RevisionReviewPage({searchParams}:{searchParams:Promise<{state?:string}>}){
- if(!(await isAdminAuthenticated()))redirect("/admin/login"); const supabase=createServiceClient(); if(!supabase)throw new Error("Supabase service client non configurato");
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login"); const supabase=createServiceClient(); if(!supabase)throw new Error("Supabase service client non configurato");
  const {data}=await supabase.from("experience_revisions").select("id,submitted_at,content,operator:operators(name),experience:experiences(name,id,slug,excerpt,description,duration_minutes,price_from)").eq("status","pending").order("submitted_at",{ascending:true});
  const rows=(data??[]) as unknown as Array<Revision&{experience:{id:string;name:string;slug:string;excerpt:string|null;description:string|null;duration_minutes:number|null;price_from:number|null}|null}>;
  const ids=rows.map(r=>r.id);const experienceIds=rows.map(r=>r.experience?.id).filter((id):id is string=>Boolean(id));

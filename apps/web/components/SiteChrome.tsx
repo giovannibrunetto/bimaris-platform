@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 const immersiveRoutes = new Set([
   "/accedi/utente",
   "/profilo/onboarding",
+  "/admin/reset-password",
 ]);
 
 export function SiteHeader() {

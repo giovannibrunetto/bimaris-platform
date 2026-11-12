@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
 
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminPage() {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
@@ -35,9 +35,9 @@ export default async function AdminPage() {
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
   const workItems=[
-    {href:"/admin/operatori",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
-    {href:"/admin/candidature",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
+    {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
+    {href:"/admin/eventi#pending-events",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
+    {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
     {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
@@ -98,17 +98,9 @@ export default async function AdminPage() {
                 <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">↗</span>
               </Link>)}
             </div>
-            <div className="admin-dashboard__workflow"><span className="admin-dashboard__overline">Regola di pubblicazione</span><p>L'approvazione non rende automaticamente pubblica un'esperienza.</p><div><span>Approva</span><span aria-hidden="true">→</span><span>Seleziona, quando previsto</span><span aria-hidden="true">→</span><span>Pubblica</span></div></div>
           </aside>
         </div>
 
-        <nav className="admin-dashboard__quicklinks" aria-label="Sezioni amministrative">
-          <div><span className="admin-dashboard__overline">Accesso rapido</span><strong>Strumenti di gestione</strong></div>
-          <Link href="/admin/candidature">Candidature <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/operatori">Operatori ed esperienze <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/eventi">Eventi <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/itinerari">Itinerari <span aria-hidden="true">↗</span></Link>
-        </nav>
       </div>
     </section>
   </div>;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./experience-revision.css";
 
@@ -14,7 +14,7 @@ const changed = (a: unknown, b: unknown) => String(a ?? "") !== String(b ?? "");
 const show = (v: unknown) => v === null || v === undefined || v === "" ? "—" : String(v);
 
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ state?: string }> }) {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const { id } = await params;
   const db = createServiceClient();
   if (!db) throw new Error("Supabase service client non configurato");
