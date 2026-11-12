@@ -37,7 +37,7 @@ export default async function AdminPage() {
   const workItems=[
     {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
     {href:"/admin/eventi#pending-events",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
-    {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
+    {href:"/admin/candidature#pending-candidatures",label:"Candidature",description:"Richieste di accesso da esaminare o in valutazione",value:pendingApps},
   ];
   const liveItems=[
     {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
