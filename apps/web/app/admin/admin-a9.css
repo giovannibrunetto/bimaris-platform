@@ -52,3 +52,25 @@
 .admin-itineraries-advanced label{display:block;margin-top:14px}
 .admin-itineraries-managed,.admin-itineraries-create{scroll-margin-top:95px}
 @media(max-width:760px){.admin-itineraries-hero,.admin-itineraries-managed,.admin-itineraries-create{padding-left:20px;padding-right:20px}.admin-itineraries-managed .section-head,.admin-itineraries-create .section-head{display:block}.admin-itineraries-managed .section-head p,.admin-itineraries-create .section-head p{margin-top:10px}.admin-itineraries-create .admin-itineraries-form{grid-template-columns:minmax(0,1fr);padding:18px}.admin-itineraries-create .admin-itineraries-form .wide{grid-column:auto}.admin-itineraries-managed .detail-panel{padding:18px}}
+
+
+/* Admin itineraries: compact dashboard-like header and one visible navigation. */
+body:has(.admin-itineraries-local-nav) > * .admin-shell-nav{display:none!important}
+.admin-itineraries-hero{padding:22px max(24px,calc((100% - 1140px)/2)) 24px!important}
+.admin-itineraries-hero h1{font-size:clamp(30px,3vw,39px)!important;margin:5px 0!important}
+.admin-itineraries-hero p{margin:5px 0!important}
+.admin-itineraries-hero .actions{margin:0!important}
+.admin-itineraries-hero .actions a{min-height:36px!important;padding:7px 12px!important;font-size:12px!important;background:transparent!important;color:#f5e7c9!important;border-color:#a3b6b6!important}
+.admin-itineraries-local-nav{background:#e6e3dc;border-bottom:1px solid #d1ccc2}
+.admin-itineraries-local-nav>div{max-width:1180px;margin:auto;display:flex;gap:4px;overflow-x:auto;padding:0 12px}
+.admin-itineraries-local-nav a{display:inline-flex;align-items:center;min-height:48px;padding:10px 16px;white-space:nowrap;text-decoration:none;color:#244346;font-size:14px;font-weight:700;border-bottom:2px solid transparent}
+.admin-itineraries-local-nav a[aria-current="page"]{background:#d9d6ce;border-color:#a17b3b}
+.admin-itineraries-managed{padding-top:30px;padding-bottom:30px}
+.admin-itineraries-create{padding-top:26px;padding-bottom:35px}
+.admin-itineraries-create__intro{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.admin-itineraries-create__intro h2{font:normal clamp(26px,3vw,34px)/1.15 Georgia,serif;color:#143438;margin:7px 0}
+.admin-itineraries-create__intro p{font-size:14px;color:#52656a;line-height:1.5;margin:6px 0 0}
+.admin-itineraries-new-button{background:#cda969;color:#102e32;border:1px solid #b68b4a;border-radius:10px;padding:12px 18px;min-height:44px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
+.admin-itineraries-new-button:focus-visible{outline:3px solid #a17b3b;outline-offset:3px}
+.admin-itineraries-create #admin-itinerary-create-form{margin-top:24px}
+@media(max-width:700px){.admin-itineraries-create__intro{align-items:flex-start;flex-direction:column}.admin-itineraries-new-button{width:100%}.admin-itineraries-hero{padding:20px!important}.admin-itineraries-local-nav a{padding:10px 12px}}
