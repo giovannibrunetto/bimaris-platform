@@ -78,7 +78,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero admin-itinerary-hero">
         <div className="kicker">Area privata</div>
         <h1>Gestione itinerari</h1>
         <p>Crea percorsi ordinati collegando cultura, miti e leggende, esperienze e operatori già verificati.</p>
@@ -96,7 +96,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
       <section className="section sand">
         <div className="section-head">
           <div><div className="kicker">Nuovo percorso</div><h2>Crea una bozza</h2></div>
-          <p>Prima creiamo il percorso, poi aggiungiamo e ordiniamo le tappe. La pubblicazione avviene solo quando il percorso è pronto.</p>
+          <p>Inserisci le informazioni principali. Dopo aver creato la bozza potrai selezionare i luoghi precisi, aggiungere le tappe e ordinarle prima della pubblicazione.</p>
         </div>
 
         <form className="form" method="post" action="/api/admin/itineraries">
@@ -105,20 +105,20 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
           <label>Slug<input name="slug" placeholder="Generato dal titolo se lasciato vuoto" /></label>
           <label>Durata in minuti<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
           <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
-          <label className="wide">Territorio<input name="territory" placeholder="Es. Messina e Stretto" /></label>
+          <label className="wide">Area geografica generale<input name="territory" placeholder="Es. Messina e Stretto" /><small>Non indica le singole tappe: le aggiungerai alla bozza nella fase successiva.</small></label>
           <label className="wide">Testo breve<input required name="excerpt" maxLength={320} placeholder="Una frase chiara per la card" /></label>
           <label className="wide">Descrizione<textarea required name="description" /></label>
           <label className="wide">URL immagine<input name="image_url" placeholder="https://..." /></label>
-          <label className="wide">Testo alternativo immagine<input name="image_alt" /></label>
-          <label className="privacy-check"><input type="checkbox" name="featured" value="yes" /><span>Metti in evidenza</span></label>
+          <label className="wide">Descrizione dell’immagine (accessibilità)<input name="image_alt" placeholder="Descrivi brevemente ciò che mostra la copertina" /><small>Aiuta chi usa un lettore di schermo a comprendere la fotografia.</small></label>
+          
           <div className="wide"><button className="button" type="submit">Crea bozza itinerario</button></div>
         </form>
       </section>
 
       <section className="section">
         <div className="section-head">
-          <div><div className="kicker">Percorsi</div><h2>Itinerari presenti</h2></div>
-          <p>{itineraries.filter(item => item.published).length} pubblicati su {itineraries.length} percorsi.</p>
+          <div><div className="kicker">Percorsi amministrabili</div><h2>Itinerari gestiti</h2></div>
+          <p>{itineraries.filter(item => item.published).length} pubblicati su {itineraries.length} itinerari gestiti. I percorsi storici editoriali e quelli personali sulla mappa non rientrano in questo conteggio.</p>
         </div>
 
         <div style={{ display: "grid", gap: 22 }}>
@@ -211,7 +211,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
               </article>
             );
           })}
-          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario presente.</p></div>}
+          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
         </div>
       </section>
     </>
