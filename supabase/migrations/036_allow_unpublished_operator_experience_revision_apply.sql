@@ -27,7 +27,6 @@ declare
  v_now timestamptz := now();
  v_cover_path text;
  v_cover_alt text;
- v_storage_base_url text;
 begin
  select * into v_revision from public.experience_revisions where id=p_revision_id for update;
  if not found or v_revision.status <> 'pending' then raise exception using errcode='P0001',message='invalid-review-state'; end if;
@@ -35,13 +34,6 @@ begin
  if not found or v_experience.operator_id <> v_revision.operator_id or v_experience.review_status <> 'approved' then raise exception using errcode='P0001',message='invalid-source-state'; end if;
  select * into v_operator from public.operators where id=v_revision.operator_id;
  if not found then raise exception using errcode='P0001',message='invalid-source-state'; end if;
- -- Resolve the public storage origin from the current environment, never from another project.
- -- A configured app.settings.supabase_url is preferred; an existing image URL
- -- can supply the same-project origin for previously illustrated experiences.
- v_storage_base_url:=nullif(trim(current_setting('app.settings.supabase_url',true)),'');
- if v_storage_base_url is null and v_experience.image_url ~ '^https://[a-z0-9-]+[.]supabase[.]co/storage/v1/object/public/experience-media/' then
-   v_storage_base_url:=split_part(v_experience.image_url,'/storage/v1/object/public/experience-media/',1);
- end if;
  v_content:=coalesce(v_revision.content,'{}'::jsonb);
  v_name:=nullif(left(trim(coalesce(v_content->>'name',v_experience.name,'')),200),'');
  if v_name is null then raise exception using errcode='P0001',message='invalid-data'; end if;
@@ -77,30 +69,6 @@ begin
  where em.experience_id=v_revision.experience_id;
 
  select m.storage_path,m.alt_text into v_cover_path,v_cover_alt from public.experience_revision_media m where m.revision_id=v_revision.id order by m.is_cover desc,m.sort_order asc limit 1;
- if v_cover_path is not null and (v_storage_base_url is null or v_storage_base_url !~ '^https://[a-z0-9-]+[.]supabase[.]co/?,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,category_id=v_category_id,territory_id=v_territory_id,
- locality=case when v_content ? 'locality' then nullif(left(trim(coalesce(v_content->>'locality','')),120),'') else v_experience.locality end,
- meeting_point=case when v_content ? 'meeting_point' then nullif(left(trim(coalesce(v_content->>'meeting_point','')),250),'') else v_experience.meeting_point end,
- google_maps_place_id=case when v_content ? 'google_maps_place_id' then nullif(left(trim(coalesce(v_content->>'google_maps_place_id','')),250),'') else v_experience.google_maps_place_id end,
- location_kind=case when v_content ? 'location_kind' then nullif(v_content->>'location_kind','') else v_experience.location_kind end,
- latitude=case when v_content ? 'latitude' then nullif(v_content->>'latitude','')::numeric else v_experience.latitude end,
- longitude=case when v_content ? 'longitude' then nullif(v_content->>'longitude','')::numeric else v_experience.longitude end,
- territory_assignment_status=case when v_content ? 'territory_assignment_status' then nullif(v_content->>'territory_assignment_status','') else v_experience.territory_assignment_status end,
- territory_municipality_code=case when v_content ? 'territory_municipality_code' then nullif(v_content->>'territory_municipality_code','') else v_experience.territory_municipality_code end,
- image_url=case when v_cover_path is null then null when v_storage_base_url is not null and v_storage_base_url ~ '^https://[a-z0-9-]+[.]supabase[.]co/?,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
- update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
- return query select v_revision.experience_id,v_name;
-end;
-$function$
-;
- then rtrim(v_storage_base_url,'/')||'/storage/v1/object/public/experience-media/'||v_cover_path else v_experience.image_url end,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
- update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
- return query select v_revision.experience_id,v_name;
-end;
-$function$
-;
-) then
-   raise exception using errcode='P0001',message='storage-origin-not-configured';
- end if;
  update public.experiences set name=v_name,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,category_id=v_category_id,territory_id=v_territory_id,
  locality=case when v_content ? 'locality' then nullif(left(trim(coalesce(v_content->>'locality','')),120),'') else v_experience.locality end,
  meeting_point=case when v_content ? 'meeting_point' then nullif(left(trim(coalesce(v_content->>'meeting_point','')),250),'') else v_experience.meeting_point end,
@@ -110,13 +78,7 @@ $function$
  longitude=case when v_content ? 'longitude' then nullif(v_content->>'longitude','')::numeric else v_experience.longitude end,
  territory_assignment_status=case when v_content ? 'territory_assignment_status' then nullif(v_content->>'territory_assignment_status','') else v_experience.territory_assignment_status end,
  territory_municipality_code=case when v_content ? 'territory_municipality_code' then nullif(v_content->>'territory_municipality_code','') else v_experience.territory_municipality_code end,
- image_url=case when v_cover_path is null then null when v_storage_base_url is not null and v_storage_base_url ~ '^https://[a-z0-9-]+[.]supabase[.]co/?,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
- update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
- return query select v_revision.experience_id,v_name;
-end;
-$function$
-;
- then rtrim(v_storage_base_url,'/')||'/storage/v1/object/public/experience-media/'||v_cover_path else v_experience.image_url end,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
+ image_url=case when v_cover_path is null then null else 'https://nzdeoimwikhoidtladnu.supabase.co/storage/v1/object/public/experience-media/'||v_cover_path end,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
  update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
  return query select v_revision.experience_id,v_name;
 end;
