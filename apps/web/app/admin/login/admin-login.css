@@ -110,3 +110,9 @@
   .admin-login__card{padding:26px 22px;border-radius:16px}
   .admin-login__description{font-size:14px;margin-bottom:23px}
 }
+
+.admin-login__password-control{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.admin-login__form .admin-login__password-control input{min-width:0}
+.admin-login__form .admin-login__password-toggle{width:auto;min-height:52px;margin:0;padding:9px 12px;border:1px solid #aeb7b4;border-radius:10px;background:#f4f6f5;color:#173338;font-size:13px;font-weight:750;white-space:nowrap}
+.admin-login__form .admin-login__password-toggle:hover:not(:disabled){background:#e7edeb}
+@media(max-width:420px){.admin-login__password-control{grid-template-columns:minmax(0,1fr)}.admin-login__form .admin-login__password-toggle{width:100%;min-height:42px}}
