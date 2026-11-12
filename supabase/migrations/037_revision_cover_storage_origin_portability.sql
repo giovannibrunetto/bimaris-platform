@@ -86,21 +86,3 @@ begin
 end;
 $function$
 ;
-) then
-   raise exception using errcode='P0001',message='storage-origin-not-configured';
- end if;
- update public.experiences set name=v_name,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,category_id=v_category_id,territory_id=v_territory_id,
- locality=case when v_content ? 'locality' then nullif(left(trim(coalesce(v_content->>'locality','')),120),'') else v_experience.locality end,
- meeting_point=case when v_content ? 'meeting_point' then nullif(left(trim(coalesce(v_content->>'meeting_point','')),250),'') else v_experience.meeting_point end,
- google_maps_place_id=case when v_content ? 'google_maps_place_id' then nullif(left(trim(coalesce(v_content->>'google_maps_place_id','')),250),'') else v_experience.google_maps_place_id end,
- location_kind=case when v_content ? 'location_kind' then nullif(v_content->>'location_kind','') else v_experience.location_kind end,
- latitude=case when v_content ? 'latitude' then nullif(v_content->>'latitude','')::numeric else v_experience.latitude end,
- longitude=case when v_content ? 'longitude' then nullif(v_content->>'longitude','')::numeric else v_experience.longitude end,
- territory_assignment_status=case when v_content ? 'territory_assignment_status' then nullif(v_content->>'territory_assignment_status','') else v_experience.territory_assignment_status end,
- territory_municipality_code=case when v_content ? 'territory_municipality_code' then nullif(v_content->>'territory_municipality_code','') else v_experience.territory_municipality_code end,
- image_url=case when v_cover_path is null then null else 'https://nzdeoimwikhoidtladnu.supabase.co/storage/v1/object/public/experience-media/'||v_cover_path end,image_alt=v_cover_alt,updated_at=v_now where id=v_revision.experience_id;
- update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
- return query select v_revision.experience_id,v_name;
-end;
-$function$
-;
