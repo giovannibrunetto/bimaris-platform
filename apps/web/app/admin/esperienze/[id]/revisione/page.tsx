@@ -41,18 +41,19 @@ export default async function Page({ params, searchParams }: { params: Promise<{
 
   const comparisonRows = ([["Nome", experience.name, next.name], ["Testo breve", experience.excerpt, next.excerpt], ["Descrizione", experience.description, next.description], ["Durata", experience.duration_minutes, next.duration_minutes], ["Prezzo da", experience.price_from, next.price_from], ["Punto di incontro", experience.meeting_point, next.meeting_point], ["Tipologia punto", experience.location_kind, next.location_kind], ["Latitudine", experience.latitude, next.latitude], ["Longitudine", experience.longitude, next.longitude], ["Codice ISTAT comune", experience.territory_municipality_code, next.territory_municipality_code]] as [string, unknown, unknown][]);
   const modifiedRows = comparisonRows.filter(([, before, after]) => changed(before, after));
-  const unchangedRows = comparisonRows.filter(([, before, after]) => !changed(before, after));
+  const photoSignature = (photos: Photo[]) => JSON.stringify(photos.map(p => ({ storage_path:p.storage_path, alt_text:p.alt_text ?? null, sort_order:p.sort_order, is_cover:p.is_cover })));
+  const photosChanged = photoSignature((livePhotos ?? []) as Photo[]) !== photoSignature((proposedRows ?? []) as Photo[]);
 
   return <><section style={{ background: "linear-gradient(135deg,#17120d,#080706)", color: "#fff", padding: "16px 6vw 18px" }}><div className="kicker" style={{ color: "#d8b778" }}>AREA PRIVATA · REVISIONE ESPERIENZA</div><h1 style={{ margin: "5px 0 10px", color: "#fff" }}>{experience.name}</h1><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Link className="button" href={`/admin/esperienze/${id}`}>← Scheda esperienza</Link><Link className="button" href="/admin/revisioni-esperienze">Tutte le revisioni</Link></div></section><section style={{ padding: "20px 5vw 50px", background: "#f8f4ee" }}>
     {state && <div style={{ padding: 12, marginBottom: 14, background: "#fff", border: "1px solid #d7c7b6" }}>{stateMessage[state] ?? state}</div>}
-    {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article id="admin-review-comparison" className="detail-panel" style={{ padding: "clamp(16px,4vw,24px)", scrollMarginTop: 112 }}><div className="kicker">{operator?.name ?? "Operatore"} · modifica proposta</div><h2 style={{ marginTop: 6 }}>Confronto versione approvata / proposta</h2><p><small>Revisione inviata {revision.submitted_at ? new Date(revision.submitted_at).toLocaleString("it-IT") : "dall'operatore"}</small></p>
+    {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article id="admin-review-comparison" className="detail-panel" style={{ padding: "clamp(16px,4vw,24px)", scrollMarginTop: 112 }}><div className="kicker">{operator?.name ?? "Operatore"} · modifica proposta</div><h2 style={{ marginTop: 6 }}>Confronto versione approvata / proposta</h2><p><Link href={`/admin/operatori/${experience.operator_id}`} className="text-link">Visualizza il dossier completo dell’operatore →</Link></p><p><small>Revisione inviata {revision.submitted_at ? new Date(revision.submitted_at).toLocaleString("it-IT") : "dall'operatore"}</small></p>
       <section className="revision-review-summary" aria-label="Modifiche da valutare">
         <h3>Modifiche da valutare <span className="revision-review-summary__count">{modifiedRows.length} {modifiedRows.length===1?"campo modificato":"campi modificati"}</span></h3>
-        {modifiedRows.length===0&&<p>Nessuna differenza rilevata nei campi testuali e nei dati principali. Verifica comunque le fotografie.</p>}
+        {modifiedRows.length===0&&<p>Nessuna differenza rilevata nei dati principali.{photosChanged ? " La proposta modifica le fotografie." : ""}</p>}
         <div className="revision-review-summary__rows">{modifiedRows.map(([label,before,after])=><div className="revision-review-summary__row" key={label}><h4>{label}</h4><div className="revision-review-summary__comparison"><div><small>{currentLabel}</small><p>{show(before)}</p></div><div><small>NUOVA PROPOSTA</small><p>{show(after)}</p></div></div></div>)}</div>
-        <details className="revision-review-summary__unchanged"><summary>Altri dati invariati ({unchangedRows.length})</summary><ul>{unchangedRows.map(([label])=><li key={label}>{label}</li>)}</ul></details>
+
       </section>
-      <details className="revision-gallery revision-review-summary__gallery"><summary>Confronto galleria fotografica — apri per verificare copertina e immagini</summary>
+      {photosChanged && <details className="revision-gallery revision-review-summary__gallery"><summary>Confronto galleria fotografica — apri per verificare copertina e immagini</summary>
         <div className="revision-section-heading">
           <h3>Confronto galleria fotografica</h3>
           <p>Controlla copertina, ordine e fotografie della versione approvata rispetto alla proposta.</p>
@@ -73,28 +74,20 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             </div>
           )}
         </div>
-      </details>
+      </details>}
       <section id="admin-review-decision" className="revision-decisions" aria-label="Esito revisione esperienza" style={{scrollMarginTop:112}}>
-        <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore.</p></div>
-        <div className="revision-review-actions">
-          <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
-            <h4>Approva la modifica</h4>
-            <p>Applica la proposta alla versione approvata. Non pubblica automaticamente l'esperienza.</p>
+        <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>L’approvazione applica le modifiche senza pubblicare automaticamente l’esperienza.</p></div>
+        <div className="revision-review-actions revision-review-actions--compact">
+          <form method="post" action="/api/admin/experience-revisions" className="revision-review-actions__simple-form">
             <input type="hidden" name="revision_id" value={revision.id}/>
-            <details className="revision-review-actions__note"><summary>Aggiungi una nota facoltativa</summary><label htmlFor="revision-approval-note">Nota di approvazione<textarea id="revision-approval-note" name="review_notes" rows={3} placeholder="Indicazioni facoltative"/></label></details>
-            <button type="submit" className="revision-decision-card__button revision-decision-card__button--approve" name="action" value="approve-apply">Approva e applica</button>
+            <button type="submit" className="revision-decision-card__button revision-decision-card__button--approve" name="action" value="approve-apply">Approva e invia</button>
           </form>
-          <details className="revision-review-actions__changes"><summary>Richiedi correzioni all'operatore</summary>
+          <details className="revision-review-actions__changes revision-review-actions__changes--compact"><summary>Richiedi modifica</summary>
             <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
-              <p>Indica gli interventi necessari prima di una nuova valutazione.</p>
+              <p>Indica all’operatore cosa correggere prima di una nuova valutazione.</p>
               <input type="hidden" name="revision_id" value={revision.id}/>
-              <div className="revision-decision-card__fields">
-                <label htmlFor="revision-basics">Informazioni principali<textarea id="revision-basics" name="review_basics" rows={3} placeholder="Nome e informazioni generali"/></label>
-                <label htmlFor="revision-description">Descrizione<textarea id="revision-description" name="review_description" rows={3} placeholder="Correzioni richieste al testo"/></label>
-                <label htmlFor="revision-details">Durata e prezzo<textarea id="revision-details" name="review_details" rows={3} placeholder="Correzioni a durata o prezzo"/></label>
-                <label htmlFor="revision-general-note">Nota generale<textarea id="revision-general-note" name="review_notes" rows={3} placeholder="Altre indicazioni per l'operatore"/></label>
-              </div>
-              <button type="submit" className="revision-decision-card__button revision-decision-card__button--changes" name="action" value="request-changes">Invia richiesta di correzioni</button>
+              <label htmlFor="revision-general-note">Modifica richiesta<textarea id="revision-general-note" name="review_notes" rows={4} required placeholder="Descrivi la modifica da richiedere all’operatore"/></label>
+              <button type="submit" className="revision-decision-card__button revision-decision-card__button--changes" name="action" value="request-changes">Invia richiesta</button>
             </form>
           </details>
         </div>
