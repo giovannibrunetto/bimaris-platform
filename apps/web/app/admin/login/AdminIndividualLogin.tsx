@@ -38,9 +38,17 @@ export default function AdminIndividualLogin() {
     setBusy(true); setError("");
     const supabase = client();
     if (!supabase) { setError("Ambiente Staging non configurato."); setBusy(false); return; }
+    // OAuth PKCE must begin and finish on the same allowlisted origin.
+    // Do not silently fall back to Supabase Site URL on ephemeral previews.
+    const allowedOrigin = "https://bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app";
+    if (window.location.origin !== allowedOrigin) {
+      setError("Accesso Google MFA disponibile soltanto sul dominio Staging autorizzato. Usa email e password per questo collaudo Preview.");
+      setBusy(false);
+      return;
+    }
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin + "/admin/login/oauth-callback" },
+      options: { redirectTo: allowedOrigin + "/auth/callback?admin=1" },
     });
     if (oauthError) { setError("Accesso Google non disponibile."); setBusy(false); }
   }
