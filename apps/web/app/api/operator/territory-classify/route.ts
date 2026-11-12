@@ -1,8 +1,11 @@
+import { rejectCrossSiteOperatorMutation } from "@/lib/operator-request-origin";
 import {NextRequest,NextResponse} from "next/server";
 import {createUserServerClient} from "@/lib/supabase/user-server";
 import {classifyPoint} from "@/lib/territory-geo";
 
 export async function POST(request:NextRequest){
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
  const userClient=await createUserServerClient();
  if(!userClient)return NextResponse.json({error:"Servizio non disponibile"},{status:503});
  const {data:claims}=await userClient.auth.getClaims();
