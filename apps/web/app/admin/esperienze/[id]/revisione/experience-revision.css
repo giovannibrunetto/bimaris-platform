@@ -25,3 +25,47 @@
 .revision-decision-card__button:hover{filter:brightness(.96)}
 @media(max-width:900px){.revision-gallery__comparison,.revision-decisions__grid{grid-template-columns:minmax(0,1fr)}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:240px}}
 @media(max-width:560px){.revision-gallery__group,.revision-decision-card{padding:14px}.revision-gallery__photos{gap:9px}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:160px}.revision-decision-card__fields{grid-template-columns:minmax(0,1fr)}}
+
+/* DT-QA-UX-07: progressive disclosure for administrative review */
+.revision-review-summary{margin:22px 0 8px}
+.revision-review-summary h3{font-size:21px;color:#173238;display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 15px}
+.revision-review-summary__count{font-size:12px;font-weight:750;background:#f5e9d4;color:#76511c;border-radius:999px;padding:6px 11px}
+.revision-review-summary__rows{display:grid;gap:13px}
+.revision-review-summary__row{border:1px solid #dfd3c2;border-radius:13px;padding:16px;background:#fff}
+.revision-review-summary__row h4{font-size:16px;color:#18383b;margin:0 0 12px}
+.revision-review-summary__comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.revision-review-summary__comparison>div{min-width:0;background:#f8f6f2;border-radius:9px;padding:12px}
+.revision-review-summary__comparison small{display:block;font-size:11px;font-weight:800;letter-spacing:.035em;color:#6d5e49}
+.revision-review-summary__comparison p{white-space:pre-wrap;overflow-wrap:anywhere;margin:9px 0 0;line-height:1.55}
+.revision-review-summary__unchanged,.revision-review-summary__gallery{margin-top:16px;border:1px solid #dfd3c2;border-radius:12px;background:#fff;padding:15px}
+.revision-review-summary__unchanged summary,.revision-review-summary__gallery>summary,.revision-review-actions__note>summary,.revision-review-actions__changes>summary{cursor:pointer;font-weight:750;color:#173238}
+.revision-review-summary__unchanged ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;padding-left:22px;margin:16px 0 2px}
+.revision-review-summary__gallery .revision-section-heading{margin-top:16px}
+.revision-review-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.revision-review-actions__note{padding:10px 0}
+.revision-review-actions__note label{margin-top:12px}
+.revision-review-actions__changes{border:1px solid #e1d3c0;border-radius:15px;background:#fff;padding:18px;min-width:0}
+.revision-review-actions__changes>summary{font-size:17px;padding:5px 0}
+.revision-review-actions__changes .revision-decision-card{padding:14px 0 0;border:0;border-radius:0}
+@media(max-width:900px){.revision-review-actions{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.revision-review-summary__comparison,.revision-review-summary__unchanged ul{grid-template-columns:minmax(0,1fr)}.revision-review-summary__row,.revision-review-actions__changes{padding:13px}}
+
+.revision-review-actions--compact{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:12px}
+.revision-review-actions__simple-form{display:flex;min-width:0}
+.revision-review-actions__simple-form .revision-decision-card__button{width:100%;margin:0;min-height:56px}
+.revision-review-actions__changes--compact{padding:0;border:0;background:transparent}
+.revision-review-actions__changes--compact>summary{display:flex;align-items:center;justify-content:center;min-height:56px;border:1px solid #b7a88e;border-radius:10px;padding:12px 18px;background:#fff;color:#173338;text-align:center;font-size:16px;list-style:none}
+.revision-review-actions__changes--compact>summary::-webkit-details-marker{display:none}
+.revision-review-actions__changes--compact[open]>summary{background:#f8f3e9}
+.revision-review-actions__changes--compact .revision-decision-card{margin-top:12px;padding:15px;border:1px solid #dfd3c2;border-radius:12px}
+@media(max-width:600px){.revision-review-actions--compact{grid-template-columns:minmax(0,1fr)}}
+
+/* Unified admin review page shell */
+.revision-review-page{background:#f8f4ee;padding:24px clamp(16px,4vw,56px) 56px;min-height:55vh;color:#173338}
+.revision-review-page__header{max-width:1280px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;border-bottom:1px solid #dfd3c2;padding:0 0 18px}
+.revision-review-page__eyebrow{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8b632d}
+.revision-review-page__header h2{font-family:Georgia,serif;font-size:clamp(24px,3vw,36px);line-height:1.2;color:#173338;margin:5px 0 0}
+.revision-review-page__header nav{display:flex;gap:16px;flex-wrap:wrap}
+.revision-review-page__header nav a{color:#26494c;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.revision-review-page>.detail-panel{max-width:1280px;margin:0 auto;background:#fff;border:1px solid #e1d6c8;border-radius:14px}
+@media(max-width:600px){.revision-review-page{padding:18px 14px 40px}.revision-review-page__header{align-items:flex-start}}
