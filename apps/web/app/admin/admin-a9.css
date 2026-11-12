@@ -21,3 +21,34 @@
 .admin-page [id="pending-operators"],.admin-page [id="pending-events"],.admin-page [id="pending-candidatures"]{scroll-margin-top:110px!important}
 .admin-page .form label small{display:block;font-size:12px;font-weight:400;line-height:1.5;color:#617174;margin-top:5px}
 @media(max-width:650px){.admin-shell-nav__inner{padding:0 12px;gap:0}.admin-shell-nav a{padding:10px 12px}}
+
+
+/* DS-UX-ADMIN-02: Itinerari redesigned around existing records and a guided draft. */
+.admin-itineraries-hero{background:#103337;color:#fff;padding:28px max(var(--page-gutter),calc((100% - 1140px)/2));border-bottom:3px solid #c7a468}
+.admin-itineraries-hero .kicker{color:#e6bd72;font-size:12px;letter-spacing:.12em;font-weight:800}
+.admin-itineraries-hero h1{color:#fff!important;font:normal clamp(32px,4vw,46px)/1.15 Georgia,serif;margin:8px 0}
+.admin-itineraries-hero p{color:#dce8e8!important;font-size:15px;max-width:800px;line-height:1.55}
+.admin-itineraries-hero .actions{margin-top:14px!important}
+.admin-itineraries-managed,.admin-itineraries-create{padding:36px max(var(--page-gutter),calc((100% - 1140px)/2)) 48px}
+.admin-itineraries-managed{background:#f5f1e9}
+.admin-itineraries-create{background:#fffdf9;border-top:1px solid #e5dbce}
+.admin-itineraries-managed .section-head,.admin-itineraries-create .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:0 0 24px}
+.admin-itineraries-managed .section-head>div,.admin-itineraries-create .section-head>div{min-width:0}
+.admin-itineraries-managed .section-head h2,.admin-itineraries-create .section-head h2{font:normal clamp(28px,3vw,36px)/1.15 Georgia,serif;margin:7px 0;color:#132f32}
+.admin-itineraries-managed .section-head p,.admin-itineraries-create .section-head p{font-size:14px;color:#52656a;line-height:1.55;max-width:440px;margin:0}
+.admin-itineraries-managed .kicker,.admin-itineraries-create .kicker{color:#996d2f;font-size:11px;font-weight:800;letter-spacing:.12em}
+.admin-itineraries-managed .detail-panel,.admin-itineraries-create .admin-itineraries-form{background:#fff;border:1px solid #dfd3c1;border-radius:16px;box-shadow:0 8px 24px rgba(16,51,55,.045)}
+.admin-itineraries-managed .detail-panel{padding:24px}
+.admin-itineraries-create .admin-itineraries-form{max-width:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:24px}
+.admin-itineraries-create .admin-itineraries-form .wide{grid-column:1/-1}
+.admin-itineraries-create .admin-itineraries-form label{min-width:0}
+.admin-itineraries-create .admin-itineraries-form input,.admin-itineraries-create .admin-itineraries-form textarea{width:100%;max-width:100%}
+.admin-itineraries-steps{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 16px}
+.admin-itineraries-steps span{display:inline-flex;align-items:center;gap:8px;color:#45595c;font-size:13px;font-weight:700}
+.admin-itineraries-steps b{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#e9ddc7;color:#6e4c1b}
+.admin-itineraries-steps span:first-child b{background:#103337;color:#fff}
+.admin-itineraries-advanced{border:1px solid #e5dbcd;border-radius:10px;padding:12px 14px}
+.admin-itineraries-advanced summary{cursor:pointer;color:#304c4e;font-size:13px;font-weight:750}
+.admin-itineraries-advanced label{display:block;margin-top:14px}
+.admin-itineraries-managed,.admin-itineraries-create{scroll-margin-top:95px}
+@media(max-width:760px){.admin-itineraries-hero,.admin-itineraries-managed,.admin-itineraries-create{padding-left:20px;padding-right:20px}.admin-itineraries-managed .section-head,.admin-itineraries-create .section-head{display:block}.admin-itineraries-managed .section-head p,.admin-itineraries-create .section-head p{margin-top:10px}.admin-itineraries-create .admin-itineraries-form{grid-template-columns:minmax(0,1fr);padding:18px}.admin-itineraries-create .admin-itineraries-form .wide{grid-column:auto}.admin-itineraries-managed .detail-panel{padding:18px}}
