@@ -140,7 +140,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                     </form>
                     <form method="post" action="/api/admin/itineraries">
                       <input type="hidden" name="itinerary_id" value={itinerary.id} />
-                      <button className="button ghost" name="action" value={itinerary.featured ? "unfeature" : "feature"} type="submit">{itinerary.featured ? "Togli evidenza" : "In evidenza"}</button>
+                      <button className="button ghost" name="action" value={itinerary.featured ? "unfeature" : "feature"} type="submit">{itinerary.featured ? "Rimuovi evidenza sul sito" : "Metti in evidenza sul sito"}</button>
                     </form>
                   </div>
                 </div>
