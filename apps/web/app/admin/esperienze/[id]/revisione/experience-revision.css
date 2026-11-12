@@ -59,3 +59,13 @@
 .revision-review-actions__changes--compact[open]>summary{background:#f8f3e9}
 .revision-review-actions__changes--compact .revision-decision-card{margin-top:12px;padding:15px;border:1px solid #dfd3c2;border-radius:12px}
 @media(max-width:600px){.revision-review-actions--compact{grid-template-columns:minmax(0,1fr)}}
+
+/* Unified admin review page shell */
+.revision-review-page{background:#f8f4ee;padding:24px clamp(16px,4vw,56px) 56px;min-height:55vh;color:#173338}
+.revision-review-page__header{max-width:1280px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;border-bottom:1px solid #dfd3c2;padding:0 0 18px}
+.revision-review-page__eyebrow{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8b632d}
+.revision-review-page__header h2{font-family:Georgia,serif;font-size:clamp(24px,3vw,36px);line-height:1.2;color:#173338;margin:5px 0 0}
+.revision-review-page__header nav{display:flex;gap:16px;flex-wrap:wrap}
+.revision-review-page__header nav a{color:#26494c;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.revision-review-page>.detail-panel{max-width:1280px;margin:0 auto;background:#fff;border:1px solid #e1d6c8;border-radius:14px}
+@media(max-width:600px){.revision-review-page{padding:18px 14px 40px}.revision-review-page__header{align-items:flex-start}}
