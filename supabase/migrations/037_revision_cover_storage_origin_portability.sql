@@ -35,13 +35,9 @@ begin
  if not found or v_experience.operator_id <> v_revision.operator_id or v_experience.review_status <> 'approved' then raise exception using errcode='P0001',message='invalid-source-state'; end if;
  select * into v_operator from public.operators where id=v_revision.operator_id;
  if not found then raise exception using errcode='P0001',message='invalid-source-state'; end if;
- -- Resolve the public storage origin from the current environment, never from another project.
- -- A configured app.settings.supabase_url is preferred; an existing image URL
- -- can supply the same-project origin for previously illustrated experiences.
+ -- Never infer the target project from legacy image URLs: those may belong to
+ -- another environment. Each database must explicitly configure its own URL.
  v_storage_base_url:=nullif(trim(current_setting('app.settings.supabase_url',true)),'');
- if v_storage_base_url is null and v_experience.image_url ~ '^https://[a-z0-9-]+[.]supabase[.]co/storage/v1/object/public/experience-media/' then
-   v_storage_base_url:=split_part(v_experience.image_url,'/storage/v1/object/public/experience-media/',1);
- end if;
  v_content:=coalesce(v_revision.content,'{}'::jsonb);
  v_name:=nullif(left(trim(coalesce(v_content->>'name',v_experience.name,'')),200),'');
  if v_name is null then raise exception using errcode='P0001',message='invalid-data'; end if;
