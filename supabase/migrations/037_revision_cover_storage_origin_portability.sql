@@ -1,4 +1,5 @@
--- Migration 037: explicit environment-local storage origin for revision cover URLs.
+-- Migration 037: explicit environment-local Supabase URL; 036 remains unchanged.
+-- Corrective migration: approval of an already-approved experience revision
 -- must not require publication or commercial selection of its operator.
 -- Retain all existing revision, ownership, data and media integrity checks.
 -- Deployment requires explicit technical authorization and staging verification.
@@ -71,7 +72,10 @@ begin
 
  select m.storage_path,m.alt_text into v_cover_path,v_cover_alt from public.experience_revision_media m where m.revision_id=v_revision.id order by m.is_cover desc,m.sort_order asc limit 1;
  v_storage_base_url:=nullif(trim(current_setting('app.settings.supabase_url',true)),'');
- if v_cover_path is not null and (v_storage_base_url is null or v_storage_base_url !~ '^https://[a-z0-9-]+[.]supabase[.]co/?,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,category_id=v_category_id,territory_id=v_territory_id,
+ if v_cover_path is not null and (v_storage_base_url is null or v_storage_base_url !~ '^https://[a-z0-9-]+[.]supabase[.]co/?$') then
+   raise exception using errcode='P0001',message='storage-origin-not-configured';
+ end if;
+ update public.experiences set name=v_name,excerpt=v_excerpt,description=v_description,duration_minutes=v_duration_minutes,price_from=v_price_from,category_id=v_category_id,territory_id=v_territory_id,
  locality=case when v_content ? 'locality' then nullif(left(trim(coalesce(v_content->>'locality','')),120),'') else v_experience.locality end,
  meeting_point=case when v_content ? 'meeting_point' then nullif(left(trim(coalesce(v_content->>'meeting_point','')),250),'') else v_experience.meeting_point end,
  google_maps_place_id=case when v_content ? 'google_maps_place_id' then nullif(left(trim(coalesce(v_content->>'google_maps_place_id','')),250),'') else v_experience.google_maps_place_id end,
