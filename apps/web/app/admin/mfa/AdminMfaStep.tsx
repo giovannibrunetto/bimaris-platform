@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 type Factor = { id: string; status: string };
@@ -19,6 +19,11 @@ export default function AdminMfaStep() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const otpRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (ready && factor) otpRef.current?.focus();
+  }, [ready, factor]);
 
   useEffect(() => {
     let mounted = true;
@@ -72,7 +77,7 @@ export default function AdminMfaStep() {
     </div>}
     {ready && factor && <form className="admin-login__form" onSubmit={verify}>
       <label htmlFor="admin-individual-otp">Codice temporaneo dell'autenticatore</label>
-      <input id="admin-individual-otp" value={otp} onChange={e => setOtp(e.target.value)} type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required />
+      <input ref={otpRef} autoFocus id="admin-individual-otp" value={otp} onChange={e => setOtp(e.target.value.replace(/\\D/g, "").slice(0, 6))} type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required />
       <button type="submit" disabled={busy}>{busy ? "Verifica…" : "Verifica codice MFA"}</button>
     </form>}
     {error && <p role="alert" className="admin-login__error">{error}</p>}
