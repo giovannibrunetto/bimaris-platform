@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdminItineraryCreate from "./AdminItineraryCreate";
+import { CULTURE_STORIES } from "@/data/ti-racconto-messina";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -193,6 +194,20 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
           })}
           {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
         </div>
+      </section>
+      <section className="admin-itineraries-public" aria-labelledby="public-paths-title">
+        <div className="kicker">PERCORSI GIÀ DISPONIBILI</div>
+        <h2 id="public-paths-title">Percorsi pubblici BIMARIS</h2>
+        <p>Questi racconti sono già disponibili sul sito e provengono dal catalogo editoriale. Non sono registrati nella tabella degli itinerari gestionali e qui sono consultabili, non modificabili.</p>
+        <div className="admin-itineraries-public-grid">
+          {CULTURE_STORIES.map(story => (
+            <article className="admin-itineraries-public-card" key={story.key}>
+              <div><span className="admin-itineraries-public-status">Editoriale · Sul sito</span><h3>{story.title}</h3><p>{story.subtitle}</p></div>
+              <Link className="text-link" href={`/mappa/epoche/${story.key}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>
+            </article>
+          ))}
+        </div>
+        <p className="admin-itineraries-public-note">Per creare e pubblicare nuovi percorsi gestionali usa «Nuovo itinerario». Non vengono creati duplicati dei racconti editoriali.</p>
       </section>
       <AdminItineraryCreate />
 
