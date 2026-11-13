@@ -180,11 +180,6 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
   }
  }
  async function syncLiveGallery(id:string){
-  if(removedPaths.length){
-   const deletion=await deleteExperienceMedia(supabase,id,removedPaths);
-   if(!deletion.ok)throw new Error("Impossibile rimuovere le fotografie eliminate.");
-   setRemovedPaths([]);
-  }
   const persisted:{id:string;key:string}[]=[];
   for(let i=0;i<media.length;i++){
    const item=media[i];
@@ -205,6 +200,13 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
    const chosen=effectiveCoverKey(media,coverKey),selected=persisted.find(x=>x.key===chosen)??persisted[0];
    const cover=await supabase.from("experience_media").update({is_cover:true}).eq("id",selected.id).eq("experience_id",id);
    if(cover.error)throw cover.error;
+  }
+  // Delete replaced photos only after the new gallery and its cover are persisted.
+  // A failed upload must not permanently remove the previous gallery.
+  if(removedPaths.length){
+   const deletion=await deleteExperienceMedia(supabase,id,removedPaths);
+   if(!deletion.ok)throw new Error("Impossibile rimuovere le fotografie eliminate.");
+   setRemovedPaths([]);
   }
  }
 
