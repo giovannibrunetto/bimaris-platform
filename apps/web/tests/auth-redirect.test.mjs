@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { authRedirectOrigin, safeAuthPath, PUBLIC_SITE_URL } from "../lib/auth-redirect.ts";
+import { authRedirectOrigin, safeAuthPath, PUBLIC_SITE_URL, OPERATOR_QA_ORIGIN, operatorOAuthEntryOrigin } from "../lib/auth-redirect.ts";
 
 const STAGING = "https://bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app";
 
@@ -40,4 +40,13 @@ test("external, protocol-relative and backslash redirects are rejected", () => {
   ]) {
     assert.equal(safeAuthPath(candidate), null);
   }
+});
+
+
+test("immutable Preview URL redirects operator OAuth entry to the stable branch alias", () => {
+ assert.equal(operatorOAuthEntryOrigin("https://bimaris-platform-96elwdpco-giovannibrunetto84-1508.vercel.app"),OPERATOR_QA_ORIGIN);
+ assert.equal(operatorOAuthEntryOrigin("https://bimaris-platform-xyz123-giovannibrunetto84-1508.vercel.app"),OPERATOR_QA_ORIGIN);
+});
+test("staging, production, and the canonical branch alias are never rewritten", () => {
+ for(const origin of [STAGING,PUBLIC_SITE_URL,OPERATOR_QA_ORIGIN])assert.equal(operatorOAuthEntryOrigin(origin),origin);
 });
