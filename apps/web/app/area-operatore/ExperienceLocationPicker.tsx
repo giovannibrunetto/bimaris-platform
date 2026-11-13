@@ -11,7 +11,6 @@ export type ExperienceLocation={
  latitude:string;
  longitude:string;
 };
-type Candidate={address:string;placeId:string;latitude:number;longitude:number};
 
 async function googleMaps():Promise<any>{
  if(window.google?.maps?.Geocoder){if(!window.google.maps.places&&window.google.maps.importLibrary)await window.google.maps.importLibrary("places");return window.google.maps;}
@@ -41,7 +40,6 @@ async function googleMaps():Promise<any>{
 
 export default function ExperienceLocationPicker({value,onChange}:{value:ExperienceLocation;onChange:(next:ExperienceLocation)=>void}){
  const [query,setQuery]=useState(value.meetingPoint);
- const [results,setResults]=useState<Candidate[]>([]);
  const [busy,setBusy]=useState(false);
  const [suggestions,setSuggestions]=useState<{description:string;placeId:string}[]>([]);
  const requestId=useRef(0);
@@ -86,7 +84,7 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   const name=query.trim();
   if(!name)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
   onChange({...value,meetingPoint:name,googleMapsPlaceId:"",latitude:String(pending.latitude),longitude:String(pending.longitude)});
-  setResults([]);setMapOpen(false);setMapError("");
+  setMapOpen(false);setMapError("");
  };
 
  const confirmed=value.latitude!==""&&value.longitude!==""&&Number.isFinite(Number(value.latitude))&&Number.isFinite(Number(value.longitude));
@@ -125,25 +123,10 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   finally{setBusy(false)}
  };
  const changeQuery=(next:string)=>{
-  setQuery(next);setResults([]);setSuggestions([]);setError("");
+  setQuery(next);setSuggestions([]);setError("");
   // Re-entering an unchanged saved address must not invalidate its confirmed coordinates.
   if(next.trim()===value.meetingPoint.trim())return;
   onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""});
- };
- const verify=async()=>{
-  if(!query.trim()){setError("Inserisci un nome o un indirizzo.");return}
-  setBusy(true);setError("");setResults([]);
-  try{
-   const maps=await googleMaps();
-   const r=await Promise.race([new maps.Geocoder().geocode({address:query.trim(),region:"IT"}),new Promise<never>((_,reject)=>window.setTimeout(()=>reject(new Error("Ricerca scaduta. Riprova.")),8000))]);
-   const found:Candidate[]=(r.results??[]).slice(0,5).flatMap((item:any)=>{
-    if(!item.geometry?.location)return[];
-    return [{address:String(item.formatted_address??query),placeId:String(item.place_id??""),latitude:item.geometry.location.lat(),longitude:item.geometry.location.lng()}];
-   });
-   if(!found.length)setError("Nessun punto identificato. Prova con un indirizzo più preciso.");
-   setResults(found);
-  }catch(err){setError(err instanceof Error?err.message:"Impossibile verificare il luogo.")}
-  finally{setBusy(false)}
  };
  return <div className="experience-location-picker">
   <strong>Punto geografico di riferimento</strong>
@@ -169,7 +152,7 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    <button type="button" onClick={confirmManual} disabled={!pending||mapLoading}>Conferma questo punto</button>
   </div>}
   {error&&<p role="alert">{error}</p>}
-  {results.length>0&&<div className="location-results" aria-label="Risultati Google Maps"><p>Conferma il punto corretto:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);setResults([])}}>{item.address} — Conferma</button>)}</div>}
+
   {confirmed&&!mapOpen&&<p className="location-confirmed" role="status">Punto confermato: {value.meetingPoint} ({Number(value.latitude).toFixed(5)}, {Number(value.longitude).toFixed(5)})</p>}
   <style jsx>{`
    .experience-location-picker{display:grid;gap:12px;padding:18px;border:1px solid #bdad8a;border-radius:14px;background:#f8f5ee;color:#153038;margin:16px 0}
