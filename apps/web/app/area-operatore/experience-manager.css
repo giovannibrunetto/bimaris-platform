@@ -98,3 +98,6 @@
  .experience-manager__show-all{display:block;width:100%;margin:12px 0 18px;padding:12px 15px;border:1px solid #caa86a;border-radius:999px;background:#fffaf1;color:#07343b;font:inherit;font-weight:700;cursor:pointer}
  .experience-manager__show-all:focus-visible{outline:2px solid #caa86a;outline-offset:3px}
 }
+
+/* DT13: a pending revision action is processing, not forbidden. Keep disabled semantics against duplicate clicks. */
+.experience-manager .experience-manager__card>button.experience-manager__propose-revision:disabled{cursor:progress;opacity:.8}
