@@ -72,3 +72,12 @@ test("administrator cannot silently approve an unimplemented partner change",()=
  assert.match(route,/collaboration-not-ready/);
  assert.match(page,/consenso verificato e l’applicazione atomica/);
 });
+
+test("taxonomy migration candidate only reports readiness for installed enabled trigger",()=>{
+ const sql=readFileSync(new URL("../../../docs/technical/DS-UX-REV-01-taxonomy-atomic-candidate.sql",import.meta.url),"utf8");
+ assert.match(sql,/from pg_catalog\.pg_trigger t/);
+ assert.match(sql,/t\.tgenabled = 'O'/);
+ assert.match(sql,/t\.tgname = 'bimaris_apply_revision_taxonomy_on_approval'/);
+ assert.match(sql,/p\.proname = 'bimaris_apply_revision_taxonomy'/);
+ assert.doesNotMatch(sql,/as \$\$select true\$\$/);
+});
