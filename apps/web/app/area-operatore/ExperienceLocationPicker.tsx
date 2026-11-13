@@ -94,26 +94,18 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   const timer=window.setTimeout(async()=>{
    try{
     const maps=await googleMaps();
-    if(!maps.places?.AutocompleteService)throw new Error("Google Places non disponibile: verifica API e restrizioni della chiave.");
-    const service=new maps.places.AutocompleteService();
-    const predictions=await new Promise<any[]>((resolve,reject)=>{
-     let settled=false;
-     const timer=window.setTimeout(()=>finish(new Error("Google Places non risponde.")),8000);
-     function finish(error:Error|null,result:any[]=[]){
-      if(settled)return;
-      settled=true;window.clearTimeout(timer);
-      if(error)reject(error);else resolve(result);
-     }
-     try{
-      service.getPlacePredictions({input:query.trim(),componentRestrictions:{country:"it"}},(items:any[]|null,status:string)=>{
-       if(status===maps.places.PlacesServiceStatus.ZERO_RESULTS){finish(null,[]);return;}
-       if(status!==maps.places.PlacesServiceStatus.OK){finish(new Error("Google Places: "+String(status||"risposta non disponibile")));return;}
-       finish(null,Array.isArray(items)?items:[]);
-      });
-     }catch(e){finish(e instanceof Error?e:new Error("Google Places non disponibile."));}
-    });
+    if(!maps.places?.AutocompleteSuggestion?.fetchAutocompleteSuggestions)throw new Error("Places API (New) non disponibile: controlla API abilitate e restrizioni.");
+    const response=await Promise.race([
+     maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({input:query.trim(),includedRegionCodes:["it"]}),
+     new Promise<never>((_,reject)=>window.setTimeout(()=>reject(new Error("Google Places non risponde entro 8 secondi.")),8000))
+    ]);
     if(current!==requestId.current)return;
-    setSuggestions(predictions.slice(0,5).map((p:any)=>({description:String(p.description??""),placeId:String(p.place_id??"")})).filter(p=>p.description&&p.placeId));
+    const suggestionsList=Array.isArray(response?.suggestions)?response.suggestions:[];
+    setSuggestions(suggestionsList.slice(0,5).flatMap((item:any)=>{
+     const prediction=item.placePrediction;
+     if(!prediction?.placeId)return[];
+     return [{description:String(prediction.text?.toString?.()??prediction.text?.text??""),placeId:String(prediction.placeId)}];
+    }).filter((item:{description:string;placeId:string})=>item.description));
     setError("");
    }catch(e){if(current===requestId.current){setSuggestions([]);setError(e instanceof Error?e.message:"Suggerimenti non disponibili.");}}
   },350);
@@ -123,14 +115,17 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   setBusy(true);setError("");setSuggestions([]);requestId.current++;
   try{
    const maps=await googleMaps();
-   const response=await Promise.race([
-    new maps.Geocoder().geocode({placeId:item.placeId}),
+   if(!maps.places?.Place)throw new Error("Places API (New) non disponibile.");
+   const place=new maps.places.Place({id:item.placeId});
+   await Promise.race([
+    place.fetchFields({fields:["location","formattedAddress"]}),
     new Promise<never>((_,reject)=>window.setTimeout(()=>reject(new Error("Verifica del luogo scaduta. Riprova.")),8000))
    ]);
-   const location=response.results?.[0]?.geometry?.location;
+   const location=place.location;
    if(!location)throw new Error("Coordinate del luogo non disponibili.");
-   setQuery(item.description);
-   onChange({...value,meetingPoint:item.description,googleMapsPlaceId:item.placeId,latitude:String(location.lat()),longitude:String(location.lng())});
+   const label=String(place.formattedAddress||item.description);
+   setQuery(label);
+   onChange({...value,meetingPoint:label,googleMapsPlaceId:item.placeId,latitude:String(location.lat()),longitude:String(location.lng())});
   }catch(e){setError(e instanceof Error?e.message:"Impossibile confermare il luogo.");}
   finally{setBusy(false)}
  };
