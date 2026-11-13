@@ -41,6 +41,11 @@ export async function POST(request:NextRequest){
    // Feature gate is server-enforced. A proposal containing taxonomy keys must
    // never be silently approved before the atomic database trigger is installed.
    const taxonomyPayload=revision.content as Record<string,unknown>|null;
+   // A partner replacement/removal is never interpreted as implicitly approved.
+   // It needs an independent, verified partner-consent workflow and an atomic apply.
+   if(taxonomyPayload&&["collaboration_change","partner_operator_id","partner_activity_label","partner_consent_id"].some(key=>key in taxonomyPayload)){
+    return back(request,"collaboration-not-ready",revision.experience_id);
+   }
    if(taxonomyPayload&&("interest_keys" in taxonomyPayload||"activity_keys" in taxonomyPayload)){
     const {data:ready,error:gateError}=await supabase.rpc("bimaris_revision_taxonomy_ready");
     if(gateError||ready!==true)return back(request,"taxonomy-not-ready",revision.experience_id);
