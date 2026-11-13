@@ -107,7 +107,6 @@ $function$
  update public.experience_revisions set status='applied',review_notes=nullif(left(trim(coalesce(p_review_notes,'')),2000),''),review_sections='{}'::jsonb,reviewed_at=v_now,applied_at=v_now,updated_at=v_now where id=v_revision.id;
  return query select v_revision.experience_id,v_name;
 end;
-$function$
 ;
 
 REVOKE ALL ON FUNCTION public.admin_apply_experience_revision(uuid,text,text) FROM PUBLIC, anon, authenticated;
