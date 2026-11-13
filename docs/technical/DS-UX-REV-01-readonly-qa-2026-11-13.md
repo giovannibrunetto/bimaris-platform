@@ -43,3 +43,18 @@ Le simulazioni hanno verificato **solo la logica di confronto**, non il trigger,
 ## Decisione
 
 **GO** per preparazione e test isolati, **NO-GO** per installazione su Staging, flag di attivazione, merge e Production. La CI PASS non sostituisce l'evidenza del comportamento transazionale dell'RPC.
+
+## Ulteriori sei simulazioni di validazione payload (sole SELECT)
+
+Sono stati verificati direttamente con PostgreSQL in Staging gli stessi predicati di validazione del candidato SQL.
+
+| Payload simulato | Validazione |
+| --- | --- |
+| Chiavi interessi e attività ben formate | Accettato |
+| Interesse duplicato | Respinto |
+| Zero interessi | Respinto |
+| Quattro interessi | Respinto |
+| Interesse non testuale | Respinto |
+| Zero attività | Respinto |
+
+**6/6 esiti attesi** nel test dei predicati. Non sono state eseguite funzioni né modifiche ai dati.
