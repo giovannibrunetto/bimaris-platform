@@ -96,12 +96,24 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
     const maps=await googleMaps();
     if(!maps.places?.AutocompleteService)throw new Error("Google Places non disponibile: verifica API e restrizioni della chiave.");
     const service=new maps.places.AutocompleteService();
-    const predictions=await Promise.race([
-     service.getPlacePredictions({input:query.trim(),componentRestrictions:{country:"it"}}),
-     new Promise<never>((_,reject)=>window.setTimeout(()=>reject(new Error("Google Places non risponde.")),8000))
-    ]);
+    const predictions=await new Promise<any[]>((resolve,reject)=>{
+     let settled=false;
+     const timer=window.setTimeout(()=>finish(new Error("Google Places non risponde.")),8000);
+     function finish(error:Error|null,result:any[]=[]){
+      if(settled)return;
+      settled=true;window.clearTimeout(timer);
+      if(error)reject(error);else resolve(result);
+     }
+     try{
+      service.getPlacePredictions({input:query.trim(),componentRestrictions:{country:"it"}},(items:any[]|null,status:string)=>{
+       if(status===maps.places.PlacesServiceStatus.ZERO_RESULTS){finish(null,[]);return;}
+       if(status!==maps.places.PlacesServiceStatus.OK){finish(new Error("Google Places: "+String(status||"risposta non disponibile")));return;}
+       finish(null,Array.isArray(items)?items:[]);
+      });
+     }catch(e){finish(e instanceof Error?e:new Error("Google Places non disponibile."));}
+    });
     if(current!==requestId.current)return;
-    setSuggestions((predictions.predictions??[]).slice(0,5).map((p:any)=>({description:p.description,placeId:p.place_id})));
+    setSuggestions(predictions.slice(0,5).map((p:any)=>({description:String(p.description??""),placeId:String(p.place_id??"")})).filter(p=>p.description&&p.placeId));
     setError("");
    }catch(e){if(current===requestId.current){setSuggestions([]);setError(e instanceof Error?e.message:"Suggerimenti non disponibili.");}}
   },350);
