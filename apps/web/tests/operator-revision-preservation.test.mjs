@@ -123,3 +123,10 @@ test("admin change request never sends rejection notice if transition affected z
  assert.match(section,/if\(!rejected\)return back\(request,"invalid-review-state"/);
  assert.ok(section.indexOf("if(!rejected)")<section.indexOf("sendReviewNotification"));
 });
+
+test("revision opening failure stays visible when wizard closes and loading label is per-card",()=>{
+ assert.match(source,/!open&&message&&<div className="experience-manager__submission-notice" role="alert"/);
+ assert.match(source,/openingRevisionId===e\.id\?"Apertura in corso…":"Proponi modifica"/);
+ assert.match(source,/if\(existingError\)throw new Error\("Impossibile verificare le proposte esistenti: "/);
+ assert.match(source,/finally\{setBusy\(false\);setOpeningRevisionId\(null\)\}/);
+});
