@@ -53,7 +53,7 @@ export async function POST(request:NextRequest){
      if(updated.error){await supabase.storage.from(LIVE_MEDIA_BUCKET).remove([livePath]);throw updated.error;}
      promoted.push({id:item.id,privatePath,livePath});
     }
-    const {data:applied,error:applyError}=await supabase.rpc("admin_apply_experience_revision",{p_revision_id:revisionId,p_review_notes:general||null});
+    const {data:applied,error:applyError}=await supabase.rpc("admin_apply_experience_revision",{p_revision_id:revisionId,p_review_notes:general||null,p_storage_origin:process.env.NEXT_PUBLIC_SUPABASE_URL||""});
     if(applyError){
      for(const item of [...promoted].reverse())await supabase.from("experience_revision_media").update({storage_path:item.privatePath}).eq("id",item.id).eq("revision_id",revisionId).eq("storage_path",item.livePath);
      if(promoted.length)await supabase.storage.from(LIVE_MEDIA_BUCKET).remove(promoted.map(item=>item.livePath));
