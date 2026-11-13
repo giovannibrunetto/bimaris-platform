@@ -28,3 +28,21 @@ test("successful submit produces visible status after closing editor",()=>{
  assert.match(source,/setSubmissionNotice\("Esperienza inviata correttamente a BIMARIS/);
  assert.match(source,/experience-manager__submission-notice" role="status"/);
 });
+
+test("taxonomy modifications are feature-gated until the DB applies them atomically",()=>{
+ assert.match(source,/REVISION_TAXONOMY_ENABLED=process\.env\.NEXT_PUBLIC_BIMARIS_REVISION_TAXONOMY_V2==="true"/);
+ assert.match(source,/base_interest_keys:taxonomyBaseRef\.current\.interestKeys/);
+ assert.match(source,/base_activity_keys:taxonomyBaseRef\.current\.activityKeys/);
+ assert.match(source,/\(!REVISION_TAXONOMY_ENABLED\)/);
+});
+test("admin approval refuses taxonomy modifications if database readiness is absent",()=>{
+ const admin=readFileSync(new URL("../app/api/admin/experience-revisions/route.ts",import.meta.url),"utf8");
+ assert.match(admin,/bimaris_revision_taxonomy_ready/);
+ assert.match(admin,/taxonomy-not-ready/);
+});
+test("admin comparison includes taxonomy and explicitly preserves partner consent",()=>{
+ const adminPage=readFileSync(new URL("../app/admin/esperienze/[id]/revisione/page.tsx",import.meta.url),"utf8");
+ assert.match(adminPage,/proposedInterests/);
+ assert.match(adminPage,/proposedActivities/);
+ assert.match(adminPage,/necessita di accettazione autonoma|necessita di accettazione/);
+});
