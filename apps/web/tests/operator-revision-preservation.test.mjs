@@ -18,8 +18,8 @@ test("revisions show existing collaboration without attempting a new invitation 
  assert.match(source,/experienceId=\{editingId\}/);
  assert.match(source,/\(!revisionId&&!collaborationReady\)/);
 });
-test("revision tags stay visible but cannot be changed without transactional apply workflow",()=>{
- assert.match(source,/disabled=\{Boolean\(revisionId\)\}/);
+test("revision tags stay visible and remain protected by the rollout flag",()=>{
+ assert.match(source,/disabled=\{Boolean\(revisionId\)\&\&!REVISION_TAXONOMY_ENABLED\}/);
  assert.match(source,/Interessi della scheda originale, conservati senza modifiche/);
  assert.match(source,/Attività collegate alla scheda originale/);
 });
