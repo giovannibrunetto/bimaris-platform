@@ -6,7 +6,7 @@
 
 create or replace function public.bimaris_revision_taxonomy_ready()
 returns boolean language sql stable security invoker
-set search_path = '' as $
+set search_path = '' as $$
  select exists (
    select 1
    from pg_catalog.pg_trigger t
@@ -19,7 +19,7 @@ set search_path = '' as $
      and n.nspname = 'public'
      and p.proname = 'bimaris_apply_revision_taxonomy'
  );
-$;
+$$;
 revoke all on function public.bimaris_revision_taxonomy_ready() from public, anon, authenticated;
 grant execute on function public.bimaris_revision_taxonomy_ready() to service_role;
 
