@@ -112,3 +112,14 @@ test("admin review comparison fails closed when any source dataset is unavailabl
  assert.match(page,/if\(livePhotosError\|\|proposedRowsError\|\|liveInterestsError\|\|liveActivitiesError\|\|livePartnersError\)/);
  assert.match(page,/Nessuna decisione è consentita/);
 });
+
+test("admin change request never sends rejection notice if transition affected zero rows",()=>{
+ const route=readFileSync(new URL("../app/api/admin/experience-revisions/route.ts",import.meta.url),"utf8");
+ const start=route.indexOf('if(action==="request-changes")');
+ const end=route.indexOf('if(action==="approve-apply")',start);
+ const section=route.slice(start,end);
+ assert.ok(start!==-1&&end>start);
+ assert.match(section,/\.eq\("status","pending"\)\.select\("id"\)\.maybeSingle\(\)/);
+ assert.match(section,/if\(!rejected\)return back\(request,"invalid-review-state"/);
+ assert.ok(section.indexOf("if(!rejected)")<section.indexOf("sendReviewNotification"));
+});
