@@ -126,7 +126,16 @@ test("admin change request never sends rejection notice if transition affected z
 
 test("revision opening failure stays visible when wizard closes and loading label is per-card",()=>{
  assert.match(source,/!open&&message&&<div className="experience-manager__submission-notice" role="alert"/);
- assert.match(source,/openingRevisionId===e\.id\?"Apertura in corso…":"Proponi modifica"/);
+ assert.match(source,/openingRevisionId===e\.id\?"Apertura in corso…":revisionStates\[e\.id\]/);
  assert.match(source,/if\(existingError\)throw new Error\("Impossibile verificare le proposte esistenti: "/);
  assert.match(source,/finally\{setBusy\(false\);setOpeningRevisionId\(null\)\}/);
+});
+
+test("revision state is fetched per operator, pending cannot spawn a second proposal and drafts are resumable",()=>{
+ assert.match(source,/\.eq\("operator_id",operatorId\)\s*\.in\("status",\["draft","pending","rejected","approved"\]\)/);
+ assert.match(source,/\.eq\("experience_id",e\.id\)\.eq\("operator_id",operatorId\)\.in\("status",\["draft","pending","rejected","approved"\]\)/);
+ assert.match(source,/revisionStates\[e\.id\]==="pending"/);
+ assert.match(source,/revisionStates\[e\.id\]==="draft"\|\|revisionStates\[e\.id\]==="rejected"\?"Riprendi modifica"/);
+ assert.match(source,/if\(existing&&\(existing\.status==="pending"\|\|existing\.status==="approved"\)\)/);
+ assert.match(source,/if\(error\)throw new Error\("Impossibile caricare le fotografie della revisione/);
 });
