@@ -36,6 +36,6 @@ export function operatorOAuthEntryOrigin(origin: string): string {
   let url: URL;
   try { url = new URL(origin); } catch { return origin; }
   const isImmutablePreview = url.protocol === "https:" &&
-    /^bimaris-platform-[a-z0-9]+-giovannibrunetto84-1508\\.vercel\\.app$/.test(url.hostname);
+    /^bimaris-platform-[a-z0-9]+-giovannibrunetto84-1508\.vercel\.app$/.test(url.hostname);
   return isImmutablePreview ? OPERATOR_QA_ORIGIN : url.origin;
 }
