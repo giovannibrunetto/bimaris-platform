@@ -7,7 +7,7 @@ import "./experience-revision.css";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type Content = { name?: string | null; excerpt?: string | null; description?: string | null; duration_minutes?: number | null; price_from?: number | null; meeting_point?: string | null; latitude?: number | null; longitude?: number | null; location_kind?: "venue" | "departure" | null; territory_id?: string | null; territory_municipality_code?: string | null };
+type Content = { name?: string | null; excerpt?: string | null; description?: string | null; duration_minutes?: number | null; price_from?: number | null; meeting_point?: string | null; latitude?: number | null; longitude?: number | null; location_kind?: "venue" | "departure" | null; territory_id?: string | null; territory_municipality_code?: string | null; interest_keys?: string[]; activity_keys?: string[] };
 type Photo = { storage_path: string; alt_text: string | null; sort_order: number; is_cover: boolean; source_media_id?: string | null; url?: string };
 const publicMediaUrl = (path: string) => `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}/storage/v1/object/public/experience-media/${path.split("/").map(encodeURIComponent).join("/")}`;
 const changed = (a: unknown, b: unknown) => String(a ?? "") !== String(b ?? "");
@@ -25,9 +25,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const { data: operator, error: operatorError } = await db.from("operators").select("name").eq("id", experience.operator_id).maybeSingle();
   if (operatorError) console.error("BIMARIS review operator lookup failed", operatorError);
   const { data: revision } = await db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
-  const [{ data: livePhotos }, { data: proposedRows }] = await Promise.all([
+  const [{ data: livePhotos }, { data: proposedRows }, {data:liveInterests}, {data:liveActivities}, {data:livePartners}] = await Promise.all([
     db.from("experience_media").select("storage_path,alt_text,sort_order,is_cover").eq("experience_id", id).order("sort_order"),
     revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] }),
+    db.from("experience_discovery_intents").select("intent_key").eq("experience_id",id),
+    db.from("experience_activity_links").select("activity_key").eq("experience_id",id).eq("operator_id",experience.operator_id),
+    db.from("experience_operators").select("operator_id,activity_label,approval_status,operators(name)").eq("experience_id",id).eq("role","participant"),
   ]);
   const proposedPhotos: Photo[] = await Promise.all(((proposedRows ?? []) as Photo[]).map(async photo => {
     if (photo.source_media_id) return { ...photo, url: publicMediaUrl(photo.storage_path) };
@@ -37,10 +40,21 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const next = (revision?.content ?? {}) as Content;
   const currentLabel=experience.published?"ONLINE ORA":"VERSIONE APPROVATA (NON PUBBLICATA)";
   const { state } = await searchParams;
-  const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "La revisione non può essere applicata: verifica lo stato di approvazione dell’esperienza e la disponibilità dell’operatore.", "action-error": "Operazione non riuscita." };
+  const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "La revisione non può essere applicata: verifica lo stato di approvazione dell’esperienza e la disponibilità dell’operatore.", "action-error": "Operazione non riuscita.", "taxonomy-not-ready": "Approvazione bloccata: le modifiche agli interessi e alle attività richiedono il modulo database di applicazione atomica." };
 
   const comparisonRows = ([["Nome", experience.name, next.name], ["Testo breve", experience.excerpt, next.excerpt], ["Descrizione", experience.description, next.description], ["Durata", experience.duration_minutes, next.duration_minutes], ["Prezzo da", experience.price_from, next.price_from], ["Punto di incontro", experience.meeting_point, next.meeting_point], ["Tipologia punto", experience.location_kind, next.location_kind], ["Latitudine", experience.latitude, next.latitude], ["Longitudine", experience.longitude, next.longitude], ["Codice ISTAT comune", experience.territory_municipality_code, next.territory_municipality_code]] as [string, unknown, unknown][]);
+  const sorted=(values:string[])=>[...values].sort((a,b)=>a.localeCompare(b,"it"));
+  const baselineInterests=sorted((liveInterests??[]).map(item=>item.intent_key));
+  const baselineActivities=sorted((liveActivities??[]).map(item=>item.activity_key));
+  const proposedInterests=sorted(Array.isArray(next.interest_keys)?next.interest_keys:baselineInterests);
+  const proposedActivities=sorted(Array.isArray(next.activity_keys)?next.activity_keys:baselineActivities);
+  const taxonomyRows: [string,string,string][]=[
+    ["Interessi",baselineInterests.join(", ")||"—",proposedInterests.join(", ")||"—"],
+    ["Attività collegate",baselineActivities.join(", ")||"—",proposedActivities.join(", ")||"—"],
+  ];
+  comparisonRows.push(...taxonomyRows);
   const modifiedRows = comparisonRows.filter(([, before, after]) => changed(before, after));
+
   const photoSignature = (photos: Photo[]) => JSON.stringify(photos.map(p => ({ storage_path:p.storage_path, alt_text:p.alt_text ?? null, sort_order:p.sort_order, is_cover:p.is_cover })));
   const photosChanged = photoSignature((livePhotos ?? []) as Photo[]) !== photoSignature((proposedRows ?? []) as Photo[]);
 
@@ -53,6 +67,15 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         {modifiedRows.length===0&&<p>Nessuna differenza rilevata nei dati principali.{photosChanged ? " La proposta modifica le fotografie." : ""}</p>}
         <div className="revision-review-summary__rows">{modifiedRows.map(([label,before,after])=><div className="revision-review-summary__row" key={label}><h4>{label}</h4><div className="revision-review-summary__comparison"><div><small>{currentLabel}</small><p>{show(before)}</p></div><div><small>NUOVA PROPOSTA</small><p>{show(after)}</p></div></div></div>)}</div>
 
+      </section>
+      <section aria-label="Collaborazioni esistenti" className="revision-review-summary">
+        <h3>Collaborazione collegata alla scheda originale</h3>
+        {(livePartners??[]).length===0?<p>Nessun partner attualmente associato.</p>:<div>{(livePartners??[]).map((item,i)=>{
+          const partner=item.operators as unknown as {name?:string}|{name?:string}[]|null;
+          const name=Array.isArray(partner)?partner[0]?.name:partner?.name;
+          return <p key={item.operator_id+i}><strong>{name??item.operator_id}</strong> — {item.activity_label||"Attività non specificata"} · {item.approval_status==="accepted"?"Confermata":item.approval_status==="pending"?"In attesa di consenso":"Rifiutata"}</p>;
+        })}</div>}
+        <p><small>La proposta attuale non cambia i partner: una nuova collaborazione necessita di accettazione autonoma prima della pubblicazione.</small></p>
       </section>
       {photosChanged && <details className="revision-gallery revision-review-summary__gallery"><summary>Confronto galleria fotografica — apri per verificare copertina e immagini</summary>
         <div className="revision-section-heading">
