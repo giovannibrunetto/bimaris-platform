@@ -94,3 +94,14 @@ test("reopened taxonomy revisions retain their original concurrency baseline",()
  assert.match(source,/Array\.isArray\(stored\?\.base_activity_keys\)/);
  assert.match(source,/taxonomyBaseRef\.current=\{interestKeys:stored\.base_interest_keys/);
 });
+
+test("integration suite requires empty isolated database and rolls back its entire fixture",()=>{
+ const fixture=readFileSync(new URL("../../../docs/technical/DS-UX-REV-01-isolated-transaction-suite.sql",import.meta.url),"utf8");
+ assert.match(fixture,/BEGIN;/);
+ assert.match(fixture,/ROLLBACK;/);
+ assert.match(fixture,/REFUSED: test requires a fresh, isolated database/);
+ assert.match(fixture,/\\ir DS-UX-REV-01-taxonomy-atomic-candidate\.sql/);
+ assert.match(fixture,/EXCEPTION WHEN foreign_key_violation/);
+ assert.match(fixture,/EXCEPTION WHEN SQLSTATE 'P0001'/);
+ assert.match(fixture,/partner_activity/);
+});
