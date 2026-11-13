@@ -1,0 +1,49 @@
+name: DS-UX-REV-01 Isolated PostgreSQL QA
+
+on:
+  pull_request:
+    paths:
+      - 'docs/technical/DS-UX-REV-01-*.sql'
+      - '.github/workflows/taxonomy-isolated.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-taxonomy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: integration-only
+          POSTGRES_DB: bimaris_disposable
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bimaris_disposable"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run rollback-only taxonomy suite on disposable PostgreSQL
+        env:
+          PGPASSWORD: integration-only
+          PGHOST: localhost
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGDATABASE: bimaris_disposable
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+          psql -X -v ON_ERROR_STOP=1 -f docs/technical/DS-UX-REV-01-isolated-transaction-suite.sql
+          if psql -X -Atc "select to_regclass('public.experiences') is null and to_regclass('public.experience_revisions') is null" | grep -qx 't'; then
+            echo "Rollback confirmed: no application fixture remains"
+          else
+            echo "FAIL: disposable fixture survived ROLLBACK" >&2
+            exit 1
+          fi
