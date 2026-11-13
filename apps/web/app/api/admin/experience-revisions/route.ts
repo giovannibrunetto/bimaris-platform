@@ -33,7 +33,7 @@ export async function POST(request:NextRequest){
   const general=text(form.get("review_notes"),2000); const sections=reviewSections(form); const summary=reviewSummary(sections,general);
   if(action==="request-changes"){
    if(!summary)return back(request,"review-note-required",revision.experience_id);
-   const {error}=await supabase.from("experience_revisions").update({status:"rejected",review_notes:summary,review_sections:sections,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",revisionId).eq("status","pending"); if(error)throw error;
+   const {data:rejected,error}=await supabase.from("experience_revisions").update({status:"rejected",review_notes:summary,review_sections:sections,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",revisionId).eq("status","pending").select("id").maybeSingle(); if(error)throw error; if(!rejected)return back(request,"invalid-review-state",revision.experience_id);
    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes:summary});
    return back(request,"changes-requested",revision.experience_id);
   }
