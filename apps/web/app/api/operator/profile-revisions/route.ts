@@ -4,8 +4,8 @@ import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 function value(form:FormData,key:string,max:number){const v=form.get(key);return typeof v==="string"?v.trim().slice(0,max):"";}
 export async function POST(request:NextRequest){
- const originError=rejectCrossSiteOperatorMutation(request);
- if(originError)return originError;
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
  const db=await createUserServerClient();if(!db)return NextResponse.redirect(new URL("/accedi",request.url),303);
  const {data:claims}=await db.auth.getClaims();const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;if(!userId)return NextResponse.redirect(new URL("/accedi",request.url),303);
  const form=await request.formData(),operatorId=value(form,"operator_id",80);if(!operatorId)return NextResponse.redirect(new URL("/area-operatore?profile=invalid",request.url),303);
