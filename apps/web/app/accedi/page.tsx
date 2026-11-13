@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FormEvent,useEffect,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import PasswordAccess from "./PasswordAccess";
+import { operatorOAuthEntryOrigin } from "@/lib/auth-redirect";
 
 export default function AccediPage(){
  const [operatorEmail,setOperatorEmail]=useState("");
@@ -42,6 +43,12 @@ export default function AccediPage(){
  }
 
  async function signInOperatorWithGoogle(){
+  const canonicalOrigin=operatorOAuthEntryOrigin(window.location.origin);
+  if(canonicalOrigin!==window.location.origin){
+   window.location.assign(`${canonicalOrigin}/accedi?next=${encodeURIComponent(operatorReturnPath())}`);
+   return;
+  }
+
   const supabase=createBrowserSupabaseClient();
   if(!supabase){feedback("Accesso Google non disponibile.",true);return;}
   setOperatorLoading(true);feedback("");
@@ -50,6 +57,12 @@ export default function AccediPage(){
   if(error){setOperatorLoading(false);feedback("Impossibile avviare l'accesso con Google. Riprova.",true);}
  }
  async function sendOperatorMagicLink(event:FormEvent){
+  const canonicalOrigin=operatorOAuthEntryOrigin(window.location.origin);
+  if(canonicalOrigin!==window.location.origin){
+   window.location.assign(`${canonicalOrigin}/accedi?next=${encodeURIComponent(operatorReturnPath())}`);
+   return;
+  }
+
   event.preventDefault();const supabase=createBrowserSupabaseClient();
   if(!supabase){feedback("Accesso non disponibile in questo momento.",true);return;}
   setOperatorLoading(true);feedback("");
