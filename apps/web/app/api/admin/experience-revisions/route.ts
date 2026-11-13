@@ -25,7 +25,7 @@ export async function POST(request:NextRequest){
  const form=await request.formData(); const action=text(form.get("action"),40); const revisionId=text(form.get("revision_id"),80); const supabase=createServiceClient();
  if(!supabase||!revisionId)return back(request,"invalid-data");
  try{
-  const {data:revision,error:readError}=await supabase.from("experience_revisions").select("id,experience_id,operator_id,status,operator:operators(name,email,published,selection_status),experience:experiences(name,published,review_status)").eq("id",revisionId).maybeSingle();
+  const {data:revision,error:readError}=await supabase.from("experience_revisions").select("id,experience_id,operator_id,status,content,operator:operators(name,email,published,selection_status),experience:experiences(name,published,review_status)").eq("id",revisionId).maybeSingle();
   if(readError||!revision||revision.status!=="pending")return back(request,"invalid-review-state");
   const operator=revision.operator as unknown as {name:string|null;email:string|null;published:boolean;selection_status:string}|null;
   const experience=revision.experience as unknown as {name:string;published:boolean;review_status:string}|null;
@@ -38,6 +38,13 @@ export async function POST(request:NextRequest){
    return back(request,"changes-requested",revision.experience_id);
   }
   if(action==="approve-apply"){
+   // Feature gate is server-enforced. A proposal containing taxonomy keys must
+   // never be silently approved before the atomic database trigger is installed.
+   const taxonomyPayload=revision.content as Record<string,unknown>|null;
+   if(taxonomyPayload&&("interest_keys" in taxonomyPayload||"activity_keys" in taxonomyPayload)){
+    const {data:ready,error:gateError}=await supabase.rpc("bimaris_revision_taxonomy_ready");
+    if(gateError||ready!==true)return back(request,"taxonomy-not-ready",revision.experience_id);
+   }
    const {data:revisionMedia,error:mediaError}=await supabase.from("experience_revision_media").select("id,source_media_id,storage_path").eq("revision_id",revisionId);
    if(mediaError)return back(request,"action-error");
    const promoted:PromotedMedia[]=[];
