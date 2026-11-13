@@ -28,7 +28,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if(revisionError){console.error("BIMARIS pending experience revision lookup failed",revisionError);throw new Error("Impossibile verificare le proposte in attesa. L'approvazione è sospesa.");}
   const [{ data: livePhotos,error:livePhotosError }, { data: proposedRows,error:proposedRowsError }, {data:liveInterests,error:liveInterestsError}, {data:liveActivities,error:liveActivitiesError}, {data:livePartners,error:livePartnersError}] = await Promise.all([
     db.from("experience_media").select("storage_path,alt_text,sort_order,is_cover").eq("experience_id", id).order("sort_order"),
-    revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] }),
+    revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] as Photo[], error: null }),
     db.from("experience_discovery_intents").select("intent_key").eq("experience_id",id),
     db.from("experience_activity_links").select("activity_key").eq("experience_id",id).eq("operator_id",experience.operator_id),
     db.from("experience_operators").select("operator_id,activity_label,approval_status,operators(name)").eq("experience_id",id).eq("role","participant"),
