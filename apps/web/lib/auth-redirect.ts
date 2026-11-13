@@ -27,3 +27,15 @@ export function safeAuthPath(value: string | null): string | null {
     return null;
   }
 }
+
+// Single branch alias for the consolidated pre-launch acceptance candidate.
+// Immutable Vercel deployment URLs must never start operator OAuth or OTP flows.
+export const OPERATOR_QA_ORIGIN = "https://bimaris-platform-git-integration-7435f3-giovannibrunetto84-1508.vercel.app";
+
+export function operatorOAuthEntryOrigin(origin: string): string {
+  let url: URL;
+  try { url = new URL(origin); } catch { return origin; }
+  const isImmutablePreview = url.protocol === "https:" &&
+    /^bimaris-platform-[a-z0-9]+-giovannibrunetto84-1508\\.vercel\\.app$/.test(url.hostname);
+  return isImmutablePreview ? OPERATOR_QA_ORIGIN : url.origin;
+}
