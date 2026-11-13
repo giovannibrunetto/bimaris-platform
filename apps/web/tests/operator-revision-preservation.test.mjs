@@ -55,3 +55,11 @@ test("revision queries cannot silently erase visible taxonomy or partner choices
  assert.match(revision,/catch\(error\)\{setOpen\(false\);setMessage/);
  assert.match(revision,/finally\{setBusy\(false\)\}/);
 });
+
+test("submission and revision draft require one authorized affected database row",()=>{
+ const revisionMatches=source.match(/\.eq\("id",revisionId\)\.eq\("operator_id",operatorId\)\.in\("status",\["draft","rejected"\]\)\.select\("id"\)\.maybeSingle\(\)/g)??[];
+ assert.equal(revisionMatches.length,2);
+ assert.match(source,/if\(!data\)throw new Error\("La proposta non è più modificabile/);
+ assert.match(source,/\.in\("review_status",\["draft","rejected"\]\)\.select\("id"\)\.maybeSingle\(\)/);
+ assert.match(source,/if\(!data\)throw new Error\("Non è stato confermato l’invio/);
+});
