@@ -133,5 +133,37 @@ BEGIN
  RAISE NOTICE 'DS-UX-REV-01 integration suite PASS: readiness; taxonomy-only; deferred apply; atomic apply; partner preservation; FK rollback; concurrency conflict';
 END;
 $tests$;
+-- Verify that readiness is not an unconditional success and the deployment
+-- does not expose either privileged function to unauthenticated clients.
+DO $security$
+BEGIN
+ IF has_function_privilege('anon','public.bimaris_revision_taxonomy_ready()','EXECUTE')
+    OR has_function_privilege('authenticated','public.bimaris_revision_taxonomy_ready()','EXECUTE')
+    OR NOT has_function_privilege('service_role','public.bimaris_revision_taxonomy_ready()','EXECUTE')
+ THEN RAISE EXCEPTION 'FAIL: readiness RPC role grants are too permissive'; END IF;
+ IF has_function_privilege('anon','public.bimaris_apply_revision_taxonomy()','EXECUTE')
+    OR has_function_privilege('authenticated','public.bimaris_apply_revision_taxonomy()','EXECUTE')
+ THEN RAISE EXCEPTION 'FAIL: privileged trigger handler exposed to browser roles'; END IF;
+END;
+$security$;
+
+ALTER TABLE public.experience_revisions DISABLE TRIGGER bimaris_apply_revision_taxonomy_on_approval;
+DO $disabled$
+BEGIN
+ IF public.bimaris_revision_taxonomy_ready() THEN
+  RAISE EXCEPTION 'FAIL: readiness returned true while approval trigger was disabled';
+ END IF;
+ RAISE NOTICE 'DS-UX-REV-01 security PASS: restricted grants and disabled-trigger fail-closed';
+END;
+$disabled$;
+ALTER TABLE public.experience_revisions ENABLE TRIGGER bimaris_apply_revision_taxonomy_on_approval;
+DO $enabled$
+BEGIN
+ IF NOT public.bimaris_revision_taxonomy_ready() THEN
+  RAISE EXCEPTION 'FAIL: readiness did not recover when approval trigger was enabled';
+ END IF;
+END;
+$enabled$;
+
 ROLLBACK;
 -- The entire fixture and candidate installation are rolled back.
