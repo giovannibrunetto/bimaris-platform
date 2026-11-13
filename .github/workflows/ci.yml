@@ -19,4 +19,5 @@ jobs:
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
       - run: pnpm test:auth
+      - run: pnpm test:media
       - run: pnpm --filter @bimaris/web build

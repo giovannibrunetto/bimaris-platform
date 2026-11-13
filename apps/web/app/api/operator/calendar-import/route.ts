@@ -1,3 +1,4 @@
+import { rejectCrossSiteOperatorMutation } from "@/lib/operator-request-origin";
 import { NextRequest,NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -48,6 +49,8 @@ function normalizedTitle(value:string){return value.normalize("NFD").replace(/[\
 function canonicalImportedTitle(value:string){let title=value;const d=parseDate(title);const t=parseTime(title);const price=parsePrice(title);if(d)title=title.replace(d.raw,"");if(t?.raw)title=title.replace(t.raw,"");if(price?.raw)title=title.replace(price.raw,"");title=title.replace(/\s*[-–—|:]\s*[-–—|:]+\s*/g," - ").replace(/^[\s\-–—|:]+|[\s\-–—|:]+$/g,"").replace(/[\s\-–—|:]+$/g,"");return normalizedTitle(title);}
 
 export async function POST(request:NextRequest){
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
  const userDb=await createUserServerClient();if(!userDb)return NextResponse.json({error:"Accesso richiesto"},{status:401});
  const {data:claims}=await userDb.auth.getClaims();const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;if(!userId)return NextResponse.json({error:"Accesso richiesto"},{status:401});
  const body=await request.json().catch(()=>null) as {operator_id?:string;raw_text?:string;source_type?:string}|null;const operatorId=body?.operator_id?.trim(),raw=body?.raw_text?.trim();if(!operatorId||!raw)return NextResponse.json({error:"Calendario mancante"},{status:400});if(raw.length>12000)return NextResponse.json({error:"Il calendario è troppo lungo"},{status:400});

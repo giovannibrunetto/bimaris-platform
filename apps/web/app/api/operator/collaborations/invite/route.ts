@@ -1,7 +1,10 @@
+import { rejectCrossSiteOperatorMutation } from "@/lib/operator-request-origin";
 import {NextRequest,NextResponse} from "next/server";
 import {createUserServerClient} from "@/lib/supabase/user-server";
 
 export async function POST(request:NextRequest){
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
  const db=await createUserServerClient();if(!db)return NextResponse.json({error:"Accesso richiesto."},{status:401});
  const {data:claims}=await db.auth.getClaims();const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;if(!userId)return NextResponse.json({error:"Accesso richiesto."},{status:401});
  const body=await request.json().catch(()=>null) as {experience_id?:string;operator_id?:string;partner_operator_id?:string;activity_label?:string}|null;
@@ -33,6 +36,8 @@ export async function POST(request:NextRequest){
 
 /** Explicitly withdraw an invitation while the experience is still editable. */
 export async function DELETE(request:NextRequest){
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
  const db=await createUserServerClient();
  if(!db)return NextResponse.json({error:"Accesso richiesto."},{status:401});
  const {data:claims}=await db.auth.getClaims();

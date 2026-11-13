@@ -3,7 +3,37 @@
 .home-journey-paths-v2 .home-journey-story{background:radial-gradient(circle at 85% 12%,rgba(202,168,106,.16),transparent 28%),linear-gradient(145deg,#0b4249,#032126)!important;border-color:rgba(202,168,106,.38)}
 .home-journey-secondary{display:grid;gap:20px}
 .home-journey-paths-v2 .home-journey-experiences,.home-journey-paths-v2 .home-journey-map{background:#12363a!important}
-.home-journey-paths-v2 .home-journey-path:hover{transform:translateY(-4px)!important}
+/* UX-HOME-01 — Premium interactive states on the three discovery paths. */
+.home-journey-paths-v2 .home-journey-path{
+  position:relative;
+  border:1px solid rgba(202,168,106,.28);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+  transform-origin:center;
+}
+@media(hover:hover) and (pointer:fine){
+  .home-journey-paths-v2 .home-journey-path:hover{
+    transform:translateY(-4px) scale(1.025)!important;
+    border-color:#caa86a!important;
+    box-shadow:0 15px 35px rgba(0,0,0,.25),0 0 0 2px rgba(202,168,106,.27);
+    z-index:2;
+  }
+}
+.home-journey-paths-v2 .home-journey-path:focus-visible{
+  outline:2px solid #caa86a;
+  outline-offset:4px;
+  border-color:#caa86a!important;
+  box-shadow:0 0 0 2px rgba(202,168,106,.25);
+}
+@media(hover:none){
+  .home-journey-paths-v2 .home-journey-path:active{
+    border-color:#caa86a!important;
+    box-shadow:0 0 0 2px rgba(202,168,106,.3);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .home-journey-paths-v2 .home-journey-path{transition:none!important}
+  .home-journey-paths-v2 .home-journey-path:hover{transform:none!important}
+}
 
 /* Home operator CTA: compact B2B closing band, secondary to the consumer journey. */
 .home-operators{background:#062a30!important;border-top-color:rgba(202,168,106,.26)!important}

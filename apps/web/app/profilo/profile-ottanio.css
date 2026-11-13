@@ -89,3 +89,74 @@
   .profile-page .overview-item,
   .profile-page .recommendation-card{transition:none !important;transform:none !important}
 }
+
+/* UX-VIS-02 — Preference summary: distinct information cards */
+.profile-page .profile-preference-summary{padding-bottom:28px}
+.profile-page .profile-preference-summary>.overview-label{margin-bottom:14px}
+.profile-page .profile-preference-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:850px;margin-bottom:18px}
+.profile-page .profile-preference-tag{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;min-width:0;padding:17px 20px;border:1px solid rgba(216,169,79,.22)!important;border-radius:16px;background:rgba(3,33,38,.42)!important}
+.profile-page .profile-preference-tag small{display:block;font-size:11px;line-height:1.3;letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+.profile-page .profile-preference-tag strong{display:block;font-size:17px;line-height:1.35;font-weight:650;overflow-wrap:anywhere}
+.profile-page .profile-preference-summary .overview-action{display:inline-flex;align-items:center;min-height:36px;font-weight:700}
+@media(max-width:700px){.profile-page .profile-preference-tags{grid-template-columns:1fr;gap:10px;margin-bottom:16px}.profile-page .profile-preference-tag{padding:14px 17px;gap:5px}.profile-page .profile-preference-tag strong{font-size:16px}}
+
+/* UX-VIS-02/R2 — Interest chips: spacing and premium interaction */
+.profile-page .interest-tags{display:flex;flex-wrap:wrap;align-items:center;gap:12px 13px;margin:15px 0 20px;overflow:visible}
+.profile-page .interest-tag{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border-radius:999px;border:1px solid rgba(216,169,79,.27)!important;background:rgba(255,255,255,.075)!important;color:#f7f2e9!important;line-height:1.3;font-weight:650;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background-color .2s ease;transform-origin:center;position:relative}
+@media(hover:hover) and (pointer:fine){
+ .profile-page .interest-tag:hover{transform:translateY(-2px) scale(1.065);border-color:#CAA86A!important;box-shadow:0 10px 25px rgba(0,0,0,.23),0 0 0 2px rgba(202,168,106,.34)!important;background:rgba(216,169,79,.15)!important;z-index:2}
+ .profile-page .profile-preference-tag:hover{transform:translateY(-2px) scale(1.018);border-color:#CAA86A!important;box-shadow:0 12px 28px rgba(0,0,0,.2),0 0 0 2px rgba(202,168,106,.3)!important}
+}
+.profile-page .profile-preference-tag{transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+@media(max-width:480px){.profile-page .interest-tags{gap:10px;margin:14px 0 19px}.profile-page .interest-tag{min-height:40px;padding:9px 13px}}
+@media(prefers-reduced-motion:reduce){.profile-page .interest-tag,.profile-page .profile-preference-tag{transition:none!important;transform:none!important}}
+
+/* UX-MOBILE-01 — Compact, coherent mobile personal dashboard */
+@media(max-width:480px){
+ .profile-page{padding:12px 10px 38px}
+ .profile-page .profile-hero{padding:22px 16px 21px;padding-right:76px;border-radius:18px}
+ .profile-page .profile-hero h1{font-size:clamp(29px,9vw,36px);line-height:1.05;margin-bottom:12px}
+ .profile-page .profile-hero p{font-size:13px;line-height:1.5}
+ .profile-page .profile-overview{margin-top:12px;padding:20px 14px 18px}
+ .profile-page .overview-head{padding-bottom:13px}
+ .profile-page .overview-head h2{font-size:clamp(24px,7vw,29px);line-height:1.15}
+ .profile-page .profile-preference-summary{padding-bottom:20px}
+ .profile-page .profile-preference-summary>.overview-label{margin-bottom:11px}
+ .profile-page .profile-preference-tags{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+ .profile-page .profile-preference-tag{padding:12px 8px;gap:6px;min-height:70px;border-radius:12px}
+ .profile-page .profile-preference-tag small{font-size:9px;letter-spacing:.05em}
+ .profile-page .profile-preference-tag strong{font-size:12px;line-height:1.3}
+ .profile-page .profile-preference-summary .overview-action{min-height:30px}
+ .profile-page .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .profile-page .overview-item,.profile-page .overview-item:first-child{padding:14px 12px;border-radius:14px}
+ .profile-page .overview-item:first-child{grid-column:1/-1}
+ .profile-page .overview-item .overview-label{margin-bottom:8px}
+ .profile-page .overview-item .overview-value{font-size:24px}
+ .profile-page .overview-item .overview-copy{font-size:12px;line-height:1.4}
+ .profile-page .overview-item .text-link{font-size:12px}
+ .profile-page .interest-tags{gap:9px;margin:12px 0 14px}
+ .profile-page .interest-tag{min-height:38px;padding:8px 12px;font-size:12px}
+ .profile-page .profile-recommendations{padding:22px 14px 25px}
+ .profile-page .recommendation-head h2{font-size:29px}
+ .profile-page .recommendation-head p{font-size:12px;line-height:1.5;margin-top:8px}
+ .profile-page .recommendation-grid{gap:10px;margin-top:15px}
+ .profile-page .recommendation-card{padding:16px 16px 17px;border-radius:16px}
+ .profile-page .recommendation-card h3{font-size:19px;line-height:1.25}
+ .profile-page .recommendation-card p{font-size:12px;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+}
+@media(max-width:350px){.profile-page .profile-preference-tag{padding:10px 6px}.profile-page .profile-preference-tag strong{font-size:11px}.profile-page .overview-item,.profile-page .overview-item:first-child{padding:12px 9px}}
+
+/* UX-MOBILE-01/R3 — Two recommendations initially on mobile */
+.profile-page .recommendation-grid--more-mobile{display:none}
+@media(min-width:481px){.profile-page .recommendation-more--mobile-only{display:none}}
+@media(max-width:480px){
+ .profile-page .profile-hero p,.profile-page .recommendation-head p{color:rgba(247,242,233,.85)!important}
+ .profile-page .profile-preference-tags{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.25fr)}
+ .profile-page .profile-preference-tag{padding:11px 7px}
+ .profile-page .profile-preference-tag strong{font-size:12px;overflow-wrap:normal;word-break:normal;hyphens:none}
+ .profile-page .recommendation-grid--primary>.recommendation-card:nth-child(n+3){display:none}
+ .profile-page .recommendation-grid--more-desktop{display:none}
+ .profile-page .recommendation-more[open] .recommendation-grid--more-mobile{display:grid}
+ .profile-page .recommendation-card p{-webkit-line-clamp:2}
+}
+@media(max-width:350px){.profile-page .profile-preference-tag strong{font-size:11px}}

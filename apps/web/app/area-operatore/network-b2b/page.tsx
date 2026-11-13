@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import B2BNetwork from "./B2BNetwork";
+import OperatorWorkspaceSwitcher from "../OperatorWorkspaceSwitcher";
 import "../operator-area.css";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,5 @@ export default async function B2BPage({searchParams}:{searchParams:Promise<{oper
   const operator = row ? one(row.operators) : null;
   if (!row || !operator) redirect(requested ? `/area-operatore?operatore=${encodeURIComponent(requested)}` : "/area-operatore");
 
-  const operatorParam = encodeURIComponent(operator.slug || row.operator_id);
-  return <section style={{background:"var(--sand)",padding:"clamp(34px,6vw,70px) 20px",minHeight:"70vh"}}><div className="container" style={{maxWidth:1120}}><div style={{marginBottom:22}}><a href={`/area-operatore?operatore=${operatorParam}`}>← Torna all'area operatore</a></div><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section>;
+  return <><section className="page-hero operator-calendar-hero operator-b2b-hero" style={{paddingTop:"clamp(18px,2.5vw,28px)",paddingBottom:"clamp(18px,2.5vw,28px)"}}><div className="operator-workspace-hero__inner"><div className="kicker">Area Operatore · Network B2B</div><h1 style={{margin:"6px 0 6px",color:"#fff",fontSize:"clamp(34px,4vw,52px)"}}>Trova operatori compatibili <span>con {operator.name}</span></h1><p style={{maxWidth:760,margin:0,color:"rgba(255,255,255,.88)"}}>Indica cosa offri e cosa cerchi. BIMARIS individua opportunità di collaborazione tra gli operatori aderenti.</p></div></section><section className="b2b-page"><div className="b2b-page__container"><OperatorWorkspaceSwitcher activities={rows.filter(r=>one(r.operators)).map(r=>({id:r.operator_id,slug:one(r.operators)!.slug,name:one(r.operators)!.name}))} selectedSlug={operator.slug}/><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section></>;
 }
