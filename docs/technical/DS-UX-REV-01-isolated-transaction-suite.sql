@@ -63,6 +63,7 @@ DECLARE
  partner uuid:='33333333-3333-4333-8333-333333333333';
  r uuid:='44444444-4444-4444-8444-444444444444';
  r2 uuid:='55555555-5555-4555-8555-555555555555';
+ r3 uuid:='66666666-6666-4666-8666-666666666666';
  ok boolean;
 BEGIN
  INSERT INTO public.discovery_intents(key) VALUES ('nature'),('culture'),('food');
@@ -130,7 +131,19 @@ BEGIN
     OR NOT EXISTS(SELECT 1 FROM public.experience_discovery_intents WHERE experience_id=e AND intent_key='food')
  THEN RAISE EXCEPTION 'FAIL: conflict check modified persisted data'; END IF;
 
- RAISE NOTICE 'DS-UX-REV-01 integration suite PASS: readiness; taxonomy-only; deferred apply; atomic apply; partner preservation; FK rollback; concurrency conflict';
+ -- Legacy revisions lacking taxonomy payload must not affect any live tags.
+ -- This is the exact compatibility class of the current Staging pending revision.
+ INSERT INTO public.experience_revisions VALUES(r3,e,o,'pending',jsonb_build_object(
+   'name','Legacy revision with media-only change'
+ ));
+ UPDATE public.experience_revisions SET status='applied' WHERE id=r3;
+ IF (SELECT status FROM public.experience_revisions WHERE id=r3)<>'applied'
+    OR (SELECT count(*) FROM public.experience_discovery_intents WHERE experience_id=e)<>3
+    OR (SELECT count(*) FROM public.experience_activity_links WHERE experience_id=e AND operator_id=o)<>1
+    OR NOT EXISTS(SELECT 1 FROM public.experience_activity_links WHERE experience_id=e AND operator_id=partner AND activity_key='partner_activity')
+ THEN RAISE EXCEPTION 'FAIL: legacy revision modified taxonomy or partner activities'; END IF;
+
+ RAISE NOTICE 'DS-UX-REV-01 integration suite PASS: readiness; taxonomy-only; deferred apply; atomic apply; partner preservation; FK rollback; concurrency conflict; legacy revision compatibility';
 END;
 $tests$;
 -- Verify that readiness is not an unconditional success and the deployment
