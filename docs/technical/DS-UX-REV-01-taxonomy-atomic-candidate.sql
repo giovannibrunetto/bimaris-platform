@@ -1,12 +1,25 @@
 -- DS-UX-REV-01: SQL CANDIDATE ONLY. DO NOT APPLY WITHOUT DS AUTHORISATION.
 -- Reviewed against Staging schema 2026-11-13. Not yet executed anywhere.
--- After applying under controlled release, ensure admin review explicitly checks
--- public.bimaris_revision_taxonomy_ready() before approving taxonomy changes.
+-- The readiness RPC is fail-closed: it returns true only while the expected
+-- revision-trigger installation exists, is enabled, and targets the approved handler.
 -- The original two- and three-argument admin_apply_experience_revision RPCs remain unchanged.
 
 create or replace function public.bimaris_revision_taxonomy_ready()
 returns boolean language sql stable security invoker
-set search_path = '' as $$select true$$;
+set search_path = '' as $
+ select exists (
+   select 1
+   from pg_catalog.pg_trigger t
+   join pg_catalog.pg_proc p on p.oid = t.tgfoid
+   join pg_catalog.pg_namespace n on n.oid = p.pronamespace
+   where t.tgrelid = 'public.experience_revisions'::pg_catalog.regclass
+     and t.tgname = 'bimaris_apply_revision_taxonomy_on_approval'
+     and t.tgenabled = 'O'
+     and not t.tgisinternal
+     and n.nspname = 'public'
+     and p.proname = 'bimaris_apply_revision_taxonomy'
+ );
+$;
 revoke all on function public.bimaris_revision_taxonomy_ready() from public, anon, authenticated;
 grant execute on function public.bimaris_revision_taxonomy_ready() to service_role;
 
