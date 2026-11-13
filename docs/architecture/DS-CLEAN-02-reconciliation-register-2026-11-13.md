@@ -33,3 +33,12 @@ Stato: candidato tecnico PR #54 (DRAFT, NO MERGE)
 
 ## Regola di consolidamento
 Gli stati “ereditata” e “trasferita” attestano la presenza di contenuto nel ramo, NON l’esito di un collaudo browser/autenticato né l’assenza di regressioni.
+
+## Verifica puntuale DS-CLEAN-03 (2026-11-13)
+- CI della PR #54, commit 3e1b34cc: SUCCESS. L'esecuzione successiva deve essere ricontrollata dopo l'aggiunta dei test OAuth storici.
+- PR #42: il codice delle pagine candidature (lista e dettaglio), eventi, dettaglio operatore, componente AdminItineraryCreate e CSS admin-dashboard è equivalente alla versione del candidato, una volta normalizzato il solo cambio da autenticazione legacy a isAuthorizedAdmin. La lista operatori differisce sul link alle revisioni (nel candidato punta alla pagina di confronto aggiornata); admin-a9.css include anche gli stili MFA aggiuntivi. Non sovrascrivere.
+- PR #39: alcune correzioni UX coincidono; altre modifiche sono divergenti rispetto alla successiva PR #42 e alla versione corrente (dashboard, filtri candidature, navigazione). Presente inoltre nella PR #39 il campo facoltativo Partita IVA nella candidatura e un diverso contratto di accettazione POST; questa funzionalità NON è ripristinata automaticamente perché richiede controllo sullo schema dati, sulle validazioni e su precedenti decisioni di prodotto. Residuo da verificare.
+- PR #7/#9: la callback legacy instradava automaticamente in base alla membership; la callback attuale utilizza contesti espliciti operator=1/admin=1, safeAuthPath e il controllo MFA. Non ripristinare la vecchia callback.
+- PR #33: il redirect invito operatore storico è sostituito dal callback attuale che associa l'intento operatore; l'endpoint corrente include CSRF, controllo di transizione e verifica associazione candidato-operatore. Non ripristinare il vecchio endpoint.
+- PR #45: suite storica admin-oauth-callback-staging.test.mjs recuperata e aggiunta a test:auth del candidato, per conservare verifica esplicita della callback OAuth condivisa.
+- Stato finale: riconciliazione documentale avanzata, nessun GO al merge fino a CI corrente PASS, confronto residuo Partita IVA e test autenticati. La PR #41 rimane HOLD.
