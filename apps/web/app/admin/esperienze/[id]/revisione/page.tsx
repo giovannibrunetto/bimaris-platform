@@ -24,14 +24,21 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (!experience) notFound();
   const { data: operator, error: operatorError } = await db.from("operators").select("name").eq("id", experience.operator_id).maybeSingle();
   if (operatorError) console.error("BIMARIS review operator lookup failed", operatorError);
-  const { data: revision } = await db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
-  const [{ data: livePhotos }, { data: proposedRows }, {data:liveInterests}, {data:liveActivities}, {data:livePartners}] = await Promise.all([
+  const { data: revision, error: revisionError } = await db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+  if(revisionError){console.error("BIMARIS pending experience revision lookup failed",revisionError);throw new Error("Impossibile verificare le proposte in attesa. L'approvazione è sospesa.");}
+  const [{ data: livePhotos,error:livePhotosError }, { data: proposedRows,error:proposedRowsError }, {data:liveInterests,error:liveInterestsError}, {data:liveActivities,error:liveActivitiesError}, {data:livePartners,error:livePartnersError}] = await Promise.all([
     db.from("experience_media").select("storage_path,alt_text,sort_order,is_cover").eq("experience_id", id).order("sort_order"),
     revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] }),
     db.from("experience_discovery_intents").select("intent_key").eq("experience_id",id),
     db.from("experience_activity_links").select("activity_key").eq("experience_id",id).eq("operator_id",experience.operator_id),
     db.from("experience_operators").select("operator_id,activity_label,approval_status,operators(name)").eq("experience_id",id).eq("role","participant"),
   ]);
+  if(livePhotosError||proposedRowsError||liveInterestsError||liveActivitiesError||livePartnersError){
+    console.error("BIMARIS revision comparison data query failed",{
+      livePhotosError,proposedRowsError,liveInterestsError,liveActivitiesError,livePartnersError
+    });
+    throw new Error("Confronto non disponibile: impossibile verificare tutti i dati approvati e proposti. Nessuna decisione è consentita.");
+  }
   const proposedPhotos: Photo[] = await Promise.all(((proposedRows ?? []) as Photo[]).map(async photo => {
     if (photo.source_media_id) return { ...photo, url: publicMediaUrl(photo.storage_path) };
     const { data, error } = await db.storage.from("experience-revision-media").createSignedUrl(photo.storage_path, 300);
