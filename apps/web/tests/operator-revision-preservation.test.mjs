@@ -33,7 +33,7 @@ test("taxonomy modifications are feature-gated until the DB applies them atomica
  assert.match(source,/REVISION_TAXONOMY_ENABLED=process\.env\.NEXT_PUBLIC_BIMARIS_REVISION_TAXONOMY_V2==="true"/);
  assert.match(source,/base_interest_keys:taxonomyBaseRef\.current\.interestKeys/);
  assert.match(source,/base_activity_keys:taxonomyBaseRef\.current\.activityKeys/);
- assert.match(source,/\(!REVISION_TAXONOMY_ENABLED\)/);
+ assert.match(source,/disabled=\{Boolean\(revisionId\)\&\&!REVISION_TAXONOMY_ENABLED\}/);
 });
 test("admin approval refuses taxonomy modifications if database readiness is absent",()=>{
  const admin=readFileSync(new URL("../app/api/admin/experience-revisions/route.ts",import.meta.url),"utf8");
