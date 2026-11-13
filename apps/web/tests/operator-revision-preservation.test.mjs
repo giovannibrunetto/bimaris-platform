@@ -46,3 +46,12 @@ test("admin comparison includes taxonomy and explicitly preserves partner consen
  assert.match(adminPage,/proposedActivities/);
  assert.match(adminPage,/necessita di accettazione autonoma|necessita di accettazione/);
 });
+
+test("revision queries cannot silently erase visible taxonomy or partner choices on failure",()=>{
+ const flow=source.slice(source.indexOf("async function loadTaxonomy"),source.indexOf("async function edit"));
+ assert.match(flow,/if\(interestError\|\|activityError\)throw new Error/);
+ assert.match(flow,/if\(error\)throw new Error\("Impossibile verificare la collaborazione/);
+ const revision=source.slice(source.indexOf("async function proposeRevision"),source.indexOf("async function selectPhotos"));
+ assert.match(revision,/catch\(error\)\{setOpen\(false\);setMessage/);
+ assert.match(revision,/finally\{setBusy\(false\)\}/);
+});
