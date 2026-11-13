@@ -135,6 +135,8 @@ test("revision state is fetched per operator, pending cannot spawn a second prop
  assert.match(source,/\.eq\("operator_id",operatorId\)\s*\.in\("status",\["draft","pending","rejected","approved"\]\)/);
  assert.match(source,/\.eq\("experience_id",e\.id\)\.eq\("operator_id",operatorId\)\.in\("status",\["draft","pending","rejected","approved"\]\)/);
  assert.match(source,/revisionStates\[e\.id\]==="pending"/);
+ assert.match(source,/disabled=\{busy\|\|!revisionStatesLoaded\}/);
+ assert.match(source,/setRevisionStates\(next\);setRevisionStatesLoaded\(true\)/);
  assert.match(source,/revisionStates\[e\.id\]==="draft"\|\|revisionStates\[e\.id\]==="rejected"\?"Riprendi modifica"/);
  assert.match(source,/if\(existing&&\(existing\.status==="pending"\|\|existing\.status==="approved"\)\)/);
  assert.match(source,/if\(error\)throw new Error\("Impossibile caricare le fotografie della revisione/);
