@@ -105,3 +105,10 @@ test("integration suite requires empty isolated database and rolls back its enti
  assert.match(fixture,/EXCEPTION WHEN SQLSTATE 'P0001'/);
  assert.match(fixture,/partner_activity/);
 });
+
+test("admin review comparison fails closed when any source dataset is unavailable",()=>{
+ const page=readFileSync(new URL("../app/admin/esperienze/[id]/revisione/page.tsx",import.meta.url),"utf8");
+ assert.match(page,/if\(revisionError\)/);
+ assert.match(page,/if\(livePhotosError\|\|proposedRowsError\|\|liveInterestsError\|\|liveActivitiesError\|\|livePartnersError\)/);
+ assert.match(page,/Nessuna decisione è consentita/);
+});
