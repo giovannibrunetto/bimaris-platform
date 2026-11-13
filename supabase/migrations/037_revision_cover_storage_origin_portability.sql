@@ -7,7 +7,8 @@
 -- The legacy before-insert trigger may assign a cover to the first inserted photo.
 -- Import the selected cover first, then normalize cover flags in the same transaction.
 -- This migration mirrors the function tested in Supabase staging.
-DROP FUNCTION IF EXISTS public.admin_apply_experience_revision(uuid, text);
+-- Keep the existing two-argument RPC during the coordinated API rollout.
+-- Retire it only in a separately authorized migration after confirming no callers remain.
 CREATE FUNCTION public.admin_apply_experience_revision(p_revision_id uuid, p_review_notes text, p_storage_origin text)
  RETURNS TABLE(experience_id uuid, experience_name text)
  LANGUAGE plpgsql
