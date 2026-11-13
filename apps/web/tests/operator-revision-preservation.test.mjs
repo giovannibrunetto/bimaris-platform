@@ -63,3 +63,12 @@ test("submission and revision draft require one authorized affected database row
  assert.match(source,/\.in\("review_status",\["draft","rejected"\]\)\.select\("id"\)\.maybeSingle\(\)/);
  assert.match(source,/if\(!data\)throw new Error\("Non è stato confermato l’invio/);
 });
+
+test("administrator cannot silently approve an unimplemented partner change",()=>{
+ const route=readFileSync(new URL("../app/api/admin/experience-revisions/route.ts",import.meta.url),"utf8");
+ const page=readFileSync(new URL("../app/admin/esperienze/[id]/revisione/page.tsx",import.meta.url),"utf8");
+ assert.match(route,/collaboration_change/);
+ assert.match(route,/partner_consent_id/);
+ assert.match(route,/collaboration-not-ready/);
+ assert.match(page,/consenso verificato e l’applicazione atomica/);
+});
