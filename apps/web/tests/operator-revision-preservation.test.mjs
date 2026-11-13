@@ -81,3 +81,16 @@ test("taxonomy migration candidate only reports readiness for installed enabled 
  assert.match(sql,/p\.proname = 'bimaris_apply_revision_taxonomy'/);
  assert.doesNotMatch(sql,/as \$\$select true\$\$/);
 });
+
+test("taxonomy-only edit is not rejected as a no-op by migration candidate",()=>{
+ const sql=readFileSync(new URL("../../../docs/technical/DS-UX-REV-01-taxonomy-atomic-candidate.sql",import.meta.url),"utf8");
+ assert.match(sql,/create or replace function public\.guard_noop_experience_revision_submission\(\)/);
+ assert.match(sql,/v_intents_same boolean := true/);
+ assert.match(sql,/v_activities_same boolean := true/);
+ assert.match(sql,/v_content_same and v_media_same and v_intents_same and v_activities_same/);
+});
+test("reopened taxonomy revisions retain their original concurrency baseline",()=>{
+ assert.match(source,/Array\.isArray\(stored\?\.base_interest_keys\)/);
+ assert.match(source,/Array\.isArray\(stored\?\.base_activity_keys\)/);
+ assert.match(source,/taxonomyBaseRef\.current=\{interestKeys:stored\.base_interest_keys/);
+});
