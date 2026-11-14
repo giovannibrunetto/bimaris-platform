@@ -13,10 +13,16 @@ type Row = {
   description: string | null;
   starts_at: string;
   source_label: string | null;
+  source_type: string | null;
   operators: { name: string } | { name: string }[] | null;
 };
 function operatorName(v: Row["operators"]) {
   return Array.isArray(v) ? v[0]?.name ?? "Operatore non indicato" : v?.name ?? "Operatore non indicato";
+}
+function sourceTypeLabel(v: string | null) {
+  const labels: Record<string, string> = { whatsapp: "WhatsApp", website: "Sito web", web: "Sito web", manual: "Manuale", api: "API", instagram: "Instagram" };
+  if (!v?.trim()) return "Origine non indicata";
+  return labels[v.toLowerCase()] ?? v;
 }
 function eventDate(value: string) {
   const date = new Date(value);
@@ -25,14 +31,23 @@ function eventDate(value: string) {
     : new Intl.DateTimeFormat("it-IT", { dateStyle: "full", timeStyle: "short", timeZone: "Europe/Rome" }).format(date);
 }
 
-export default async function AdminEventsPage() {
+export default async function AdminEventsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  const { status } = await searchParams;
+  const notifications: Record<string, string> = {
+    approved: "Evento approvato. Non è ancora pubblicato.",
+    rejected: "Evento scartato.",
+    published: "Evento pubblicato.",
+    stale: "L’evento è già stato modificato o non è più in questo stato. Aggiorna la coda.",
+    invalid: "Operazione non valida.",
+    error: "Operazione non riuscita. Riprova o verifica lo stato dell’evento.",
+  };
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
   const [{ data, error }, { data: approvedData, error: approvedError }] = await Promise.all([
-    db.from("events").select("id,title,description,starts_at,source_label,operators(name)")
+    db.from("events").select("id,title,description,starts_at,source_label,source_type,operators(name)")
       .eq("verification_status", "pending").eq("published", false).order("starts_at", { ascending: true }),
-    db.from("events").select("id,title,description,starts_at,source_label,operators(name)")
+    db.from("events").select("id,title,description,starts_at,source_label,source_type,operators(name)")
       .eq("verification_status", "verified").eq("published", false).order("starts_at", { ascending: true }),
   ]);
   if (error || approvedError) throw new Error("Impossibile caricare le code degli eventi");
@@ -53,6 +68,7 @@ export default async function AdminEventsPage() {
     </header>
     <section className="admin-events__body" aria-label="Coda eventi">
       <div className="admin-events__container">
+        {status && notifications[status] && <p role="status" className="admin-events__notice">{notifications[status]}</p>}
         <div className="admin-events__summary">
           <div><span className="admin-events__eyebrow">Coda di revisione</span><h2>In attesa di verifica</h2></div>
           <strong aria-label={`${rows.length} eventi in attesa`}>{rows.length} {rows.length === 1 ? "evento" : "eventi"}</strong>
@@ -63,6 +79,7 @@ export default async function AdminEventsPage() {
           : <div className="admin-events__list">{rows.map(row => <article className="admin-events__card" key={row.id}>
               <div className="admin-events__metadata">
                 <span><strong>Operatore</strong>{operatorName(row.operators)}</span>
+                <span><strong>Canale di acquisizione</strong>{sourceTypeLabel(row.source_type)}</span>
                 <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
               </div>
               <h3>{row.title}</h3>
@@ -89,7 +106,8 @@ export default async function AdminEventsPage() {
             : <div className="admin-events__list">{approvedRows.map(row => <article className="admin-events__card" key={row.id}>
                 <div className="admin-events__metadata">
                   <span><strong>Operatore</strong>{operatorName(row.operators)}</span>
-                  <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
+                  <span><strong>Canale di acquisizione</strong>{sourceTypeLabel(row.source_type)}</span>
+                <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
                 </div>
                 <h3>{row.title}</h3>
                 <p className="admin-events__date">{eventDate(row.starts_at)}</p>
