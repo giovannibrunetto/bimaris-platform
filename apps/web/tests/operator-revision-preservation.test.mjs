@@ -198,28 +198,25 @@ test("portal keeps its experience-manager ancestry for the scoped wizard form CS
  assert.match(source,/createPortal\(<div className="experience-manager experience-edit-screen"/);
 });
 
-test("revision workspace is one centered card with neutral background and unified form",()=>{
+test("review editor keeps unified panel and inherits approved BIMARIS brand foundation",()=>{
  const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ const foundation=readFileSync(new URL("../app/foundation.css",import.meta.url),"utf8");
  const open=source.indexOf('createPortal(<div className="experience-manager experience-edit-screen"');
  const panel=source.indexOf('className="experience-edit-screen__panel"',open);
  const header=source.indexOf('className="experience-edit-screen__header"',panel);
  const wizard=source.indexOf('ref={wizardRef} className="experience-wizard"',header);
  assert.ok(open>=0&&panel>open&&header>panel&&wizard>header);
- assert.match(css,/\.experience-edit-screen__layout\{width:min\(100%,820px\)/);
- assert.match(css,/\.experience-edit-screen__panel\{/);
- assert.match(css,/\.experience-manager\.experience-edit-screen \.experience-wizard\{/);
- assert.match(css,/border-top:1px solid #e9e4db/);
- assert.match(css,/background:#f8f7f4/);
-});
-
-test("unified experience workspace has clear BIMARIS contrast without a second panel",()=>{
- const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
- const block=css.slice(css.indexOf("DS-UX-REV-02/VISUAL-02"));
- assert.match(block,/background:#dfe6e3/);
- assert.match(block,/background:linear-gradient\(125deg,#062e35/);
- assert.match(block,/background:#f4f5f1/);
+ assert.match(foundation,/--bimaris-abyssal-teal:\s*#032126/);
+ assert.match(foundation,/--bimaris-ivory:\s*#fffaf4/);
+ assert.match(foundation,/--bimaris-gold:\s*#caa86a/);
+ const block=css.slice(css.indexOf("DS-UX-REV-02/VISUAL-03"));
  assert.match(block,/\.experience-edit-screen__panel\{/);
  assert.match(block,/\.experience-edit-screen__header\{/);
+ assert.match(block,/background:var\(--bimaris-abyssal-teal\)/);
+ assert.match(block,/background:var\(--bimaris-ivory\)/);
+ assert.match(block,/background:var\(--bimaris-gold\)/);
+ assert.match(block,/color:var\(--bimaris-gold\)/);
  assert.match(block,/\.experience-wizard__actions button\.button\{/);
  assert.match(block,/@media\(max-width:650px\)/);
+ assert.doesNotMatch(block, /#[0-9a-f]{3,8}\b/i);
 });
