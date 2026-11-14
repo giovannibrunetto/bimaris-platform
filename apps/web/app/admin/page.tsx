@@ -15,7 +15,7 @@ export default async function AdminPage() {
   const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experiences").select("id", { count: "exact", head: true }).in("review_status", ["pending", "submitted"]),
+    db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -37,7 +37,7 @@ export default async function AdminPage() {
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
-    {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
+    {href:"/admin/operatori?view=pending#pending-operators",label:"Operatori ed esperienze da esaminare",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
     {href:"/admin/eventi#pending-events",label:"Gestione eventi acquisiti",description:`${pendingEvents} da verificare · ${eventsToPublish} approvati da pubblicare`,value:pendingEvents+eventsToPublish},
     {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
