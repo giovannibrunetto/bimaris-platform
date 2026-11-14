@@ -220,3 +220,15 @@ test("review editor keeps unified panel and inherits approved BIMARIS brand foun
  assert.match(block,/@media\(max-width:650px\)/);
  assert.doesNotMatch(block, /#[0-9a-f]{3,8}\b/i);
 });
+
+test("single experience editor has compact header, gold outline and a wider centered form",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ const block=css.slice(css.indexOf("DS-UX-REV-02/VISUAL-04"));
+ assert.match(block,/\.experience-edit-screen__layout\{width:min\(100%,960px\)/);
+ assert.match(block,/border:2px solid var\(--bimaris-gold\)/);
+ assert.match(block,/background:var\(--sand\)/);
+ assert.match(block,/\.experience-edit-screen__header\{/);
+ assert.match(block,/\.experience-manager\.experience-edit-screen \.experience-step\{\s*max-width:none/);
+ assert.match(block,/@media\(max-width:650px\)/);
+ assert.doesNotMatch(block, /#[0-9a-f]{3,8}\b/i);
+});
