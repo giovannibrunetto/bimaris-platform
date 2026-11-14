@@ -35,12 +35,12 @@ export default async function AdminPage() {
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
   const workItems=[
-    {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi#pending-events",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
+    {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze da esaminare",description:"Nuove esperienze e modifiche di profili o esperienze: solo richieste pendenti",value:pendingOperatorArea},
+    {href:"/admin/eventi#pending-events",label:"Segnalazioni eventi da verificare",description:"Appuntamenti acquisiti: controlla fonte, data e duplicati prima di pubblicare",value:pendingEvents},
     {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
-    {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
+    {href:"/admin/operatori?vista=archivio#operator-archive",label:"Archivio operatori",value:onlineOperators},
     {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences},
     {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries},
   ];
