@@ -304,7 +304,7 @@ test("event editorial queue is distinct, mobile responsive and warns of publicat
  assert.match(page,/segnalazioni evento/);
  assert.match(page,/Non equivale all'approvazione di un'esperienza/);
  assert.match(page,/row\.source_label\|\|sourceTypeLabel\(row\.source_type\)/);
- assert.match(page,/status=.+approved/);
+ assert.match(page,/status==="approved"/);
  assert.match(page,/name="action" value="approve"/);
  assert.match(page,/name="action" value="reject"/);
  assert.match(css,/@media\(max-width:640px\)/);
