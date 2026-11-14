@@ -31,7 +31,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] as Photo[], error: null }),
     db.from("experience_discovery_intents").select("intent_key").eq("experience_id",id),
     db.from("experience_activity_links").select("activity_key").eq("experience_id",id).eq("operator_id",experience.operator_id),
-    db.from("experience_operators").select("operator_id,activity_label,approval_status,operators(name)").eq("experience_id",id).eq("role","participant"),
+    db.from("experience_operators").select("operator_id,activity_label,approval_status,operators:operators!experience_operators_operator_id_fkey(name)").eq("experience_id",id).eq("role","participant"),
   ]);
   if(livePhotosError||proposedRowsError||liveInterestsError||liveActivitiesError||livePartnersError){
     console.error("BIMARIS revision comparison data query failed",{
