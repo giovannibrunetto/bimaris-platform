@@ -392,3 +392,24 @@
   .experience-edit-screen .experience-wizard__actions{display:flex;gap:8px;flex-wrap:wrap}
   .experience-edit-screen .experience-wizard__actions button{min-height:44px;flex:1 1 auto}
 }
+
+
+/* DS-UX-REV-02/VISUAL-05 — center the working card in both axes when it fits.
+   Flex auto margins become zero when the wizard is taller than the viewport,
+   preserving ordinary top-to-bottom scrolling without clipping form actions. */
+.experience-manager.experience-edit-screen{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch
+}
+.experience-manager.experience-edit-screen .experience-edit-screen__layout{
+  width:min(100%,960px);
+  margin:auto;
+  padding:0;
+  flex:0 0 auto
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen .experience-edit-screen__layout{
+    margin:0 auto
+  }
+}
