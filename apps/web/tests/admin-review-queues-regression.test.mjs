@@ -39,3 +39,15 @@ test("failed operator queue queries cannot be misreported as an empty queue", ()
   assert.match(page, /if\(operatorsError\|\|experiencesError\|\|revisionsError\|\|operatorRevisionsError\)throw new Error/);
   assert.doesNotMatch(page, /Non pubblicato · Da verificare/);
 });
+
+test("dashboard fails visibly if any of its nine count queries fail", () => {
+  const dashboard = read("../app/admin/page.tsx");
+  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes\]\.some\(result => result\.error\)/);
+  assert.match(dashboard, /throw new Error\("Impossibile caricare i contatori della dashboard amministrativa"\)/);
+});
+
+test("dashboard excludes curated BIMARIS experience revisions from operator queue", () => {
+  const dashboard = read("../app/admin/page.tsx");
+  assert.match(dashboard, /experiences!inner\(experience_origin\)/);
+  assert.match(dashboard, /\.neq\("experiences\.experience_origin", "bimaris"\)/);
+});
