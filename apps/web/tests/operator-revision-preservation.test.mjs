@@ -148,3 +148,14 @@ test("booking and weather fields are informational only on approved experience r
  assert.match(source,/if\(error\)throw new Error\("Impossibile leggere le condizioni di prenotazione e meteo/);
  assert.match(source,/revisionId\?<div className="experience-step" role="status"/);
 });
+
+test("revision wizard does not briefly open and collapse during async data loading",()=>{
+ const start=source.indexOf("async function proposeRevision");
+ const stop=source.indexOf("async function selectPhotos",start);
+ const code=source.slice(start,stop);
+ const loaded=code.indexOf("await Promise.all([loadRevisionMedia");
+ const opened=code.lastIndexOf("setOpen(true)");
+ assert.ok(loaded>=0 && opened>loaded,"wizard opens only after load promises settle");
+ assert.match(source,/if\(open\|\|!message\)return;/);
+ assert.match(source,/querySelector<HTMLElement>\('\[role="alert"\]'\)/);
+});
