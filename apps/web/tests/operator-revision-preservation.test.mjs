@@ -211,3 +211,15 @@ test("revision workspace is one centered card with neutral background and unifie
  assert.match(css,/border-top:1px solid #e9e4db/);
  assert.match(css,/background:#f8f7f4/);
 });
+
+test("unified experience workspace has clear BIMARIS contrast without a second panel",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ const block=css.slice(css.indexOf("DS-UX-REV-02/VISUAL-02"));
+ assert.match(block,/background:#dfe6e3/);
+ assert.match(block,/background:linear-gradient\(125deg,#062e35/);
+ assert.match(block,/background:#f4f5f1/);
+ assert.match(block,/\.experience-edit-screen__panel\{/);
+ assert.match(block,/\.experience-edit-screen__header\{/);
+ assert.match(block,/\.experience-wizard__actions button\.button\{/);
+ assert.match(block,/@media\(max-width:650px\)/);
+});
