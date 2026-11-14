@@ -26,6 +26,7 @@ export function Header() {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
   const [access,setAccess] = useState<"guest"|"user"|"operator"|"both">("guest");
+  const [adminAuthorized,setAdminAuthorized] = useState(false);
 
   useEffect(() => {
     const supabase=createBrowserSupabaseClient();
@@ -36,7 +37,14 @@ export function Header() {
       const current=++request;
       const {data:{user},error}=await supabase!.auth.getUser();
       if(!active||current!==request)return;
-      if(error||!user){setAccess("guest");return;}
+      if(error||!user){setAccess("guest");setAdminAuthorized(false);return;}
+      // Never infer administrative privileges from operator membership.
+      // The server verifies the current Supabase identity, AAL2 and Super Admin role.
+      try {
+        const response=await fetch("/api/admin/access-state",{cache:"no-store",credentials:"same-origin"});
+        const state=response.ok?await response.json() as {authorized?:boolean}:{authorized:false};
+        if(active&&current===request)setAdminAuthorized(state.authorized===true);
+      }catch{if(active&&current===request)setAdminAuthorized(false);}
       const {data:memberships,error:membershipError}=await supabase!.from("operator_memberships").select("role").eq("user_id",user.id);
       if(!active||current!==request)return;
       if(membershipError){setAccess("user");return;}
@@ -48,13 +56,15 @@ export function Header() {
       queueMicrotask(()=>{if(active)void refresh();});
     });
     return()=>{active=false;request++;subscription.unsubscribe();};
-  },[]);
+  },[pathname]);
 
   const accessLinks=access==="guest"
     ?[{href:"/accedi",label:"Accedi"}]
     :access==="user"
       ?[{href:"/profilo",label:"Area personale"}]
       :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
+
+  const adminLinks=adminAuthorized?[{href:"/admin",label:"Area Amministratore"}]:[];
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
@@ -76,7 +86,7 @@ export function Header() {
             {link.label}
           </Link>
         ))}
-        {accessLinks.map(link=><Link key={link.href} href={link.href} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
+        {[...accessLinks,...adminLinks].map(link=><Link key={link.href} href={link.href} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
         {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
           <Link
             href={link.href}
@@ -101,7 +111,7 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          {accessLinks.map(link=><Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
+          {[...accessLinks,...adminLinks].map(link=><Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
           {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
             <Link
               href={link.href}
