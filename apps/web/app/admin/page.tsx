@@ -12,31 +12,37 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experiences").select("id", { count: "exact", head: true }).in("review_status", ["pending", "submitted"]),
+    db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    db.from("experience_revisions").select("id,experiences!inner(experience_origin)", { count: "exact", head: true }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending"),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
   ]);
+
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes].some(result => result.error)) {
+    throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
+  }
 
   const pendingApps = appsRes.count ?? 0;
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
+  const eventsToPublish = approvedEventsRes.count ?? 0;
   const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
   const onlineItineraries = onlineItinsRes.count ?? 0;
 
-  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
+  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
-    {href:"/admin/operatori#pending-operators",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi#pending-events",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
+    {href:"/admin/operatori?view=pending#pending-operators",label:"Operatori ed esperienze da esaminare",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
+    {href:"/admin/eventi#pending-events",label:"Gestione eventi acquisiti",description:`${pendingEvents} da verificare · ${eventsToPublish} approvati da pubblicare`,value:pendingEvents+eventsToPublish},
     {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
@@ -46,20 +52,6 @@ export default async function AdminPage() {
   ];
 
   return <div className="admin-dashboard">
-    <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
-      <div className="admin-dashboard__container admin-dashboard__intro-layout">
-        <div className="admin-dashboard__intro-copy">
-          <span className="admin-dashboard__eyebrow">BIMARIS / Pannello di controllo</span>
-          <h1 id="admin-dashboard-title">Centro operativo</h1>
-          <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
-        </div>
-        <div className="admin-dashboard__intro-actions">
-          <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
-          <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
-        </div>
-      </div>
-    </section>
-
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
         <div className="admin-dashboard__summary">

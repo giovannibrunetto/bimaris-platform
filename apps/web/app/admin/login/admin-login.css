@@ -110,3 +110,16 @@
   .admin-login__card{padding:26px 22px;border-radius:16px}
   .admin-login__description{font-size:14px;margin-bottom:23px}
 }
+
+/* Inline visibility control, without changing the password or submitting the form. */
+.admin-login__password-field{position:relative;min-width:0}
+.admin-login__password-field input{padding-right:62px}
+.admin-login__form .admin-login__password-toggle{
+  position:absolute;right:7px;top:50%;transform:translateY(-50%);
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;min-height:40px;margin:0;padding:8px;
+  background:#f3eee6;border:1px solid #c6b7a2;border-radius:8px;
+  color:#173338;font-size:13px;font-weight:750;
+}
+.admin-login__form .admin-login__password-toggle:hover:not(:disabled){background:#e9dfce}
+.admin-login__form .admin-login__password-toggle:focus-visible{outline:3px solid #d5ad58;outline-offset:2px}
