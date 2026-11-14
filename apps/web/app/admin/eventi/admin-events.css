@@ -30,3 +30,5 @@
 .admin-events__empty p{margin:0;color:#617174}
 .admin-events a:focus-visible,.admin-events button:focus-visible{outline:3px solid #c6a15d;outline-offset:3px}
 @media(max-width:420px){.admin-events__links{display:grid}.admin-events__actions,.admin-events__actions form,.admin-events__actions button{width:100%}.admin-events__metadata{display:grid}}
+
+.admin-events__approved{margin-top:45px;padding-top:28px;border-top:2px solid #ddd7cb}
