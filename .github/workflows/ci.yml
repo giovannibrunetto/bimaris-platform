@@ -20,4 +20,5 @@ jobs:
       - run: pnpm --filter @bimaris/mobile typecheck
       - run: pnpm test:auth
       - run: node --experimental-strip-types --test apps/web/tests/admin-event-transitions.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-events-route-runtime.test.mjs
       - run: pnpm --filter @bimaris/web build
