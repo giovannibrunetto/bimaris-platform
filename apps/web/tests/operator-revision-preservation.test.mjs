@@ -275,15 +275,15 @@ test("successful standalone revision submit returns to list and only confirms a 
  assert.match(css,/\.experience-edit-route__loading\{/);
 });
 
-test("administration link lives in the global header and requires server-verified AAL2",()=>{
+test("global admin access is visibly linked without bypassing protected server gate",()=>{
  const page=readFileSync(new URL("../app/area-operatore/page.tsx",import.meta.url),"utf8");
  const header=readFileSync(new URL("../components/Header.tsx",import.meta.url),"utf8");
- const route=readFileSync(new URL("../app/api/admin/access-state/route.ts",import.meta.url),"utf8");
+ const admin=readFileSync(new URL("../app/admin/page.tsx",import.meta.url),"utf8");
+ const adminGate=readFileSync(new URL("../lib/admin-access.ts",import.meta.url),"utf8");
  assert.doesNotMatch(page,/operator-admin-shortcut|canAccessAdministration/);
- assert.match(route,/import \{ isAuthorizedAdmin \} from "@\/lib\/admin-access"/);
- assert.match(route,/await isAuthorizedAdmin\(\)/);
- assert.match(route,/Cache-Control": "private, no-store, max-age=0"/);
- assert.match(header,/fetch\("\/api\/admin\/access-state",\{cache:"no-store",credentials:"same-origin"\}\)/);
- assert.match(header,/const adminLinks=adminAuthorized\?\[\{href:"\/admin",label:"Area Amministratore"\}\]:\[\]/);
+ assert.match(header,/const adminLinks=\[\{href:"\/admin",label:"Area Amministratore"\}\]/);
  assert.match(header,/\[\.\.\.accessLinks,\.\.\.adminLinks\]\.map/g);
+ assert.doesNotMatch(header,/adminAuthorized|\/api\/admin\/access-state/);
+ assert.match(admin,/if \(!\(await isAuthorizedAdmin\(\)\)\) redirect\("\/admin\/login"\)/);
+ assert.match(adminGate,/getVerifiedSuperAdmin/);
 });
