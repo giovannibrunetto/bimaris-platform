@@ -79,6 +79,9 @@ test("admin individual login supports showing and hiding the password without by
   assert.match(login, /aria-pressed=\{showPassword\}/);
   assert.match(login, /"Mostra password"/);
   assert.match(login, /"Nascondi password"/);
+  assert.match(login, /<svg aria-hidden="true" viewBox="0 0 24 24"/);
+  assert.match(login, /<circle cx="12" cy="12" r="3"/);
+  assert.doesNotMatch(login, /\{showPassword \? "Nascondi" : "Mostra"\}/);
   assert.match(login, /window\.location\.assign\("\/admin\/mfa"\)/);
   assert.match(login, /signInWithPassword/);
 });
