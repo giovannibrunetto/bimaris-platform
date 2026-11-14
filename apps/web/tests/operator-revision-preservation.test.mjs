@@ -141,3 +141,10 @@ test("revision state is fetched per operator, pending cannot spawn a second prop
  assert.match(source,/if\(existing&&\(existing\.status==="pending"\|\|existing\.status==="approved"\)\)/);
  assert.match(source,/if\(error\)throw new Error\("Impossibile caricare le fotografie della revisione/);
 });
+
+test("booking and weather fields are informational only on approved experience revisions",()=>{
+ assert.match(source,/step===4&&\(revisionId\?<div className="experience-step" role="note"/);
+ assert.match(source,/Non sono modificabili in questo flusso/);
+ assert.match(source,/if\(error\)throw new Error\("Impossibile leggere le condizioni di prenotazione e meteo/);
+ assert.match(source,/revisionId\?<div className="experience-step" role="status"/);
+});
