@@ -1,0 +1,35 @@
+/* DS-UX-ADMIN-03 — a separate, responsive editorial queue for event reports. */
+.admin-event-review{background:var(--sand);color:var(--bimaris-abyssal-teal);min-height:60vh}
+.admin-event-review__container{width:min(100% - 36px,1120px);margin-inline:auto}
+.admin-event-review__intro{background:var(--bimaris-abyssal-teal);border-bottom:3px solid var(--bimaris-gold);color:var(--bimaris-ivory);padding:30px 0 27px}
+.admin-event-review__eyebrow{display:block;color:var(--bimaris-gold);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.admin-event-review__intro h1{color:var(--bimaris-ivory);font:normal clamp(28px,3.5vw,40px)/1.15 Georgia,serif;margin:7px 0}
+.admin-event-review__intro p{color:var(--bimaris-ivory);opacity:.88;max-width:770px;line-height:1.55;margin:0}
+.admin-event-review__actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin-top:20px}
+.admin-event-review__actions a{color:var(--bimaris-ivory);text-underline-offset:4px;font-weight:750;font-size:.88rem}
+.admin-event-review__count{padding:8px 12px;border:1px solid var(--bimaris-gold);border-radius:999px;color:var(--bimaris-gold);font-size:.87rem;font-weight:850}
+.admin-event-review__main{padding:25px 0 56px;scroll-margin-top:20px}
+.admin-event-review__rule{margin:0 0 22px;border-left:4px solid var(--bimaris-gold);border-radius:10px;background:var(--bimaris-ivory);padding:15px 18px;line-height:1.5;font-size:.9rem}
+.admin-event-review__feedback{margin:0 0 20px;padding:13px 16px;border-radius:10px;background:var(--color-success-bg);color:var(--color-success);border:1px solid var(--color-border)}
+.admin-event-review__list{display:grid;gap:17px}
+.admin-event-review__card,.admin-event-review__empty{border:1px solid var(--color-border);border-radius:16px;background:var(--bimaris-ivory);padding:clamp(18px,3vw,26px);box-shadow:var(--shadow-sm);min-width:0}
+.admin-event-review__card-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px}
+.admin-event-review__source{display:block;font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-muted);font-weight:800}
+.admin-event-review__card h2{font:normal clamp(21px,2.7vw,27px)/1.2 Georgia,serif;color:var(--bimaris-abyssal-teal);margin:8px 0 0;overflow-wrap:anywhere}
+.admin-event-review__status{border:1px solid var(--bimaris-gold);border-radius:999px;color:var(--bimaris-abyssal-teal);background:var(--color-surface-subtle);padding:7px 12px;font-size:.8rem;font-weight:800;white-space:nowrap}
+.admin-event-review__facts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin:20px 0 0;padding:15px 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)}
+.admin-event-review__facts dt{font-size:.75rem;font-weight:800;color:var(--color-text-muted);margin-bottom:6px}
+.admin-event-review__facts dd{margin:0;color:var(--bimaris-abyssal-teal);font-size:.93rem;line-height:1.5;overflow-wrap:anywhere}
+.admin-event-review__facts a{color:inherit;font-weight:800;text-underline-offset:3px}
+.admin-event-review__description{margin-top:18px;padding:15px 17px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:11px}
+.admin-event-review__description strong{font-size:.8rem}
+.admin-event-review__description p{margin:8px 0 0;font-size:.9rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.admin-event-review__decision{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.admin-event-review__decision form{margin:0}
+.admin-event-review__decision button{min-height:44px;border-radius:999px;padding:10px 18px;font:inherit;font-size:.9rem;font-weight:800;cursor:pointer}
+.admin-event-review__approve{border:1px solid var(--bimaris-gold);background:var(--bimaris-gold);color:var(--bimaris-abyssal-teal)}
+.admin-event-review__reject{border:1px solid var(--color-border);background:transparent;color:var(--bimaris-abyssal-teal)}
+.admin-event-review a:focus-visible,.admin-event-review button:focus-visible{outline:3px solid var(--bimaris-gold);outline-offset:3px}
+.admin-event-review__empty h2{margin:0 0 8px;font-size:1.35rem}
+.admin-event-review__empty p{margin:0}
+@media(max-width:640px){.admin-event-review__container{width:calc(100% - 28px)}.admin-event-review__intro{padding:24px 0}.admin-event-review__facts{grid-template-columns:1fr;gap:13px}.admin-event-review__decision form{flex:1 1 170px}.admin-event-review__decision button{width:100%}.admin-event-review__actions{align-items:flex-start}}

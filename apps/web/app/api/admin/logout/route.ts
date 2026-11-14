@@ -1,7 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { clearAdminSession } from "@/lib/admin-auth";
+import { createUserServerClient } from "@/lib/supabase/user-server";
 
+/**
+ * DS-MFA-01/C transitional logout: clear the legacy admin cookie and
+ * invalidate the individual Supabase Auth session when one exists.
+ * Shared-password login is disabled on this isolated V34 branch.
+ */
 export async function POST(request: NextRequest) {
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
+  // Always clear the legacy cookie, including when the individual Auth
+  // session is absent or Supabase is temporarily unavailable.
   await clearAdminSession();
+
+  const userClient = await createUserServerClient();
+  if (userClient) {
+    // Server-side signOut revokes the current refresh token; existing JWTs
+    // can remain valid until expiry. Do not claim immediate global revocation.
+    const { data: sessionData, error: sessionError } = await userClient.auth.getSession();
+    if (sessionError) {
+      console.error("Admin individual session inspection failed");
+      return NextResponse.json({ ok: false, error: "individual_logout_failed" }, { status: 503 });
+    }
+    if (sessionData.session) {
+      const { error } = await userClient.auth.signOut({ scope: "local" });
+      if (error) {
+        console.error("Admin individual logout failed");
+        return NextResponse.json({ ok: false, error: "individual_logout_failed" }, { status: 503 });
+      }
+    }
+  }
+
   return NextResponse.redirect(new URL("/admin/login", request.url), 303);
 }

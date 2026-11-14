@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminExperiencesPage() {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
 
   // The former all-in-one experience administration screen duplicated the
   // operator dossier/review workflow and still depended on the legacy

@@ -1,9 +1,12 @@
+import { rejectCrossSiteOperatorMutation } from "@/lib/operator-request-origin";
 import { NextRequest,NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 
 function field(form:FormData,key:string,max=80){const value=form.get(key);return typeof value==="string"?value.trim().slice(0,max):"";}
 
 export async function POST(request:NextRequest){
+ const originError = rejectCrossSiteOperatorMutation(request);
+ if (originError) return originError;
   const db=await createUserServerClient();
   if(!db)return NextResponse.redirect(new URL("/accedi",request.url),303);
   const {data:claims}=await db.auth.getClaims();

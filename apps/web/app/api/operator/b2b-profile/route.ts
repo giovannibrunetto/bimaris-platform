@@ -1,3 +1,4 @@
+import { rejectCrossSiteOperatorMutation } from "@/lib/operator-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { B2B_TAGS, COLLABORATION_TYPES, CUSTOMER_SEGMENTS, LANGUAGES, AVAILABILITY_MODES } from "@/lib/b2b";
@@ -31,6 +32,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+ const originError = rejectCrossSiteOperatorMutation(req);
+ if (originError) return originError;
   const body = await req.json().catch(() => null) as Record<string, unknown> | null;
   const operatorId = typeof body?.operator_id === "string" ? body.operator_id : null;
   if (!operatorId) return NextResponse.json({ error: "operator_id mancante" }, { status: 400 });

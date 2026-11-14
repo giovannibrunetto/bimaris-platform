@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, staging, feature/admin-individual-mfa, integration/ds-mfa-ux-identity-20261111]
   pull_request:
 
 jobs:
@@ -19,4 +19,5 @@ jobs:
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
       - run: pnpm test:auth
+      - run: pnpm test:media
       - run: pnpm --filter @bimaris/web build

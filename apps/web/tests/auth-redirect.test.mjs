@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { authRedirectOrigin, safeAuthPath, PUBLIC_SITE_URL } from "../lib/auth-redirect.ts";
+import { readFileSync } from "node:fs";
+import { authRedirectOrigin, safeAuthPath, PUBLIC_SITE_URL, OPERATOR_QA_ORIGIN, operatorOAuthEntryOrigin } from "../lib/auth-redirect.ts";
 
 const STAGING = "https://bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app";
 
@@ -40,4 +41,23 @@ test("external, protocol-relative and backslash redirects are rejected", () => {
   ]) {
     assert.equal(safeAuthPath(candidate), null);
   }
+});
+
+
+test("immutable Preview URL redirects operator OAuth entry to the stable branch alias", () => {
+ assert.equal(operatorOAuthEntryOrigin("https://bimaris-platform-96elwdpco-giovannibrunetto84-1508.vercel.app"),OPERATOR_QA_ORIGIN);
+ assert.equal(operatorOAuthEntryOrigin("https://bimaris-platform-xyz123-giovannibrunetto84-1508.vercel.app"),OPERATOR_QA_ORIGIN);
+});
+test("staging, production, and the canonical branch alias are never rewritten", () => {
+ for(const origin of [STAGING,PUBLIC_SITE_URL,OPERATOR_QA_ORIGIN])assert.equal(operatorOAuthEntryOrigin(origin),origin);
+});
+
+test("operator login normalizes immutable Preview before Google button is used",()=>{
+ const source=readFileSync(new URL("../app/accedi/page.tsx",import.meta.url),"utf8");
+ const effect=source.slice(source.indexOf(" useEffect(()=>{"),source.indexOf(" },[]);")+7);
+ assert.match(effect,/const canonicalOrigin=operatorOAuthEntryOrigin\(window\.location\.origin\)/);
+ assert.match(effect,/if\(operatorEntry&&canonicalOrigin!==window\.location\.origin\)/);
+ assert.match(effect,/window\.location\.replace\(/);
+ assert.ok(effect.indexOf("window.location.replace")<effect.indexOf("setShowOperatorLogin(true)"));
+ assert.match(effect,/const operatorEntry=Boolean\(next&&/);
 });

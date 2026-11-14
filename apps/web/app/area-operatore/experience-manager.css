@@ -87,3 +87,368 @@
  .experience-wizard__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .experience-wizard__actions button{min-width:0;padding:10px 9px;white-space:normal}
 }
+
+/* UX-MOBILE-03 — Mobile experience list progressive disclosure */
+.experience-manager__create-primary{margin:18px 0 14px}
+.experience-manager__create-primary .button{min-height:46px}
+.experience-manager__show-all{display:none}
+@media(max-width:600px){
+ .experience-manager__create-primary .button{width:100%}
+ .experience-manager__list:not(.experience-manager__list--expanded)>.experience-manager__card:nth-child(n+3){display:none}
+ .experience-manager__show-all{display:block;width:100%;margin:12px 0 18px;padding:12px 15px;border:1px solid #caa86a;border-radius:999px;background:#fffaf1;color:#07343b;font:inherit;font-weight:700;cursor:pointer}
+ .experience-manager__show-all:focus-visible{outline:2px solid #caa86a;outline-offset:3px}
+}
+
+/* DT13: a pending revision action is processing, not forbidden. Keep disabled semantics against duplicate clicks. */
+.experience-manager .experience-manager__card>button.experience-manager__propose-revision:disabled{cursor:progress;opacity:.8}
+
+/* DS-CLEAN-05: visible confirmation survives closing the experience wizard. */
+.experience-manager__submission-notice{padding:18px 20px;margin:18px 0;border:1px solid #afcbb9;border-left:5px solid #26734c;border-radius:12px;background:#f1f8f3;color:#113d29}
+.experience-manager__submission-notice strong{display:block;margin-bottom:4px;font-size:1rem}
+.experience-manager__submission-notice p{margin:0;line-height:1.5}
+.experience-manager .experience-chips button:disabled{cursor:default;opacity:.9}
+
+
+/* Dedicated operator experience editing workspace: no inline wizard below the listing. */
+.experience-edit-screen{position:fixed;inset:0;z-index:10000;overflow-y:auto;overscroll-behavior:contain;background:#f5f1e9;color:#122f35;padding:clamp(12px,3vw,36px);box-sizing:border-box}
+.experience-edit-screen__layout{width:min(100%,980px);margin:0 auto;padding-bottom:clamp(20px,5vh,54px)}
+.experience-edit-screen__header{padding:clamp(16px,3vw,28px) clamp(16px,3vw,32px);border:1px solid #e4d8c4;border-radius:20px;background:#fff;box-shadow:0 8px 22px rgba(18,47,53,.06)}
+.experience-edit-screen__back{border:1px solid #caa86a;border-radius:999px;padding:10px 18px;background:#fff;color:#123239;font:inherit;font-weight:700;cursor:pointer}
+.experience-edit-screen__back:hover{background:#f7efe0}
+.experience-edit-screen__back:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+.experience-edit-screen__back:disabled{opacity:.55;cursor:wait}
+.experience-edit-screen__eyebrow{font-size:.7rem;letter-spacing:.12em;font-weight:800;color:#97703b;margin-top:20px}
+.experience-edit-screen__header h1{font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.13;margin:6px 0;color:#122f35;overflow-wrap:anywhere}
+.experience-edit-screen__header p{margin:0;color:#5e6b70;line-height:1.5}
+.experience-edit-screen .experience-wizard{margin-top:16px;animation:none;overflow:visible}
+.experience-edit-screen .experience-wizard__actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+@media(max-width:600px){.experience-edit-screen{padding:10px}.experience-edit-screen__header{border-radius:15px}.experience-edit-screen .experience-wizard{border-radius:16px}.experience-edit-screen .experience-wizard__actions button{min-height:42px}}
+
+
+/* DS-UX-REV-02: one restrained, centered working surface. The editor is a route,
+   not a second card stacked below an experience heading. */
+.experience-manager.experience-edit-screen{
+  display:block;position:fixed;inset:0;z-index:10000;overflow-y:auto;
+  padding:clamp(16px,4vh,44px) clamp(12px,3vw,32px);
+  border:0;border-radius:0;box-shadow:none;background:#f8f7f4;
+  color:#17343b;overscroll-behavior:contain
+}
+.experience-edit-screen__layout{width:min(100%,820px);margin:0 auto;padding:0 0 44px}
+.experience-edit-screen__panel{
+  padding:clamp(20px,4vw,40px);background:#fff;border:1px solid #e7e1d6;
+  border-radius:22px;box-shadow:0 12px 36px rgba(25,37,36,.055)
+}
+.experience-edit-screen__header{
+  padding:0;border:0;border-radius:0;box-shadow:none;background:transparent
+}
+.experience-edit-screen__eyebrow{margin-top:22px}
+.experience-edit-screen__header h1{font-size:clamp(1.55rem,3vw,2.15rem);margin:7px 0 9px}
+.experience-edit-screen__header p{font-size:.94rem;max-width:640px}
+.experience-manager.experience-edit-screen .experience-wizard{
+  margin:24px 0 0;padding:24px 0 0;border:0;border-top:1px solid #e9e4db;
+  border-radius:0;background:transparent;color:#17343b;box-shadow:none;
+  animation:none;isolation:auto;overflow:visible
+}
+.experience-edit-screen .experience-wizard::before,
+.experience-edit-screen .experience-wizard::after{content:none;display:none}
+.experience-edit-screen .experience-wizard__progress{color:#866331;margin-bottom:22px}
+.experience-edit-screen .experience-wizard__progress>div{background:#e9e4dc}
+.experience-edit-screen .experience-wizard__progress i{background:#b9904e}
+.experience-manager.experience-edit-screen .experience-step h3{
+  color:#17343b;font-size:clamp(1.55rem,3vw,2rem);line-height:1.2
+}
+.experience-manager.experience-edit-screen .experience-step>p{color:#5d6b70}
+.experience-manager.experience-edit-screen .experience-step>label,
+.experience-manager.experience-edit-screen .experience-grid>label{color:#17343b}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  border:1px solid #d5dcd9;background:#fff;color:#17343b;
+  min-height:44px
+}
+.experience-manager.experience-edit-screen .experience-step :is(input,textarea,select):focus-visible{
+  outline:2px solid #b9904e;outline-offset:2px
+}
+.experience-manager.experience-edit-screen .experience-fieldset>strong{color:#17343b}
+.experience-manager.experience-edit-screen .experience-fieldset>p{color:#5d6b70}
+.experience-manager.experience-edit-screen .experience-chips button{
+  border-color:#cbd4d1;background:#fff;color:#17343b
+}
+.experience-manager.experience-edit-screen .experience-chips button.is-active{
+  background:#d9bd8c;border-color:#b9904e;color:#17343b
+}
+.experience-edit-screen .experience-wizard__actions{
+  border-top:1px solid #e9e4db;padding-top:20px;gap:10px
+}
+.experience-edit-screen .experience-wizard__actions button{
+  border-color:#b9c8c4;background:#fff;color:#17343b
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:#caa86a;border-color:#caa86a;color:#102939
+}
+.experience-edit-screen .experience-wizard__message{
+  background:#f5f2ea;color:#17343b;border:1px solid #e3d9c8
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:12px 10px}
+  .experience-edit-screen__panel{padding:20px 16px;border-radius:16px}
+  .experience-manager.experience-edit-screen .experience-wizard{margin-top:18px;padding-top:20px}
+  .experience-edit-screen .experience-wizard__actions{display:flex;flex-wrap:wrap}
+  .experience-edit-screen .experience-wizard__actions button{flex:1 1 auto;min-width:110px}
+}
+
+
+
+/* DS-UX-REV-02/VISUAL-03 — use the APPROVED palette in foundation.css.
+   Avoid alternate hard-coded teals/golds: brand tokens are the source of truth. */
+.experience-manager.experience-edit-screen{
+  background:var(--bimaris-abyssal-teal);
+  padding:clamp(22px,5vh,58px) clamp(12px,3vw,36px)
+}
+.experience-edit-screen__layout{width:min(100%,880px)}
+.experience-edit-screen__panel{
+  padding:0;overflow:hidden;
+  border:1px solid var(--color-border);
+  background:var(--color-surface-subtle);
+  border-radius:24px;
+  box-shadow:var(--shadow-md)
+}
+.experience-edit-screen__header{
+  padding:clamp(25px,4vw,42px) clamp(24px,5vw,50px) clamp(27px,4vw,39px);
+  border:0;border-radius:0;background:var(--bimaris-abyssal-teal);
+  color:var(--bimaris-ivory)
+}
+.experience-edit-screen__back{
+  padding:10px 17px;color:var(--bimaris-ivory);
+  border:1px solid var(--bimaris-gold);background:transparent
+}
+.experience-edit-screen__back:hover{
+  color:var(--bimaris-abyssal-teal);
+  background:var(--bimaris-gold);border-color:var(--bimaris-gold)
+}
+.experience-edit-screen__back:focus-visible{outline-color:var(--bimaris-gold)}
+.experience-edit-screen__eyebrow{
+  color:var(--bimaris-gold);margin-top:24px;letter-spacing:.15em
+}
+.experience-edit-screen__header h1{
+  color:var(--bimaris-ivory);font-size:clamp(1.75rem,3.4vw,2.5rem);
+  line-height:1.13;margin:10px 0 12px
+}
+.experience-edit-screen__header p{
+  color:var(--bimaris-ivory);font-size:1rem;
+  line-height:1.6;opacity:.9
+}
+.experience-manager.experience-edit-screen .experience-wizard{
+  margin:0;
+  padding:clamp(26px,4vw,42px) clamp(24px,5vw,50px) clamp(28px,4vw,38px);
+  border:0;border-radius:0;
+  background:var(--color-surface-subtle);color:var(--color-text)
+}
+.experience-edit-screen .experience-wizard__progress{
+  color:var(--color-text);font-size:.82rem;margin-bottom:28px
+}
+.experience-edit-screen .experience-wizard__progress>div{
+  height:6px;background:var(--color-border)
+}
+.experience-edit-screen .experience-wizard__progress i{
+  background:var(--bimaris-gold)
+}
+.experience-manager.experience-edit-screen .experience-step h3{
+  color:var(--bimaris-abyssal-teal);font-size:clamp(1.75rem,3vw,2.25rem)
+}
+.experience-manager.experience-edit-screen .experience-step>p{
+  color:var(--color-text-muted);font-size:1rem
+}
+.experience-manager.experience-edit-screen .experience-step>label,
+.experience-manager.experience-edit-screen .experience-grid>label{
+  color:var(--color-text)
+}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  border:1.5px solid var(--color-border);
+  background:var(--bimaris-ivory);color:var(--color-text);
+  box-shadow:var(--shadow-sm)
+}
+.experience-manager.experience-edit-screen .experience-step :is(input,textarea,select):focus-visible{
+  outline:3px solid var(--color-focus);outline-offset:2px
+}
+.experience-edit-screen .experience-wizard__actions{
+  margin-top:30px;border-top:1px solid var(--color-border);
+  padding-top:24px;gap:12px
+}
+.experience-edit-screen .experience-wizard__actions button{
+  border:1px solid var(--color-border);
+  background:var(--color-surface-subtle);color:var(--color-text);
+  box-shadow:none;min-height:44px;padding:10px 18px
+}
+.experience-edit-screen .experience-wizard__actions button:hover:not(:disabled){
+  border-color:var(--bimaris-gold);background:var(--color-surface-subtle)
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:var(--bimaris-gold);border-color:var(--bimaris-gold);
+  color:var(--bimaris-abyssal-teal);box-shadow:var(--shadow-sm)
+}
+.experience-edit-screen .experience-wizard__actions button.button:hover:not(:disabled){
+  background:var(--bimaris-gold);border-color:var(--bimaris-gold);
+  filter:brightness(1.04)
+}
+.experience-manager.experience-edit-screen .experience-chips button.is-active{
+  background:var(--bimaris-abyssal-teal);
+  border-color:var(--bimaris-abyssal-teal);color:var(--bimaris-ivory)
+}
+.experience-edit-screen .experience-wizard__message{
+  border-color:var(--color-border);
+  background:var(--color-info-bg);color:var(--color-text)
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:12px 10px}
+  .experience-edit-screen__panel{border-radius:17px}
+  .experience-edit-screen__header{padding:24px 20px 25px}
+  .experience-manager.experience-edit-screen .experience-wizard{padding:25px 20px 28px}
+  .experience-edit-screen .experience-wizard__actions button{flex:1 1 130px}
+}
+
+
+/* DS-UX-REV-02/VISUAL-04 — final single-card hierarchy.
+   All chromatic values reference the approved BIMARIS foundation tokens. */
+.experience-manager.experience-edit-screen{
+  background:var(--sand);
+  padding:clamp(20px,4vh,45px) clamp(12px,3vw,32px)
+}
+.experience-edit-screen__layout{width:min(100%,960px);margin-inline:auto}
+.experience-edit-screen__panel{
+  border:2px solid var(--bimaris-gold);
+  border-radius:20px;
+  background:var(--bimaris-ivory);
+  overflow:hidden;
+  box-shadow:0 16px 44px rgba(3,33,38,.19),0 4px 12px rgba(3,33,38,.09)
+}
+.experience-edit-screen__header{
+  background:var(--bimaris-abyssal-teal);
+  padding:22px clamp(22px,4vw,40px) 22px;
+  border:0;border-radius:0;
+  color:var(--bimaris-ivory)
+}
+.experience-edit-screen__back{
+  padding:8px 15px;
+  background:transparent;color:var(--bimaris-ivory);
+  border:1px solid var(--bimaris-gold)
+}
+.experience-edit-screen__eyebrow{
+  margin-top:14px;color:var(--bimaris-gold)
+}
+.experience-edit-screen__header h1{
+  font-size:clamp(1.55rem,2.8vw,2.05rem);
+  margin:7px 0 6px;line-height:1.13;color:var(--bimaris-ivory)
+}
+.experience-edit-screen__header p{
+  font-size:.9rem;line-height:1.45;max-width:700px;
+  margin:0;color:var(--bimaris-ivory);opacity:.92
+}
+.experience-manager.experience-edit-screen .experience-wizard{
+  background:var(--bimaris-ivory);
+  padding:clamp(22px,3vw,34px) clamp(22px,4vw,40px) 30px;
+  margin:0;border:0;border-radius:0
+}
+.experience-edit-screen .experience-wizard__progress{
+  margin-bottom:20px;color:var(--color-text)
+}
+.experience-edit-screen .experience-wizard__progress>div{background:var(--color-border)}
+.experience-edit-screen .experience-wizard__progress i{background:var(--bimaris-gold)}
+.experience-manager.experience-edit-screen .experience-step{
+  max-width:none
+}
+.experience-manager.experience-edit-screen .experience-step h3{
+  font-size:clamp(1.55rem,2.7vw,2rem);
+  color:var(--bimaris-abyssal-teal)
+}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  color:var(--color-text)
+}
+.experience-edit-screen .experience-wizard__actions{
+  margin-top:24px;padding-top:18px;border-top:1px solid var(--color-border)
+}
+.experience-edit-screen .experience-wizard__actions button{
+  background:var(--color-surface);
+  color:var(--bimaris-abyssal-teal);
+  border-color:var(--color-border)
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:var(--bimaris-gold);
+  border-color:var(--bimaris-gold);
+  color:var(--bimaris-abyssal-teal)
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:10px}
+  .experience-edit-screen__panel{border-width:2px;border-radius:16px}
+  .experience-edit-screen__header{padding:18px 18px 20px}
+  .experience-edit-screen__eyebrow{margin-top:12px}
+  .experience-manager.experience-edit-screen .experience-wizard{padding:22px 18px 26px}
+  .experience-edit-screen .experience-wizard__actions{display:flex;gap:8px;flex-wrap:wrap}
+  .experience-edit-screen .experience-wizard__actions button{min-height:44px;flex:1 1 auto}
+}
+
+
+/* DS-UX-REV-02/VISUAL-05 — center the working card in both axes when it fits.
+   Flex auto margins become zero when the wizard is taller than the viewport,
+   preserving ordinary top-to-bottom scrolling without clipping form actions. */
+.experience-manager.experience-edit-screen{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch
+}
+.experience-manager.experience-edit-screen .experience-edit-screen__layout{
+  width:min(100%,960px);
+  margin:auto;
+  padding:0;
+  flex:0 0 auto
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen .experience-edit-screen__layout{
+    margin:0 auto
+  }
+}
+
+
+/* DS-UX-REV-02/PARTNER-VISUAL — clear partner identity and consent status. */
+.experience-manager.experience-edit-screen .experience-revision-partner{
+  border:1px solid var(--color-border);border-left:4px solid var(--bimaris-gold);
+  border-radius:var(--radius-md);background:var(--color-surface);
+  padding:clamp(16px,2.6vw,24px);margin-top:18px;
+}
+.experience-revision-partner__top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.experience-revision-partner__label{display:block;color:var(--color-text-muted);font-size:.8rem;font-weight:700;margin-bottom:5px}
+.experience-revision-partner__name{display:block;color:var(--bimaris-abyssal-teal);font-size:clamp(1.1rem,2vw,1.35rem);line-height:1.25;overflow-wrap:anywhere}
+.experience-revision-partner__status{display:inline-flex;align-items:center;border-radius:999px;padding:7px 12px;font-size:.83rem;font-weight:800;border:1px solid var(--color-border);background:var(--color-surface-subtle);color:var(--color-text)}
+.experience-revision-partner__status--accepted{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success)}
+.experience-revision-partner__status--pending{border-color:var(--bimaris-gold);background:var(--color-info-bg);color:var(--color-text)}
+.experience-revision-partner__status--rejected{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error)}
+.experience-revision-partner__activity{display:grid;gap:5px;margin:18px 0 0;color:var(--color-text);font-size:.95rem;line-height:1.55}
+.experience-revision-partner__activity strong{font-size:.8rem;color:var(--color-text-muted)}
+.experience-revision-partner__note{border-top:1px solid var(--color-border);padding-top:14px;margin:16px 0 0;color:var(--color-text-muted);font-size:.85rem;line-height:1.5}
+
+
+/* Post-submission and no-longer-editable deep-link state. */
+.experience-edit-route__loading{
+  width:min(100% - 32px,680px);
+  margin:clamp(36px,10vh,100px) auto;
+  padding:clamp(24px,4vw,40px);
+  background:var(--bimaris-ivory);
+  border:2px solid var(--bimaris-gold);
+  border-radius:18px;
+  box-shadow:var(--shadow-md);
+  color:var(--bimaris-abyssal-teal)
+}
+.experience-edit-route__loading h2{font-size:clamp(1.35rem,3vw,1.8rem);margin:0 0 12px}
+.experience-edit-route__loading p{margin:0 0 20px;line-height:1.55}
+.experience-edit-route__loading button{
+  border:1px solid var(--bimaris-gold);border-radius:999px;
+  padding:10px 18px;background:var(--bimaris-gold);
+  color:var(--bimaris-abyssal-teal);font:inherit;font-weight:700;cursor:pointer
+}
+.experience-edit-route__loading button:focus-visible{outline:3px solid var(--color-focus);outline-offset:3px}

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 const primaryLinks = [
   { href: "/cultura", label: "Cultura" },
@@ -24,6 +25,40 @@ function isCurrentPath(pathname: string, href: string) {
 export function Header() {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
+  const [access,setAccess] = useState<"guest"|"user"|"operator"|"both">("guest");
+
+  useEffect(() => {
+    const supabase=createBrowserSupabaseClient();
+    if(!supabase)return;
+    let active=true;
+    let request=0;
+    async function refresh(){
+      const current=++request;
+      const {data:{user},error}=await supabase!.auth.getUser();
+      if(!active||current!==request)return;
+      if(error||!user){setAccess("guest");return;}
+      const {data:memberships,error:membershipError}=await supabase!.from("operator_memberships").select("role").eq("user_id",user.id);
+      if(!active||current!==request)return;
+      if(membershipError){setAccess("user");return;}
+      const hasOperator=(memberships??[]).some(item=>["owner","manager","viewer"].includes(item.role));
+      setAccess(hasOperator?"both":"user");
+    }
+    void refresh();
+    const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{
+      queueMicrotask(()=>{if(active)void refresh();});
+    });
+    return()=>{active=false;request++;subscription.unsubscribe();};
+  },[pathname]);
+
+  const accessLinks=access==="guest"
+    ?[{href:"/accedi",label:"Accedi"}]
+    :access==="user"
+      ?[{href:"/profilo",label:"Area personale"}]
+      :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
+
+  // A navigation link is not an authorization: /admin still enforces the
+  // existing server-side Super Admin identity and MFA/AAL2 checks.
+  const adminLinks=[{href:"/admin",label:"Area Amministratore"}];
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
@@ -45,8 +80,8 @@ export function Header() {
             {link.label}
           </Link>
         ))}
-        <Link href="/accedi" aria-current={isCurrentPath(pathname, "/accedi") ? "page" : undefined}>Accedi</Link>
-        {utilityLinks.map(link => (
+        {[...accessLinks,...adminLinks].map(link=><Link key={link.href} href={link.href} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
+        {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
           <Link
             href={link.href}
             key={link.href}
@@ -70,8 +105,8 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <Link href="/accedi" onClick={closeMobileMenu} aria-current={isCurrentPath(pathname, "/accedi") ? "page" : undefined}>Accedi / Il tuo BIMARIS</Link>
-          {utilityLinks.map(link => (
+          {[...accessLinks,...adminLinks].map(link=><Link key={link.href} href={link.href} onClick={closeMobileMenu} aria-current={isCurrentPath(pathname,link.href)?"page":undefined}>{link.label}</Link>)}
+          {utilityLinks.filter(link=>access!=="both"&&access!=="operator"||link.href!=="/operatori/candidatura").map(link => (
             <Link
               href={link.href}
               key={link.href}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ const messages: Record<string,string> = {
 };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
   const [{ data: operators, error: operatorsError }, { data: memberships, error: membershipsError }] = await Promise.all([
