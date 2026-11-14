@@ -197,3 +197,17 @@ test("portal keeps its experience-manager ancestry for the scoped wizard form CS
  assert.match(css,/\.experience-manager \.experience-step input/);
  assert.match(source,/createPortal\(<div className="experience-manager experience-edit-screen"/);
 });
+
+test("revision workspace is one centered card with neutral background and unified form",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ const open=source.indexOf('createPortal(<div className="experience-manager experience-edit-screen"');
+ const panel=source.indexOf('className="experience-edit-screen__panel"',open);
+ const header=source.indexOf('className="experience-edit-screen__header"',panel);
+ const wizard=source.indexOf('ref={wizardRef} className="experience-wizard"',header);
+ assert.ok(open>=0&&panel>open&&header>panel&&wizard>header);
+ assert.match(css,/\.experience-edit-screen__layout\{width:min\(100%,820px\)/);
+ assert.match(css,/\.experience-edit-screen__panel\{/);
+ assert.match(css,/\.experience-manager\.experience-edit-screen \.experience-wizard\{/);
+ assert.match(css,/border-top:1px solid #e9e4db/);
+ assert.match(css,/background:#f8f7f4/);
+});
