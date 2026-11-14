@@ -32,3 +32,5 @@
 @media(max-width:420px){.admin-events__links{display:grid}.admin-events__actions,.admin-events__actions form,.admin-events__actions button{width:100%}.admin-events__metadata{display:grid}}
 
 .admin-events__approved{margin-top:45px;padding-top:28px;border-top:2px solid #ddd7cb}
+
+.admin-events__notice{padding:13px 16px;border:1px solid #c7a466;border-radius:10px;background:#fff9ed;color:#63491e;font-weight:700;line-height:1.45;margin:0 0 18px}
