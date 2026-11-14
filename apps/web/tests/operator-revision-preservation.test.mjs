@@ -287,3 +287,27 @@ test("global admin access is visibly linked without bypassing protected server g
  assert.match(admin,/if \(!\(await isAuthorizedAdmin\(\)\)\) redirect\("\/admin\/login"\)/);
  assert.match(adminGate,/getVerifiedSuperAdmin/);
 });
+
+test("administrator operator queue defaults to pending work; archive contains approved records",()=>{
+ const page=readFileSync(new URL("../app/admin/operatori/page.tsx",import.meta.url),"utf8");
+ assert.match(page,/const archive=vista==="archivio"/);
+ assert.match(page,/filter\(o=>archive\|\|pendingForOperator\(o\.id\)>0\)/);
+ assert.match(page,/e\.operator_id===o\.id&&\(archive\|\|needsReview\(e\)\)/);
+ assert.match(page,/revisionPending\?"MODIFICA DA ESAMINARE":"NUOVA ESPERIENZA DA ESAMINARE"/);
+ assert.match(page,/\/admin\/operatori\?vista=archivio#operator-archive/);
+});
+test("event editorial queue is distinct, mobile responsive and warns of publication",()=>{
+ const page=readFileSync(new URL("../app/admin/eventi/page.tsx",import.meta.url),"utf8");
+ const css=readFileSync(new URL("../app/admin/eventi/admin-event-review.css",import.meta.url),"utf8");
+ const dashboard=readFileSync(new URL("../app/admin/page.tsx",import.meta.url),"utf8");
+ assert.match(page,/\.eq\("verification_status","pending"\)/);
+ assert.match(page,/segnalazioni evento/);
+ assert.match(page,/Non equivale all'approvazione di un'esperienza/);
+ assert.match(page,/row\.source_label\|\|sourceTypeLabel\(row\.source_type\)/);
+ assert.match(page,/status=.+approved/);
+ assert.match(page,/name="action" value="approve"/);
+ assert.match(page,/name="action" value="reject"/);
+ assert.match(css,/@media\(max-width:640px\)/);
+ assert.match(css,/var\(--bimaris-gold\)/);
+ assert.match(dashboard,/label:"Segnalazioni eventi da verificare"/);
+});
