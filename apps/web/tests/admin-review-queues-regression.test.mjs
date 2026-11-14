@@ -71,3 +71,14 @@ test("dashboard uses the shared MFA header exactly once", () => {
   assert.match(dashboard, /className="admin-dashboard__overview"/);
   assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
 });
+
+test("admin individual login supports showing and hiding the password without bypassing MFA", () => {
+  const login = read("../app/admin/login/AdminIndividualLogin.tsx");
+  assert.match(login, /const \[showPassword, setShowPassword\] = useState\(false\)/);
+  assert.match(login, /type=\{showPassword \? "text" : "password"\}/);
+  assert.match(login, /aria-pressed=\{showPassword\}/);
+  assert.match(login, /"Mostra password"/);
+  assert.match(login, /"Nascondi password"/);
+  assert.match(login, /window\.location\.assign\("\/admin\/mfa"\)/);
+  assert.match(login, /signInWithPassword/);
+});
