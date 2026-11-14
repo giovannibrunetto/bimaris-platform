@@ -51,3 +51,23 @@ test("dashboard excludes curated BIMARIS experience revisions from operator queu
   assert.match(dashboard, /experiences!inner\(experience_origin\)/);
   assert.match(dashboard, /\.neq\("experiences\.experience_origin", "bimaris"\)/);
 });
+
+test("pending operator profile revision renders as its own visible row, not header action", () => {
+  const page = read("../app/admin/operatori/page.tsx");
+  assert.match(page, /Modifica del profilo operatore/);
+  assert.match(page, /pendingProfile&&<div className="admin-operator-grid"/);
+  assert.match(page, /revisioni-profilo/);
+  assert.doesNotMatch(page, />Esamina modifica<\/Link>/);
+  assert.match(page, /pendingProfiles===1\?"profilo":"profili"/);
+});
+
+test("dashboard uses the shared MFA header exactly once", () => {
+  const layout = read("../app/admin/layout.tsx");
+  const dashboard = read("../app/admin/page.tsx");
+  assert.match(layout, /className="admin-shell-header"/);
+  assert.match(layout, /Super Admin · MFA verificata/);
+  assert.doesNotMatch(dashboard, /className="admin-dashboard__intro"/);
+  assert.doesNotMatch(dashboard, /<h1[^>]*>Centro operativo<\/h1>/);
+  assert.match(dashboard, /className="admin-dashboard__overview"/);
+  assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
+});
