@@ -264,3 +264,13 @@ test("revision submit reports database no-op rejection instead of generic failur
  assert.match(submit,/Nessuna modifica da inviare: questa bozza è identica alla versione già approvata/);
  assert.doesNotMatch(submit,/err instanceof Error\?err\.message:"Invio non riuscito"/);
 });
+
+test("successful standalone revision submit returns to list and only confirms a verified pending revision",()=>{
+ assert.match(source,/if\(standaloneEditor\)\{router\.replace\(\`\/area-operatore\?operatore=\$\{encodeURIComponent\(operatorId\)\}&inviata=\$\{encodeURIComponent\(revisionId\)\}\`\);return\}/);
+ assert.match(source,/new URLSearchParams\(window\.location\.search\)\.get\("inviata"\)/);
+ assert.match(source,/\.eq\("id",submittedRevisionId\)\.eq\("operator_id",operatorId\)\.eq\("status","pending"\)\.maybeSingle\(\)/);
+ assert.match(source,/if\(active&&data&&!error\)setSubmissionNotice/);
+ assert.match(source,/Modifica non disponibile/);
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ assert.match(css,/\.experience-edit-route__loading\{/);
+});
