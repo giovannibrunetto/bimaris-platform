@@ -172,7 +172,7 @@ test("participant collaboration resolves partner FK explicitly, never the inviti
 test("operator editing opens in its own full-screen workspace, not below experience cards",()=>{
  const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
  assert.match(source,/import \{createPortal\} from "react-dom"/);
- assert.match(source,/createPortal\(<div className="experience-edit-screen"/);
+ assert.match(source,/createPortal\(<div className="experience-manager experience-edit-screen"/);
  assert.match(source,/Torna alle esperienze/);
  assert.match(source,/document\.body\)\}/);
  assert.match(source,/document\.body\.style\.overflow="hidden"/);
@@ -189,4 +189,11 @@ test("operator resumes an existing revision at an authenticated standalone URL",
  assert.match(source,/if\(!standaloneEditor\|\|!initialRevisionExperienceId\|\|!revisionStatesLoaded\)return/);
  assert.match(source,/!standaloneEditor&&<>/);
  assert.match(source,/if\(standaloneEditor\)\{router\.push/);
+});
+
+test("portal keeps its experience-manager ancestry for the scoped wizard form CSS",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ assert.match(css,/\.experience-manager \.experience-step>label/);
+ assert.match(css,/\.experience-manager \.experience-step input/);
+ assert.match(source,/createPortal\(<div className="experience-manager experience-edit-screen"/);
 });
