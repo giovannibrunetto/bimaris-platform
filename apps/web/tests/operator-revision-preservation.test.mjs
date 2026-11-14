@@ -254,3 +254,13 @@ test("existing collaboration is prominent but cannot be edited through revision"
  assert.match(css,/\.experience-revision-partner__status--accepted\{/);
  assert.match(css,/var\(--color-success-bg\)/);
 });
+
+test("revision submit reports database no-op rejection instead of generic failure",()=>{
+ const start=source.indexOf("async function submit()");
+ const end=source.indexOf("\n return <section",start);
+ const submit=source.slice(start,end);
+ assert.match(submit,/errorMessage\(err,"Invio non riuscito/);
+ assert.match(submit,/La proposta non contiene modifiche rispetto alla versione online/);
+ assert.match(submit,/Nessuna modifica da inviare: questa bozza è identica alla versione già approvata/);
+ assert.doesNotMatch(submit,/err instanceof Error\?err\.message:"Invio non riuscito"/);
+});
