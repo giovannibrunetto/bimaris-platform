@@ -179,3 +179,14 @@ test("operator editing opens in its own full-screen workspace, not below experie
  assert.match(css,/\.experience-edit-screen\{position:fixed;inset:0;/);
  assert.match(css,/@media\(max-width:600px\)/);
 });
+
+test("operator resumes an existing revision at an authenticated standalone URL",()=>{
+ const page=readFileSync(new URL("../app/area-operatore/page.tsx",import.meta.url),"utf8");
+ assert.match(page,/if\(params\.modifica\)\{/);
+ assert.match(page,/allowedExperience\.review_status!=="approved"/);
+ assert.match(page,/initialRevisionExperienceId=\{params\.modifica\} standaloneEditor/);
+ assert.match(source,/router\.push\(\`\/area-operatore\?operatore=\$\{encodeURIComponent\(operatorId\)\}&modifica=\$\{encodeURIComponent\(e\.id\)\}\`\)/);
+ assert.match(source,/if\(!standaloneEditor\|\|!initialRevisionExperienceId\|\|!revisionStatesLoaded\)return/);
+ assert.match(source,/!standaloneEditor&&<>/);
+ assert.match(source,/if\(standaloneEditor\)\{router\.push/);
+});
