@@ -552,3 +552,10 @@
 
 /* UX-OP-PROFILE-02 — Visible result of profile revision submission */
 .operator-profile-feedback{padding:16px 18px;border:1px solid rgba(154,111,41,.4);border-left:4px solid #b98b43;border-radius:12px;background:#fffaf0;color:#14393d;font-size:14px;line-height:1.55;font-weight:600;overflow-wrap:anywhere}
+
+/* Administrative access is shown only after the server-side Super Admin/AAL2 gate. */
+.operator-admin-shortcut-area{display:flex;justify-content:flex-end;padding:14px max(20px,calc((100vw - 1120px)/2));background:var(--sand)}
+.operator-admin-shortcut{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid var(--bimaris-gold);background:var(--bimaris-abyssal-teal);color:var(--bimaris-ivory);font-weight:750;text-decoration:none}
+.operator-admin-shortcut:hover{background:var(--bimaris-gold);color:var(--bimaris-abyssal-teal)}
+.operator-admin-shortcut:focus-visible{outline:3px solid var(--bimaris-gold);outline-offset:3px}
+@media(max-width:650px){.operator-admin-shortcut-area{padding:12px 16px}.operator-admin-shortcut{width:100%;justify-content:center}}
