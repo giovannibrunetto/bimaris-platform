@@ -52,20 +52,6 @@ export default async function AdminPage() {
   ];
 
   return <div className="admin-dashboard">
-    <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
-      <div className="admin-dashboard__container admin-dashboard__intro-layout">
-        <div className="admin-dashboard__intro-copy">
-          <span className="admin-dashboard__eyebrow">BIMARIS / Pannello di controllo</span>
-          <h1 id="admin-dashboard-title">Centro operativo</h1>
-          <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
-        </div>
-        <div className="admin-dashboard__intro-actions">
-          <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
-          <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
-        </div>
-      </div>
-    </section>
-
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
         <div className="admin-dashboard__summary">
