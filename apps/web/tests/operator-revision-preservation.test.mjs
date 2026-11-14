@@ -243,3 +243,14 @@ test("operator revision editor centers vertically when short and scrolls when ta
  assert.match(rule,/margin:0 auto/);
  assert.match(css,/position:fixed;inset:0;z-index:10000;overflow-y:auto/);
 });
+
+test("existing collaboration is prominent but cannot be edited through revision",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ assert.match(source,/experience-revision-partner__name/);
+ assert.match(source,/experience-revision-partner__status--\$\{collaboration\.status\}/);
+ assert.match(source,/collaboration\.status==="accepted"\?"Confermata"/);
+ assert.match(source,/Attività concordata/);
+ assert.match(source,/La collaborazione della scheda originale rimane invariata durante questa revisione/);
+ assert.match(css,/\.experience-revision-partner__status--accepted\{/);
+ assert.match(css,/var\(--color-success-bg\)/);
+});
