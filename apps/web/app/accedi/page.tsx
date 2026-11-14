@@ -17,14 +17,13 @@ export default function AccediPage(){
   // Immutable Preview links have a different cookie origin from the stable QA
   // alias. Move there BEFORE offering Google login, so the first Google click
   // actually starts OAuth instead of only navigating to another domain.
+  const next=new URLSearchParams(window.location.search).get("next");
+  const operatorEntry=Boolean(next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#")));
   const canonicalOrigin=operatorOAuthEntryOrigin(window.location.origin);
-  if(canonicalOrigin!==window.location.origin){
-   const next=new URLSearchParams(window.location.search).get("next");
-   const allowedNext=next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#"))?next:"/area-operatore";
-   window.location.replace(`${canonicalOrigin}/accedi?next=${encodeURIComponent(allowedNext)}`);
+  if(operatorEntry&&canonicalOrigin!==window.location.origin){
+   window.location.replace(`${canonicalOrigin}/accedi?next=${encodeURIComponent(next!)}`);
    return;
   }
-  const next=new URLSearchParams(window.location.search).get("next");
   if(next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#"))){
    setOperatorDeepLink(true);
    setShowOperatorLogin(true);
