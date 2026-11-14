@@ -26,7 +26,6 @@ export function Header() {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
   const [access,setAccess] = useState<"guest"|"user"|"operator"|"both">("guest");
-  const [adminAuthorized,setAdminAuthorized] = useState(false);
 
   useEffect(() => {
     const supabase=createBrowserSupabaseClient();
@@ -37,14 +36,7 @@ export function Header() {
       const current=++request;
       const {data:{user},error}=await supabase!.auth.getUser();
       if(!active||current!==request)return;
-      if(error||!user){setAccess("guest");setAdminAuthorized(false);return;}
-      // Never infer administrative privileges from operator membership.
-      // The server verifies the current Supabase identity, AAL2 and Super Admin role.
-      try {
-        const response=await fetch("/api/admin/access-state",{cache:"no-store",credentials:"same-origin"});
-        const state=response.ok?await response.json() as {authorized?:boolean}:{authorized:false};
-        if(active&&current===request)setAdminAuthorized(state.authorized===true);
-      }catch{if(active&&current===request)setAdminAuthorized(false);}
+      if(error||!user){setAccess("guest");return;}
       const {data:memberships,error:membershipError}=await supabase!.from("operator_memberships").select("role").eq("user_id",user.id);
       if(!active||current!==request)return;
       if(membershipError){setAccess("user");return;}
@@ -64,7 +56,9 @@ export function Header() {
       ?[{href:"/profilo",label:"Area personale"}]
       :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
 
-  const adminLinks=adminAuthorized?[{href:"/admin",label:"Area Amministratore"}]:[];
+  // A navigation link is not an authorization: /admin still enforces the
+  // existing server-side Super Admin identity and MFA/AAL2 checks.
+  const adminLinks=[{href:"/admin",label:"Area Amministratore"}];
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
