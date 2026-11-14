@@ -159,3 +159,12 @@ test("revision wizard does not briefly open and collapse during async data loadi
  assert.match(source,/if\(open\|\|!message\)return;/);
  assert.match(source,/querySelector<HTMLElement>\('\[role="alert"\]'\)/);
 });
+
+test("participant collaboration resolves partner FK explicitly, never the inviting operator",()=>{
+ const adminPage=readFileSync(new URL("../app/admin/esperienze/[id]/revisione/page.tsx",import.meta.url),"utf8");
+ const relation="operators:operators!experience_operators_operator_id_fkey(name)";
+ assert.ok(source.includes(relation));
+ assert.ok(adminPage.includes(relation));
+ assert.doesNotMatch(source,/approval_status,operators\(name\)/);
+ assert.doesNotMatch(adminPage,/approval_status,operators\(name\)/);
+});
