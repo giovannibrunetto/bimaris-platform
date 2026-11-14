@@ -20,7 +20,7 @@ export default async function AdminPage() {
     db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending"),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
   ]);
 
   const pendingApps = appsRes.count ?? 0;
@@ -36,7 +36,7 @@ export default async function AdminPage() {
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
   const workItems=[
     {href:"/admin/operatori",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
+    {href:"/admin/eventi",label:"Eventi da verificare",description:"Verifica eventi e pubblicazione separata",value:pendingEvents},
     {href:"/admin/candidature",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
