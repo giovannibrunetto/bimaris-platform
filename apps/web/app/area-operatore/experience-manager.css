@@ -123,3 +123,76 @@
 .experience-edit-screen .experience-wizard{margin-top:16px;animation:none;overflow:visible}
 .experience-edit-screen .experience-wizard__actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 @media(max-width:600px){.experience-edit-screen{padding:10px}.experience-edit-screen__header{border-radius:15px}.experience-edit-screen .experience-wizard{border-radius:16px}.experience-edit-screen .experience-wizard__actions button{min-height:42px}}
+
+
+/* DS-UX-REV-02: one restrained, centered working surface. The editor is a route,
+   not a second card stacked below an experience heading. */
+.experience-manager.experience-edit-screen{
+  display:block;position:fixed;inset:0;z-index:10000;overflow-y:auto;
+  padding:clamp(16px,4vh,44px) clamp(12px,3vw,32px);
+  border:0;border-radius:0;box-shadow:none;background:#f8f7f4;
+  color:#17343b;overscroll-behavior:contain
+}
+.experience-edit-screen__layout{width:min(100%,820px);margin:0 auto;padding:0 0 44px}
+.experience-edit-screen__panel{
+  padding:clamp(20px,4vw,40px);background:#fff;border:1px solid #e7e1d6;
+  border-radius:22px;box-shadow:0 12px 36px rgba(25,37,36,.055)
+}
+.experience-edit-screen__header{
+  padding:0;border:0;border-radius:0;box-shadow:none;background:transparent
+}
+.experience-edit-screen__eyebrow{margin-top:22px}
+.experience-edit-screen__header h1{font-size:clamp(1.55rem,3vw,2.15rem);margin:7px 0 9px}
+.experience-edit-screen__header p{font-size:.94rem;max-width:640px}
+.experience-manager.experience-edit-screen .experience-wizard{
+  margin:24px 0 0;padding:24px 0 0;border:0;border-top:1px solid #e9e4db;
+  border-radius:0;background:transparent;color:#17343b;box-shadow:none;
+  animation:none;isolation:auto;overflow:visible
+}
+.experience-edit-screen .experience-wizard::before,
+.experience-edit-screen .experience-wizard::after{content:none;display:none}
+.experience-edit-screen .experience-wizard__progress{color:#866331;margin-bottom:22px}
+.experience-edit-screen .experience-wizard__progress>div{background:#e9e4dc}
+.experience-edit-screen .experience-wizard__progress i{background:#b9904e}
+.experience-manager.experience-edit-screen .experience-step h3{
+  color:#17343b;font-size:clamp(1.55rem,3vw,2rem);line-height:1.2
+}
+.experience-manager.experience-edit-screen .experience-step>p{color:#5d6b70}
+.experience-manager.experience-edit-screen .experience-step>label,
+.experience-manager.experience-edit-screen .experience-grid>label{color:#17343b}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  border:1px solid #d5dcd9;background:#fff;color:#17343b;
+  min-height:44px
+}
+.experience-manager.experience-edit-screen .experience-step :is(input,textarea,select):focus-visible{
+  outline:2px solid #b9904e;outline-offset:2px
+}
+.experience-manager.experience-edit-screen .experience-fieldset>strong{color:#17343b}
+.experience-manager.experience-edit-screen .experience-fieldset>p{color:#5d6b70}
+.experience-manager.experience-edit-screen .experience-chips button{
+  border-color:#cbd4d1;background:#fff;color:#17343b
+}
+.experience-manager.experience-edit-screen .experience-chips button.is-active{
+  background:#d9bd8c;border-color:#b9904e;color:#17343b
+}
+.experience-edit-screen .experience-wizard__actions{
+  border-top:1px solid #e9e4db;padding-top:20px;gap:10px
+}
+.experience-edit-screen .experience-wizard__actions button{
+  border-color:#b9c8c4;background:#fff;color:#17343b
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:#caa86a;border-color:#caa86a;color:#102939
+}
+.experience-edit-screen .experience-wizard__message{
+  background:#f5f2ea;color:#17343b;border:1px solid #e3d9c8
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:12px 10px}
+  .experience-edit-screen__panel{padding:20px 16px;border-radius:16px}
+  .experience-manager.experience-edit-screen .experience-wizard{margin-top:18px;padding-top:20px}
+  .experience-edit-screen .experience-wizard__actions{display:flex;flex-wrap:wrap}
+  .experience-edit-screen .experience-wizard__actions button{flex:1 1 auto;min-width:110px}
+}
