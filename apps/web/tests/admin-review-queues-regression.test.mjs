@@ -30,3 +30,12 @@ test("events retain independent queue and MFA authorization", () => {
   assert.match(events, /await isAuthorizedAdmin\(\)/);
   assert.doesNotMatch(events, /isAdminAuthenticated/);
 });
+
+test("failed operator queue queries cannot be misreported as an empty queue", () => {
+  const page = read("../app/admin/operatori/page.tsx");
+  for (const name of ["operatorsError", "experiencesError", "revisionsError", "operatorRevisionsError"]) {
+    assert.match(page, new RegExp(name));
+  }
+  assert.match(page, /if\(operatorsError\|\|experiencesError\|\|revisionsError\|\|operatorRevisionsError\)throw new Error/);
+  assert.doesNotMatch(page, /Non pubblicato · Da verificare/);
+});
