@@ -274,3 +274,11 @@ test("successful standalone revision submit returns to list and only confirms a 
  const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
  assert.match(css,/\.experience-edit-route__loading\{/);
 });
+
+test("admin navigation from operator workspace is gated by the existing MFA server authorization",()=>{
+ const page=readFileSync(new URL("../app/area-operatore/page.tsx",import.meta.url),"utf8");
+ assert.match(page,/import \{ isAuthorizedAdmin \} from "@\/lib\/admin-access"/);
+ assert.match(page,/const canAccessAdministration=await isAuthorizedAdmin\(\)/);
+ assert.match(page,/canAccessAdministration&&<nav className="operator-admin-shortcut-area"/);
+ assert.match(page,/<Link href="\/admin" className="operator-admin-shortcut">Area Amministratore/);
+});
