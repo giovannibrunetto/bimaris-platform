@@ -308,3 +308,87 @@
   .experience-manager.experience-edit-screen .experience-wizard{padding:25px 20px 28px}
   .experience-edit-screen .experience-wizard__actions button{flex:1 1 130px}
 }
+
+
+/* DS-UX-REV-02/VISUAL-04 — final single-card hierarchy.
+   All chromatic values reference the approved BIMARIS foundation tokens. */
+.experience-manager.experience-edit-screen{
+  background:var(--sand);
+  padding:clamp(20px,4vh,45px) clamp(12px,3vw,32px)
+}
+.experience-edit-screen__layout{width:min(100%,960px);margin-inline:auto}
+.experience-edit-screen__panel{
+  border:2px solid var(--bimaris-gold);
+  border-radius:20px;
+  background:var(--bimaris-ivory);
+  overflow:hidden;
+  box-shadow:0 16px 44px rgba(3,33,38,.19),0 4px 12px rgba(3,33,38,.09)
+}
+.experience-edit-screen__header{
+  background:var(--bimaris-abyssal-teal);
+  padding:22px clamp(22px,4vw,40px) 22px;
+  border:0;border-radius:0;
+  color:var(--bimaris-ivory)
+}
+.experience-edit-screen__back{
+  padding:8px 15px;
+  background:transparent;color:var(--bimaris-ivory);
+  border:1px solid var(--bimaris-gold)
+}
+.experience-edit-screen__eyebrow{
+  margin-top:14px;color:var(--bimaris-gold)
+}
+.experience-edit-screen__header h1{
+  font-size:clamp(1.55rem,2.8vw,2.05rem);
+  margin:7px 0 6px;line-height:1.13;color:var(--bimaris-ivory)
+}
+.experience-edit-screen__header p{
+  font-size:.9rem;line-height:1.45;max-width:700px;
+  margin:0;color:var(--bimaris-ivory);opacity:.92
+}
+.experience-manager.experience-edit-screen .experience-wizard{
+  background:var(--bimaris-ivory);
+  padding:clamp(22px,3vw,34px) clamp(22px,4vw,40px) 30px;
+  margin:0;border:0;border-radius:0
+}
+.experience-edit-screen .experience-wizard__progress{
+  margin-bottom:20px;color:var(--color-text)
+}
+.experience-edit-screen .experience-wizard__progress>div{background:var(--color-border)}
+.experience-edit-screen .experience-wizard__progress i{background:var(--bimaris-gold)}
+.experience-manager.experience-edit-screen .experience-step{
+  max-width:none
+}
+.experience-manager.experience-edit-screen .experience-step h3{
+  font-size:clamp(1.55rem,2.7vw,2rem);
+  color:var(--bimaris-abyssal-teal)
+}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  color:var(--color-text)
+}
+.experience-edit-screen .experience-wizard__actions{
+  margin-top:24px;padding-top:18px;border-top:1px solid var(--color-border)
+}
+.experience-edit-screen .experience-wizard__actions button{
+  background:var(--color-surface);
+  color:var(--bimaris-abyssal-teal);
+  border-color:var(--color-border)
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:var(--bimaris-gold);
+  border-color:var(--bimaris-gold);
+  color:var(--bimaris-abyssal-teal)
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:10px}
+  .experience-edit-screen__panel{border-width:2px;border-radius:16px}
+  .experience-edit-screen__header{padding:18px 18px 20px}
+  .experience-edit-screen__eyebrow{margin-top:12px}
+  .experience-manager.experience-edit-screen .experience-wizard{padding:22px 18px 26px}
+  .experience-edit-screen .experience-wizard__actions{display:flex;gap:8px;flex-wrap:wrap}
+  .experience-edit-screen .experience-wizard__actions button{min-height:44px;flex:1 1 auto}
+}
