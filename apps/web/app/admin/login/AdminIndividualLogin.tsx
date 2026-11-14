@@ -13,6 +13,7 @@ function client() {
 export default function AdminIndividualLogin() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
@@ -56,7 +57,10 @@ export default function AdminIndividualLogin() {
     <label htmlFor="individual-email">Email individuale</label>
     <input id="individual-email" name="email" type="email" autoComplete="username" required />
     <label htmlFor="individual-password">Password individuale</label>
-    <input id="individual-password" name="password" type="password" autoComplete="current-password" required />
+    <div className="admin-login__password-field">
+      <input id="individual-password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required />
+      <button type="button" className="admin-login__password-toggle" aria-label={showPassword ? "Nascondi password" : "Mostra password"} aria-pressed={showPassword} onClick={() => setShowPassword(value => !value)}>{showPassword ? "Nascondi" : "Mostra"}</button>
+    </div>
     <button type="button" disabled={busy} onClick={googleLogin}>Continua con Google (Staging)</button>
     {error && <p className="admin-login__error" role="alert">{error}</p>}
     <button type="submit" disabled={busy}>{busy ? "Verifica in corso…" : "Continua con MFA"}</button>
