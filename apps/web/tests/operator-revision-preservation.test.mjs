@@ -232,3 +232,14 @@ test("single experience editor has compact header, gold outline and a wider cent
  assert.match(block,/@media\(max-width:650px\)/);
  assert.doesNotMatch(block, /#[0-9a-f]{3,8}\b/i);
 });
+
+test("operator revision editor centers vertically when short and scrolls when tall",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ const rule=css.slice(css.indexOf("DS-UX-REV-02/VISUAL-05"));
+ assert.match(rule,/\.experience-manager\.experience-edit-screen\{\s*display:flex;\s*flex-direction:column/);
+ assert.match(rule,/\.experience-manager\.experience-edit-screen \.experience-edit-screen__layout\{\s*width:min\(100%,960px\);\s*margin:auto;/);
+ assert.match(rule,/flex:0 0 auto/);
+ assert.match(rule,/@media\(max-width:650px\)/);
+ assert.match(rule,/margin:0 auto/);
+ assert.match(css,/position:fixed;inset:0;z-index:10000;overflow-y:auto/);
+});
