@@ -168,3 +168,14 @@ test("participant collaboration resolves partner FK explicitly, never the inviti
  assert.doesNotMatch(source,/approval_status,operators\(name\)/);
  assert.doesNotMatch(adminPage,/approval_status,operators\(name\)/);
 });
+
+test("operator editing opens in its own full-screen workspace, not below experience cards",()=>{
+ const css=readFileSync(new URL("../app/area-operatore/experience-manager.css",import.meta.url),"utf8");
+ assert.match(source,/import \{createPortal\} from "react-dom"/);
+ assert.match(source,/createPortal\(<div className="experience-edit-screen"/);
+ assert.match(source,/Torna alle esperienze/);
+ assert.match(source,/document\.body\)\}/);
+ assert.match(source,/document\.body\.style\.overflow="hidden"/);
+ assert.match(css,/\.experience-edit-screen\{position:fixed;inset:0;/);
+ assert.match(css,/@media\(max-width:600px\)/);
+});
