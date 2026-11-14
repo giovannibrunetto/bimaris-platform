@@ -196,3 +196,134 @@
   .experience-edit-screen .experience-wizard__actions{display:flex;flex-wrap:wrap}
   .experience-edit-screen .experience-wizard__actions button{flex:1 1 auto;min-width:110px}
 }
+
+
+/* DS-UX-REV-02/VISUAL-02 — BIMARIS high-contrast single-panel revision editor.
+   Keep the six-step form and its handlers untouched. */
+.experience-manager.experience-edit-screen{
+  background:#dfe6e3;
+  padding:clamp(22px,5vh,58px) clamp(12px,3vw,36px);
+}
+.experience-edit-screen__layout{width:min(100%,880px)}
+.experience-edit-screen__panel{
+  padding:0;
+  overflow:hidden;
+  border:1px solid #aebeb9;
+  background:#f4f5f1;
+  border-radius:24px;
+  box-shadow:0 26px 65px rgba(5,37,42,.19),0 4px 12px rgba(5,37,42,.08)
+}
+.experience-edit-screen__header{
+  padding:clamp(25px,4vw,42px) clamp(24px,5vw,50px) clamp(27px,4vw,39px);
+  border:0;border-radius:0;
+  background:linear-gradient(125deg,#062e35 0%,#0b4248 75%,#125158 100%);
+  color:#f9f7ef;
+}
+.experience-edit-screen__back{
+  padding:10px 17px;
+  color:#fff;
+  border:1px solid rgba(222,190,132,.75);
+  background:rgba(255,255,255,.075)
+}
+.experience-edit-screen__back:hover{
+  color:#062e35;background:#e1bc79;border-color:#e1bc79
+}
+.experience-edit-screen__back:focus-visible{outline-color:#e1bc79}
+.experience-edit-screen__eyebrow{
+  color:#e4ba71;
+  margin-top:24px;
+  letter-spacing:.15em
+}
+.experience-edit-screen__header h1{
+  color:#fff;
+  font-size:clamp(1.75rem,3.4vw,2.5rem);
+  line-height:1.13;
+  margin:10px 0 12px
+}
+.experience-edit-screen__header p{
+  color:#d6e2df;
+  font-size:1rem;
+  line-height:1.6
+}
+.experience-manager.experience-edit-screen .experience-wizard{
+  margin:0;
+  padding:clamp(26px,4vw,42px) clamp(24px,5vw,50px) clamp(28px,4vw,38px);
+  border:0;border-radius:0;
+  background:#f4f5f1;
+}
+.experience-edit-screen .experience-wizard__progress{
+  color:#745226;
+  font-size:.82rem;
+  margin-bottom:28px
+}
+.experience-edit-screen .experience-wizard__progress>div{
+  height:6px;background:#d5ded9
+}
+.experience-edit-screen .experience-wizard__progress i{
+  background:#b88639
+}
+.experience-manager.experience-edit-screen .experience-step h3{
+  color:#07343b;
+  font-size:clamp(1.75rem,3vw,2.25rem)
+}
+.experience-manager.experience-edit-screen .experience-step>p{
+  color:#4c6262;
+  font-size:1rem
+}
+.experience-manager.experience-edit-screen .experience-step>label,
+.experience-manager.experience-edit-screen .experience-grid>label{
+  color:#0b343a
+}
+.experience-manager.experience-edit-screen .experience-step input,
+.experience-manager.experience-edit-screen .experience-step textarea,
+.experience-manager.experience-edit-screen .experience-step select{
+  border:1.5px solid #b8c7c1;
+  background:#fff;
+  color:#092e35;
+  box-shadow:0 1px 2px rgba(13,49,51,.05)
+}
+.experience-manager.experience-edit-screen .experience-step :is(input,textarea,select):focus-visible{
+  outline:3px solid #bd8d43;
+  outline-offset:2px
+}
+.experience-edit-screen .experience-wizard__actions{
+  margin-top:30px;
+  border-top:1px solid #c7d2cc;
+  padding-top:24px;
+  gap:12px
+}
+.experience-edit-screen .experience-wizard__actions button{
+  border:1px solid #90a9a4;
+  background:#e7efeb;
+  color:#07343b;
+  box-shadow:none;
+  min-height:44px;
+  padding:10px 18px
+}
+.experience-edit-screen .experience-wizard__actions button:hover:not(:disabled){
+  border-color:#07343b;background:#d7e5df
+}
+.experience-edit-screen .experience-wizard__actions button.button{
+  background:#07343b;
+  border-color:#07343b;
+  color:#fff;
+  box-shadow:0 5px 12px rgba(7,52,59,.15)
+}
+.experience-edit-screen .experience-wizard__actions button.button:hover:not(:disabled){
+  background:#12545b;border-color:#12545b
+}
+.experience-manager.experience-edit-screen .experience-chips button.is-active{
+  background:#07343b;border-color:#07343b;color:#fff
+}
+.experience-edit-screen .experience-wizard__message{
+  border-color:#c9a364;background:#fff3df;color:#543c1d
+}
+@media(max-width:650px){
+  .experience-manager.experience-edit-screen{padding:12px 10px}
+  .experience-edit-screen__panel{border-radius:17px}
+  .experience-edit-screen__header{padding:24px 20px 25px}
+  .experience-manager.experience-edit-screen .experience-wizard{
+    padding:25px 20px 28px
+  }
+  .experience-edit-screen .experience-wizard__actions button{flex:1 1 130px}
+}
