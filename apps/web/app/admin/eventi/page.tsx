@@ -29,12 +29,15 @@ export default async function AdminEventsPage() {
   if (!(await isAdminAuthenticated())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
-  const { data, error } = await db.from("events")
-    .select("id,title,description,starts_at,source_label,operators(name)")
-    .eq("verification_status", "pending")
-    .order("starts_at", { ascending: true });
-  if (error) throw new Error("Impossibile caricare gli eventi da verificare");
+  const [{ data, error }, { data: approvedData, error: approvedError }] = await Promise.all([
+    db.from("events").select("id,title,description,starts_at,source_label,operators(name)")
+      .eq("verification_status", "pending").eq("published", false).order("starts_at", { ascending: true }),
+    db.from("events").select("id,title,description,starts_at,source_label,operators(name)")
+      .eq("verification_status", "verified").eq("published", false).order("starts_at", { ascending: true }),
+  ]);
+  if (error || approvedError) throw new Error("Impossibile caricare le code degli eventi");
   const rows = (data ?? []) as Row[];
+  const approvedRows = (approvedData ?? []) as Row[];
 
   return <div className="admin-events">
     <header className="admin-events__hero">
@@ -54,7 +57,7 @@ export default async function AdminEventsPage() {
           <div><span className="admin-events__eyebrow">Coda di revisione</span><h2>In attesa di verifica</h2></div>
           <strong aria-label={`${rows.length} eventi in attesa`}>{rows.length} {rows.length === 1 ? "evento" : "eventi"}</strong>
         </div>
-        <p className="admin-events__hint">Le schede di questa pagina provengono dal registro eventi. Non sono candidature, esperienze o revisioni di esperienze. L'azione «Approva e pubblica» rende pubblico l'evento: usala solo dopo la verifica completa.</p>
+        <p className="admin-events__hint">Il registro eventi è distinto dalle candidature e dalle esperienze degli operatori. L'approvazione non pubblica l'evento: è necessaria una successiva azione esplicita.</p>
         {rows.length === 0
           ? <div className="admin-events__empty"><h3>Nessun evento da controllare</h3><p>La coda di verifica è vuota.</p></div>
           : <div className="admin-events__list">{rows.map(row => <article className="admin-events__card" key={row.id}>
@@ -68,7 +71,7 @@ export default async function AdminEventsPage() {
               <div className="admin-events__actions">
                 <form method="post" action={`/api/admin/events/${row.id}/status`}>
                   <input type="hidden" name="action" value="approve" />
-                  <button className="admin-events__approve" type="submit">Approva e pubblica</button>
+                  <button className="admin-events__approve" type="submit">Approva</button>
                 </form>
                 <form method="post" action={`/api/admin/events/${row.id}/status`}>
                   <input type="hidden" name="action" value="reject" />
@@ -76,6 +79,29 @@ export default async function AdminEventsPage() {
                 </form>
               </div>
             </article>)}</div>}
+        <section className="admin-events__approved" aria-labelledby="approved-events-heading">
+          <div className="admin-events__summary">
+            <div><span className="admin-events__eyebrow">Seconda fase</span><h2 id="approved-events-heading">Approvati, da pubblicare</h2></div>
+            <strong>{approvedRows.length} {approvedRows.length === 1 ? "evento" : "eventi"}</strong>
+          </div>
+          {approvedRows.length === 0
+            ? <div className="admin-events__empty"><h3>Nessun evento pronto per la pubblicazione</h3><p>Gli eventi approvati appariranno qui fino alla pubblicazione.</p></div>
+            : <div className="admin-events__list">{approvedRows.map(row => <article className="admin-events__card" key={row.id}>
+                <div className="admin-events__metadata">
+                  <span><strong>Operatore</strong>{operatorName(row.operators)}</span>
+                  <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
+                </div>
+                <h3>{row.title}</h3>
+                <p className="admin-events__date">{eventDate(row.starts_at)}</p>
+                {row.description && <p className="admin-events__description">{row.description}</p>}
+                <div className="admin-events__actions">
+                  <form method="post" action={`/api/admin/events/${row.id}/status`}>
+                    <input type="hidden" name="action" value="publish" />
+                    <button className="admin-events__approve" type="submit">Pubblica</button>
+                  </form>
+                </div>
+              </article>)}</div>}
+        </section>
       </div>
     </section>
   </div>;
