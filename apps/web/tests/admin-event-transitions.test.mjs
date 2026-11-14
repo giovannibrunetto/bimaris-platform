@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { eventTransition } from "../lib/admin-event-transitions.ts";
 
 test("approval verifies without publishing", () => {
@@ -23,5 +24,23 @@ test("publishing requires prior verification, and never changes review status", 
 test("unknown actions cannot mutate data", () => {
   for (const action of ["", "delete", "reset", "approve-and-publish", "PUBLISH"]) {
     assert.equal(eventTransition(action), null);
+  }
+});
+
+test("event status mutation retains individual MFA and same-origin guards", () => {
+  const api = readFileSync(new URL("../app/api/admin/events/[id]/status/route.ts", import.meta.url), "utf8");
+  assert.match(api, /rejectCrossSiteAdminMutation\(request\)/);
+  assert.match(api, /await isAuthorizedAdmin\(\)/);
+  assert.match(api, /eventTransition\(rawAction\)/);
+  assert.match(api, /\.eq\("verification_status", transition\.expectedStatus\)/);
+  assert.match(api, /\.eq\("published", transition\.expectedPublished\)/);
+  assert.doesNotMatch(api, /isAdminAuthenticated|@\/lib\/admin-auth/);
+});
+
+test("event review and dashboard require individual MFA, not legacy admin cookie", () => {
+  for (const path of ["../app/admin/eventi/page.tsx", "../app/admin/page.tsx"]) {
+    const source = readFileSync(new URL(path, import.meta.url), "utf8");
+    assert.match(source, /await isAuthorizedAdmin\(\)/);
+    assert.doesNotMatch(source, /isAdminAuthenticated|@\/lib\/admin-auth/);
   }
 });
