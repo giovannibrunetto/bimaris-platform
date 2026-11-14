@@ -17,12 +17,16 @@ export default async function AdminPage() {
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    db.from("experience_revisions").select("id,experiences!inner(experience_origin)", { count: "exact", head: true }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
   ]);
+
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes].some(result => result.error)) {
+    throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
+  }
 
   const pendingApps = appsRes.count ?? 0;
   const pendingRevs = revsRes.count ?? 0;
