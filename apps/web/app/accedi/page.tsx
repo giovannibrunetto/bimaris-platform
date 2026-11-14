@@ -14,6 +14,16 @@ export default function AccediPage(){
  const [showOperatorMagicLink,setShowOperatorMagicLink]=useState(false);
  const [operatorDeepLink,setOperatorDeepLink]=useState(false);
  useEffect(()=>{
+  // Immutable Preview links have a different cookie origin from the stable QA
+  // alias. Move there BEFORE offering Google login, so the first Google click
+  // actually starts OAuth instead of only navigating to another domain.
+  const canonicalOrigin=operatorOAuthEntryOrigin(window.location.origin);
+  if(canonicalOrigin!==window.location.origin){
+   const next=new URLSearchParams(window.location.search).get("next");
+   const allowedNext=next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#"))?next:"/area-operatore";
+   window.location.replace(`${canonicalOrigin}/accedi?next=${encodeURIComponent(allowedNext)}`);
+   return;
+  }
   const next=new URLSearchParams(window.location.search).get("next");
   if(next&&(next==="/area-operatore"||next.startsWith("/area-operatore?")||next.startsWith("/area-operatore/")||next.startsWith("/area-operatore#"))){
    setOperatorDeepLink(true);
