@@ -12,7 +12,7 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).in("review_status", ["pending", "submitted"]),
@@ -21,22 +21,24 @@ export default async function AdminPage() {
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
   ]);
 
   const pendingApps = appsRes.count ?? 0;
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
+  const eventsToPublish = approvedEventsRes.count ?? 0;
   const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
   const onlineItineraries = onlineItinsRes.count ?? 0;
 
-  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
+  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
     {href:"/admin/operatori",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi",label:"Eventi da verificare",description:"Verifica eventi e pubblicazione separata",value:pendingEvents},
+    {href:"/admin/eventi",label:"Gestione eventi acquisiti",description:`${pendingEvents} da verificare · ${eventsToPublish} approvati da pubblicare`,value:pendingEvents+eventsToPublish},
     {href:"/admin/candidature",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
