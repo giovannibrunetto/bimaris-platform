@@ -232,12 +232,12 @@
 .operator-area-shell>.container>div{gap:18px!important}
 .operator-area-shell .operator-area-grid{
  position:relative;
- padding:clamp(14px,2.1vw,30px);
- border-radius:30px;
- background:linear-gradient(165deg,#E8E2D6 0%,#F2EFE8 52%,#EDEAE2 100%);
- border:1px solid rgba(216,169,79,.29);
- box-shadow:0 28px 70px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.65);
- gap:18px;
+ padding:clamp(12px,1.6vw,22px);
+ border-radius:22px;
+ background:#f2efe8;
+ border:1px solid #d6cebf;
+ box-shadow:0 5px 18px rgba(7,36,41,.055);
+ gap:16px;
 }
 .operator-area-shell .operator-summary{
  background:linear-gradient(112deg,#0B3438,#07252A)!important;
@@ -293,8 +293,8 @@
 }
 .operator-area-shell .operator-area-grid{
  border:1px solid rgba(216,169,79,.22);
- box-shadow:0 22px 58px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.48);
- gap:15px;
+ box-shadow:0 5px 18px rgba(7,36,41,.055);
+ gap:16px;
 }
 .operator-area-shell .experience-manager,
 .operator-area-shell .operator-impact,
@@ -451,3 +451,104 @@
 @media(max-width:650px){
   .operator-area-shell > .container > .detail-panel {padding:21px 19px}
 }
+
+/* UX-B2B-01 / visual regression correction — explicit institutional contrasts.
+   This is intentionally last to supersede legacy dark-card rules. */
+.operator-area-shell nav[aria-label="Seleziona attività"] {
+  background: #f8f8f5 !important;
+  border: 1px solid #d6cebf !important;
+  padding: 14px 18px !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] strong {
+  color: #10383a !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a {
+  background: #f8f8f5 !important;
+  color: #10383a !important;
+  border: 1px solid #899b98 !important;
+}
+.operator-area-shell nav[aria-label="Seleziona attività"] a[aria-current="page"] {
+  background: #07343b !important;
+  border-color: #07343b !important;
+  color: #fff !important;
+}
+.operator-area-shell .operator-summary {
+  background: #f8f8f5 !important;
+  border: 1px solid #d6cebf !important;
+  color: #10383a !important;
+}
+.operator-area-shell .operator-summary h2,
+.operator-area-shell .operator-summary p {
+  color: #10383a !important;
+}
+.operator-area-shell .operator-summary .eyebrow { color: #85612b !important; }
+@media(max-width:650px) {
+  .operator-area-shell nav[aria-label="Seleziona attività"] {
+    padding: 12px !important;
+  }
+}
+
+/* UX-B2B-01 — definitive shared selector surface. This file contains legacy
+   high-specificity rules; the canonical selector must follow those rules. */
+.operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] {
+  box-sizing:border-box;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100%;
+  margin:0 !important;
+  padding:14px 18px !important;
+  border:1px solid #d6cebf !important;
+  border-radius:16px !important;
+  background:#f8f8f5 !important;
+  box-shadow:none !important;
+}
+.operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] strong {
+  color:#10383a !important;
+  margin:0 6px 0 0 !important;
+}
+@media(max-width:650px) {
+  .operator-area-shell nav.operator-activity-selector[aria-label="Seleziona attività"] {
+    display:flex !important;
+    padding:12px !important;
+  }
+}
+
+/* UX-B2B-01 — compact operator status and experience creation hierarchy. */
+.operator-status-strip{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;padding:12px 16px;border:1px solid #d6cebf;border-radius:12px;background:#f8f8f5;color:#07343b;font-size:14px;line-height:1.45}
+.operator-status-strip__label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:750;color:#8a622c}
+.operator-status-strip a{margin-left:auto;color:#07343b;font-weight:700;text-underline-offset:3px}
+.experience-manager__create{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:20px}
+.experience-manager__create p{margin:0;color:#526463;line-height:1.5}
+@media(max-width:600px){.operator-status-strip{align-items:flex-start}.operator-status-strip a{margin-left:0;width:100%}.experience-manager__create .button{width:100%;text-align:center}}
+
+/* UX-B2B-01 — secondary collaboration pathway beneath experience actions. */
+.experience-manager__collaboration{box-sizing:border-box;width:100%;margin-top:8px;padding:20px 22px;border-top:1px solid #d6cebf;background:#f8f8f5;border-radius:0 0 12px 12px;color:#07343b}
+.experience-manager__collaboration strong{display:block;font-size:16px;line-height:1.35}
+.experience-manager__collaboration p{margin:7px 0 10px;color:#526463;font-size:14px;line-height:1.5}
+.experience-manager__collaboration a{color:#07343b;font-size:14px;font-weight:700;text-underline-offset:3px}
+@media(max-width:600px){.experience-manager__collaboration{padding:16px}}
+
+/* UX-B2B-01 — feature collaboration as a first-class BIMARIS opportunity. */
+.experience-manager__collaboration{margin-top:12px;padding:24px 28px;background:linear-gradient(125deg,#07343b,#032126);border:1px solid rgba(202,168,106,.45);border-radius:16px;color:#fff;box-shadow:0 8px 24px rgba(3,33,38,.10)}
+.experience-manager__collaboration strong{font-family:Georgia,'Times New Roman',serif;font-size:clamp(22px,2.4vw,29px);font-weight:400;line-height:1.18;color:#fff}
+.experience-manager__collaboration p{margin:10px 0 18px;max-width:650px;color:#e2e8ed;font-size:15px;line-height:1.55}
+.experience-manager__collaboration a{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:46px;padding:11px 20px;border-radius:999px;background:#caa86a;color:#032126;font-weight:750;text-decoration:none;line-height:1.3;transition:background-color .15s ease,transform .15s ease}
+.experience-manager__collaboration a:hover{background:#dfc18a;transform:translateY(-1px)}
+.experience-manager__collaboration a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:600px){.experience-manager__collaboration{padding:21px 18px}.experience-manager__collaboration a{width:100%;text-align:center}}
+
+/* UX-B2B-01 / mobile QA — visual order must match semantic DOM order. */
+.operator-area-grid > .operator-status-strip{order:0}
+.operator-area-grid > .collaboration-inbox{order:1}
+.operator-area-grid > .operator-profile-card{order:2}
+.operator-area-grid > .operator-experiences{order:3}
+.operator-area-grid > .operator-impact{order:4}
+
+/* UX-OP-STATUS-01 — Explain publication state without implying approval workflow */
+.operator-status-strip__explanation{color:#526463;font-size:13px;line-height:1.5}
+@media(max-width:600px){.operator-status-strip__explanation{flex-basis:100%;font-size:12px}}
+
+/* UX-OP-PROFILE-02 — Visible result of profile revision submission */
+.operator-profile-feedback{padding:16px 18px;border:1px solid rgba(154,111,41,.4);border-left:4px solid #b98b43;border-radius:12px;background:#fffaf0;color:#14393d;font-size:14px;line-height:1.55;font-weight:600;overflow-wrap:anywhere}
