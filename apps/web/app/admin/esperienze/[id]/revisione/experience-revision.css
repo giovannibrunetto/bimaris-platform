@@ -54,3 +54,8 @@
   .revision-full-comparison__fields{margin:12px}
   .revision-full-comparison .revision-gallery{margin:18px 12px}
 }
+
+.revision-review__context{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.revision-review__operator-link{display:inline-flex;align-items:center;min-height:38px;padding:7px 12px;border:1px solid #d4c5ad;border-radius:10px;background:#fff;color:#14363a;font-size:13px;font-weight:750;text-decoration:none}
+.revision-review__operator-link:hover{background:#f6eddd}
+.revision-review__operator-link:focus-visible{outline:3px solid #d1ae67;outline-offset:2px}
