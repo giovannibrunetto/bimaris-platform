@@ -41,13 +41,13 @@ export default async function AdminPage() {
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
-    {href:"/admin/operatori?view=pending#pending-operators",label:"Operatori ed esperienze da esaminare",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi#pending-events",label:"Gestione eventi acquisiti",description:`${pendingEvents} da verificare · ${eventsToPublish} approvati da pubblicare`,value:pendingEvents+eventsToPublish},
+    {href:"/admin/contenuti",label:"Contenuti da esaminare",description:`${pendingProfileRevs} profili · ${pendingExperiences+pendingRevs} esperienze · ${pendingEvents} appuntamenti`,value:pendingOperatorArea+pendingEvents},
+    {href:"/admin/attivita?view=ready",label:"Contenuti pronti da pubblicare",description:`${eventsToPublish} appuntamenti verificati in attesa di pubblicazione`,value:eventsToPublish},
     {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
     {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
-    {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences},
+    {href:"/admin/attivita",label:"Esperienze e appuntamenti",value:onlineExperiences},
     {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries},
   ];
 
@@ -80,7 +80,7 @@ export default async function AdminPage() {
                 <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
               </Link>)}
             </div>
-            <p className="admin-dashboard__panel-footnote">I conteggi indicano elementi in attesa, non il numero di operatori complessivi.</p>
+            <p className="admin-dashboard__panel-footnote">I conteggi delle azioni indicano interventi ancora necessari. Il numero delle esperienze online non include gli appuntamenti acquisiti, consultabili nel registro.</p>
           </section>
 
           <aside className="admin-dashboard__sidepanel" aria-labelledby="admin-status-heading">
