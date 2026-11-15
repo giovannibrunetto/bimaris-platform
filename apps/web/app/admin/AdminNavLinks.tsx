@@ -8,7 +8,9 @@ export default function AdminNavLinks({ applicationsPending, operatorExperienceP
   const items = [
     { href: "/admin", label: "Dashboard", count: 0 },
     { href: "/admin/candidature", label: "Candidature", count: applicationsPending },
-    { href: "/admin/operatori", label: "Operatori", count: operatorExperiencePending },
+    { href: "/admin/contenuti", label: "Da esaminare", count: operatorExperiencePending },
+    { href: "/admin/operatori", label: "Operatori", count: 0 },
+    { href: "/admin/attivita", label: "Esperienze e appuntamenti", count: 0 },
     { href: "/admin/itinerari", label: "Itinerari", count: 0 },
   ];
   return <nav aria-label="Sezioni del Centro operativo" className="admin-shell-nav">
