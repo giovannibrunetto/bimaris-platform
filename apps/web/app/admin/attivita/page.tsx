@@ -42,7 +42,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
       <p>Un unico registro di consultazione. Ogni contenuto mantiene il suo dossier, lo stato reale e la fonte: gli appuntamenti acquisiti non vengono duplicati come esperienze.</p>
       <nav className="admin-events__links"><Link href="/admin">← Centro operativo</Link><Link href="/admin/contenuti">Contenuti da esaminare</Link></nav>
     </div></header>
-    <main className="admin-events__body"><div className="admin-events__container">
+    <section className="admin-events__body"><div className="admin-events__container">
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{allExperiences.length}</strong><span>Esperienze totali</span><small>{countOnlineExperiences} online</small></div>
         <div><strong>{allAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
@@ -72,6 +72,6 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
         </article>)}{appointments.length===0&&<div className="admin-events__empty">Nessun appuntamento per questo filtro.</div>}</div>
       </section>}
       <p className="admin-events__hint">Registro di consultazione: esperienze e appuntamenti sono presentati insieme, ma restano salvati nei rispettivi archivi fino alla validazione tecnica dell'integrazione MAI.</p>
-    </div></main>
+    </div></section>
   </div>;
 }
