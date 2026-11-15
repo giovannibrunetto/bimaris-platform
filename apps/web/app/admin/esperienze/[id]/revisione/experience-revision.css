@@ -25,3 +25,32 @@
 .revision-decision-card__button:hover{filter:brightness(.96)}
 @media(max-width:900px){.revision-gallery__comparison,.revision-decisions__grid{grid-template-columns:minmax(0,1fr)}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:240px}}
 @media(max-width:560px){.revision-gallery__group,.revision-decision-card{padding:14px}.revision-gallery__photos{gap:9px}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:160px}.revision-decision-card__fields{grid-template-columns:minmax(0,1fr)}}
+
+/* Compact, change-first review. The complete dossier is opt-in. */
+.revision-changes{margin:20px 0 18px}
+.revision-changes__fields{display:grid;gap:12px}
+.revision-changes__field{padding:17px 19px;border:1px solid #d9c9b1;border-radius:13px;background:#fffcf7}
+.revision-changes__field h4{margin:0 0 12px;font-size:17px;color:#173238}
+.revision-changes__values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.revision-changes__values>div{min-width:0}
+.revision-changes__values small{display:block;margin-bottom:7px;color:#78674f;font-size:12px;font-weight:750}
+.revision-changes__values p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.5}
+.revision-changes__empty{padding:15px 17px;background:#fff7e8;border:1px solid #dfc394;border-radius:12px}
+.revision-gallery__changes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px}
+.revision-gallery__changes .revision-gallery__photo{padding:12px;border:1px solid #e1d3c0;border-radius:12px;background:#fff}
+.revision-gallery__changes .revision-gallery__photo strong{display:block;margin-bottom:10px;color:#193338;font-size:13px}
+.revision-full-comparison{margin:18px 0 22px;border:1px solid #d9c9b1;border-radius:13px;background:#fff;overflow:hidden}
+.revision-full-comparison>summary{padding:15px 19px;cursor:pointer;font-weight:750;color:#15343a}
+.revision-full-comparison>summary:focus-visible{outline:3px solid #d1ae67;outline-offset:-3px}
+.revision-full-comparison[open]>summary{border-bottom:1px solid #e6ddd0}
+.revision-full-comparison__hint{margin:16px 18px;font-size:13px;color:#665f53}
+.revision-full-comparison__fields{display:grid;gap:9px;margin:16px 18px}
+.revision-full-comparison__field{padding:11px 13px;border:1px solid #e5ded3;border-radius:10px}
+.revision-full-comparison__field strong{display:block;margin-bottom:10px}
+.revision-full-comparison .revision-gallery{margin:22px 18px}
+@media(max-width:600px){
+  .revision-changes__values{grid-template-columns:1fr;gap:12px}
+  .revision-changes__field{padding:14px}
+  .revision-full-comparison__fields{margin:12px}
+  .revision-full-comparison .revision-gallery{margin:18px 12px}
+}
