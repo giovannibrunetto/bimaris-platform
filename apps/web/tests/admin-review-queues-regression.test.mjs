@@ -4,10 +4,11 @@ import { readFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
 
-test("dashboard work queue links to pending operator review, not full catalog", () => {
+test("dashboard provides one consolidated content queue and combined activity registry", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /\/admin\/operatori\?view=pending#pending-operators/);
-  assert.match(dashboard, /label:"Operatori ed esperienze da esaminare"/);
+  assert.match(dashboard, /href:"\/admin\/contenuti",label:"Contenuti da esaminare"/);
+  assert.match(dashboard, /href:"\/admin\/attivita",label:"Esperienze e appuntamenti"/);
+  assert.match(dashboard, /acquiredAppointments = allEventsRes\.count/);
   assert.match(dashboard, /\.neq\("experience_origin","bimaris"\)\.in\("review_status"/);
   assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
 });
@@ -40,9 +41,9 @@ test("failed operator queue queries cannot be misreported as an empty queue", ()
   assert.doesNotMatch(page, /Non pubblicato · Da verificare/);
 });
 
-test("dashboard fails visibly if any of its nine count queries fail", () => {
+test("dashboard fails visibly if any of its ten count queries fail", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes\]\.some\(result => result\.error\)/);
+  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes,allEventsRes\]\.some\(result => result\.error\)/);
   assert.match(dashboard, /throw new Error\("Impossibile caricare i contatori della dashboard amministrativa"\)/);
 });
 
@@ -170,4 +171,29 @@ test("event queue requires an inspection before any admin mutation", () => {
   assert.match(action, /transition\.expectedStatus/);
   assert.match(css, /admin-events__card--compact/);
   assert.match(css, /@media\(max-width:650px\)/);
+});
+
+test("consolidated content queue keeps operator reviews and event dossiers distinct", () => {
+  const page = read("../app/admin/contenuti/page.tsx");
+  assert.match(page, /await isAuthorizedAdmin\(\)/);
+  assert.match(page, /operator_revisions/);
+  assert.match(page, /experience_revisions/);
+  assert.match(page, /experience_origin","bimaris"/);
+  assert.match(page, /verification_status","pending"/);
+  assert.match(page, /\/admin\/operatori\/\$\{item\.operator_id\}\/revisioni-profilo/);
+  assert.match(page, /\/admin\/revisione-esperienza\?id=/);
+  assert.match(page, /\/admin\/eventi\/\$\{item\.id\}/);
+  assert.doesNotMatch(page, /<form method="post"/);
+});
+test("combined activity registry counts every acquired appointment without double-creating experiences", () => {
+  const page = read("../app/admin/attivita/page.tsx");
+  const dashboard = read("../app/admin/page.tsx");
+  assert.match(page, /await isAuthorizedAdmin\(\)/);
+  assert.match(page, /db\.from\("experiences"\)/);
+  assert.match(page, /db\.from\("events"\)/);
+  assert.match(page, /Appuntamenti acquisiti/);
+  assert.match(page, /Da pubblicare/);
+  assert.match(page, /allAppointments\.filter\(v=>v\.verification_status==="verified"&&!v\.published\)/);
+  assert.match(dashboard, /allEventsRes\.count/);
+  assert.doesNotMatch(page, /\.insert\(|\.update\(|\.delete\(/);
 });
