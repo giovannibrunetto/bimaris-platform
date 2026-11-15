@@ -144,3 +144,30 @@ test("top navigation exposes administrator only through server-verified MFA chec
   assert.match(header, /adminLink && <Link href=\{adminLink\.href\} onClick=\{closeMobileMenu\}/);
   assert.doesNotMatch(route, /operator_memberships/);
 });
+
+test("event queue requires an inspection before any admin mutation", () => {
+  const queue = read("../app/admin/eventi/page.tsx");
+  const detail = read("../app/admin/eventi/[id]/page.tsx");
+  const action = read("../app/api/admin/events/[id]/status/route.ts");
+  const css = read("../app/admin/eventi/admin-events.css");
+  assert.match(queue, /\/admin\/eventi\/\$\{row\.id\}/);
+  assert.match(queue, /Esamina →/);
+  assert.match(queue, /Verifica e pubblica →/);
+  assert.doesNotMatch(queue, /<form method="post"/);
+  assert.match(detail, /await isAuthorizedAdmin\(\)/);
+  assert.match(detail, /verification_status === "pending"/);
+  assert.match(detail, /verification_status === "verified"/);
+  assert.match(detail, /event\.starts_at/);
+  assert.match(detail, /event\.ends_at/);
+  assert.match(detail, /event\.location/);
+  assert.match(detail, /event\.source_url/);
+  assert.match(detail, /event\.id/);
+  assert.match(detail, /Approva evento/);
+  assert.match(detail, /Scarta evento/);
+  assert.match(detail, /Pubblica evento/);
+  assert.match(action, /rejectCrossSiteAdminMutation/);
+  assert.match(action, /await isAuthorizedAdmin\(\)/);
+  assert.match(action, /transition\.expectedStatus/);
+  assert.match(css, /admin-events__card--compact/);
+  assert.match(css, /@media\(max-width:650px\)/);
+});
