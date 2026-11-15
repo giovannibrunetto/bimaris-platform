@@ -26,7 +26,7 @@ export function Header() {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
   const [access,setAccess] = useState<"guest"|"user"|"operator"|"both">("guest");
-  const [adminAccess,setAdminAccess] = useState(false);
+  const [adminAccess,setAdminAccess] = useState<{visible:boolean;verified:boolean}>({visible:false,verified:false});
 
   useEffect(() => {
     const supabase=createBrowserSupabaseClient();
@@ -54,7 +54,7 @@ export function Header() {
   useEffect(() => {
     let active = true;
     const controller = new AbortController();
-    setAdminAccess(false);
+    setAdminAccess({visible:false,verified:false});
     async function checkAdminNavigation() {
       try {
         const response = await fetch("/api/admin/nav-access", {
@@ -63,8 +63,8 @@ export function Header() {
           signal: controller.signal,
         });
         if (!response.ok) return;
-        const result: { allowed?: boolean } = await response.json();
-        if (active) setAdminAccess(result.allowed === true);
+        const result: { visible?: boolean; verified?: boolean } = await response.json();
+        if (active) setAdminAccess({visible:result.visible === true,verified:result.verified === true});
       } catch {
         // Keep the link hidden when the session check is unavailable.
       }
@@ -75,7 +75,7 @@ export function Header() {
       // Refresh after login/logout/MFA changes, never derive the admin role
       // from client-provided identity or operator membership.
       queueMicrotask(() => {
-        if (active) { setAdminAccess(false); void checkAdminNavigation(); }
+        if (active) { setAdminAccess({visible:false,verified:false}); void checkAdminNavigation(); }
       });
     });
     return () => {
@@ -91,7 +91,7 @@ export function Header() {
       ?[{href:"/profilo",label:"Area personale"}]
       :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
 
-  const adminLink = adminAccess ? { href: "/admin", label: "Area Amministratore" } : null;
+  const adminLink = adminAccess.visible ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" } : null;
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
