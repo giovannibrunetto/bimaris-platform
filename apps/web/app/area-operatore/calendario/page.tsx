@@ -6,14 +6,14 @@ import OperatorWorkspaceSwitcher from "../OperatorWorkspaceSwitcher";
 export const dynamic="force-dynamic";
 export const revalidate=0;
 
-type Operator={id:string;name:string};
+type Operator={id:string;name:string;slug:string};
 type Membership={role:string;operator_id:string;operators:Operator|Operator[]|null};
 function related(v:Operator|Operator[]|null){return Array.isArray(v)?v[0]??null:v;}
 
 export default async function CalendarImportPage({searchParams}:{searchParams:Promise<{operatore?:string}>}){
  const db=await createUserServerClient();if(!db)redirect("/accedi");
  const {data:claims}=await db.auth.getClaims();const userId=typeof claims?.claims?.sub==="string"?claims.claims.sub:null;if(!userId)redirect("/accedi");
- const {data}=await db.from("operator_memberships").select("role,operator_id,operators(id,name)").eq("user_id",userId);
+ const {data}=await db.from("operator_memberships").select("role,operator_id,operators(id,name,slug)").eq("user_id",userId);
  const rows=((data??[]) as Membership[]).map(r=>({role:r.role,operator_id:r.operator_id,operator:related(r.operators)})).filter(r=>r.operator&&["owner","manager"].includes(r.role)) as {role:string;operator_id:string;operator:Operator}[];
  const params=await searchParams;const requested=params.operatore;const active=requested?rows.find(r=>r.operator_id===requested||r.operator.slug===requested)??null:rows[0]??null;
  return <>
