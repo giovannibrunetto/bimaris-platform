@@ -22,7 +22,7 @@ function dated(v: string) {
 export default async function ContentReview({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
   if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const { tipo } = await searchParams;
-  const chosen = ["profili","esperienze","appuntamenti"].includes(tipo ?? "") ? tipo : "tutti";
+  const chosen = tipo === "profili" ? "profili" : ["attivita","esperienze","appuntamenti"].includes(tipo ?? "") ? "attivita" : "tutti";
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
@@ -43,8 +43,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
   const options = [
     {id:"tutti",label:"Tutti",amount:total},
     {id:"profili",label:"Profili",amount:profiles.length},
-    {id:"esperienze",label:"Esperienze",amount:experiences.length+revisions.length},
-    {id:"appuntamenti",label:"Appuntamenti",amount:appointments.length},
+    {id:"attivita",label:"Esperienze e appuntamenti",amount:experiences.length+revisions.length+appointments.length},
   ];
   const show = (id: string) => chosen === "tutti" || chosen === id;
   return <div className="admin-events">
@@ -70,21 +69,18 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
           <Link className="admin-events__examine" href={`/admin/operatori/${item.operator_id}/revisioni-profilo`}>Esamina →</Link>
         </article>)}</div>
       </section>}
-      {show("esperienze")&&(experiences.length>0||revisions.length>0)&&<section className="admin-events__queue-group" aria-labelledby="review-experiences"><h2 id="review-experiences">Esperienze <small>{experiences.length+revisions.length}</small></h2>
+      {show("attivita")&&(experiences.length>0||revisions.length>0||appointments.length>0)&&<section className="admin-events__queue-group" aria-labelledby="review-experiences"><h2 id="review-experiences">Esperienze e appuntamenti <small>{experiences.length+revisions.length+appointments.length}</small></h2>
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
-            <div className="admin-events__card-main"><span className="admin-events__eyebrow">Nuova proposta</span><h3>{item.name}</h3></div>
+            <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Nuova proposta</span><h3>{item.name}</h3></div>
             <Link className="admin-events__examine" href={`/admin/esperienze/${item.id}#admin-decision`}>Esamina →</Link>
           </article>)}
           {revisions.map(item=><article className="admin-events__card admin-events__card--compact" key={`rev-${item.id}`}>
-            <div className="admin-events__card-main"><span className="admin-events__eyebrow">Modifica esperienza</span><h3>{relatedName(item.experiences)}</h3></div>
+            <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Modifica</span><h3>{relatedName(item.experiences)}</h3></div>
             <Link className="admin-events__examine" href={`/admin/revisione-esperienza?id=${encodeURIComponent(item.experience_id)}`}>Esamina →</Link>
           </article>)}
-        </div>
-      </section>}
-      {show("appuntamenti")&&appointments.length>0&&<section className="admin-events__queue-group" aria-labelledby="review-appointments"><h2 id="review-appointments">Appuntamenti <small>{appointments.length}</small></h2>
-        <div className="admin-events__list">{appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
-          <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.source_type?.trim() || "Origine non indicata"}</span><h3>{item.title}</h3><p className="admin-events__date">{dated(item.starts_at)}</p></div>
+          {appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
+          <div className="admin-events__card-main"><span className="admin-events__eyebrow">Appuntamento · {item.source_type?.trim() || "Origine non indicata"}</span><h3>{item.title}</h3><p className="admin-events__date">{dated(item.starts_at)}</p></div>
           <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Esamina →</Link>
         </article>)}</div>
       </section>}
