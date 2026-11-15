@@ -126,3 +126,16 @@ test("operator profile review renders only changed fields with a dossier link", 
   assert.match(page, /Nessuna differenza rilevata/);
   assert.match(page, /repeat\(auto-fit,minmax/);
 });
+
+test("top navigation exposes administrator only through server-verified MFA check", () => {
+  const header = read("../components/Header.tsx");
+  const route = read("../app/api/admin/nav-access/route.ts");
+  assert.match(route, /await isAuthorizedAdmin\(\)/);
+  assert.match(route, /Cache-Control.*private, no-store/);
+  assert.match(header, /fetch\("\/api\/admin\/nav-access"/);
+  assert.match(header, /result\.allowed === true/);
+  assert.match(header, /label: "Area Amministratore"/);
+  assert.match(header, /adminLink && <Link href=\{adminLink\.href\}/);
+  assert.match(header, /adminLink && <Link href=\{adminLink\.href\} onClick=\{closeMobileMenu\}/);
+  assert.doesNotMatch(route, /operator_memberships/);
+});
