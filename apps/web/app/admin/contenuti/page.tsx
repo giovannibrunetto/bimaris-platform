@@ -19,10 +19,8 @@ function dated(v: string) {
   return Number.isNaN(date.getTime()) ? "Data da verificare" :
     new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(date);
 }
-export default async function ContentReview({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
+export default async function ContentReview() {
   if (!(await isAuthorizedAdmin())) redirect("/admin/login");
-  const { tipo } = await searchParams;
-  const chosen = tipo === "profili" ? "profili" : ["attivita","esperienze","appuntamenti"].includes(tipo ?? "") ? "attivita" : "tutti";
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
@@ -40,36 +38,24 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
   const revisions = (revisionsRes.data ?? []) as ExpRevision[];
   const appointments = (eventsRes.data ?? []) as Event[];
   const total = profiles.length + experiences.length + revisions.length + appointments.length;
-  const options = [
-    {id:"tutti",label:"Tutti",amount:total},
-    {id:"profili",label:"Profili",amount:profiles.length},
-    {id:"attivita",label:"Esperienze e appuntamenti",amount:experiences.length+revisions.length+appointments.length},
-  ];
-  const show = (id: string) => chosen === "tutti" || chosen === id;
-  return <div className="admin-events">
+  return <div className="admin-events admin-content-review">
     <header className="admin-events__hero"><div className="admin-events__container">
       <span className="admin-events__eyebrow">Amministrazione / Azioni richieste</span>
       <h1>Contenuti da esaminare</h1>
       <p>Un solo punto d'ingresso per revisioni dei profili, proposte degli operatori e appuntamenti acquisiti. Le procedure di esame rimangono protette e distinte.</p>
       <nav className="admin-events__links" aria-label="Navigazione amministrativa">
         <Link href="/admin">← Centro operativo</Link>
-        <Link href="/admin/attivita">Esperienze e appuntamenti</Link>
       </nav>
     </div></header>
     <section className="admin-events__body"><div className="admin-events__container">
-      <nav className="admin-events__filters" aria-label="Filtra contenuti da esaminare">
-        {options.map(option=><Link key={option.id} href={option.id==="tutti"?"/admin/contenuti":`/admin/contenuti?tipo=${option.id}`} aria-current={chosen===option.id?"page":undefined}>
-          {option.label} <span>{option.amount}</span>
-        </Link>)}
-      </nav>
       {total===0&&<div className="admin-events__empty"><h3>Nessun contenuto in attesa</h3><p>Non ci sono revisioni o nuove proposte da esaminare.</p></div>}
-      {show("profili")&&profiles.length>0&&<section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>
+      {profiles.length>0&&<section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>
         <div className="admin-events__list">{profiles.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Modifica profilo</span><h3>{relatedName(item.operators)}</h3></div>
           <Link className="admin-events__examine" href={`/admin/operatori/${item.operator_id}/revisioni-profilo`}>Esamina →</Link>
         </article>)}</div>
       </section>}
-      {show("attivita")&&(experiences.length>0||revisions.length>0||appointments.length>0)&&<section className="admin-events__queue-group" aria-labelledby="review-experiences"><h2 id="review-experiences">Esperienze e appuntamenti <small>{experiences.length+revisions.length+appointments.length}</small></h2>
+      {(experiences.length>0||revisions.length>0||appointments.length>0)&&<section className="admin-events__queue-group" aria-labelledby="review-experiences"><h2 id="review-experiences">Esperienze e appuntamenti <small>{experiences.length+revisions.length+appointments.length}</small></h2>
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Nuova proposta</span><h3>{item.name}</h3></div>
@@ -84,8 +70,6 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
           <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Esamina →</Link>
         </article>)}</div>
       </section>}
-      {chosen!=="tutti"&&((chosen==="profili"&&profiles.length===0)||(chosen==="attivita"&&experiences.length+revisions.length+appointments.length===0))&&
-        <div className="admin-events__empty"><h3>Nessun elemento in questa categoria</h3><p>Puoi consultare le altre categorie dalla barra dei filtri.</p></div>}
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
     </div></section>
   </div>;
