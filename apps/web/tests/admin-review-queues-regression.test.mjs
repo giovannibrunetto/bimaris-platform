@@ -115,3 +115,13 @@ test("MFA code field focuses automatically after the asynchronous factor check",
   assert.match(page, /autoComplete="one-time-code"/);
   assert.match(page, /getAuthenticatorAssuranceLevel/);
 });
+
+test("operator profile review renders only changed fields with a dossier link", () => {
+  const page = read("../app/admin/operatori/[id]/revisioni-profilo/page.tsx");
+  assert.match(page, /const changed=fields\.filter/);
+  assert.match(page, /\{changed\.map\(\(\[key,label\]\)/);
+  assert.doesNotMatch(page, /\{fields\.map\(\(\[key,label\]\)/);
+  assert.match(page, /Dossier operatore/);
+  assert.match(page, /Nessuna differenza rilevata/);
+  assert.match(page, /repeat\(auto-fit,minmax/);
+});
