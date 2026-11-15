@@ -63,3 +63,18 @@ test("PR36 operator UX and lifecycle behavior survive the consolidation", () => 
   assert.match(logout, /session_not_found/);
   assert.match(logout, /scope: "local"/);
 });
+
+test("validated login eye, account header and no-op operator profile revision protection remain", () => {
+  const login = read("../app/accedi/PasswordAccess.tsx");
+  const header = read("../components/Header.tsx");
+  const revision = read("../app/api/operator/profile-revisions/route.ts");
+  assert.match(login, /showPassword/);
+  assert.match(login, /setShowPassword/);
+  assert.match(header, /onAuthStateChange/);
+  assert.match(header, /operator_memberships/);
+  assert.match(header, /"Area Operatore"/);
+  assert.match(revision, /\["owner","manager"\]/);
+  assert.match(revision, /const unchanged=/);
+  assert.match(revision, /profile=unchanged/);
+  assert.match(revision, /pendingError/);
+});
