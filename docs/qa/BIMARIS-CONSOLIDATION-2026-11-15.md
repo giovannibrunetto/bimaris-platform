@@ -26,15 +26,14 @@ Confronto GitHub PR #36 vs PR #56: divergenza di **97 commit behind / 220 ahead*
 2. Connesso il selettore alle tre superfici: `/area-operatore`, `/area-operatore/calendario`, `/area-operatore/network-b2b`.
 3. Rimossa la navigazione doppia dal layout condiviso dell'area operatore.
 4. Selezione calendario: il parametro `operatore` accetta id o slug, senza ricadere silenziosamente su una seconda attività per richieste non riconosciute.
-5. Aggiunta suite `operator-workspace-consolidation.test.mjs`, senza modifica dei controlli server-side delle membership.
-6. Ereditate dalla PR #56 le correzioni: intestazione dashboard unica, revisione profilo esposta come attività autonoma, icona occhio per password, MFA/CSRF, due fasi di approvazione/pubblicazione eventi.
+5. Ripristinati dalla PR #36 il comportamento responsive di `ExperienceManager` (inclusa lista progressiva mobile) e il relativo CSS, le interfacce `B2BNetwork` e i fogli di stile `operator-area.css` / `operator-navigation.css`. Ripristinati anche gli affinamenti UX di `OperatorProfileEditor`, `CalendarImporter` e la gestione sicura di sessione remota scaduta in `OperatorLogoutButton`.
+6. Aggiunta suite `operator-workspace-consolidation.test.mjs` alla CI (test switcher, lista esperienze, B2B, accessibilità e logout), senza modifica dei controlli server-side delle membership.
+7. Ereditate dalla PR #56 le correzioni: intestazione dashboard unica, revisione profilo esposta come attività autonoma, icona occhio per password, MFA/CSRF, due fasi di approvazione/pubblicazione eventi.
 
 ## Differenze PR #36 ancora da riconciliare (HOLD)
 
 Questa fase non dimostra una piena equivalenza UX. Confrontare e decidere singolarmente i seguenti file, senza trascrizione massiva:
-- `app/area-operatore/ExperienceManager.tsx` e `experience-manager.css`: disposizione creazione esperienza, visualizzazione liste, wizard.
-- `app/area-operatore/OperatorProfileEditor.tsx`, `OperatorLogoutButton.tsx`, `CalendarImporter.tsx`: UX di editing/accesso/importazione.
-- `app/area-operatore/network-b2b/B2BNetwork.tsx` e `operator-area.css`: layout, dati mostrati, azioni e permessi.
+- Gli elementi UX di `ExperienceManager`, `OperatorProfileEditor`, `CalendarImporter`, `OperatorLogoutButton`, `B2BNetwork` e dei principali CSS dell'area sono stati recuperati da PR #36 e richiedono ora QA browser, con speciale attenzione a permessi, responsive e regressioni visive.
 - `app/area-operatore/calendario/page.tsx`, `page.tsx`: raffinatezze di hero, gerarchia e responsività.
 - `app/accedi/*`, `components/Header.tsx`, `app/profilo/*`, `home-journey-v2.css`: differenze possibili fuori dall'Area Operatore.
 - `app/api/operator/profile-revisions/route.ts`: verificarne compatibilità RLS/authorization prima di recepire modifiche.
