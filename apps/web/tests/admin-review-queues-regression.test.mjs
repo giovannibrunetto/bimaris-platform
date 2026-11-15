@@ -100,6 +100,7 @@ test("experience revision displays changed data first and full comparison on dem
   assert.match(page, /removedPhotos\.map/);
   assert.match(page, /updatedPhotos\.map/);
   assert.match(css, /revision-changes__values/);
+  assert.match(css, /revision-gallery__changes\{display:grid;grid-template-columns:repeat\(auto-fill,minmax\(min\(100%,220px\),260px\)\)/);
   assert.match(css, /@media\(max-width:600px\)/);
   assert.match(page, /id="admin-review-decision"/);
   assert.match(page, /Dossier operatore/);
