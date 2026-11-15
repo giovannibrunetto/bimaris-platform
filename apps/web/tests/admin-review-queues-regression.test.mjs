@@ -138,6 +138,7 @@ test("top navigation exposes administrator only through server-verified MFA chec
   assert.match(header, /fetch\("\/api\/admin\/nav-access"/);
   assert.match(header, /result\.visible === true/);
   assert.match(header, /adminAccess\.verified \? "\/admin" : "\/admin\/mfa"/);
+  assert.match(header, /access !== "guest" \? \{ href: "\/admin\/login", label: "Accesso amministratore" \}/);
   assert.match(header, /label: "Area Amministratore"/);
   assert.match(header, /adminLink && <Link href=\{adminLink\.href\}/);
   assert.match(header, /adminLink && <Link href=\{adminLink\.href\} onClick=\{closeMobileMenu\}/);
