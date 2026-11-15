@@ -75,7 +75,7 @@ export function Header() {
       // Refresh after login/logout/MFA changes, never derive the admin role
       // from client-provided identity or operator membership.
       queueMicrotask(() => {
-        if (active) void checkAdminNavigation();
+        if (active) { setAdminAccess(false); void checkAdminNavigation(); }
       });
     });
     return () => {
