@@ -1,0 +1,19 @@
+/* Isolated operator profile revision UI: no global hero or duplicated admin guidance. */
+body:has(.profile-review-workspace) .admin-shell-nav,
+body:has(.profile-review-workspace) .admin-status-guide{display:none}
+.profile-review-workspace{box-sizing:border-box;min-height:60vh;background:#f8f4ee;padding:22px clamp(16px,4vw,48px) 48px;color:#173238}
+.profile-review-heading,.profile-review-body{width:min(100%,1100px);margin-inline:auto}
+.profile-review-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 26px;margin-bottom:18px;padding:0 0 18px;border-bottom:1px solid #decfb9}
+.profile-review-heading__copy{min-width:0;flex:1 1 360px}
+.profile-review-heading__eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#88602c}
+.profile-review-heading h1{margin:6px 0;font:normal clamp(27px,3vw,35px)/1.2 Georgia,serif;color:#11363b;overflow-wrap:anywhere}
+.profile-review-heading p{margin:0;color:#54696b;font-size:13px;line-height:1.45}
+.profile-review-heading__links{display:flex;gap:9px;flex-wrap:wrap}
+.profile-review-heading__links a{min-height:42px;display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid #d4c5ad;border-radius:9px;background:#fff;color:#12393d;text-decoration:none;font-size:13px;font-weight:750}
+.profile-review-heading__links a:first-child{background:#e8dcc9;border-color:#cdb997}
+.profile-review-heading__links a:hover{background:#f4e9d9}
+.profile-review-body{padding:0!important;min-width:0}
+.profile-review-body__content{display:grid;gap:16px}
+.profile-review-body .detail-panel{margin:0;min-width:0}
+.profile-review-body .detail-panel:first-of-type{border-radius:12px}
+@media(max-width:650px){.profile-review-workspace{padding:17px 15px 36px}.profile-review-heading{align-items:flex-start}.profile-review-heading__links{width:100%}.profile-review-heading__links a{flex:1 1 auto}.profile-review-body .detail-panel{padding:16px!important}}
