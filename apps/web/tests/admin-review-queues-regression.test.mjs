@@ -131,9 +131,13 @@ test("top navigation exposes administrator only through server-verified MFA chec
   const header = read("../components/Header.tsx");
   const route = read("../app/api/admin/nav-access/route.ts");
   assert.match(route, /await isAuthorizedAdmin\(\)/);
+  assert.match(route, /is_active_super_admin/);
+  assert.match(route, /client\.auth\.getUser\(\)/);
+  assert.match(route, /visible: true, verified/);
   assert.match(route, /Cache-Control.*private, no-store/);
   assert.match(header, /fetch\("\/api\/admin\/nav-access"/);
-  assert.match(header, /result\.allowed === true/);
+  assert.match(header, /result\.visible === true/);
+  assert.match(header, /adminAccess\.verified \? "\/admin" : "\/admin\/mfa"/);
   assert.match(header, /label: "Area Amministratore"/);
   assert.match(header, /adminLink && <Link href=\{adminLink\.href\}/);
   assert.match(header, /adminLink && <Link href=\{adminLink\.href\} onClick=\{closeMobileMenu\}/);
