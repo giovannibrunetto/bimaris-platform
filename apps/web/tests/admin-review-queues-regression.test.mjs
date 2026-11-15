@@ -247,3 +247,18 @@ test("operator profile revision uses a legible compact header and no duplicated 
   assert.match(page, /name="action" value="reject"/);
   assert.match(page, /name="action" value="approve"/);
 });
+
+test("acquired appointment detail displays structured price and one locality field", () => {
+  const page = read("../app/admin/eventi/[id]/page.tsx");
+  assert.match(page, /metadata: \{ price_eur\?: unknown \} \| null/);
+  assert.match(page, /metadata\?\.price_eur/);
+  assert.match(page, /typeof price !== "number"/);
+  assert.match(page, /Number\.isFinite\(price\)/);
+  assert.match(page, /currency: "EUR"/);
+  assert.match(page, /<dt>Prezzo<\/dt>/);
+  assert.match(page, /<dt>Località<\/dt>/);
+  assert.doesNotMatch(page, /<dt>Luogo<\/dt>/);
+  assert.doesNotMatch(page, /<dt>Territorio<\/dt>/);
+  assert.match(page, /metadata,operators\(name\),territories\(name\)/);
+  assert.match(page, /await isAuthorizedAdmin\(\)/);
+});
