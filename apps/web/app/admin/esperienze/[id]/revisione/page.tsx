@@ -61,9 +61,22 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const { state } = await searchParams;
   const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "La versione pubblicata o l'operatore non sono più in uno stato compatibile con l'applicazione.", "action-error": "Operazione non riuscita." };
 
-  return <><section style={{ background: "linear-gradient(135deg,#17120d,#080706)", color: "#fff", padding: "16px 6vw 18px" }}><div className="kicker" style={{ color: "#d8b778" }}>AREA PRIVATA · REVISIONE ESPERIENZA</div><h1 style={{ margin: "5px 0 10px", color: "#fff" }}>{experience.name}</h1><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Link className="button" href={`/admin/esperienze/${id}`}>← Scheda esperienza</Link><Link className="button" href="/admin/revisioni-esperienze">Tutte le revisioni</Link></div></section><section style={{ padding: "20px 5vw 50px", background: "#f8f4ee" }}>
+  return <div className="revision-workspace">
+    <div className="revision-workspace__heading">
+      <div className="revision-workspace__heading-copy">
+        <span className="revision-workspace__eyebrow">Revisione esperienza</span>
+        <h1>{experience.name}</h1>
+        <p>{operator?.name ?? "Operatore"} · {revision?.submitted_at ? `Proposta del ${new Date(revision.submitted_at).toLocaleDateString("it-IT", {timeZone:"Europe/Rome"})}` : "Modifica proposta"}</p>
+      </div>
+      <nav className="revision-workspace__links" aria-label="Navigazione revisione">
+        <Link href="/admin/contenuti">← Da esaminare</Link>
+        <Link href={`/admin/esperienze/${id}`}>Scheda esperienza</Link>
+        <Link href={`/admin/operatori/${experience.operator_id}`}>Dossier operatore</Link>
+      </nav>
+    </div>
+    <section className="revision-workspace__content">
     {state && <div style={{ padding: 12, marginBottom: 14, background: "#fff", border: "1px solid #d7c7b6" }}>{stateMessage[state] ?? state}</div>}
-    {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel" style={{ padding: "clamp(16px,4vw,24px)" }}><div className="revision-review__context"><span className="kicker">{operator?.name ?? "Operatore"} · modifica proposta</span><Link href={`/admin/operatori/${experience.operator_id}`} className="revision-review__operator-link">Dossier operatore</Link></div><h2 style={{ marginTop: 6 }}>Confronto versione approvata / proposta</h2><p><small>Revisione inviata {revision.submitted_at ? new Date(revision.submitted_at).toLocaleString("it-IT") : "dall'operatore"}</small></p>
+    {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel revision-workspace__panel">
       <section className="revision-changes" aria-labelledby="revision-changes-title">
         <div className="revision-section-heading"><h3 id="revision-changes-title">Solo le modifiche da esaminare</h3>
           <p>{changedFields.length} {changedFields.length===1?"campo modificato":"campi modificati"} · {photoChangesCount} {photoChangesCount===1?"modifica fotografica":"modifiche fotografiche"}. I campi invariati sono nascosti.</p>
@@ -154,5 +167,6 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         </div>
       </section>
     </article>}
-  </section></>;
+    </section>
+  </div>;
 }
