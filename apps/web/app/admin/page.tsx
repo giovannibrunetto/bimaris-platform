@@ -12,7 +12,7 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes, allEventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
@@ -22,9 +22,10 @@ export default async function AdminPage() {
     db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
+    db.from("events").select("id", { count: "exact", head: true }),
   ]);
 
-  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes].some(result => result.error)) {
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes,allEventsRes].some(result => result.error)) {
     throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
   }
 
@@ -38,6 +39,7 @@ export default async function AdminPage() {
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
   const onlineItineraries = onlineItinsRes.count ?? 0;
+  const acquiredAppointments = allEventsRes.count ?? 0;
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
@@ -47,7 +49,7 @@ export default async function AdminPage() {
   ];
   const liveItems=[
     {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
-    {href:"/admin/attivita",label:"Esperienze e appuntamenti",value:onlineExperiences},
+    {href:"/admin/attivita",label:"Esperienze e appuntamenti",value:`${onlineExperiences} + ${acquiredAppointments}`},
     {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries},
   ];
 
@@ -80,7 +82,7 @@ export default async function AdminPage() {
                 <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
               </Link>)}
             </div>
-            <p className="admin-dashboard__panel-footnote">I conteggi delle azioni indicano interventi ancora necessari. Il numero delle esperienze online non include gli appuntamenti acquisiti, consultabili nel registro.</p>
+            <p className="admin-dashboard__panel-footnote">I conteggi delle azioni indicano interventi ancora necessari. Nello Stato piattaforma, «Esperienze e appuntamenti» riporta prima le esperienze online e poi gli appuntamenti acquisiti, distinti dal segno +.</p>
           </section>
 
           <aside className="admin-dashboard__sidepanel" aria-labelledby="admin-status-heading">
