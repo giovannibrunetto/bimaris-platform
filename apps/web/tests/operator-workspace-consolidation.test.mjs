@@ -44,3 +44,22 @@ test("admin consolidation retains individual MFA and corrected dashboard", () =>
   assert.match(login, /aria-label=\{showPassword \? "Nascondi password" : "Mostra password"\}/);
   assert.match(login, /<svg aria-hidden="true"/);
 });
+
+test("PR36 operator UX and lifecycle behavior survive the consolidation", () => {
+  const manager = read("../app/area-operatore/ExperienceManager.tsx");
+  const managerCss = read("../app/area-operatore/experience-manager.css");
+  const b2b = read("../app/area-operatore/network-b2b/B2BNetwork.tsx");
+  const operatorCss = read("../app/area-operatore/operator-navigation.css");
+  const profile = read("../app/area-operatore/OperatorProfileEditor.tsx");
+  const importer = read("../app/area-operatore/CalendarImporter.tsx");
+  const logout = read("../app/area-operatore/OperatorLogoutButton.tsx");
+  assert.match(manager, /showAllExperiences/);
+  assert.match(manager, /experience-manager__show-all/);
+  assert.match(managerCss, /experience-manager__list--expanded/);
+  assert.match(b2b, /b2b-options__grid/);
+  assert.match(operatorCss, /operator-section-nav__link/);
+  assert.match(profile, /scrollIntoView/);
+  assert.match(importer, /scrollIntoView/);
+  assert.match(logout, /session_not_found/);
+  assert.match(logout, /scope: "local"/);
+});
