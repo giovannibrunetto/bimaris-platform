@@ -91,7 +91,9 @@ export function Header() {
       ?[{href:"/profilo",label:"Area personale"}]
       :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
 
-  const adminLink = adminAccess.visible ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" } : null;
+  const adminLink = adminAccess.visible
+    ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" }
+    : access !== "guest" ? { href: "/admin/login", label: "Accesso amministratore" } : null;
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
