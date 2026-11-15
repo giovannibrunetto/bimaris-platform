@@ -262,3 +262,25 @@ test("acquired appointment detail displays structured price and one locality fie
   assert.match(page, /metadata,operators\(name\),territories\(name\)/);
   assert.match(page, /await isAuthorizedAdmin\(\)/);
 });
+
+test("citizen survey privacy page remains an unapproved notice without data collection", () => {
+  const page = read("../app/privacy-questionario/page.tsx");
+  const css = read("../app/privacy-questionario/privacy-questionario.css");
+  assert.match(page, /Jessica Lucchesi/);
+  assert.match(page, /info@bimarisnet\.it/);
+  assert.match(page, /legittimo interesse/);
+  assert.match(page, /art\. 6, par\. 1, lett\. f/);
+  assert.match(page, /consenso libero e facoltativo/);
+  assert.match(page, /art\. 6, par\. 1, lett\. a/);
+  assert.match(page, /Google Forms/);
+  assert.match(page, /Google Sheets/);
+  assert.match(page, /12 mesi/);
+  assert.match(page, /Spazio Economico Europeo/);
+  assert.match(page, /Garante per la protezione dei dati personali/);
+  assert.match(page, /Bozza del 15 novembre 2026/);
+  assert.match(page, /Raccolta non ancora autorizzata/);
+  assert.match(page, /robots: \{ index: false, follow: false, noarchive: true \}/);
+  assert.doesNotMatch(page, /<form|<input|<textarea|fetch\(|supabase|createServiceClient/);
+  assert.match(css, /@media\(max-width:600px\)/);
+  assert.match(css, /focus-visible/);
+});
