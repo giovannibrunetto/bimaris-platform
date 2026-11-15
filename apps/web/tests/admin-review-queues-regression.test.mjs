@@ -197,3 +197,15 @@ test("combined activity registry counts every acquired appointment without doubl
   assert.match(dashboard, /allEventsRes\.count/);
   assert.doesNotMatch(page, /\.insert\(|\.update\(|\.delete\(/);
 });
+
+test("review filters group experiences and appointments into one category", () => {
+  const page = read("../app/admin/contenuti/page.tsx");
+  assert.match(page, /id:"attivita",label:"Esperienze e appuntamenti"/);
+  assert.match(page, /show\("attivita"\)/);
+  assert.match(page, /experiences\.length\+revisions\.length\+appointments\.length/);
+  assert.match(page, /Esperienza · Modifica/);
+  assert.match(page, /Appuntamento · /);
+  assert.doesNotMatch(page, /id:"appuntamenti",label:"Appuntamenti"/);
+  assert.doesNotMatch(page, /id:"esperienze",label:"Esperienze"/);
+  assert.match(page, /\["attivita","esperienze","appuntamenti"\]\.includes/);
+});
