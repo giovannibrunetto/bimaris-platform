@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.replace(/\/$/, "") === "/questionario-cittadini"
+  if ((request.nextUrl.pathname.replace(/\/$/, "") === "/questionario-cittadini"
+    || request.nextUrl.pathname.startsWith("/questionario-cittadini/"))
     && process.env.VERCEL_ENV !== "preview" && process.env.NODE_ENV !== "development") {
     return new NextResponse("Not Found", { status: 404, headers: {
       "X-Robots-Tag": "noindex, nofollow, noarchive", "Cache-Control": "no-store",

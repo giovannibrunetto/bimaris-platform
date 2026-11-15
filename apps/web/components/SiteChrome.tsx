@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 
 const immersiveRoutes = new Set([
   "/questionario-cittadini",
+  "/questionario-cittadini/collaudo",
   "/accedi/utente",
   "/profilo/onboarding",
   "/admin/reset-password",
