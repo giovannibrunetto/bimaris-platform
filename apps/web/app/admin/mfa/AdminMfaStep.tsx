@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 type Factor = { id: string; status: string };
@@ -19,6 +19,7 @@ export default function AdminMfaStep() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const otpInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -32,6 +33,10 @@ export default function AdminMfaStep() {
     });
     return () => { mounted = false; };
   }, []);
+
+  useEffect(() => {
+    if (ready && factor) otpInputRef.current?.focus();
+  }, [ready, factor]);
 
   async function enroll() {
     const supabase = client();
@@ -72,7 +77,7 @@ export default function AdminMfaStep() {
     </div>}
     {ready && factor && <form className="admin-login__form" onSubmit={verify}>
       <label htmlFor="admin-individual-otp">Codice temporaneo dell'autenticatore</label>
-      <input id="admin-individual-otp" value={otp} onChange={e => setOtp(e.target.value)} type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required />
+      <input ref={otpInputRef} autoFocus id="admin-individual-otp" value={otp} onChange={e => setOtp(e.target.value)} type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" required />
       <button type="submit" disabled={busy}>{busy ? "Verifica…" : "Verifica codice MFA"}</button>
     </form>}
     {error && <p role="alert" className="admin-login__error">{error}</p>}
