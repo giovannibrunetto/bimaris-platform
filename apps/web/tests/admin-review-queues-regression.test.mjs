@@ -230,3 +230,20 @@ test("experience revision starts with a single compact heading and the changed c
   assert.match(page, /name="action" value="approve-apply"/);
   assert.match(page, /name="action" value="request-changes"/);
 });
+
+test("operator profile revision uses a legible compact header and no duplicated admin menus", () => {
+  const page = read("../app/admin/operatori/[id]/revisioni-profilo/page.tsx");
+  const css = read("../app/admin/operatori/[id]/revisioni-profilo/profile-review.css");
+  assert.match(page, /className="profile-review-workspace"/);
+  assert.match(page, /className="profile-review-heading"/);
+  assert.match(page, /href="\/admin\/contenuti"/);
+  assert.match(page, /Dossier operatore/);
+  assert.match(page, /className="profile-review-body__content"/);
+  assert.doesNotMatch(page, /className="page-hero"/);
+  assert.doesNotMatch(page, /Operatori ed Esperienze/);
+  assert.match(css, /body:has\(\.profile-review-workspace\) \.admin-shell-nav/);
+  assert.match(css, /admin-status-guide\{display:none\}/);
+  assert.match(css, /\.profile-review-heading h1\{[^}]*color:#11363b/);
+  assert.match(page, /name="action" value="reject"/);
+  assert.match(page, /name="action" value="approve"/);
+});
