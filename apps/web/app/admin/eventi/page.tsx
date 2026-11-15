@@ -76,25 +76,14 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
         <p className="admin-events__hint">Il registro eventi è distinto dalle candidature e dalle esperienze degli operatori. L'approvazione non pubblica l'evento: è necessaria una successiva azione esplicita.</p>
         {rows.length === 0
           ? <div className="admin-events__empty"><h3>Nessun evento da controllare</h3><p>La coda di verifica è vuota.</p></div>
-          : <div className="admin-events__list">{rows.map(row => <article className="admin-events__card" key={row.id}>
-              <div className="admin-events__metadata">
-                <span><strong>Operatore</strong>{operatorName(row.operators)}</span>
-                <span><strong>Canale di acquisizione</strong>{sourceTypeLabel(row.source_type)}</span>
-                <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
+          : <div className="admin-events__list">{rows.map(row => <article className="admin-events__card admin-events__card--compact" key={row.id}>
+              <div className="admin-events__card-main">
+                <span className="admin-events__eyebrow">Da esaminare · {operatorName(row.operators)}</span>
+                <h3>{row.title}</h3>
+                <p className="admin-events__date">{eventDate(row.starts_at)}</p>
+                <p className="admin-events__card-origin">Origine: {sourceTypeLabel(row.source_type)}{row.source_label?.trim() ? ` · ${row.source_label.trim()}` : ""}</p>
               </div>
-              <h3>{row.title}</h3>
-              <p className="admin-events__date">{eventDate(row.starts_at)}</p>
-              {row.description && <p className="admin-events__description">{row.description}</p>}
-              <div className="admin-events__actions">
-                <form method="post" action={`/api/admin/events/${row.id}/status`}>
-                  <input type="hidden" name="action" value="approve" />
-                  <button className="admin-events__approve" type="submit">Approva</button>
-                </form>
-                <form method="post" action={`/api/admin/events/${row.id}/status`}>
-                  <input type="hidden" name="action" value="reject" />
-                  <button className="admin-events__reject" type="submit">Scarta</button>
-                </form>
-              </div>
+              <Link className="admin-events__examine" href={`/admin/eventi/${row.id}`}>Esamina →</Link>
             </article>)}</div>}
         <section className="admin-events__approved" aria-labelledby="approved-events-heading">
           <div className="admin-events__summary">
@@ -103,21 +92,13 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
           </div>
           {approvedRows.length === 0
             ? <div className="admin-events__empty"><h3>Nessun evento pronto per la pubblicazione</h3><p>Gli eventi approvati appariranno qui fino alla pubblicazione.</p></div>
-            : <div className="admin-events__list">{approvedRows.map(row => <article className="admin-events__card" key={row.id}>
-                <div className="admin-events__metadata">
-                  <span><strong>Operatore</strong>{operatorName(row.operators)}</span>
-                  <span><strong>Canale di acquisizione</strong>{sourceTypeLabel(row.source_type)}</span>
-                <span><strong>Fonte dichiarata</strong>{row.source_label?.trim() || "Non indicata"}</span>
+            : <div className="admin-events__list">{approvedRows.map(row => <article className="admin-events__card admin-events__card--compact" key={row.id}>
+                <div className="admin-events__card-main">
+                  <span className="admin-events__eyebrow">Approvato · non pubblicato · {operatorName(row.operators)}</span>
+                  <h3>{row.title}</h3>
+                  <p className="admin-events__date">{eventDate(row.starts_at)}</p>
                 </div>
-                <h3>{row.title}</h3>
-                <p className="admin-events__date">{eventDate(row.starts_at)}</p>
-                {row.description && <p className="admin-events__description">{row.description}</p>}
-                <div className="admin-events__actions">
-                  <form method="post" action={`/api/admin/events/${row.id}/status`}>
-                    <input type="hidden" name="action" value="publish" />
-                    <button className="admin-events__approve" type="submit">Pubblica</button>
-                  </form>
-                </div>
+                <Link className="admin-events__examine" href={`/admin/eventi/${row.id}`}>Verifica e pubblica →</Link>
               </article>)}</div>}
         </section>
       </div>
