@@ -212,3 +212,21 @@ test("focused content review presents one grouped list without duplicated naviga
   assert.doesNotMatch(page, /searchParams/);
   assert.match(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
 });
+
+test("experience revision starts with a single compact heading and the changed content", () => {
+  const page = read("../app/admin/esperienze/[id]/revisione/page.tsx");
+  const css = read("../app/admin/esperienze/[id]/revisione/experience-revision.css");
+  assert.match(page, /className="revision-workspace"/);
+  assert.match(page, /className="revision-workspace__heading"/);
+  assert.match(page, /href="\/admin\/contenuti"/);
+  assert.match(page, /Scheda esperienza/);
+  assert.match(page, /Dossier operatore/);
+  assert.match(page, /className="detail-panel revision-workspace__panel"/);
+  assert.doesNotMatch(page, /Confronto versione approvata \/ proposta/);
+  assert.doesNotMatch(page, /Tutte le revisioni/);
+  assert.match(css, /body:has\(\.revision-workspace\) \.admin-shell-nav/);
+  assert.match(css, /admin-status-guide\{display:none\}/);
+  assert.match(page, /id="admin-review-decision"/);
+  assert.match(page, /name="action" value="approve-apply"/);
+  assert.match(page, /name="action" value="request-changes"/);
+});
