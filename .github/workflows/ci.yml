@@ -22,4 +22,5 @@ jobs:
       - run: node --experimental-strip-types --test apps/web/tests/admin-event-transitions.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/admin-events-route-runtime.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/admin-review-queues-regression.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/operator-workspace-consolidation.test.mjs
       - run: pnpm --filter @bimaris/web build
