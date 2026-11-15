@@ -85,3 +85,21 @@ test("admin individual login supports showing and hiding the password without by
   assert.match(login, /window\.location\.assign\("\/admin\/mfa"\)/);
   assert.match(login, /signInWithPassword/);
 });
+
+test("experience revision displays changed data first and full comparison on demand", () => {
+  const page = read("../app/admin/esperienze/[id]/revisione/page.tsx");
+  const css = read("../app/admin/esperienze/[id]/revisione/experience-revision.css");
+  assert.match(page, /const changedFields = allFields\.filter/);
+  assert.match(page, /Solo le modifiche da esaminare/);
+  assert.match(page, /changedFields\.map/);
+  assert.match(page, /<details className="revision-full-comparison">/);
+  assert.match(page, /Mostra confronto completo e gallerie/);
+  assert.match(page, /allFields\.map/);
+  assert.match(page, /photo\.source_media_id \?\? photo\.id \?\? photo\.storage_path/);
+  assert.match(page, /addedPhotos\.map/);
+  assert.match(page, /removedPhotos\.map/);
+  assert.match(page, /updatedPhotos\.map/);
+  assert.match(css, /revision-changes__values/);
+  assert.match(css, /@media\(max-width:600px\)/);
+  assert.match(page, /id="admin-review-decision"/);
+});
