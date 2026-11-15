@@ -84,7 +84,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
           <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Esamina →</Link>
         </article>)}</div>
       </section>}
-      {chosen!=="tutti"&&((chosen==="profili"&&profiles.length===0)||(chosen==="esperienze"&&experiences.length+revisions.length===0)||(chosen==="appuntamenti"&&appointments.length===0))&&
+      {chosen!=="tutti"&&((chosen==="profili"&&profiles.length===0)||(chosen==="attivita"&&experiences.length+revisions.length+appointments.length===0))&&
         <div className="admin-events__empty"><h3>Nessun elemento in questa categoria</h3><p>Puoi consultare le altre categorie dalla barra dei filtri.</p></div>}
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
     </div></section>
