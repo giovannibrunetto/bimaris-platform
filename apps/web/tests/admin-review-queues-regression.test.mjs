@@ -105,3 +105,13 @@ test("experience revision displays changed data first and full comparison on dem
   assert.match(page, /Dossier operatore/);
   assert.match(page, /experience\.operator_id/);
 });
+
+test("MFA code field focuses automatically after the asynchronous factor check", () => {
+  const page = read("../app/admin/mfa/AdminMfaStep.tsx");
+  assert.match(page, /useRef<HTMLInputElement>\(null\)/);
+  assert.match(page, /if \(ready && factor\) otpInputRef\.current\?\.focus\(\)/);
+  assert.match(page, /\[ready, factor\]/);
+  assert.match(page, /<input ref=\{otpInputRef\} autoFocus id="admin-individual-otp"/);
+  assert.match(page, /autoComplete="one-time-code"/);
+  assert.match(page, /getAuthenticatorAssuranceLevel/);
+});
