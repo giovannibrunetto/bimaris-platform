@@ -57,7 +57,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
         <Link href="/admin/attivita">Esperienze e appuntamenti</Link>
       </nav>
     </div></header>
-    <main className="admin-events__body"><div className="admin-events__container">
+    <section className="admin-events__body"><div className="admin-events__container">
       <nav className="admin-events__filters" aria-label="Filtra contenuti da esaminare">
         {options.map(option=><Link key={option.id} href={option.id==="tutti"?"/admin/contenuti":`/admin/contenuti?tipo=${option.id}`} aria-current={chosen===option.id?"page":undefined}>
           {option.label} <span>{option.amount}</span>
@@ -91,6 +91,6 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
       {chosen!=="tutti"&&((chosen==="profili"&&profiles.length===0)||(chosen==="esperienze"&&experiences.length+revisions.length===0)||(chosen==="appuntamenti"&&appointments.length===0))&&
         <div className="admin-events__empty"><h3>Nessun elemento in questa categoria</h3><p>Puoi consultare le altre categorie dalla barra dei filtri.</p></div>}
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
-    </div></main>
+    </div></section>
   </div>;
 }
