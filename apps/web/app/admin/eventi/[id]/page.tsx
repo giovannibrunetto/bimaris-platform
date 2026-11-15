@@ -14,11 +14,17 @@ type EventRow = {
   published: boolean; verification_status: string;
   source_type: string | null; source_label: string | null;
   source_url: string | null; import_batch_id: string | null;
+  metadata: { price_eur?: unknown } | null;
   operators: { name: string } | { name: string }[] | null;
   territories: { name: string } | { name: string }[] | null;
 };
 function relationName(value: { name: string } | { name: string }[] | null) {
   return (Array.isArray(value) ? value[0] : value)?.name ?? "Non indicato";
+}
+function priceLabel(metadata: EventRow["metadata"]) {
+  const price = metadata?.price_eur;
+  if (typeof price !== "number" || !Number.isFinite(price) || price < 0) return "Non indicato";
+  return price === 0 ? "Gratuito" : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(price);
 }
 function dateLabel(value: string | null) {
   if (!value) return "Non indicata";
@@ -47,12 +53,16 @@ export default async function AdminEventReview({ params }: { params: Promise<{ i
   if (!db) throw new Error("Supabase non configurato");
 
   const { data, error } = await db.from("events")
-    .select("id,title,description,starts_at,ends_at,location,published,verification_status,source_type,source_label,source_url,import_batch_id,operators(name),territories(name)")
+    .select("id,title,description,starts_at,ends_at,location,published,verification_status,source_type,source_label,source_url,import_batch_id,metadata,operators(name),territories(name)")
     .eq("id", id).maybeSingle();
   if (error) throw new Error("Impossibile caricare la scheda dell'evento");
   if (!data) notFound();
   const event = data as EventRow;
   const source = sourceLink(event.source_url);
+  const place = event.location?.trim();
+  const territory = relationName(event.territories);
+  const locality = place && territory !== "Non indicato" && !place.toLocaleLowerCase("it-IT").includes(territory.toLocaleLowerCase("it-IT"))
+    ? `${place} · ${territory}` : place || territory;
   const pending = event.verification_status === "pending" && event.published === false;
   const approved = event.verification_status === "verified" && event.published === false;
 
@@ -77,8 +87,8 @@ export default async function AdminEventReview({ params }: { params: Promise<{ i
           <dl className="admin-events__facts">
             <div><dt>Inizio</dt><dd>{dateLabel(event.starts_at)}</dd></div>
             <div><dt>Fine</dt><dd>{dateLabel(event.ends_at)}</dd></div>
-            <div><dt>Luogo</dt><dd>{event.location?.trim() || "Non indicato"}</dd></div>
-            <div><dt>Territorio</dt><dd>{relationName(event.territories)}</dd></div>
+            <div><dt>Località</dt><dd>{locality}</dd></div>
+            <div><dt>Prezzo</dt><dd>{priceLabel(event.metadata)}</dd></div>
             <div><dt>Operatore</dt><dd>{relationName(event.operators)}</dd></div>
             <div><dt>Canale di acquisizione</dt><dd>{event.source_type ? sourceTypes[event.source_type.toLowerCase()] ?? event.source_type : "Non indicato"}</dd></div>
             <div><dt>Fonte dichiarata</dt><dd>{event.source_label?.trim() || "Non indicata"}</dd></div>
