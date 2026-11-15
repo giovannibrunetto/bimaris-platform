@@ -198,14 +198,17 @@ test("combined activity registry counts every acquired appointment without doubl
   assert.doesNotMatch(page, /\.insert\(|\.update\(|\.delete\(/);
 });
 
-test("review filters group experiences and appointments into one category", () => {
+test("focused content review presents one grouped list without duplicated navigation", () => {
   const page = read("../app/admin/contenuti/page.tsx");
-  assert.match(page, /id:"attivita",label:"Esperienze e appuntamenti"/);
-  assert.match(page, /show\("attivita"\)/);
-  assert.match(page, /experiences\.length\+revisions\.length\+appointments\.length/);
+  const css = read("../app/admin/eventi/admin-events.css");
+  assert.match(page, /admin-content-review/);
+  assert.match(page, /Esperienze e appuntamenti/);
+  assert.match(page, /profiles.length>0/);
+  assert.match(page, /experiences.length>0\|\|revisions.length>0\|\|appointments.length>0/);
   assert.match(page, /Esperienza · Modifica/);
   assert.match(page, /Appuntamento · /);
-  assert.doesNotMatch(page, /id:"appuntamenti",label:"Appuntamenti"/);
-  assert.doesNotMatch(page, /id:"esperienze",label:"Esperienze"/);
-  assert.match(page, /\["attivita","esperienze","appuntamenti"\]\.includes/);
+  assert.match(page, /href="\/admin"/);
+  assert.doesNotMatch(page, /admin-events__filters/);
+  assert.doesNotMatch(page, /searchParams/);
+  assert.match(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
 });
