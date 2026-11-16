@@ -284,3 +284,15 @@ test("citizen survey privacy page remains an unapproved notice without data coll
   assert.match(css, /@media\(max-width:600px\)/);
   assert.match(css, /focus-visible/);
 });
+
+test("shared tablet header switches to the accessible compact menu before links overflow", () => {
+  const css = read("../app/a11-foundation.css");
+  const header = read("../components/Header.tsx");
+  assert.match(css, /@media \(min-width: 701px\) and \(max-width: 1100px\)/);
+  assert.match(css, /\.site-header \.nav \{ display: none !important; \}/);
+  assert.match(css, /\.site-header \.mobile-menu \{ display: block !important;/);
+  assert.match(css, /max-height: calc\(100dvh - 84px\)/);
+  assert.match(header, /<details className="mobile-menu" ref=\{mobileMenuRef\}>/);
+  assert.match(header, /aria-label="Navigazione mobile"/);
+  assert.match(header, /onClick=\{closeMobileMenu\}/);
+});
