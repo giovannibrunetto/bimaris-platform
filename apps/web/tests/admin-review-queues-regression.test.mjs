@@ -277,7 +277,8 @@ test("citizen survey privacy page remains an unapproved notice without data coll
   assert.match(page, /12 mesi/);
   assert.match(page, /Spazio Economico Europeo/);
   assert.match(page, /Garante per la protezione dei dati personali/);
-  assert.match(page, /Bozza del 15 novembre 2026/);
+  assert.match(page, /Versione 2026-11-16-v1/);
+  assert.match(page, /In verifica/);
   assert.match(page, /Raccolta non ancora autorizzata/);
   assert.match(page, /robots: \{ index: false, follow: false, noarchive: true \}/);
   assert.doesNotMatch(page, /<form|<input|<textarea|fetch\(|supabase|createServiceClient/);
