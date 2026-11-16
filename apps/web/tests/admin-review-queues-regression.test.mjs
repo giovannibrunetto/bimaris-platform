@@ -281,7 +281,9 @@ test("citizen survey privacy page remains an unapproved notice without data coll
   assert.match(page, /In verifica/);
   assert.match(page, /Raccolta non ancora autorizzata/);
   assert.match(page, /robots: \{ index: false, follow: false, noarchive: true \}/);
-  assert.doesNotMatch(page, /<form|<input|<textarea|fetch\(|supabase|createServiceClient/);
+  assert.doesNotMatch(page, /<form|<input|<textarea|fetch\(|createServiceClient/);
+  assert.match(page, /Google Forms e Google Sheets non sono utilizzati/);
+  assert.match(page, /archivi distinti nel database Supabase/);
   assert.match(css, /@media\(max-width:600px\)/);
   assert.match(css, /focus-visible/);
 });
