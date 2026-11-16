@@ -169,3 +169,21 @@ body:has(.access-gateway) { background:var(--bimaris-tortora); }
   .consent { left:10px; right:10px; bottom:10px; grid-template-columns:1fr; padding:14px; border-radius:14px; }
   .consent-actions { justify-content:flex-start; }
 }
+
+
+/* Shared responsive navigation: keep every destination usable at tablet widths.
+   The larger authenticated/admin menu does not reliably fit between 761 and 1100 px. */
+@media (min-width: 701px) and (max-width: 1100px) {
+  .site-header .nav { display: none !important; }
+  .site-header .mobile-menu { display: block !important; margin-left: auto; }
+  .site-header .mobile-nav {
+    right: 0;
+    left: auto;
+    width: min(330px, calc(100vw - 36px));
+    max-width: calc(100vw - 36px);
+    max-height: calc(100dvh - 84px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .site-header .mobile-nav a { white-space: normal; overflow-wrap: anywhere; }
+}
