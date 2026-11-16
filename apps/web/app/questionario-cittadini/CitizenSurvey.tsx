@@ -5,13 +5,15 @@ import Link from "next/link";
 import { launchConsent, questions } from "./questions";
 import styles from "./survey.module.css";
 
-export default function CitizenSurvey() {
+export default function CitizenSurvey({ testMode = false }: { testMode?: boolean }) {
   const [step, setStep] = useState(-1);
   const [answers, setAnswers] = useState<string[][]>([[], [], [], [], []]);
   const [idea, setIdea] = useState("");
   const [consent, setConsent] = useState<"yes" | "no" | "">("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const requestId = useRef("");
   const heading = useRef<HTMLHeadingElement>(null);
   const emailInput = useRef<HTMLInputElement>(null);
   useEffect(() => { heading.current?.focus(); }, [step]);
@@ -27,10 +29,24 @@ export default function CitizenSurvey() {
       : [value]));
     setError("");
   }
+  async function finish() {
+    if (!testMode) { go(7); return; }
+    if (sending) return;
+    setSending(true); setError("");
+    requestId.current ||= crypto.randomUUID();
+    try {
+      const response = await fetch("/questionario-cittadini/invio", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId: requestId.current, answers, idea, consent, email, website: "" }) });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true) throw new Error(result.error || "Invio non riuscito.");
+      go(7);
+    } catch (e) { setError(e instanceof Error ? e.message : "Invio non riuscito. Riprova."); }
+    finally { setSending(false); }
+  }
   function next() {
     // Match the existing form: questions 1–3 required, 4–5 optional.
     if (step >= 0 && step < 3 && answers[step].length === 0) { setError("Scegli una risposta per continuare."); return; }
-    if (step === 5) { go(consent === "yes" ? 6 : 7); return; }
+    if (step === 5) { if (consent === "yes") go(6); else void finish(); return; }
+    if (step === 6) { void finish(); return; }
     go(step + 1);
   }
   const question = step >= 0 && step < 5 ? questions[step] : null;
@@ -39,7 +55,7 @@ export default function CitizenSurvey() {
   return <div className={styles.survey}>
     <header className={styles.topbar}>
       <Link href="/" aria-label="BIMARIS — Messina da vivere" className={styles.wordmark}>BIMARIS <span>Messina da vivere</span></Link>
-      <span className={styles.preview}>Anteprima · raccolta disattivata</span>
+      <span className={styles.preview}>{testMode ? "Collaudo · solo dati fittizi" : "Anteprima · raccolta disattivata"}</span>
     </header>
     <div className={styles.layout}>
       <aside className={styles.brand} aria-label="BIMARIS sta arrivando">
@@ -72,7 +88,7 @@ export default function CitizenSurvey() {
           </> : question ? <>
             <h2 ref={heading} tabIndex={-1}>{question.title}</h2>
             {step === 2 && <p id="choice-help" className={styles.hint}>Puoi scegliere una o due risposte.</p>}
-            {step === 4 ? <><p className={styles.hint}>Risposta facoltativa</p><label htmlFor="citizen-idea" className={styles.srOnly}>{question.title}</label><textarea id="citizen-idea" rows={5} value={idea} onChange={event => setIdea(event.target.value)} placeholder="La tua risposta…" /></>
+            {step === 4 ? <><p className={styles.hint}>Risposta facoltativa</p><label htmlFor="citizen-idea" className={styles.srOnly}>{question.title}</label><textarea id="citizen-idea" rows={5} maxLength={1000} value={idea} onChange={event => setIdea(event.target.value)} placeholder={testMode ? "COLLAUDO: testo fittizio, nessun dato personale" : "La tua risposta…"} /></>
               : <fieldset className={styles.choices} aria-describedby={step === 2 ? "choice-help" : undefined}>
                 <legend className={styles.srOnly}>{question.title}</legend>
                 {question.options.map((option, index) => <label key={option} className={`${styles.choice} ${answers[step].includes(option) ? styles.selected : ""}`}>
@@ -93,23 +109,23 @@ export default function CitizenSurvey() {
           </> : step === 6 ? <>
             <h2 ref={heading} tabIndex={-1}>La tua email per il lancio</h2>
             <label htmlFor="launch-email" className={styles.emailLabel}>Indirizzo email <span>Facoltativo</span></label>
-            <input ref={emailInput} id="launch-email" type="email" autoComplete="off" value={email} onChange={event => setEmail(event.target.value)} placeholder="La tua email" />
+            <input ref={emailInput} id="launch-email" type="email" maxLength={254} autoComplete="off" value={email} onChange={event => setEmail(event.target.value)} placeholder={testMode ? "prova@example.invalid" : "La tua email"} />
           </> : <>
             <p className={styles.eyebrow}>Collaudo completato</p>
             <h2 ref={heading} tabIndex={-1}>Grazie per aver provato<br />il questionario.</h2>
-            <p>Questa è un’anteprima. Le risposte e l’eventuale email non sono state inviate né salvate.</p>
+            <p>{testMode ? "Le risposte di prova sono state salvate. L’eventuale email fittizia è registrata in un archivio separato, con la prova del consenso." : "Questa è un’anteprima. Le risposte e l’eventuale email non sono state inviate né salvate."}</p>
             <p className={styles.hint}>La raccolta rimane disattivata in attesa dell’autorizzazione alla pubblicazione.</p>
-            <button type="button" className={styles.primary} onClick={() => { setAnswers([[], [], [], [], []]); setIdea(""); setEmail(""); setConsent(""); go(-1); }}>Torna all’inizio <span aria-hidden="true">↺</span></button>
+            <button type="button" className={styles.primary} onClick={() => { requestId.current = ""; setAnswers([[], [], [], [], []]); setIdea(""); setEmail(""); setConsent(""); go(-1); }}>Torna all’inizio <span aria-hidden="true">↺</span></button>
           </>}
           {error && <p className={styles.error} role="alert">{error}</p>}
           {step >= 0 && step < 7 && <div className={styles.actions}>
-            <button type="button" className={styles.back} onClick={() => go(step - 1)}>← Indietro</button>
-            <button type="button" className={styles.primary} onClick={() => {
+            <button type="button" className={styles.back} disabled={sending} onClick={() => go(step - 1)}>← Indietro</button>
+            <button type="button" className={styles.primary} disabled={sending} onClick={() => {
               if (step === 6) {
                 if (!emailInput.current?.reportValidity()) return;
               }
               next();
-            }}>{step === 6 || step === 5 && consent !== "yes" ? "Concludi la prova" : step === 4 ? "Continua" : "Avanti"}<span aria-hidden="true">→</span></button>
+            }}>{sending ? "Invio…" : step === 6 || step === 5 && consent !== "yes" ? "Concludi la prova" : step === 4 ? "Continua" : "Avanti"}<span aria-hidden="true">→</span></button>
           </div>}
         </div>
         <footer className={styles.footer}><span>BIMARIS — Messina da vivere</span><a href="/privacy-questionario" target="_blank" rel="noopener noreferrer">Privacy</a></footer>
