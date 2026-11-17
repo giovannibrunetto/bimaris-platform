@@ -21,3 +21,11 @@
 .survey-admin__ideas li{border-top:1px solid #e4e3dc;padding:14px 0;overflow-wrap:anywhere}
 .survey-admin__ideas li span{font-size:12px;color:#647476}
 .survey-admin__ideas li p{white-space:pre-wrap;margin:5px 0 0}
+
+.survey-admin__search{display:grid;gap:8px;max-width:650px;margin:20px 0}
+.survey-admin__search label{font-size:13px;font-weight:750;color:#25494b}
+.survey-admin__search>div{display:flex;gap:9px;flex-wrap:wrap}
+.survey-admin__search input{flex:1 1 220px;min-width:0;padding:12px 13px;min-height:44px;background:#fff;color:#173739;border:1px solid #9daead;border-radius:9px}
+.survey-admin__search button,.survey-admin__paging a{padding:11px 19px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;background:#cba96c;color:#143438;text-decoration:none;font-weight:800;border:0;cursor:pointer}
+.survey-admin__paging{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:18px}
+.survey-admin__search input:focus-visible,.survey-admin__search button:focus-visible,.survey-admin__paging a:focus-visible{outline:3px solid #ae8548;outline-offset:2px}
