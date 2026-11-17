@@ -3,7 +3,7 @@ import { questions } from "../../app/questionario-cittadini/questions";
 export const PRIVACY_VERSION = "2026-11-17-v2";
 export const CONSENT_VERSION = "launch-only-v1";
 export type SurveyInput = { requestId: string; answers: string[][]; idea: string; consent: string; email: string; website: string };
-export function validateSurvey(value: unknown) {
+export function validateSurvey(value: unknown, mode: "test" | "live" = "test") {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const v = value as Record<string, unknown>;
   const keys = ["requestId", "answers", "idea", "consent", "email", "website"];
@@ -21,10 +21,11 @@ export function validateSurvey(value: unknown) {
     encoded.push(a.map(item => options.indexOf(item) + 1));
   }
   if (typeof v.idea !== "string" || v.idea.length > 1000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(v.idea)) return null;
-  // Staging accepts synthetic text only; no production collection switch exists.
-  if (v.idea.trim() && !v.idea.startsWith("COLLAUDO:")) return null;
+  // Test mode remains the default; only the guarded live handler can opt out.
+  if (mode === "test" && v.idea.trim() && !v.idea.startsWith("COLLAUDO:")) return null;
   if (!["", "yes", "no"].includes(v.consent as string) || typeof v.email !== "string" || typeof v.website !== "string" || v.website !== "") return null;
   const email = v.email.trim().toLowerCase();
-  if (email && (v.consent !== "yes" || email.length > 254 || !/^[a-z0-9._+-]+@example\.invalid$/.test(email))) return null;
+  const emailPattern = mode === "test" ? /^[a-z0-9._+-]+@example\.invalid$/ : /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
+  if (email && (v.consent !== "yes" || email.length > 254 || !emailPattern.test(email))) return null;
   return { requestId: v.requestId, q1: encoded[0][0], q2: encoded[1][0], q3: encoded[2], q4: encoded[3][0] ?? null, idea: v.idea.trim(), email: email || null, consent: v.consent === "yes" && Boolean(email) };
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { launchConsent, questions } from "./questions";
 import styles from "./survey.module.css";
 
-export default function CitizenSurvey({ testMode = false }: { testMode?: boolean }) {
+export default function CitizenSurvey({ testMode = false, liveMode = false }: { testMode?: boolean; liveMode?: boolean }) {
   const [step, setStep] = useState(-1);
   const [answers, setAnswers] = useState<string[][]>([[], [], [], [], []]);
   const [idea, setIdea] = useState("");
@@ -30,7 +30,7 @@ export default function CitizenSurvey({ testMode = false }: { testMode?: boolean
     setError("");
   }
   async function finish() {
-    if (!testMode) { go(7); return; }
+    if (!testMode && !liveMode) { go(7); return; }
     if (sending) return;
     setSending(true); setError("");
     requestId.current ||= crypto.randomUUID();
@@ -55,7 +55,7 @@ export default function CitizenSurvey({ testMode = false }: { testMode?: boolean
   return <div className={styles.survey}>
     <header className={styles.topbar}>
       <Link href="/" aria-label="BIMARIS — Messina da vivere" className={styles.wordmark}>BIMARIS <span>Messina da vivere</span></Link>
-      <span className={styles.preview}>{testMode ? "Collaudo · solo dati fittizi" : "Anteprima · raccolta disattivata"}</span>
+      <span className={styles.preview}>{liveMode ? "Questionario cittadini" : testMode ? "Collaudo · solo dati fittizi" : "Anteprima · raccolta disattivata"}</span>
     </header>
     <div className={styles.layout}>
       <aside className={styles.brand} aria-label="BIMARIS sta arrivando">
@@ -111,10 +111,10 @@ export default function CitizenSurvey({ testMode = false }: { testMode?: boolean
             <label htmlFor="launch-email" className={styles.emailLabel}>Indirizzo email <span>Facoltativo</span></label>
             <input ref={emailInput} id="launch-email" type="email" maxLength={254} autoComplete="off" value={email} onChange={event => setEmail(event.target.value)} placeholder={testMode ? "prova@example.invalid" : "La tua email"} />
           </> : <>
-            <p className={styles.eyebrow}>Collaudo completato</p>
-            <h2 ref={heading} tabIndex={-1}>Grazie per aver provato<br />il questionario.</h2>
-            <p>{testMode ? "Le risposte di prova sono state salvate. L’eventuale email fittizia è registrata in un archivio separato, con la prova del consenso." : "Questa è un’anteprima. Le risposte e l’eventuale email non sono state inviate né salvate."}</p>
-            <p className={styles.hint}>La raccolta rimane disattivata in attesa dell’autorizzazione alla pubblicazione.</p>
+            <p className={styles.eyebrow}>{liveMode ? "Questionario completato" : "Collaudo completato"}</p>
+            <h2 ref={heading} tabIndex={-1}>{liveMode ? "Grazie per aver risposto" : "Grazie per aver provato"}<br />{liveMode ? "al questionario." : "il questionario."}</h2>
+            <p>{liveMode ? "Le risposte sono state salvate. L’eventuale email è registrata separatamente e sarà utilizzata esclusivamente per l’annuncio del lancio." : testMode ? "Le risposte di prova sono state salvate. L’eventuale email fittizia è registrata in un archivio separato, con la prova del consenso." : "Questa è un’anteprima. Le risposte e l’eventuale email non sono state inviate né salvate."}</p>
+            {!liveMode && <p className={styles.hint}>La raccolta rimane disattivata in attesa dell’autorizzazione alla pubblicazione.</p>}
             <button type="button" className={styles.primary} onClick={() => { requestId.current = ""; setAnswers([[], [], [], [], []]); setIdea(""); setEmail(""); setConsent(""); go(-1); }}>Torna all’inizio <span aria-hidden="true">↺</span></button>
           </>}
           {error && <p className={styles.error} role="alert">{error}</p>}

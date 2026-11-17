@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { surveyTestSession } from "@/lib/survey/security";
+import { liveCollectionOpen } from "@/lib/survey/live";
 import CitizenSurvey from "./CitizenSurvey";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CitizenSurveyPage() {
-  // Preview/local only; persistence requires an authorized synthetic-test session.
-  if (process.env.VERCEL_ENV !== "preview" && process.env.NODE_ENV !== "development") notFound();
-  return <CitizenSurvey testMode={await surveyTestSession()} />;
+  const liveMode = await liveCollectionOpen();
+  if (!liveMode && process.env.VERCEL_ENV !== "preview" && process.env.NODE_ENV !== "development") notFound();
+  return <CitizenSurvey testMode={!liveMode && await surveyTestSession()} liveMode={liveMode} />;
 }

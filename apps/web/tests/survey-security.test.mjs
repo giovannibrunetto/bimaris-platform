@@ -17,6 +17,7 @@ const v=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptT
 globalThis.surveyTestStubs={configured:true,session:true,limit:'allow',db:true,saved:true,calls:0};
 let route=await load('../app/questionario-cittadini/invio/route.ts');route=route.replace(/^import .*;\n/gm,'');route=`const {validateSurvey,PRIVACY_VERSION,CONSENT_VERSION}=globalThis.surveyValidation;
 const launchConsent='consent';
+const surveyLiveConfigured=()=>false;
 const s=globalThis.surveyTestStubs;
 const surveyConfigured=()=>s.configured, surveyTestSession=async()=>s.session, surveyLimit=async()=>s.limit;
 const {sameOrigin,json,readLimitedText}=globalThis.surveySecurity;
