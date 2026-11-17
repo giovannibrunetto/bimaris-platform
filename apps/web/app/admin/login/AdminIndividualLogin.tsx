@@ -47,6 +47,9 @@ export default function AdminIndividualLogin() {
       window.location.assign(allowedOrigin + "/admin/login");
       return;
     }
+    // A deliberate new admin login must not reuse an already AAL2-verified browser session.
+    const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
+    if (signOutError) { setError("Impossibile avviare un nuovo accesso sicuro. Riprova."); setBusy(false); return; }
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: allowedOrigin + "/auth/callback?admin=1" },
