@@ -14,7 +14,7 @@ export function validateSurvey(value: unknown, mode: "test" | "live" = "test") {
   for (let i = 0; i < 5; i++) {
     const a = v.answers[i];
     if (!Array.isArray(a) || a.some(item => typeof item !== "string") || new Set(a).size !== a.length) return null;
-    const min = i < 3 ? 1 : 0, max = i === 2 ? 2 : i === 4 ? 0 : 1;
+    const min = i < 4 ? 1 : 0, max = i === 2 ? 2 : i === 4 ? 0 : 1;
     if (a.length < min || a.length > max) return null;
     const options: readonly string[] = questions[i].options;
     if (a.some(item => !options.includes(item))) return null;
