@@ -1,0 +1,23 @@
+.survey-admin{color:#173739;background:#f5f2ec;padding:clamp(20px,4vw,48px);min-height:60vh}
+.survey-admin__heading{max-width:900px;margin-bottom:24px}
+.survey-admin__eyebrow{display:block;color:#89652c;font-size:12px;text-transform:uppercase;letter-spacing:.11em;font-weight:800}
+.survey-admin h2{font:normal clamp(29px,4vw,44px)/1.15 Georgia,serif;color:#143438;margin:10px 0}
+.survey-admin h3{font:normal clamp(21px,2.5vw,26px)/1.2 Georgia,serif;margin:0 0 16px;color:#143438}
+.survey-admin p{line-height:1.55}
+.survey-admin__notice{border:1px solid #b18d4b;border-radius:12px;padding:17px;background:#fff9eb}
+.survey-admin__stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.survey-admin__stats>div,.survey-admin__panel{background:#fff;border:1px solid #ddd8cd;border-radius:15px;padding:22px;min-width:0}
+.survey-admin__stats span{display:block;color:#546c6d;font-size:13px;font-weight:700}
+.survey-admin__stats strong{display:block;color:#124145;font:normal 40px/1.3 Georgia,serif}
+.survey-admin__caption{font-size:12px;color:#607273;margin:12px 0 20px}
+.survey-admin__charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,365px),1fr));gap:17px;margin:22px 0}
+.survey-admin__answer{margin-top:17px}
+.survey-admin__line{display:flex;justify-content:space-between;gap:10px;font-size:13px;line-height:1.45}
+.survey-admin__line span{overflow-wrap:anywhere}
+.survey-admin__line strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+.survey-admin__track{height:9px;background:#e8e9e4;border-radius:100px;overflow:hidden;margin-top:7px}
+.survey-admin__track>div{height:100%;background:#ba965a;border-radius:100px}
+.survey-admin__ideas ul{list-style:none;margin:0;padding:0}
+.survey-admin__ideas li{border-top:1px solid #e4e3dc;padding:14px 0;overflow-wrap:anywhere}
+.survey-admin__ideas li span{font-size:12px;color:#647476}
+.survey-admin__ideas li p{white-space:pre-wrap;margin:5px 0 0}
