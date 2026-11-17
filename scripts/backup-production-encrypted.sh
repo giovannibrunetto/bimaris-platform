@@ -27,8 +27,10 @@ trap cleanup EXIT HUP INT TERM
 
 # No --schema restriction: include all PostgreSQL objects that the configured
 # backup role can access, including business/auth schemas. Encrypted in-flight;
-# no plaintext dump is persisted. The pipeline fails if pg_dump or gpg fails.
-pg_dump --format=custom --no-owner --no-acl --dbname="service=$PGSERVICE" |
+# no plaintext dump is persisted. Ownership and ACLs are included where visible.
+# Roles/globals and Storage objects need separate backup/inventory.
+# The pipeline fails if pg_dump or gpg fails.
+pg_dump --format=custom --dbname="service=$PGSERVICE" |
   gpg --batch --yes --trust-model always --encrypt --recipient "$BIMARIS_GPG_RECIPIENT" --output "$temporary"
 [[ -s "$temporary" ]] || { echo 'Encrypted archive is empty' >&2; exit 1; }
 chmod 600 "$temporary"
