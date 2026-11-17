@@ -25,3 +25,78 @@
 
 /* Welcome is static: avoid entrance translation while layout and images settle. */
 .welcomeScreen{animation:none!important;transform:none!important;}
+
+/* Welcome screen only: a centered, viewport-locked layout without document scrolling. 
+   If the display is short or zoomed, the panel scrolls internally to keep all actions accessible. */
+.surveyWelcome{
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding-bottom:clamp(10px,2dvh,22px);
+}
+.surveyWelcome .topbar{width:100%;flex:0 0 auto}
+.surveyWelcome .layout{
+  width:100%;
+  flex:1 1 auto;
+  min-height:0;
+  margin:0 auto;
+  align-items:center;
+}
+.surveyWelcome .brand{
+  align-self:center;
+  max-height:100%;
+  min-height:0;
+  overflow:hidden;
+}
+.surveyWelcome .visual{height:clamp(110px,34dvh,320px)}
+.surveyWelcome .visual img{height:100%;object-fit:cover}
+.surveyWelcome .brandCopy{padding-top:clamp(12px,2dvh,24px)}
+.surveyWelcome .brandTitle{margin-bottom:clamp(10px,2dvh,20px)!important}
+.surveyWelcome .brandCopy .rule{margin:clamp(8px,1.5dvh,18px) 0}
+.surveyWelcome .brandCopy .duration{margin-top:clamp(10px,2dvh,22px)!important}
+.surveyWelcome .panel{
+  align-self:center;
+  min-height:0;
+  max-height:100%;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:0 6px 0 0;
+}
+.surveyWelcome .screen{flex:0 0 auto}
+.surveyWelcome .screen h1{margin:clamp(8px,2dvh,20px) 0}
+.surveyWelcome .screen .subtitle{margin-bottom:clamp(12px,2dvh,24px)}
+.surveyWelcome .screen .intro{margin-top:clamp(10px,2dvh,22px)}
+.surveyWelcome .screen>.primary{margin-top:clamp(10px,2dvh,22px)}
+.surveyWelcome .footer{margin-top:clamp(12px,2dvh,24px);padding-top:12px}
+@media(max-width:760px){
+  .surveyWelcome{padding-bottom:10px}
+  .surveyWelcome .topbar{padding:12px 0}
+  .surveyWelcome .layout{
+    justify-content:center;
+    gap:clamp(10px,2dvh,20px);
+  }
+  .surveyWelcome .brand{
+    align-self:stretch;
+    width:100%;
+    flex:0 0 auto;
+    max-height:none;
+  }
+  .surveyWelcome .visual{
+    height:clamp(64px,12dvh,100px);
+  }
+  .surveyWelcome .panel{
+    align-self:stretch;
+    flex:0 1 auto;
+    width:100%;
+    min-height:0;
+    max-height:100%;
+    padding-right:3px;
+  }
+  .surveyWelcome .screen h1{margin:8px 0 12px}
+  .surveyWelcome .screen .subtitle{margin-bottom:12px}
+  .surveyWelcome .screen .intro{margin-top:12px}
+  .surveyWelcome .screen>.primary{margin-top:12px}
+  .surveyWelcome .footer{margin-top:12px;padding-top:8px}
+}
