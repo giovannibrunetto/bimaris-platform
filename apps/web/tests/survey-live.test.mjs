@@ -28,7 +28,7 @@ const env = () => {
  process.env.BIMARIS_SURVEY_LIVE_SECRET='x'.repeat(64);
 };
 const reset = () => { env(); Object.assign(globalThis.liveTest,{db:true,open:true,limited:false,fail:'',calls:[],saved:null}); };
-const payload = () => ({requestId:'12345678-1234-4123-8123-123456789abc',answers:[['Social network'],['Nessuna difficoltà'],['Escursioni e natura'],[],[]],idea:'',email:'',consent:'',website:''});
+const payload = () => ({requestId:'12345678-1234-4123-8123-123456789abc',answers:[['Social network'],['Nessuna difficoltà'],['Escursioni e natura'],['Ci sono, ma sono difficili da scoprire'],[]],idea:'',email:'',consent:'',website:''});
 const request = (body=JSON.stringify(payload()),headers={}) => new Request('https://bimaris.example/questionario-cittadini/invio',{method:'POST',headers:{origin:'https://bimaris.example','content-type':'application/json','x-vercel-forwarded-for':'192.0.2.1',...headers},body});
 for(const [name,modify] of [
  ['preview',()=>process.env.VERCEL_ENV='preview'],
