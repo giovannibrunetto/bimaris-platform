@@ -58,7 +58,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
       <span className={styles.preview}>{liveMode ? "Questionario cittadini" : testMode ? "Collaudo · solo dati fittizi" : "Anteprima · raccolta disattivata"}</span>
     </header>
     <div className={styles.layout}>
-      <aside className={styles.brand} aria-label="BIMARIS sta arrivando">
+      <aside className={`${styles.brand} ${step >= 0 && step < 7 ? styles.brandCompact : ""}`} aria-label="BIMARIS sta arrivando">
         <div className={styles.visual}>
           {/* Official website asset, used without AI reconstruction. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
