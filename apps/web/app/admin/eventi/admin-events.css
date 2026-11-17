@@ -84,7 +84,7 @@
 @media(max-width:390px){.admin-events__register-stats{gap:8px}.admin-events__register-stats>div{padding:12px}.admin-events__filters a{padding:8px 10px;font-size:12px}}
 
 /* Focused review workspace: no duplicate global section menu or local filter menu. */
-body:has(.admin-content-review) .admin-shell-nav{display:none}
+/* The shared admin navigation remains visible in the content-review page. */
 .admin-content-review .admin-events__hero{padding-top:25px;padding-bottom:26px}
 .admin-content-review .admin-events__body{padding-top:22px}
 .admin-content-review .admin-events__queue-group:first-of-type{margin-top:4px}
