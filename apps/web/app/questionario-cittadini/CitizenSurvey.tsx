@@ -43,8 +43,8 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
     finally { setSending(false); }
   }
   function next() {
-    // Match the existing form: questions 1–3 required, 4–5 optional.
-    if (step >= 0 && step < 3 && answers[step].length === 0) { setError("Scegli una risposta per continuare."); return; }
+    // Questions 1–4 are required; only question 5 (free text) is optional.
+    if (step >= 0 && step < 4 && answers[step].length === 0) { setError("Scegli una risposta per continuare."); return; }
     if (step === 5) { if (consent === "yes") go(6); else void finish(); return; }
     if (step === 6) { void finish(); return; }
     go(step + 1);
