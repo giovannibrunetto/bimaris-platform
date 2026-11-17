@@ -27,4 +27,5 @@ jobs:
       - run: node --experimental-strip-types --test apps/web/tests/survey-isolated-surface.test.mjs
       - run: bash scripts/tests/backup-production-synthetic.sh
       - run: python3 scripts/tests/backup-production-windows-synthetic.py
+      - run: node --test apps/web/tests/survey-production-candidate.test.mjs
       - run: pnpm --filter @bimaris/web build
