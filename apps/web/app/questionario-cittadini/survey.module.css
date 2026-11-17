@@ -19,3 +19,6 @@
 .layout:has(.brandCompact) .actions{margin-top:16px;padding-top:14px}
 .layout:has(.brandCompact) .footer{margin-top:16px;padding-top:16px}
 }
+
+/* Browser/mobile reset: keep multi-select indicators circular at any viewport width. */
+.survey .choice input[type=checkbox]{box-sizing:border-box!important;inline-size:18px!important;block-size:18px!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;max-width:18px!important;max-height:18px!important;aspect-ratio:1 / 1!important;flex:0 0 18px!important;padding:0!important;margin:0!important;border-radius:50%!important;appearance:none;-webkit-appearance:none}
