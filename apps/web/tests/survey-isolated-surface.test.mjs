@@ -7,7 +7,7 @@ const read = p => readFile(new URL(p, import.meta.url), "utf8");
 const moduleFrom = src => import("data:text/javascript;base64," + Buffer.from(stripTypeScriptTypes(src)).toString("base64"));
 const mode = await moduleFrom(await read("../lib/prelaunch-mode.ts"));
 const mainId = "prj_KXD8HdV3hY2ipyN8DAdA7uhp6kgX";
-const otherId = "prj_isolated_survey_candidate";
+const otherId = "prj_NsbtPm214NbbweDhUQvPnSaFM1rH";
 const setEnv = (id = otherId) => {
   process.env.VERCEL_ENV = "production";
   process.env.VERCEL_PROJECT_ID = id;
