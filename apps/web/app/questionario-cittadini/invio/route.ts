@@ -3,9 +3,15 @@ import { surveyConfigured, surveyTestSession, sameOrigin, json, surveyLimit, rea
 import { validateSurvey, PRIVACY_VERSION, CONSENT_VERSION } from "@/lib/survey/validation";
 import { launchConsent } from "../questions";
 import { surveyLiveConfigured, handleLiveSubmission } from "@/lib/survey/live";
+import { isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
-  if (surveyLiveConfigured()) return handleLiveSubmission(request);
+  // The isolated public surface must never use the Staging/test submission fallback.
+  if (isIsolatedSurveyDeployment()) {
+    if (!surveyLiveConfigured()) return json({ error: "raccolta_disattivata" }, 503);
+    return handleLiveSubmission(request);
+  }
+  if (surveyLiveConfigured()) return json({ error: "not_found" }, 404);
   if (!surveyConfigured()) return json({ error: "not_found" }, 404);
   if (!sameOrigin(request)) return json({ error: "origin" }, 403);
   if (!await surveyTestSession()) return json({ error: "collaudo_non_autorizzato" }, 403);
