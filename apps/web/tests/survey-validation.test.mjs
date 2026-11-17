@@ -10,6 +10,7 @@ test('minimal response requires Q4 but allows optional Q5 and no contact',()=>{a
 test('explicit consent records only synthetic contact',()=>{const v=input();v.consent='yes';v.email='PROVA@example.invalid';assert.equal(validateSurvey(v).email,'prova@example.invalid');assert.equal(validateSurvey(v).consent,true);});
 for (const [name, mutate] of [
  ['missing required answer',v=>v.answers[0]=[]],
+ ['missing required fourth answer',v=>v.answers[3]=[]],
  ['three interests',v=>v.answers[2]=['Escursioni e natura','Cultura, borghi e tradizioni','Eventi, musica e spettacoli']],
  ['duplicate interests',v=>v.answers[2]=['Escursioni e natura','Escursioni e natura']],
  ['invented option',v=>v.answers[0]=['other']],
