@@ -7,7 +7,7 @@ import { track } from "@/lib/analytics";
 export function AnalyticsClickTracker() {
   const pathname = usePathname();
   useEffect(() => {
-    if (pathname === "/privacy-questionario") return;
+    if (pathname === "/privacy-questionario" || pathname === "/questionario-cittadini" || pathname.startsWith("/questionario-cittadini/")) return;
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       const anchor = target?.closest("a") as HTMLAnchorElement | null;
