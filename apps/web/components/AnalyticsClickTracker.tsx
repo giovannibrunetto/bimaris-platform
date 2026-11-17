@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 
 export function AnalyticsClickTracker() {
+  const pathname = usePathname();
   useEffect(() => {
+    if (pathname === "/privacy-questionario") return;
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       const anchor = target?.closest("a") as HTMLAnchorElement | null;
@@ -45,7 +48,7 @@ export function AnalyticsClickTracker() {
 
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, []);
+  }, [pathname]);
 
   return null;
 }
