@@ -21,3 +21,9 @@ export function isIsolatedSurveyDeployment() {
     && current === expected
     && current !== "prj_KXD8HdV3hY2ipyN8DAdA7uhp6kgX";
 }
+
+/** A partial public-only configuration must never fall through to normal BIMARIS routes. */
+export function isIsolatedSurveyRequested() {
+  return process.env.BIMARIS_SURVEY_PUBLIC_ONLY !== undefined
+    || process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID !== undefined;
+}
