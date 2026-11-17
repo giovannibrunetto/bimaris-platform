@@ -63,7 +63,8 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
         {questions.slice(0,4).map((question,index) => {
           const values=data.choices[index] || [0,0,0,0];
           const denominator = index===3 ? values.reduce((sum,n)=>sum+n,0) : data.responses;
-          return <section key={question.title} className="survey-admin__panel" aria-label={question.title}>
+          return <section key={question.title} className="survey-admin__panel" aria-label={`Domanda ${index+1} di 5: ${question.title}`}>
+            <span className="survey-admin__question-number">DOMANDA {index+1} DI 5</span>
             <h3>{question.title}</h3>
             <p className="survey-admin__caption">{index===2?"Fino a due risposte per questionario":index===3?"Percentuali sulle risposte espresse":"Percentuali sui questionari ricevuti"}</p>
             {question.options.map((option,i)=> {
@@ -77,8 +78,9 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
           </section>;
         })}
       </div>
-      <section className="survey-admin__panel survey-admin__ideas">
-        <h3>Risposte aperte</h3>
+      <section className="survey-admin__panel survey-admin__ideas" aria-label={`Domanda 5 di 5: ${questions[4].title}`}>
+        <span className="survey-admin__question-number">DOMANDA 5 DI 5 · RISPOSTA APERTA</span>
+        <h3>{questions[4].title}</h3>
         <p className="survey-admin__caption">Tutte le risposte aperte non scadute, consultabili 20 alla volta e senza identificativi. Trattare i testi come potenziali dati personali; non divulgarli.</p>
         <form className="survey-admin__search" method="get" action="/admin/questionari"><label htmlFor="survey-answer-search">Cerca nelle risposte aperte</label><div><input id="survey-answer-search" type="search" name="q" maxLength={80} defaultValue={search} placeholder="Parola o frase" /><button type="submit">Cerca</button></div></form>
         {!ideas ? <p role="alert">Consultazione delle risposte aperte temporaneamente non disponibile.</p> : <>
