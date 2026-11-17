@@ -69,7 +69,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
           <p className={styles.brandTitle}>Messina <em>da vivere.</em></p>
           <span className={styles.rule} />
           <p>Un nuovo modo per scoprire eventi, esperienze, luoghi e attività del territorio.</p>
-          <p className={styles.duration}>5 domande <span>·</span> 60–90 secondi</p>
+          <p className={styles.duration}>5 domande <span>·</span> circa 60 secondi</p>
         </div>
       </aside>
       <section className={styles.panel} aria-label="Questionario cittadini">
@@ -83,7 +83,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
             <h1 ref={heading} tabIndex={-1}>A MESSINA<br />NON C’È <span className={styles.strike}>NENTI!</span></h1>
             <p className={styles.subtitle}>O forse non sappiamo dove cercare?</p>
             <p className={styles.intro}>Sta arrivando BIMARIS — Messina da vivere.</p>
-            <p>Aiutaci a capire cosa cercano davvero i messinesi. Bastano circa 60–90 secondi.</p>
+            <p>Aiutaci a capire cosa cercano davvero i messinesi. Bastano circa 60 secondi.</p>
             <button type="button" className={styles.primary} onClick={() => go(0)}>Inizia il questionario <span aria-hidden="true">→</span></button>
           </> : question ? <>
             <h2 ref={heading} tabIndex={-1}>{question.title}</h2>
