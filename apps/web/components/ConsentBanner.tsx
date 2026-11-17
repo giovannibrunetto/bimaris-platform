@@ -30,7 +30,7 @@ export function ConsentBanner() {
   const [details, setDetails] = useState(false);
   const [state, setState] = useState<ConsentState>({ analytics: true, personalization: false, marketing: false });
 
-  if (pathname === "/privacy-questionario" || consentStatus !== "unset") return null;
+  if (pathname === "/privacy-questionario" || pathname === "/questionario-cittadini" || pathname.startsWith("/questionario-cittadini/") || consentStatus !== "unset") return null;
 
   const commit = (value: ConsentState) => {
     saveConsent(value);
