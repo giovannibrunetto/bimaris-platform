@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isPrelaunchEnabled, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested } from "@/lib/prelaunch-mode";
 
 export function proxy(request: NextRequest) {
   // Fail closed: a dedicated second Vercel project exposes only these exact
   // survey paths. The main BIMARIS deployment retains its original behavior.
-  if (isIsolatedSurveyDeployment()) {
+  if (isIsolatedSurveyRequested()) {
+    if (!isIsolatedSurveyDeployment()) return new NextResponse("Service Unavailable", { status: 503, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+    } });
     const path = request.nextUrl.pathname.replace(/[/]$/, "") || "/";
     const pages = new Set(["/questionario-cittadini", "/privacy-questionario"]);
     const submission = path === "/questionario-cittadini/invio";
