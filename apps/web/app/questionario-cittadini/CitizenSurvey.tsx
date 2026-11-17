@@ -16,7 +16,8 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
   const requestId = useRef("");
   const heading = useRef<HTMLHeadingElement>(null);
   const emailInput = useRef<HTMLInputElement>(null);
-  useEffect(() => { heading.current?.focus(); }, [step]);
+  // Do not move the browser viewport while the initial welcome screen is loading.
+  useEffect(() => { if (step >= 0) heading.current?.focus({ preventScroll: true }); }, [step]);
 
   function go(next: number) { setError(""); setStep(next); }
   function choose(value: string) {
@@ -77,7 +78,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
           <div className={styles.progressLabel}><span>{step < 5 ? `Domanda ${step + 1} di 5` : step === 5 ? "Avviso di lancio · facoltativo" : "Email · facoltativa"}</span><span aria-hidden="true">{String(progress).padStart(2, "0")} / 07</span></div>
           <div className={styles.progress} role="progressbar" aria-label="Avanzamento del questionario" aria-valuemin={0} aria-valuemax={7} aria-valuenow={progress}><span style={{ width: `${progress / 7 * 100}%` }} /></div>
         </div>}
-        <div key={step} className={styles.screen}>
+        <div key={step} className={`${styles.screen} ${step === -1 ? styles.welcomeScreen : ""}`}>
           {step === -1 ? <>
             <p className={styles.eyebrow}>La voce di chi vive Messina</p>
             <h1 ref={heading} tabIndex={-1}>A MESSINA<br />NON C’È <span className={styles.strike}>NENTI!</span></h1>
