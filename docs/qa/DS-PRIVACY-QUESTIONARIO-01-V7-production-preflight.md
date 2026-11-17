@@ -49,3 +49,19 @@ SELECT
 - BLOCKED: backup integrale / restore test, DPA account-specifici, conferma della titolare per allineamento informativa, autorizzazione DDL Production.
 - HOLD: merge, deploy Production, raccolta reale, rimozione protezione Vercel.
 - **NO-GO alla raccolta reale allo stato attuale**.
+
+## Addendum di collaudo — 17 novembre 2026
+
+### Verifica transazionale su Staging: PASS (ambiente logico isolato, non database autonomo)
+
+Il candidato `docs/qa/sql/DS-PRIVACY-QUESTIONARIO-01-V7-production-candidate.sql` è stato sottoposto a una prova SQL in una **transazione esplicitamente annullata** sul database Staging. Per evitare interferenze:
+- tutti i riferimenti a `survey_private` sono stati sostituiti con `survey_v7_isolated`;
+- tutte le funzioni `public.*` del candidato sono state sostituite con funzioni `survey_v7_isolated.*`;
+- `CREATE EXTENSION pg_cron`, `cron.schedule` e `NOTIFY pgrst` sono stati esclusi dalla prova, per non modificare estensioni/job/notifiche reali;
+- la transazione è terminata con `ROLLBACK`, seguito da una query di verifica indipendente.
+
+**Esiti:** schema e funzioni creati senza errori; `collection_control.enabled=false` e `staging_only=true`; `citizen_survey_collection_open('2026-11-17-v2')=false`; zero righe in `responses`; ruolo `anon` senza SELECT su `responses` e senza EXECUTE su `submit_citizen_survey`. Dopo ROLLBACK, `survey_v7_isolated` assente; le tabelle originali Staging mantengono 1 risposta di prova e 1 contatto di prova; raccolta reale Staging disattivata.
+
+**Limiti importanti:** non è una prova in una istanza indipendente; estensione `pg_cron` e scheduling non sono stati eseguiti nel sandbox; non costituisce test di ripristino di `pg_dump`, verifica delle copie cifrate, prova di invio reale, applicazione in Production né autorizzazione al rilascio.
+
+**Decisione:** PASS all'esecuzione transazionale dello schema adattato; **BLOCKED** su backup/restore end-to-end indipendente, cron Production, contratti fornitori e autorizzazione a migrare Production. Protezione Vercel su tutti i deployment da mantenere fino a GO scritto.
