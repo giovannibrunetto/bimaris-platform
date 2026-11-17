@@ -91,3 +91,18 @@ test('admin displays rehearsal counts separately without exposing emails or alte
   assert.match(migration, /REVOKE ALL ON FUNCTION public\.admin_citizen_survey_test_summary\(\) FROM PUBLIC, anon, authenticated/);
   assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.admin_citizen_survey_test_summary\(\) TO service_role/);
 });
+
+test('V6 privacy notice accurately describes isolated rehearsal flags without changing consent version', async () => {
+  const notice = await readFile(new URL('../app/privacy-questionario/page.tsx', import.meta.url), 'utf8');
+  assert.match(notice, /rehearsal=true/);
+  assert.match(notice, /tabelle di test dedicate/);
+  assert.match(notice, /versione 2026-11-17-v2/);
+});
+test('V6 backup procedure uses encrypted stream, never plaintext dump or automatic schedule', async () => {
+  const script = await readFile(new URL('../../../scripts/backup-survey-encrypted.sh', import.meta.url), 'utf8');
+  assert.match(script, /set -Eeuo pipefail/);
+  assert.match(script, /pg_dump --format=custom --no-owner --no-acl --schema=survey_private \|\s*\n\s*gpg --batch --encrypt/);
+  assert.match(script, /BIMARIS_GPG_RECIPIENT/);
+  assert.match(script, /NOT VERIFIED BY RESTORE/);
+  assert.doesNotMatch(script, /(?:--password=|PGPASSWORD=|service_role_key=)/);
+});
