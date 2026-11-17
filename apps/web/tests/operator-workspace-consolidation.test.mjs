@@ -36,7 +36,7 @@ test("calendar cannot silently fall back to a different operator for unrecognize
 });
 
 test("admin consolidation retains individual MFA and corrected dashboard", () => {
-  const layout = read("../app/admin/layout.tsx");
+  const layout = read("../app/admin/template.tsx");
   const dashboard = read("../app/admin/page.tsx");
   const login = read("../app/admin/login/AdminIndividualLogin.tsx");
   assert.match(layout, /Super Admin · MFA verificata/);
