@@ -35,3 +35,12 @@ test('mobile survey retains a compact BIMARIS image during questions and consent
   assert.match(css, /\.brandCompact \.visual\{[^}]*height:72px/);
   assert.match(css, /\.primary\{[^}]*border-radius:999px/);
 });
+
+test('desktop questions use a compact layout without affecting welcome and thanks', async () => {
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(css, /@media\(min-width:761px\)/);
+  assert.match(css, /\.layout:has\(\.brandCompact\)\{margin-top:24px/);
+  assert.match(css, /\.brandCompact \.visual\{width:100%;max-width:420px/);
+  assert.match(css, /\.layout:has\(\.brandCompact\) \.panel\{min-height:0/);
+  assert.match(css, /\.layout:has\(\.brandCompact\) \.choice\{min-height:58px/);
+});
