@@ -14,12 +14,12 @@ export default function PrivacyQuestionarioPage() {
         <p className="survey-privacy__eyebrow">BIMARIS · Messina da vivere</p>
         <h1>Informativa privacy del questionario cittadini</h1>
         <p className="survey-privacy__subtitle">«A MESSINA NON C’È NENTI!» — sondaggio sulle attività e sulle esigenze dei cittadini di Messina.</p>
-        <p className="survey-privacy__version">Versione 2026-11-16-v1 · 16 novembre 2026 · In verifica · Raccolta non ancora autorizzata</p>
+        <p className="survey-privacy__version">Versione candidata 2026-11-17-v2 · 17 novembre 2026 · Approvazione della titolare non ancora acquisita</p>
       </div>
     </header>
 
     <div className="survey-privacy__container survey-privacy__content">
-      <p className="survey-privacy__notice"><strong>Informativa in verifica.</strong> Questa pagina è predisposta per il collaudo prima dell'attivazione del questionario. La base giuridica del sondaggio, alcuni tempi di conservazione e le condizioni contrattuali dei fornitori devono ancora essere confermati. Non inviare risposte o dati personali attraverso questa pagina.</p>
+      <p className="survey-privacy__notice"><strong>Versione finale proposta, non ancora approvata.</strong> La raccolta reale è disattivata. Questo testo descrive il collaudo attivo e la politica proposta per il lancio; la titolare deve approvare la valutazione della base giuridica e i termini di conservazione. Restano da completare le verifiche contrattuali sugli account e sui backup. Non inserire dati personali reali nell’anteprima.</p>
 
       <section aria-labelledby="survey-owner">
         <h2 id="survey-owner">1. Titolare del trattamento e contatto</h2>
@@ -30,7 +30,7 @@ export default function PrivacyQuestionarioPage() {
       <section aria-labelledby="survey-purpose">
         <h2 id="survey-purpose">2. Risposte al questionario</h2>
         <p>Le risposte alle cinque domande sulle attività a Messina, insieme alla data di invio, saranno utilizzate per analizzare le esigenze dei cittadini e migliorare il progetto BIMARIS.</p>
-        <p><strong>Base giuridica proposta:</strong> legittimo interesse della titolare a svolgere questa ricerca (art. 6, par. 1, lett. f, GDPR), <strong>soggetto a valutazione e documentazione prima dell'avvio della raccolta</strong>. Non si dichiara conclusa tale verifica.</p>
+        <p><strong>Base giuridica proposta:</strong> legittimo interesse della titolare a svolgere questa ricerca (art. 6, par. 1, lett. f, GDPR), <strong>valutato nel dossier privacy BIMARIS del 17 novembre 2026 e soggetto ad adozione documentata da parte della titolare prima della raccolta reale</strong>. La finalità è comprendere le esigenze territoriali per orientare il lancio, utilizzando solo le informazioni necessarie e privilegiando risultati aggregati. Non si dichiara acquisita l’approvazione della titolare.</p>
         <p>La risposta aperta è facoltativa. Non inserire nomi, recapiti, dati particolari o informazioni riferite ad altre persone. Il questionario non richiede nome, cognome o telefono.</p>
       </section>
 
@@ -50,16 +50,16 @@ export default function PrivacyQuestionarioPage() {
 
       <section aria-labelledby="survey-retention">
         <h2 id="survey-retention">5. Conservazione dei dati</h2>
-        <p><strong>Durate proposte, da confermare prima della raccolta:</strong> le risposte riconducibili a persone saranno conservate per un massimo di 12 mesi dalla raccolta e poi cancellate o rese anonime.</p>
-        <p>L'email per l'avviso sarà cancellata dopo la comunicazione del lancio, e comunque entro 12 mesi dalla raccolta, salvo cancellazione anticipata in caso di revoca.</p>
-        <p>La prova del consenso comprende testo accettato, data e ora, versione del consenso e versione dell’informativa. Il termine di conservazione della prova dopo la cancellazione del contatto deve essere definito e approvato prima della raccolta reale.</p>
+        <p><strong>Durate proposte, da confermare prima della raccolta:</strong> le risposte individuali saranno conservate per un massimo di 12 mesi dalla raccolta, riesaminandone la necessità dopo 90 giorni e cancellandole prima se non più necessarie. Oltre tale periodo potranno essere mantenute soltanto statistiche effettivamente anonime, senza testo o dettagli identificanti.</p>
+        <p>L’email e la prova del consenso saranno cancellate entro 30 giorni dall’invio dell’annuncio di lancio e comunque entro 12 mesi dalla raccolta: si applica la scadenza anteriore. In caso di revoca il contatto sarà escluso dall’invio appena la richiesta sarà ricevuta e verificata, con cancellazione senza ingiustificato ritardo.</p>
+        <p>La prova del consenso comprende testo accettato, data e ora, versione del consenso e versione dell’informativa. La prova viene eliminata insieme al contatto; non è prevista una conservazione personale permanente successiva.</p>
       </section>
 
       <section aria-labelledby="survey-providers">
         <h2 id="survey-providers">6. Strumenti, destinatari e trasferimenti internazionali</h2>
         <p>Il questionario è ospitato sul sito BIMARIS mediante <strong>Vercel</strong>; la persistenza è predisposta su <strong>Supabase</strong>, nel progetto di staging situato nella regione <strong>eu-west-1 (Irlanda)</strong>. Google Forms e Google Sheets non sono utilizzati per questa raccolta.</p>
         <p>Le risposte individuali e gli indirizzi non saranno pubblicati. L’accesso sarà limitato alla titolare e alle persone autorizzate; i fornitori potranno trattare dati tecnici necessari al funzionamento e alla sicurezza dei servizi, secondo i rispettivi accordi.</p>
-        <p>Per prevenire abusi il server utilizza un’impronta HMAC dell’indirizzo IP, senza registrare l’IP in chiaro negli archivi del questionario. I contatori vengono eliminati al successivo utilizzo quando più vecchi di 24 ore. I fornitori di hosting possono trattare ulteriori log tecnici secondo la loro configurazione.</p>
+        <p>Per prevenire abusi il server utilizza un’impronta HMAC dell’indirizzo IP, senza registrare l’IP in chiaro negli archivi del questionario. I contatori vengono eliminati da una procedura periodica nel database, con una finestra massima prevista di 24 ore durante il regolare funzionamento del servizio. L’impronta è un dato pseudonimizzato, non anonimo. I fornitori di hosting possono trattare ulteriori log tecnici secondo la loro configurazione.</p>
         <p>Prima della raccolta reale devono essere confermati gli accordi sul trattamento, i subfornitori, la conservazione dei log e le garanzie per gli eventuali trasferimenti fuori dallo Spazio Economico Europeo. La collocazione europea del database non esclude da sola tali trasferimenti.</p>
         <p>Documentazione dei fornitori: <a href="https://vercel.com/legal/privacy-notice" target="_blank" rel="noopener noreferrer">Privacy Vercel</a>, <a href="https://vercel.com/legal/dpa" target="_blank" rel="noopener noreferrer">DPA Vercel</a>, <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Supabase</a> e <a href="https://supabase.com/legal/customer-resources/data-processing-addendum" target="_blank" rel="noopener noreferrer">DPA Supabase</a>.</p>
       </section>
@@ -67,7 +67,7 @@ export default function PrivacyQuestionarioPage() {
       <section aria-labelledby="survey-test">
         <h2 id="survey-test">7. Stato attuale: solo collaudo riservato</h2>
         <p>La raccolta reale è disattivata. L’anteprima ordinaria non invia né salva risposte o email. Un accesso riservato di collaudo, valido per 30 minuti, consente esclusivamente prove con dati inventati: email nel dominio example.invalid e testo libero con prefisso COLLAUDO:.</p>
-        <p>La sessione di prova usa un cookie tecnico HttpOnly, SameSite Strict e Secure su HTTPS. Gli archivi di prova sono separati dai dati delle altre funzionalità. Le prove più vecchie di sette giorni vengono eliminate al successivo invio; prima del lancio è prevista la cancellazione completa dei dati di collaudo. Nessuna comunicazione email è inviata dal questionario.</p>
+        <p>La sessione di prova usa un cookie tecnico HttpOnly, SameSite Strict e Secure su HTTPS. Gli archivi di prova sono separati dai dati delle altre funzionalità. La cancellazione dei dati fittizi è programmata ogni ora nel database, indipendentemente da nuove risposte, anticipando fino a un’ora la scadenza di sette giorni. I registri di esecuzione contengono solo conteggi, esito e orari e sono conservati per 30 giorni. In caso di errore il ciclo seguente ritenta; se il database è sospeso o indisponibile, occorre ripristinarlo e completare la pulizia prima di riabilitare gli accessi. Prima del lancio è prevista la cancellazione completa delle prove. Nessuna comunicazione email è inviata dal questionario.</p>
       </section>
 
       <section aria-labelledby="survey-rights">
@@ -77,7 +77,7 @@ export default function PrivacyQuestionarioPage() {
       </section>
 
       <footer className="survey-privacy__footnote">
-        <p><strong>Stato del documento:</strong> versione di collaudo per il questionario cittadini. L'attivazione del sondaggio e l'impiego di questa informativa come testo definitivo richiedono una successiva approvazione.</p>
+        <p><strong>Stato del documento:</strong> testo candidato per l’approvazione della titolare, versione 2026-11-17-v2. I termini proposti non sono ancora attivati su dati reali. L’attivazione richiede le approvazioni privacy e una nuova autorizzazione della Direzione Strategica; gli archivi attuali restano esclusivamente di prova.</p>
       </footer>
     </div>
   </article>;

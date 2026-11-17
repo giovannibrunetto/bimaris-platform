@@ -40,3 +40,15 @@ for (const [name,setup,req,status] of [
  ['database failure',s=>s.saved=false,()=>request(),503],
  ['successful save',()=>{},()=>request(),200],
 ]) test('HTTP handler: '+name,async()=>{const s=globalThis.surveyTestStubs;Object.assign(s,{configured:true,session:true,limit:'allow',db:true,saved:true,calls:0});setup(s);const response=await POST(req());assert.equal(response.status,status);assert.equal(response.headers.get('cache-control'),'no-store');if(status===200)assert.equal((await response.json()).ok,true);else if(status!==503) assert.equal(s.calls,0);});
+
+test('privacy v2 invalidates sessions signed before the version change',async()=>{
+  const {createHmac}=await import('node:crypto');
+  const token=security.createTestToken();const payload=token.split('.').slice(0,2).join('.');
+  const oldSignature=createHmac('sha256',process.env.BIMARIS_SURVEY_TEST_SECRET).update(payload).digest('hex');
+  assert.equal(security.validTestToken(payload+'.'+oldSignature),false);
+});
+test('privacy version matches the candidate notice and database migration',async()=>{
+  const notice=await load('../app/privacy-questionario/page.tsx');
+  assert.ok(notice.includes(v.PRIVACY_VERSION));
+  assert.equal(v.PRIVACY_VERSION,'2026-11-17-v2');
+});

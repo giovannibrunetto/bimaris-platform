@@ -1,6 +1,6 @@
 import { questions } from "../../app/questionario-cittadini/questions";
 
-export const PRIVACY_VERSION = "2026-11-16-v1";
+export const PRIVACY_VERSION = "2026-11-17-v2";
 export const CONSENT_VERSION = "launch-only-v1";
 export type SurveyInput = { requestId: string; answers: string[][]; idea: string; consent: string; email: string; website: string };
 export function validateSurvey(value: unknown) {

@@ -66,7 +66,7 @@ export default function CitizenSurvey({ testMode = false }: { testMode?: boolean
         </div>
         <div className={styles.brandCopy}>
           <p className={styles.eyebrow}>Sta arrivando BIMARIS</p>
-          <p className={styles.brandTitle}>Messina<br /><em>da vivere.</em></p>
+          <p className={styles.brandTitle}>Messina <em>da vivere.</em></p>
           <span className={styles.rule} />
           <p>Un nuovo modo per scoprire eventi, esperienze, luoghi e attività del territorio.</p>
           <p className={styles.duration}>5 domande <span>·</span> 60–90 secondi</p>

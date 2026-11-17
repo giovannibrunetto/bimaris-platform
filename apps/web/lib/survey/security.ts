@@ -13,7 +13,7 @@ export function surveyConfigured() {
 export function equalSecret(candidate: string) {
   return surveyConfigured() && timingSafeEqual(createHash("sha256").update(candidate).digest(), createHash("sha256").update(secret()).digest());
 }
-const sign = (payload: string) => createHmac("sha256", secret()).update(payload).digest("hex");
+const sign = (payload: string) => createHmac("sha256", secret()).update("2026-11-17-v2:" + payload).digest("hex");
 export function createTestToken() { const p = `${Date.now() + TEST_SECONDS * 1000}.${randomUUID()}`; return `${p}.${sign(p)}`; }
 export function validTestToken(value: string) {
   if (!surveyConfigured()) return false;
