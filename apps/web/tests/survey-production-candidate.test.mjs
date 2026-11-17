@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const file = new URL("../../docs/qa/sql/DS-PRIVACY-QUESTIONARIO-01-V8-production-review-only.sql", import.meta.url);
+const file = new URL("../../../docs/qa/sql/DS-PRIVACY-QUESTIONARIO-01-V8-production-review-only.sql", import.meta.url);
 const sql = await readFile(file, "utf8");
 
 test("V8 stays a review-only document and is transaction-wrapped", () => {
