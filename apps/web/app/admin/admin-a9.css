@@ -133,3 +133,81 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
 .admin-shell-nav a.admin-shell-nav__tab--questionnaire{background:#d0a85e;color:#122b2d;border:1px solid #b99656;border-radius:999px;margin:6px 2px;padding:9px 16px;font-weight:800;min-height:40px}
 .admin-shell-nav a.admin-shell-nav__tab--questionnaire:hover{background:#e2c38a;color:#122b2d}
 .admin-shell-nav{position:sticky;top:78px;z-index:19}
+
+/* DS-UX-ADMIN-NAV-UNIFIED: one shared navigation across every admin route. */
+.admin-shell-nav{
+  position:sticky;
+  top:78px;
+  z-index:19;
+  background:#fffaf0;
+  color:#15393b;
+  border-top:1px solid #e5dac6;
+  border-bottom:2px solid #c6a465;
+  box-shadow:0 4px 14px rgba(18,43,45,.10);
+}
+.admin-shell-nav__inner{
+  width:min(100%,1440px);
+  max-width:1440px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  align-items:center;
+  gap:8px;
+  padding:12px clamp(16px,4vw,40px);
+  overflow:visible;
+}
+.admin-shell-nav a.admin-shell-nav__tab{
+  display:inline-flex;
+  align-items:center;
+  flex:0 0 auto;
+  min-height:44px;
+  padding:10px 14px;
+  border:1px solid #bcaa89;
+  border-radius:9px;
+  background:#fff;
+  color:#15393b;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:750;
+  text-decoration:none;
+  white-space:nowrap;
+  box-shadow:none;
+}
+.admin-shell-nav a.admin-shell-nav__tab:hover{
+  background:#f4ead7;
+  border-color:#a9864b;
+  color:#15393b;
+}
+.admin-shell-nav a.admin-shell-nav__tab--active,
+.admin-shell-nav a.admin-shell-nav__tab[aria-current="page"]{
+  border-color:#94703a;
+  background:#e9dbc0;
+  color:#15393b;
+  box-shadow:inset 0 -2px 0 #94703a;
+}
+.admin-shell-nav a.admin-shell-nav__tab--questionnaire,
+.admin-shell-nav a.admin-shell-nav__tab--questionnaire:hover{
+  background:#d0a85e;
+  color:#122b2d;
+  border:1px solid #b99656;
+  border-radius:9px;
+  min-height:44px;
+  padding:10px 14px;
+  margin:0;
+  box-shadow:none;
+}
+@media(max-width:760px){
+  .admin-shell-nav__inner{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    gap:8px;
+    padding:9px 14px;
+  }
+  .admin-shell-nav a.admin-shell-nav__tab{
+    padding:10px 13px;
+    min-height:44px;
+  }
+}
