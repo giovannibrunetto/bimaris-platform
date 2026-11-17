@@ -31,9 +31,13 @@ export async function GET(request: Request) {
     },
   });
 
+  // An admin OAuth callback must exchange a fresh code: an earlier valid
+  // browser session must never substitute for a failed or missing OAuth exchange.
+  if (adminIntent && !code) return NextResponse.redirect(publicUrl("/admin/login", url));
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
+      if (adminIntent) return NextResponse.redirect(publicUrl("/admin/login", url));
       const { data: existing } = await supabase.auth.getUser();
       if (!existing.user) return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
     }
