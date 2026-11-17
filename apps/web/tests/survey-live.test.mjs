@@ -23,6 +23,9 @@ const createServiceClient=()=>globalThis.liveTest.db?{rpc:async(name,args)=>{
 ` + (await read('../lib/survey/live.ts')).replace(/^import .*;\n/gm, ''));
 const env = () => {
  process.env.VERCEL_ENV='production'; process.env.BIMARIS_SURVEY_COLLECTION_MODE='live';
+ process.env.VERCEL_PROJECT_ID='prj_NsbtPm214NbbweDhUQvPnSaFM1rH';
+ process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID='prj_NsbtPm214NbbweDhUQvPnSaFM1rH';
+ process.env.BIMARIS_SURVEY_PUBLIC_ONLY='true';
  process.env.BIMARIS_SURVEY_LIVE_PROJECT_REF='aaaaaaaaaaaaaaaaaaaa';
  process.env.NEXT_PUBLIC_SUPABASE_URL='https://aaaaaaaaaaaaaaaaaaaa.supabase.co';
  process.env.BIMARIS_SURVEY_LIVE_SECRET='x'.repeat(64);
@@ -32,6 +35,9 @@ const payload = () => ({requestId:'12345678-1234-4123-8123-123456789abc',answers
 const request = (body=JSON.stringify(payload()),headers={}) => new Request('https://bimaris.example/questionario-cittadini/invio',{method:'POST',headers:{origin:'https://bimaris.example','content-type':'application/json','x-vercel-forwarded-for':'192.0.2.1',...headers},body});
 for(const [name,modify] of [
  ['preview',()=>process.env.VERCEL_ENV='preview'],
+ ['main project',()=>process.env.VERCEL_PROJECT_ID='prj_KXD8HdV3hY2ipyN8DAdA7uhp6kgX'],
+ ['wrong isolated project',()=>process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID='prj_KXD8HdV3hY2ipyN8DAdA7uhp6kgX'],
+ ['public only off',()=>process.env.BIMARIS_SURVEY_PUBLIC_ONLY='false'],
  ['disabled switch',()=>delete process.env.BIMARIS_SURVEY_COLLECTION_MODE],
  ['staging database',()=>{process.env.BIMARIS_SURVEY_LIVE_PROJECT_REF='nzdeoimwikhoidtladnu';process.env.NEXT_PUBLIC_SUPABASE_URL='https://nzdeoimwikhoidtladnu.supabase.co';}],
  ['mismatched project',()=>process.env.NEXT_PUBLIC_SUPABASE_URL='https://bbbbbbbbbbbbbbbbbbbb.supabase.co'],
