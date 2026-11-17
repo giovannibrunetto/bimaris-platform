@@ -106,3 +106,16 @@ test('V6 backup procedure uses encrypted stream, never plaintext dump or automat
   assert.match(script, /NOT VERIFIED BY RESTORE/);
   assert.doesNotMatch(script, /(?:--password=|PGPASSWORD=|service_role_key=)/);
 });
+
+test('production candidate is not a deployable migration and defaults to a disabled release gate', async () => {
+  const prod = await readFile(new URL('../../../docs/qa/sql/DS-PRIVACY-QUESTIONARIO-01-V7-production-candidate.sql', import.meta.url), 'utf8');
+  assert.match(prod, /REVIEW CANDIDATE ONLY/);
+  assert.match(prod, /enabled boolean NOT NULL DEFAULT false/);
+  assert.match(prod, /staging_only boolean NOT NULL DEFAULT true/);
+  assert.match(prod, /production_rehearsal_disabled/);
+  assert.match(prod, /REVOKE ALL ON SCHEMA survey_private FROM PUBLIC,anon,authenticated/);
+  assert.match(prod, /CREATE OR REPLACE FUNCTION public.admin_citizen_survey_test_summary/);
+  assert.match(prod, /cron.schedule\('bimaris-citizen-survey-release-retention'/);
+  assert.doesNotMatch(prod, /CREATE TABLE survey_private\.(?:responses_test|launch_contacts_test)/);
+  assert.doesNotMatch(prod, /^INSERT INTO survey_private\.(?:responses|launch_contacts)\s/m);
+});
