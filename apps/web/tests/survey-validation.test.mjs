@@ -52,3 +52,11 @@ test('multi-select checkboxes have round indicators without changing checkbox se
   assert.match(css, /\.choice input\[type=checkbox\]\{[^}]*border-radius:50%/);
   assert.match(css, /\.choice input\[type=checkbox\]:checked\{/);
 });
+
+test('round checkbox indicators have fixed equal mobile dimensions', async () => {
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*inline-size:18px!important/);
+  assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*block-size:18px!important/);
+  assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*min-height:18px!important/);
+  assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*aspect-ratio:1 \/ 1!important/);
+});
