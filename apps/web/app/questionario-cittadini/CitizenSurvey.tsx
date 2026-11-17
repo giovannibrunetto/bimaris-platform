@@ -125,7 +125,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
                 if (!emailInput.current?.reportValidity()) return;
               }
               next();
-            }}>{sending ? "Invio…" : step === 6 || step === 5 && consent !== "yes" ? "Concludi la prova" : step === 4 ? "Continua" : "Avanti"}<span aria-hidden="true">→</span></button>
+            }}>{sending ? "Invio…" : step === 6 || step === 5 && consent !== "yes" ? (liveMode ? "Invia risposte" : "Concludi la prova") : step === 4 ? "Continua" : "Avanti"}<span aria-hidden="true">→</span></button>
           </div>}
         </div>
         <footer className={styles.footer}><span>BIMARIS — Messina da vivere</span><a href="/privacy-questionario" target="_blank" rel="noopener noreferrer">Privacy</a></footer>
