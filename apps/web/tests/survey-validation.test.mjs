@@ -5,8 +5,8 @@ import { stripTypeScriptTypes } from 'node:module';
 const questions = stripTypeScriptTypes(await readFile(new URL('../app/questionario-cittadini/questions.ts', import.meta.url), 'utf8'));
 const source = (await readFile(new URL('../lib/survey/validation.ts',import.meta.url),'utf8')).replace('import { questions } from "../../app/questionario-cittadini/questions";', questions.replaceAll('export ',''));
 const { validateSurvey } = await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(source)).toString('base64'));
-const input = () => ({ requestId:'12345678-1234-4123-8123-123456789abc', answers:[['Social network'],['Informazioni troppo disperse'],['Escursioni e natura'],[],[]],idea:'',consent:'',email:'',website:'' });
-test('minimal response has optional Q4/Q5 and no contact',()=>{assert.deepEqual(validateSurvey(input()),{requestId:input().requestId,q1:1,q2:1,q3:[3],q4:null,idea:'',email:null,consent:false});});
+const input = () => ({ requestId:'12345678-1234-4123-8123-123456789abc', answers:[['Social network'],['Informazioni troppo disperse'],['Escursioni e natura'],['Ci sono, ma sono difficili da scoprire'],[]],idea:'',consent:'',email:'',website:'' });
+test('minimal response requires Q4 but allows optional Q5 and no contact',()=>{assert.deepEqual(validateSurvey(input()),{requestId:input().requestId,q1:1,q2:1,q3:[3],q4:1,idea:'',email:null,consent:false});});
 test('explicit consent records only synthetic contact',()=>{const v=input();v.consent='yes';v.email='PROVA@example.invalid';assert.equal(validateSurvey(v).email,'prova@example.invalid');assert.equal(validateSurvey(v).consent,true);});
 for (const [name, mutate] of [
  ['missing required answer',v=>v.answers[0]=[]],
