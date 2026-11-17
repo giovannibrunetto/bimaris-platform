@@ -8,7 +8,10 @@ import { launchConsent } from "../../app/questionario-cittadini/questions";
 // No environment variables are set by this change. Preview can NEVER collect live data.
 export function surveyLiveConfigured() {
   const ref = process.env.BIMARIS_SURVEY_LIVE_PROJECT_REF ?? "";
-  return process.env.VERCEL_ENV === "production"
+  return process.env.VERCEL_PROJECT_ID === "prj_NsbtPm214NbbweDhUQvPnSaFM1rH"
+    && process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID === "prj_NsbtPm214NbbweDhUQvPnSaFM1rH"
+    && process.env.BIMARIS_SURVEY_PUBLIC_ONLY === "true"
+    && process.env.VERCEL_ENV === "production"
     && process.env.BIMARIS_SURVEY_COLLECTION_MODE === "live"
     && /^[a-z]{20}$/.test(ref) && ref !== "nzdeoimwikhoidtladnu"
     && process.env.NEXT_PUBLIC_SUPABASE_URL === `https://${ref}.supabase.co`
