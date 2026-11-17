@@ -87,3 +87,11 @@ test("known isolated project remains closed when both custom flags are absent", 
     assert.equal(proxy(request(path)).status, 503, path);
   }
 });
+
+test("isolated submit never falls back to staging test submissions", async () => {
+  const route = await read("../app/questionario-cittadini/invio/route.ts");
+  const live = await read("../lib/survey/live.ts");
+  assert.match(route, /if \(isIsolatedSurveyDeployment\(\)\)/);
+  assert.match(route, /if \(!surveyLiveConfigured\(\)\) return json\(\{ error: "raccolta_disattivata" \}, 503\)/);
+  assert.match(live, /process\.env\.BIMARIS_SURVEY_PUBLIC_ONLY === "true"/);
+});
