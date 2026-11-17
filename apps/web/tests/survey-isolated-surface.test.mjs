@@ -35,7 +35,7 @@ const proxySource = (await read("../proxy.ts"))
       static json(body, opts={}) { return new NextResponse(JSON.stringify(body), opts); }
     };
   `)
-  .replace('import { isPrelaunchEnabled, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";',
+  .replace('import { isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested } from "@/lib/prelaunch-mode";',
     'const {isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested}=globalThis.surveyIsolatedMode;');
 globalThis.surveyIsolatedMode = mode;
 const {proxy}=await moduleFrom(proxySource);
