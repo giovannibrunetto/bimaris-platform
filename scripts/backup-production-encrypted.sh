@@ -29,7 +29,7 @@ trap cleanup EXIT HUP INT TERM
 # backup role can access, including business/auth schemas. Encrypted in-flight;
 # no plaintext dump is persisted. The pipeline fails if pg_dump or gpg fails.
 pg_dump --format=custom --no-owner --no-acl --dbname="service=$PGSERVICE" |
-  gpg --batch --trust-model always --encrypt --recipient "$BIMARIS_GPG_RECIPIENT" --output "$temporary"
+  gpg --batch --yes --trust-model always --encrypt --recipient "$BIMARIS_GPG_RECIPIENT" --output "$temporary"
 [[ -s "$temporary" ]] || { echo 'Encrypted archive is empty' >&2; exit 1; }
 chmod 600 "$temporary"
 mv -- "$temporary" "$archive"
