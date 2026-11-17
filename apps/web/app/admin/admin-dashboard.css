@@ -60,7 +60,7 @@
 body:has(.admin-dashboard) .admin-status-guide{display:none}
 
 /* Dashboard: prima l'identità della pagina, poi la navigazione. */
-body:has(.admin-dashboard) .admin-shell-nav{display:none}
+/* Shared admin navigation is deliberately visible on the dashboard. */
 .admin-dashboard__section-nav{background:#17383a;border-bottom:1px solid #4d6867;padding:0 clamp(22px,5vw,58px)}
 .admin-dashboard__section-nav-inner{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
 .admin-dashboard__section-nav a{display:inline-flex;align-items:center;gap:7px;min-height:52px;padding:12px 16px;color:#e9f0ec;text-decoration:none;font-size:14px;font-weight:750;border-bottom:3px solid transparent}
