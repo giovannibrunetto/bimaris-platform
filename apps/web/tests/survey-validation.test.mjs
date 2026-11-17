@@ -82,7 +82,7 @@ test('welcome screen is centered and viewport-locked without trapping short disp
 
 test('admin displays rehearsal counts separately without exposing emails or altering live statistics', async () => {
   const admin = await readFile(new URL('../app/admin/questionari/page.tsx', import.meta.url), 'utf8');
-  const migration = await readFile(new URL('../../supabase/migrations/20261117142500_citizen_survey_admin_rehearsal_readonly.sql', import.meta.url), 'utf8');
+  const migration = await readFile(new URL('../../../supabase/migrations/20261117142500_citizen_survey_admin_rehearsal_readonly.sql', import.meta.url), 'utf8');
   assert.match(admin, /db\.rpc\("admin_citizen_survey_test_summary"\)/);
   assert.match(admin, /STAGING · SOLO COLLAUDI/);
   assert.match(admin, /rehearsal\.rehearsal_responses/);
