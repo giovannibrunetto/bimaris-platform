@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
 import { readConsent, saveConsent, type ConsentState } from "@/lib/analytics";
 
 const allOn: ConsentState = { analytics: true, personalization: true, marketing: true };
@@ -20,6 +21,7 @@ function getServerConsentSnapshot() {
 }
 
 export function ConsentBanner() {
+  const pathname = usePathname();
   const consentStatus = useSyncExternalStore(
     subscribeConsent,
     getConsentSnapshot,
@@ -28,7 +30,7 @@ export function ConsentBanner() {
   const [details, setDetails] = useState(false);
   const [state, setState] = useState<ConsentState>({ analytics: true, personalization: false, marketing: false });
 
-  if (consentStatus !== "unset") return null;
+  if (pathname === "/privacy-questionario" || consentStatus !== "unset") return null;
 
   const commit = (value: ConsentState) => {
     saveConsent(value);
