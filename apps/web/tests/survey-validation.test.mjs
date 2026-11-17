@@ -26,3 +26,11 @@ for (const [name, mutate] of [
 ]) test('rejects '+name,()=>{const v=input();mutate(v);assert.equal(validateSurvey(v),null);});
 test('yes with empty optional email creates no contact',()=>{const v=input();v.consent='yes';assert.equal(validateSurvey(v).consent,false);});
 test('valid two interests, optional Q4 and fake text',()=>{const v=input();v.answers[2].push('Cultura, borghi e tradizioni');v.answers[3]=["Sono soddisfatto dell'offerta"];v.idea='COLLAUDO: prova';assert.deepEqual(validateSurvey(v).q3,[3,2]);assert.equal(validateSurvey(v).q4,4);});
+
+test('mobile survey hides the decorative brand only during questions and consent', async () => {
+  const page = await readFile(new URL('../app/questionario-cittadini/CitizenSurvey.tsx', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(page, /step >= 0 && step < 7 \? styles\.brandCompact : ""/);
+  assert.match(css, /@media\(max-width:760px\)\{[^\n]*\.brandCompact\{display:none\}/);
+  assert.match(css, /\.primary\{[^}]*border-radius:999px/);
+});
