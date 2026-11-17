@@ -48,7 +48,7 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
   return <section className="survey-admin" aria-labelledby="survey-admin-heading">
     <div className="survey-admin__heading">
       <span className="survey-admin__eyebrow">Centro operativo / Questionari e sondaggi</span>
-      <h2 id="survey-admin-heading">Questionario cittadini</h2>
+      <div className="survey-admin__title-row"><h2 id="survey-admin-heading">Questionario cittadini</h2><Link className="survey-admin__open-questionnaire" href="/questionario-cittadini">Apri il questionario <span aria-hidden="true">↗</span></Link></div>
       <p>Risultati del questionario «A MESSINA NON C’È NENTI!». Solo risposte reali, escluse le prove di collaudo.</p>
     </div>
     {!data ? <div role="alert" className="survey-admin__notice">
