@@ -14,12 +14,12 @@ export default function PrivacyQuestionarioPage() {
         <p className="survey-privacy__eyebrow">BIMARIS · Messina da vivere</p>
         <h1>Informativa privacy del questionario cittadini</h1>
         <p className="survey-privacy__subtitle">«A MESSINA NON C’È NENTI!» — sondaggio sulle attività e sulle esigenze dei cittadini di Messina.</p>
-        <p className="survey-privacy__version">Versione candidata 2026-11-17-v2 · 17 novembre 2026 · Approvazione della titolare non ancora acquisita</p>
+        <p className="survey-privacy__version">Versione 2026-11-17-v2 · 17 novembre 2026 · Approvata dalla titolare · Raccolta reale disattivata</p>
       </div>
     </header>
 
     <div className="survey-privacy__container survey-privacy__content">
-      <p className="survey-privacy__notice"><strong>Versione finale proposta, non ancora approvata.</strong> La raccolta reale è disattivata. Questo testo descrive il collaudo attivo e la politica proposta per il lancio; la titolare deve approvare la valutazione della base giuridica e i termini di conservazione. Restano da completare le verifiche contrattuali sugli account e sui backup. Non inserire dati personali reali nell’anteprima.</p>
+      <p className="survey-privacy__notice"><strong>Versione approvata dalla titolare.</strong> La raccolta reale è disattivata. Questo testo descrive il collaudo attivo e la politica approvata per il lancio; l’approvazione riguarda la valutazione della base giuridica, i termini di conservazione e l’informativa. Restano da completare le verifiche contrattuali sugli account e sui backup. Non inserire dati personali reali nell’anteprima.</p>
 
       <section aria-labelledby="survey-owner">
         <h2 id="survey-owner">1. Titolare del trattamento e contatto</h2>
@@ -30,7 +30,7 @@ export default function PrivacyQuestionarioPage() {
       <section aria-labelledby="survey-purpose">
         <h2 id="survey-purpose">2. Risposte al questionario</h2>
         <p>Le risposte alle cinque domande sulle attività a Messina, insieme alla data di invio, saranno utilizzate per analizzare le esigenze dei cittadini e migliorare il progetto BIMARIS.</p>
-        <p><strong>Base giuridica proposta:</strong> legittimo interesse della titolare a svolgere questa ricerca (art. 6, par. 1, lett. f, GDPR), <strong>valutato nel dossier privacy BIMARIS del 17 novembre 2026 e soggetto ad adozione documentata da parte della titolare prima della raccolta reale</strong>. La finalità è comprendere le esigenze territoriali per orientare il lancio, utilizzando solo le informazioni necessarie e privilegiando risultati aggregati. Non si dichiara acquisita l’approvazione della titolare.</p>
+        <p><strong>Base giuridica prevista per il sondaggio:</strong> legittimo interesse della titolare a svolgere questa ricerca (art. 6, par. 1, lett. f, GDPR), <strong>valutato nel dossier privacy BIMARIS del 17 novembre 2026 e approvato dalla titolare</strong>. La finalità è comprendere le esigenze territoriali per orientare il lancio, utilizzando solo le informazioni necessarie e privilegiando risultati aggregati. L’approvazione non attiva la raccolta reale, che resta sospesa fino al completamento delle verifiche sui fornitori e all’autorizzazione alla pubblicazione.</p>
         <p>La risposta aperta è facoltativa. Non inserire nomi, recapiti, dati particolari o informazioni riferite ad altre persone. Il questionario non richiede nome, cognome o telefono.</p>
       </section>
 
@@ -50,7 +50,7 @@ export default function PrivacyQuestionarioPage() {
 
       <section aria-labelledby="survey-retention">
         <h2 id="survey-retention">5. Conservazione dei dati</h2>
-        <p><strong>Durate proposte, da confermare prima della raccolta:</strong> le risposte individuali saranno conservate per un massimo di 12 mesi dalla raccolta, riesaminandone la necessità dopo 90 giorni e cancellandole prima se non più necessarie. Oltre tale periodo potranno essere mantenute soltanto statistiche effettivamente anonime, senza testo o dettagli identificanti.</p>
+        <p><strong>Termini approvati per la futura raccolta:</strong> le risposte individuali saranno conservate per un massimo di 12 mesi dalla raccolta, riesaminandone la necessità dopo 90 giorni e cancellandole prima se non più necessarie. Oltre tale periodo potranno essere mantenute soltanto statistiche effettivamente anonime, senza testo o dettagli identificanti.</p>
         <p>L’email e la prova del consenso saranno cancellate entro 30 giorni dall’invio dell’annuncio di lancio e comunque entro 12 mesi dalla raccolta: si applica la scadenza anteriore. In caso di revoca il contatto sarà escluso dall’invio appena la richiesta sarà ricevuta e verificata, con cancellazione senza ingiustificato ritardo.</p>
         <p>La prova del consenso comprende testo accettato, data e ora, versione del consenso e versione dell’informativa. La prova viene eliminata insieme al contatto; non è prevista una conservazione personale permanente successiva.</p>
       </section>
@@ -77,7 +77,7 @@ export default function PrivacyQuestionarioPage() {
       </section>
 
       <footer className="survey-privacy__footnote">
-        <p><strong>Stato del documento:</strong> testo candidato per l’approvazione della titolare, versione 2026-11-17-v2. I termini proposti non sono ancora attivati su dati reali. L’attivazione richiede le approvazioni privacy e una nuova autorizzazione della Direzione Strategica; gli archivi attuali restano esclusivamente di prova.</p>
+        <p><strong>Stato del documento:</strong> informativa approvata dalla titolare, versione 2026-11-17-v2. I termini approvati non sono ancora attivati su dati reali. L’attivazione richiede il completamento delle verifiche sui fornitori e una nuova autorizzazione della Direzione Strategica; gli archivi attuali restano esclusivamente di prova.</p>
       </footer>
     </div>
   </article>;
