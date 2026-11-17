@@ -61,3 +61,11 @@ test('round checkbox indicators have fixed equal mobile dimensions', async () =>
   assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*min-height:18px!important/);
   assert.match(css, /\.survey \.choice input\[type=checkbox\]\{[^}]*aspect-ratio:1 \/ 1!important/);
 });
+
+test('welcome screen stays stationary without autofocus-induced scroll', async () => {
+  const page = await readFile(new URL('../app/questionario-cittadini/CitizenSurvey.tsx', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(page, /if \(step >= 0\) heading\.current\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(page, /step === -1 \? styles\.welcomeScreen : ""/);
+  assert.match(css, /\.welcomeScreen\{animation:none!important;transform:none!important;\}/);
+});
