@@ -54,19 +54,6 @@ export default async function AdminPage() {
   ];
 
   return <div className="admin-dashboard">
-    <nav aria-label="Accesso diretto alle sezioni amministrative" style={{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",padding:"18px clamp(16px,4vw,40px)",background:"#fffaf0",borderBottom:"2px solid #c6a465",color:"#15393b"}}>
-      <strong style={{marginRight:10}}>Centro operativo · Menu di accesso</strong>
-      {[
-        {href:"/admin",label:"Dashboard"},
-        {href:"/admin/candidature",label:"Candidature"},
-        {href:"/admin/contenuti",label:"Da esaminare"},
-        {href:"/admin/operatori",label:"Operatori"},
-        {href:"/admin/attivita",label:"Esperienze e appuntamenti"},
-        {href:"/admin/itinerari",label:"Itinerari"},
-        {href:"/admin/questionari",label:"Questionari e sondaggi"},
-        {href:"/questionario-cittadini",label:"Apri il questionario"},
-      ].map(item=><Link key={item.href} href={item.href} style={{display:"inline-flex",alignItems:"center",minHeight:44,padding:"10px 14px",background:item.href==="/questionario-cittadini"?"#d0a85e":"#ffffff",color:"#15393b",border:"1px solid #bcaa89",borderRadius:9,fontWeight:750,textDecoration:"none"}}>{item.label}</Link>)}
-    </nav>
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
         <div className="admin-dashboard__summary">
