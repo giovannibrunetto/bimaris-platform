@@ -320,3 +320,19 @@ test("survey privacy notice is isolated from shared navigation and consent overl
   assert.doesNotMatch(page, /href="\/(?!\/)/);
   assert.match(page, /Jessica Lucchesi/);
 });
+
+test("admin shell navigation is visible on dashboard, review queue and itineraries", () => {
+  const dashboardCss = read("../app/admin/admin-dashboard.css");
+  const eventsCss = read("../app/admin/eventi/admin-events.css");
+  const shellCss = read("../app/admin/admin-a9.css");
+  const template = read("../app/admin/template.tsx");
+  const links = read("../app/admin/AdminNavLinks.tsx");
+  assert.doesNotMatch(dashboardCss, /body:has\(\.admin-dashboard\) \.admin-shell-nav\s*\{\s*display\s*:\s*none/);
+  assert.doesNotMatch(eventsCss, /body:has\(\.admin-content-review\) \.admin-shell-nav\s*\{\s*display\s*:\s*none/);
+  assert.doesNotMatch(shellCss, /body:has\(\.admin-itineraries-local-nav\)[^{]*\.admin-shell-nav\s*\{\s*display\s*:\s*none/);
+  assert.match(template, /<AdminNavLinks applicationsPending=/);
+  assert.match(links, /href: "\/admin\/questionari"/);
+  assert.match(links, /href: "\/questionario-cittadini"/);
+  assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(shellCss, /@media\(max-width:600px\)/);
+});
