@@ -12,6 +12,7 @@ export default function AdminNavLinks({ applicationsPending, operatorExperienceP
     { href: "/admin/operatori", label: "Operatori", count: 0 },
     { href: "/admin/attivita", label: "Esperienze e appuntamenti", count: 0 },
     { href: "/admin/itinerari", label: "Itinerari", count: 0 },
+    { href: "/admin/questionari", label: "Questionari e sondaggi", count: 0 },
   ];
   return <nav aria-label="Sezioni del Centro operativo" className="admin-shell-nav">
     <div className="admin-shell-nav__inner">
