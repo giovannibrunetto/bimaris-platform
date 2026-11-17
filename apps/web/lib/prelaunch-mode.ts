@@ -24,6 +24,8 @@ export function isIsolatedSurveyDeployment() {
 
 /** A partial public-only configuration must never fall through to normal BIMARIS routes. */
 export function isIsolatedSurveyRequested() {
-  return process.env.BIMARIS_SURVEY_PUBLIC_ONLY !== undefined
+  // Also lock the dedicated project when BOTH custom settings are missing.
+  return process.env.VERCEL_PROJECT_ID === "prj_NsbtPm214NbbweDhUQvPnSaFM1rH"
+    || process.env.BIMARIS_SURVEY_PUBLIC_ONLY !== undefined
     || process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID !== undefined;
 }
