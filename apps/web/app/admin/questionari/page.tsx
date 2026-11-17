@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import { questions } from "@/app/questionario-cittadini/questions";
@@ -13,6 +14,13 @@ type Results = {
   choices: number[][];
   ideas: {date:string; text:string}[];
 };
+type IdeasPage = {total:number; page:number; page_size:number; items:{date:string;text:string}[]};
+function isIdeasPage(v:unknown):v is IdeasPage {
+  if (!v || typeof v!=="object") return false;
+  const r=v as Record<string,unknown>;
+  return typeof r.total==="number" && Number.isSafeInteger(r.total) && r.total>=0 && r.page_size===20 && typeof r.page==="number"
+    && Array.isArray(r.items) && r.items.length<=20 && r.items.every((x:unknown)=>!!x && typeof x==="object" && typeof (x as Record<string,unknown>).date==="string" && typeof (x as Record<string,unknown>).text==="string");
+}
 function isResults(value: unknown): value is Results {
   if (!value || typeof value !== "object") return false;
   const o = value as Record<string,unknown>;
@@ -22,11 +30,21 @@ function isResults(value: unknown): value is Results {
     && Array.isArray(o.ideas) && o.ideas.length<=20
     && o.ideas.every((v:unknown)=>!!v && typeof v==="object" && typeof (v as Record<string,unknown>).text==="string" && typeof (v as Record<string,unknown>).date==="string");
 }
-export default async function QuestionariPage() {
+export default async function QuestionariPage({searchParams}:{searchParams:Promise<{page?:string;q?:string}>}) {
   if (!(await isAuthorizedAdmin())) redirect("/admin/login");
+  const params=await searchParams;
+  const rawPage=Number(params?.page ?? "1");
+  const page=Number.isSafeInteger(rawPage) && rawPage>=1 && rawPage<=100000 ? rawPage : 1;
+  const search=(params?.q ?? "").trim().slice(0,80);
   const db = createServiceClient();
-  const result = db ? await db.rpc("admin_citizen_survey_summary") : null;
+  const [result, ideasResult] = db ? await Promise.all([
+    db.rpc("admin_citizen_survey_summary"),
+    db.rpc("admin_citizen_survey_ideas",{p_page:page,p_search:search}),
+  ]) : [null,null];
   const data: Results | null = result && !result.error && isResults(result.data) ? result.data : null;
+  const ideas: IdeasPage | null = ideasResult && !ideasResult.error && isIdeasPage(ideasResult.data) ? ideasResult.data : null;
+  const pages=ideas ? Math.max(1,Math.ceil(ideas.total/20)) : 1;
+  const pageUrl=(number:number)=>"/admin/questionari?"+new URLSearchParams({page:String(number),...(search?{q:search}:{})}).toString();
   return <section className="survey-admin" aria-labelledby="survey-admin-heading">
     <div className="survey-admin__heading">
       <span className="survey-admin__eyebrow">Centro operativo / Questionari e sondaggi</span>
@@ -61,9 +79,14 @@ export default async function QuestionariPage() {
       </div>
       <section className="survey-admin__panel survey-admin__ideas">
         <h3>Risposte aperte</h3>
-        <p className="survey-admin__caption">Ultime 20 risposte non vuote, senza identificativi. Trattare i testi come potenziali dati personali; non divulgarli.</p>
-        {data.ideas.length===0 ? <p>Nessuna risposta aperta disponibile.</p>:
-          <ul>{data.ideas.map((entry,i)=><li key={i}><span>{entry.date}</span><p>{entry.text}</p></li>)}</ul>}
+        <p className="survey-admin__caption">Tutte le risposte aperte non scadute, consultabili 20 alla volta e senza identificativi. Trattare i testi come potenziali dati personali; non divulgarli.</p>
+        <form className="survey-admin__search" method="get" action="/admin/questionari"><label htmlFor="survey-answer-search">Cerca nelle risposte aperte</label><div><input id="survey-answer-search" type="search" name="q" maxLength={80} defaultValue={search} placeholder="Parola o frase" /><button type="submit">Cerca</button></div></form>
+        {!ideas ? <p role="alert">Consultazione delle risposte aperte temporaneamente non disponibile.</p> : <>
+          <p className="survey-admin__caption">{ideas.total.toLocaleString("it-IT")} risposte corrispondenti · pagina {page} di {pages} · 20 per pagina</p>
+          {ideas.items.length===0 ? <p>Nessuna risposta aperta disponibile.</p>:
+            <ul>{ideas.items.map((entry,i)=><li key={i}><span>{entry.date}</span><p>{entry.text}</p></li>)}</ul>}
+          <nav aria-label="Paginazione risposte aperte" className="survey-admin__paging">{page>1 && <Link href={pageUrl(page-1)}>← Precedente</Link>}{page<pages && <Link href={pageUrl(page+1)}>Successiva →</Link>}</nav>
+        </>}
       </section>
     </>}
     <p className="survey-admin__caption">L'archivio email rimane separato e non è consultabile in questa sezione. L'esportazione dei dati richiede un controllo specifico su autorizzazioni, minimizzazione e retention.</p>
