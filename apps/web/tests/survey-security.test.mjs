@@ -14,10 +14,12 @@ test('no database or trusted IP fails closed',async()=>assert.equal(await securi
 const questions=stripTypeScriptTypes(await load('../app/questionario-cittadini/questions.ts'));
 const validation=(await load('../lib/survey/validation.ts')).replace('import { questions } from "../../app/questionario-cittadini/questions";',questions.replaceAll('export ',''));
 const v=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(validation)).toString('base64'));
-globalThis.surveyTestStubs={configured:true,session:true,limit:'allow',db:true,saved:true,calls:0};
+globalThis.surveyTestStubs={configured:true,session:true,limit:'allow',db:true,saved:true,calls:0,isolated:false};
 let route=await load('../app/questionario-cittadini/invio/route.ts');route=route.replace(/^import .*;\n/gm,'');route=`const {validateSurvey,PRIVACY_VERSION,CONSENT_VERSION}=globalThis.surveyValidation;
 const launchConsent='consent';
 const surveyLiveConfigured=()=>false;
+const isIsolatedSurveyDeployment=()=>globalThis.surveyTestStubs.isolated;
+const handleLiveSubmission=async()=>new Response(null,{status:418});
 const s=globalThis.surveyTestStubs;
 const surveyConfigured=()=>s.configured, surveyTestSession=async()=>s.session, surveyLimit=async()=>s.limit;
 const {sameOrigin,json,readLimitedText}=globalThis.surveySecurity;
@@ -40,7 +42,7 @@ for (const [name,setup,req,status] of [
  ['database missing',s=>s.db=false,()=>request(),503],
  ['database failure',s=>s.saved=false,()=>request(),503],
  ['successful save',()=>{},()=>request(),200],
-]) test('HTTP handler: '+name,async()=>{const s=globalThis.surveyTestStubs;Object.assign(s,{configured:true,session:true,limit:'allow',db:true,saved:true,calls:0});setup(s);const response=await POST(req());assert.equal(response.status,status);assert.equal(response.headers.get('cache-control'),'no-store');if(status===200)assert.equal((await response.json()).ok,true);else if(status!==503) assert.equal(s.calls,0);});
+]) test('HTTP handler: '+name,async()=>{const s=globalThis.surveyTestStubs;Object.assign(s,{configured:true,session:true,limit:'allow',db:true,saved:true,calls:0,isolated:false});setup(s);const response=await POST(req());assert.equal(response.status,status);assert.equal(response.headers.get('cache-control'),'no-store');if(status===200)assert.equal((await response.json()).ok,true);else if(status!==503) assert.equal(s.calls,0);});
 
 test('privacy v2 invalidates sessions signed before the version change',async()=>{
   const {createHmac}=await import('node:crypto');
@@ -52,4 +54,13 @@ test('privacy version matches the candidate notice and database migration',async
   const notice=await load('../app/privacy-questionario/page.tsx');
   assert.ok(notice.includes(v.PRIVACY_VERSION));
   assert.equal(v.PRIVACY_VERSION,'2026-11-17-v2');
+});
+
+test('isolated survey submit rejects all attempts while live collection is off',async()=>{
+  const s=globalThis.surveyTestStubs;
+  Object.assign(s,{configured:true,session:true,limit:'allow',db:true,saved:true,calls:0,isolated:true});
+  const response=await POST(request());
+  assert.equal(response.status,503);
+  assert.equal((await response.json()).error,'raccolta_disattivata');
+  assert.equal(s.calls,0);
 });
