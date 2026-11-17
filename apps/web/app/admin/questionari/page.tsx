@@ -57,16 +57,16 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
     <div className="survey-admin__heading">
       <span className="survey-admin__eyebrow">Centro operativo / Questionari e sondaggi</span>
       <div className="survey-admin__title-row"><h2 id="survey-admin-heading">Questionario cittadini</h2><Link className="survey-admin__open-questionnaire" href="/questionario-cittadini">Apri il questionario <span aria-hidden="true">↗</span></Link></div>
-      <p>Risultati del questionario «A MESSINA NON C’È NENTI!». Solo risposte reali, escluse le prove di collaudo.</p>
+      <p>Risultati del questionario «A MESSINA NON C’È NENTI!». I collaudi sono mostrati separatamente dalla raccolta pubblica, che è ancora disattivata.</p>
     </div>
     <section className="survey-admin__panel" aria-labelledby="survey-test-heading">
       <span className="survey-admin__question-number">STAGING · SOLO COLLAUDI</span>
-      <h3 id="survey-test-heading">Esiti degli invii di prova</h3>
-      <p className="survey-admin__caption">Dati fittizi, esclusi dai questionari pubblici. Conteggi aggregati senza risposte individuali o indirizzi email.</p>
+      <h3 id="survey-test-heading">Risultati del collaudo</h3>
+      <p className="survey-admin__caption">Questi sono gli invii effettuati durante il test, comprese le adesioni fittizie all’avviso di lancio. Non sono conteggiati nei risultati pubblici.</p>
       {rehearsal ? <>
         <div className="survey-admin__stats" aria-label="Risultati dei collaudi">
-          <div><span>Invii di prova verificati</span><strong>{rehearsal.rehearsal_responses.toLocaleString("it-IT")}</strong></div>
-          <div><span>Contatti fittizi registrati</span><strong>{rehearsal.rehearsal_contacts.toLocaleString("it-IT")}</strong></div>
+          <div><span>Questionari di prova ricevuti</span><strong>{rehearsal.rehearsal_responses.toLocaleString("it-IT")}</strong></div>
+          <div><span>Adesioni di prova all’avviso di lancio</span><strong>{rehearsal.rehearsal_contacts.toLocaleString("it-IT")}</strong></div>
         </div>
         <p className="survey-admin__caption">Archivio storico di test separato: {rehearsal.legacy_test_responses.toLocaleString("it-IT")} risposte e {rehearsal.legacy_test_contacts.toLocaleString("it-IT")} contatti di prova precedenti. I record di collaudo correnti sono identificati con rehearsal=true.</p>
       </> : <p role="alert" className="survey-admin__notice">Conteggi di collaudo non disponibili: verificare la funzione amministrativa su Staging.</p>}
@@ -74,11 +74,17 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
     {!data ? <div role="alert" className="survey-admin__notice">
       Risultati non disponibili: il modulo di consultazione deve ancora essere installato o verificato su Staging. Nessun dato viene simulato.
     </div> : <>
-      <div className="survey-admin__stats" aria-label="Indicatori del questionario">
-        <div><span>Questionari ricevuti</span><strong>{data.responses.toLocaleString("it-IT")}</strong></div>
-        <div><span>Adesioni all’avviso di lancio</span><strong>{data.launch_contacts.toLocaleString("it-IT")}</strong></div>
+      <section className="survey-admin__panel" aria-labelledby="survey-real-heading">
+        <span className="survey-admin__question-number">RACCOLTA REALE · NON ANCORA AVVIATA</span>
+        <h3 id="survey-real-heading">Risultati pubblici effettivi</h3>
+        <p className="survey-admin__caption">Questi contatori restano a zero durante il collaudo: non comprendono le prove e aumenteranno soltanto dopo l’attivazione autorizzata della raccolta reale.</p>
+      <div className="survey-admin__stats" aria-label="Indicatori della raccolta reale">
+        <div><span>Questionari reali ricevuti</span><strong>{data.responses.toLocaleString("it-IT")}</strong></div>
+        <div><span>Adesioni reali all’avviso di lancio</span><strong>{data.launch_contacts.toLocaleString("it-IT")}</strong></div>
       </div>
       <p className="survey-admin__caption">Le adesioni sono contatti distinti, non collegati alle risposte individuali. Nessun indirizzo email è mostrato in questa pagina.</p>
+      </section>
+      <p className="survey-admin__caption">I grafici seguenti si riferiscono soltanto ai questionari reali e saranno popolati con l’avvio autorizzato della raccolta.</p>
       <nav className="survey-admin__question-index" aria-label="Indice delle cinque domande"><strong>Le 5 domande del questionario</strong><div>{questions.map((q,i)=><a key={q.title} href={`#survey-question-${i+1}`}>Domanda {i+1}<span>{i===4?"Risposta aperta":"Grafico"}</span></a>)}</div></nav>
       <div className="survey-admin__charts">
         {questions.slice(0,4).map((question,index) => {
