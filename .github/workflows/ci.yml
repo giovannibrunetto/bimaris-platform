@@ -25,4 +25,5 @@ jobs:
       - run: node --experimental-strip-types --test apps/web/tests/operator-workspace-consolidation.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/survey-validation.test.mjs apps/web/tests/survey-security.test.mjs apps/web/tests/survey-live.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/survey-isolated-surface.test.mjs
+      - run: bash scripts/tests/backup-production-synthetic.sh
       - run: pnpm --filter @bimaris/web build
