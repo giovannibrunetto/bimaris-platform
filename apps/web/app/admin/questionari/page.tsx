@@ -14,6 +14,12 @@ type Results = {
   choices: number[][];
   ideas: {date:string; text:string}[];
 };
+type RehearsalSummary = { rehearsal_responses:number; rehearsal_contacts:number; legacy_test_responses:number; legacy_test_contacts:number };
+function isRehearsalSummary(value:unknown):value is RehearsalSummary {
+  if (!value || typeof value!=="object") return false;
+  const entry=value as Record<string,unknown>;
+  return ["rehearsal_responses","rehearsal_contacts","legacy_test_responses","legacy_test_contacts"].every(key=>Number.isSafeInteger(entry[key]) && (entry[key] as number)>=0);
+}
 type IdeasPage = {total:number; page:number; page_size:number; items:{date:string;text:string}[]};
 function isIdeasPage(v:unknown):v is IdeasPage {
   if (!v || typeof v!=="object") return false;
@@ -37,11 +43,13 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
   const page=Number.isSafeInteger(rawPage) && rawPage>=1 && rawPage<=100000 ? rawPage : 1;
   const search=(params?.q ?? "").trim().slice(0,80);
   const db = createServiceClient();
-  const [result, ideasResult] = db ? await Promise.all([
+  const [result, ideasResult, rehearsalResult] = db ? await Promise.all([
     db.rpc("admin_citizen_survey_summary"),
     db.rpc("admin_citizen_survey_ideas",{p_page:page,p_search:search}),
-  ]) : [null,null];
+    db.rpc("admin_citizen_survey_test_summary"),
+  ]) : [null,null,null];
   const data: Results | null = result && !result.error && isResults(result.data) ? result.data : null;
+  const rehearsal: RehearsalSummary | null = rehearsalResult && !rehearsalResult.error && isRehearsalSummary(rehearsalResult.data) ? rehearsalResult.data : null;
   const ideas: IdeasPage | null = ideasResult && !ideasResult.error && isIdeasPage(ideasResult.data) ? ideasResult.data : null;
   const pages=ideas ? Math.max(1,Math.ceil(ideas.total/20)) : 1;
   const pageUrl=(number:number)=>"/admin/questionari?"+new URLSearchParams({page:String(number),...(search?{q:search}:{})}).toString();
@@ -51,6 +59,18 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
       <div className="survey-admin__title-row"><h2 id="survey-admin-heading">Questionario cittadini</h2><Link className="survey-admin__open-questionnaire" href="/questionario-cittadini">Apri il questionario <span aria-hidden="true">↗</span></Link></div>
       <p>Risultati del questionario «A MESSINA NON C’È NENTI!». Solo risposte reali, escluse le prove di collaudo.</p>
     </div>
+    <section className="survey-admin__panel" aria-labelledby="survey-test-heading">
+      <span className="survey-admin__question-number">STAGING · SOLO COLLAUDI</span>
+      <h3 id="survey-test-heading">Esiti degli invii di prova</h3>
+      <p className="survey-admin__caption">Dati fittizi, esclusi dai questionari pubblici. Conteggi aggregati senza risposte individuali o indirizzi email.</p>
+      {rehearsal ? <>
+        <div className="survey-admin__stats" aria-label="Risultati dei collaudi">
+          <div><span>Invii di prova verificati</span><strong>{rehearsal.rehearsal_responses.toLocaleString("it-IT")}</strong></div>
+          <div><span>Contatti fittizi registrati</span><strong>{rehearsal.rehearsal_contacts.toLocaleString("it-IT")}</strong></div>
+        </div>
+        <p className="survey-admin__caption">Archivio storico di test separato: {rehearsal.legacy_test_responses.toLocaleString("it-IT")} risposte e {rehearsal.legacy_test_contacts.toLocaleString("it-IT")} contatti di prova precedenti. I record di collaudo correnti sono identificati con rehearsal=true.</p>
+      </> : <p role="alert" className="survey-admin__notice">Conteggi di collaudo non disponibili: verificare la funzione amministrativa su Staging.</p>}
+    </section>
     {!data ? <div role="alert" className="survey-admin__notice">
       Risultati non disponibili: il modulo di consultazione deve ancora essere installato o verificato su Staging. Nessun dato viene simulato.
     </div> : <>
