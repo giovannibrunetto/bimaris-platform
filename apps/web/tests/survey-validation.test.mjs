@@ -44,3 +44,11 @@ test('desktop questions use a compact layout without affecting welcome and thank
   assert.match(css, /\.layout:has\(\.brandCompact\) \.panel\{min-height:0/);
   assert.match(css, /\.layout:has\(\.brandCompact\) \.choice\{min-height:58px/);
 });
+
+test('multi-select checkboxes have round indicators without changing checkbox semantics', async () => {
+  const page = await readFile(new URL('../app/questionario-cittadini/CitizenSurvey.tsx', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(page, /type=\{step === 2 \? "checkbox" : "radio"\}/);
+  assert.match(css, /\.choice input\[type=checkbox\]\{[^}]*border-radius:50%/);
+  assert.match(css, /\.choice input\[type=checkbox\]:checked\{/);
+});
