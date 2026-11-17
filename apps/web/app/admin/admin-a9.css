@@ -1,4 +1,4 @@
-.admin-shell-nav{border-bottom:1px solid var(--border-soft);background:var(--surface-subtle)}
+.admin-shell-nav{position:sticky;top:78px;z-index:19;border-bottom:1px solid var(--border-soft);background:var(--surface-subtle);box-shadow:0 3px 12px rgba(0,0,0,.06)}
 .admin-shell-nav__inner{width:min(100%,1440px);margin:0 auto;padding:4px var(--page-gutter);display:flex;gap:20px;align-items:center;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}.admin-shell-nav__inner::-webkit-scrollbar{display:none}
 .admin-shell-nav a{display:inline-flex;align-items:center;min-height:44px;flex:0 0 auto;font-size:14px;font-weight:750;white-space:nowrap;text-underline-offset:4px}
 .admin-shell-nav a:focus-visible,.admin-page a:focus-visible,.admin-page button:focus-visible,.admin-page input:focus-visible,.admin-page textarea:focus-visible,.admin-page select:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}
