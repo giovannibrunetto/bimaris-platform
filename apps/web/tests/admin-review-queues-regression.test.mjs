@@ -332,7 +332,9 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   assert.doesNotMatch(shellCss, /body:has\(\.admin-itineraries-local-nav\)[^{]*\.admin-shell-nav\s*\{\s*display\s*:\s*none/);
   assert.match(template, /<AdminNavLinks applicationsPending=/);
   assert.match(links, /href: "\/admin\/questionari"/);
-  assert.match(links, /href: "\/questionario-cittadini"/);
+  assert.doesNotMatch(links, /href: "\/questionario-cittadini"/);
+  const surveyPage = read("../app/admin/questionari/page.tsx");
+  assert.match(surveyPage, /href="\/questionario-cittadini"/);
   assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });
