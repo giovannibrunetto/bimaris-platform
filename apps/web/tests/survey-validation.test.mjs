@@ -26,7 +26,7 @@ for (const [name, mutate] of [
  ['missing payload field',v=>delete v.email],
 ]) test('rejects '+name,()=>{const v=input();mutate(v);assert.equal(validateSurvey(v),null);});
 test('yes with empty optional email creates no contact',()=>{const v=input();v.consent='yes';assert.equal(validateSurvey(v).consent,false);});
-test('valid two interests, optional Q4 and fake text',()=>{const v=input();v.answers[2].push('Cultura, borghi e tradizioni');v.answers[3]=["Sono soddisfatto dell'offerta"];v.idea='COLLAUDO: prova';assert.deepEqual(validateSurvey(v).q3,[3,2]);assert.equal(validateSurvey(v).q4,4);});
+test('valid two interests, required Q4 and optional fake text',()=>{const v=input();v.answers[2].push('Cultura, borghi e tradizioni');v.answers[3]=["Sono soddisfatto dell'offerta"];v.idea='COLLAUDO: prova';assert.deepEqual(validateSurvey(v).q3,[3,2]);assert.equal(validateSurvey(v).q4,4);});
 
 test('mobile survey retains a compact BIMARIS image during questions and consent', async () => {
   const page = await readFile(new URL('../app/questionario-cittadini/CitizenSurvey.tsx', import.meta.url), 'utf8');
