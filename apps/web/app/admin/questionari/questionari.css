@@ -29,3 +29,5 @@
 .survey-admin__search button,.survey-admin__paging a{padding:11px 19px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;background:#cba96c;color:#143438;text-decoration:none;font-weight:800;border:0;cursor:pointer}
 .survey-admin__paging{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:18px}
 .survey-admin__search input:focus-visible,.survey-admin__search button:focus-visible,.survey-admin__paging a:focus-visible{outline:3px solid #ae8548;outline-offset:2px}
+
+.survey-admin__question-number{display:block;margin-bottom:10px;color:#906725;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
