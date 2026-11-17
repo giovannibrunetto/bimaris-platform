@@ -63,7 +63,7 @@ test("pending operator profile revision renders as its own visible row, not head
 });
 
 test("dashboard uses the shared MFA header exactly once", () => {
-  const layout = read("../app/admin/layout.tsx");
+  const layout = read("../app/admin/template.tsx");
   const dashboard = read("../app/admin/page.tsx");
   assert.match(layout, /className="admin-shell-header"/);
   assert.match(layout, /Super Admin · MFA verificata/);
@@ -210,7 +210,7 @@ test("focused content review presents one grouped list without duplicated naviga
   assert.match(page, /href="\/admin"/);
   assert.doesNotMatch(page, /admin-events__filters/);
   assert.doesNotMatch(page, /searchParams/);
-  assert.match(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
+  assert.doesNotMatch(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
 });
 
 test("experience revision starts with a single compact heading and the changed content", () => {
