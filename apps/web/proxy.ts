@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
   // Fail closed: a dedicated second Vercel project exposes only these exact
   // survey paths. The main BIMARIS deployment retains its original behavior.
   if (isIsolatedSurveyDeployment()) {
-    const path = request.nextUrl.pathname.replace(/\\/$/, "") || "/";
+    const path = request.nextUrl.pathname.replace(/[/]$/, "") || "/";
     const pages = new Set(["/questionario-cittadini", "/privacy-questionario"]);
     const submission = path === "/questionario-cittadini/invio";
     const publicAsset = path === "/brand/bimaris-main.jpeg" || path.startsWith("/_next/static/");
