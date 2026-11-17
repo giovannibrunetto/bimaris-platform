@@ -59,11 +59,12 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
         <div><span>Adesioni all’avviso di lancio</span><strong>{data.launch_contacts.toLocaleString("it-IT")}</strong></div>
       </div>
       <p className="survey-admin__caption">Le adesioni sono contatti distinti, non collegati alle risposte individuali. Nessun indirizzo email è mostrato in questa pagina.</p>
+      <nav className="survey-admin__question-index" aria-label="Indice delle cinque domande"><strong>Le 5 domande del questionario</strong><div>{questions.map((q,i)=><a key={q.title} href={`#survey-question-${i+1}`}>Domanda {i+1}<span>{i===4?"Risposta aperta":"Grafico"}</span></a>)}</div></nav>
       <div className="survey-admin__charts">
         {questions.slice(0,4).map((question,index) => {
           const values=data.choices[index] || [0,0,0,0];
           const denominator = index===3 ? values.reduce((sum,n)=>sum+n,0) : data.responses;
-          return <section key={question.title} className="survey-admin__panel" aria-label={`Domanda ${index+1} di 5: ${question.title}`}>
+          return <section key={question.title} id={`survey-question-${index+1}`} className="survey-admin__panel" aria-label={`Domanda ${index+1} di 5: ${question.title}`}>
             <span className="survey-admin__question-number">DOMANDA {index+1} DI 5</span>
             <h3>{question.title}</h3>
             <p className="survey-admin__caption">{index===2?"Fino a due risposte per questionario":index===3?"Percentuali sulle risposte espresse":"Percentuali sui questionari ricevuti"}</p>
@@ -77,8 +78,7 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
             })}
           </section>;
         })}
-      </div>
-      <section className="survey-admin__panel survey-admin__ideas" aria-label={`Domanda 5 di 5: ${questions[4].title}`}>
+      <section id="survey-question-5" className="survey-admin__panel survey-admin__ideas" aria-label={`Domanda 5 di 5: ${questions[4].title}`}>
         <span className="survey-admin__question-number">DOMANDA 5 DI 5 · RISPOSTA APERTA</span>
         <h3>{questions[4].title}</h3>
         <p className="survey-admin__caption">Tutte le risposte aperte non scadute, consultabili 20 alla volta e senza identificativi. Trattare i testi come potenziali dati personali; non divulgarli.</p>
@@ -90,6 +90,7 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
           <nav aria-label="Paginazione risposte aperte" className="survey-admin__paging">{page>1 && <Link href={pageUrl(page-1)}>← Precedente</Link>}{page<pages && <Link href={pageUrl(page+1)}>Successiva →</Link>}</nav>
         </>}
       </section>
+      </div>
     </>}
     <p className="survey-admin__caption">L'archivio email rimane separato e non è consultabile in questa sezione. L'esportazione dei dati richiede un controllo specifico su autorizzazioni, minimizzazione e retention.</p>
   </section>;
