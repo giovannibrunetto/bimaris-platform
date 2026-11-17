@@ -299,3 +299,16 @@ test("shared tablet header switches to the accessible compact menu before links 
   assert.match(header, /aria-label="Navigazione mobile"/);
   assert.match(header, /onClick=\{closeMobileMenu\}/);
 });
+
+test("survey privacy notice is isolated from shared navigation and consent overlays", () => {
+  const chrome = read("../components/SiteChrome.tsx");
+  const consent = read("../components/ConsentBanner.tsx");
+  const tracker = read("../components/AnalyticsTracker.tsx");
+  const page = read("../app/privacy-questionario/page.tsx");
+  assert.match(chrome, /"\/privacy-questionario"/);
+  assert.match(chrome, /if \(immersiveRoutes\.has\(pathname\)\) return null/);
+  assert.match(consent, /pathname === "\/privacy-questionario"/);
+  assert.match(tracker, /pathname === "\/privacy-questionario"/);
+  assert.doesNotMatch(page, /href="\/(?!\/)/);
+  assert.match(page, /Jessica Lucchesi/);
+});
