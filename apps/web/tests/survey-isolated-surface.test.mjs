@@ -21,6 +21,7 @@ test("isolated mode needs explicit matching non-main Vercel project", () => {
   assert.equal(mode.isIsolatedSurveyDeployment(), false);
   setEnv(); delete process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID;
   assert.equal(mode.isIsolatedSurveyDeployment(), false);
+  assert.equal(mode.isIsolatedSurveyRequested(), true);
   setEnv(); process.env.BIMARIS_SURVEY_PUBLIC_ONLY = "false";
   assert.equal(mode.isIsolatedSurveyDeployment(), false);
   setEnv(); process.env.VERCEL_ENV = "development";
@@ -35,7 +36,7 @@ const proxySource = (await read("../proxy.ts"))
     };
   `)
   .replace('import { isPrelaunchEnabled, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";',
-    'const {isPrelaunchEnabled, isIsolatedSurveyDeployment}=globalThis.surveyIsolatedMode;');
+    'const {isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested}=globalThis.surveyIsolatedMode;');
 globalThis.surveyIsolatedMode = mode;
 const {proxy}=await moduleFrom(proxySource);
 const request = path => ({nextUrl: {pathname:path}});
@@ -54,7 +55,7 @@ test("public-only allowlist permits exactly survey, notice, submit and needed as
 test("main deployment cannot activate public-only routes", () => {
   setEnv(mainId);process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID=mainId;
   assert.equal(mode.isIsolatedSurveyDeployment(),false);
-  assert.equal(proxy(request("/questionario-cittadini")).status,404);
+  assert.equal(proxy(request("/questionario-cittadini")).status,503);
 });
 test("isolated survey removes main site chrome and keeps live off by default",async()=>{
   const layout = await read("../app/layout.tsx");
@@ -63,4 +64,15 @@ test("isolated survey removes main site chrome and keeps live off by default",as
   assert.match(layout,/isIsolatedSurveyDeployment\(\)/);
   assert.match(page,/!isIsolatedSurveyDeployment\(\)/);
   assert.match(live,/BIMARIS_SURVEY_COLLECTION_MODE === "live"/);
+});
+
+test("incomplete or mismatched public-only configuration fails closed for all routes", () => {
+  setEnv(); delete process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID;
+  for (const path of ["/", "/questionario-cittadini", "/privacy-questionario", "/admin", "/api/admin/operators"]) {
+    assert.equal(proxy(request(path)).status, 503, path);
+  }
+  setEnv(); process.env.VERCEL_PROJECT_ID = mainId;
+  assert.equal(proxy(request("/mappa")).status, 503);
+  setEnv(); process.env.VERCEL_ENV = "development";
+  assert.equal(proxy(request("/questionario-cittadini")).status, 503);
 });
