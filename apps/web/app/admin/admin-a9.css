@@ -128,3 +128,8 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
 .admin-itineraries-public-status{font-size:11px;font-weight:800;letter-spacing:.06em;color:#8c632b}
 .admin-itineraries-public-note{font-size:12px!important}
 @media(max-width:760px){.admin-itineraries-public{padding:24px 20px}}
+
+/* DT15: questionnaire shortcut remains prominent in the internal admin navigation. */
+.admin-shell-nav a.admin-shell-nav__tab--questionnaire{background:#d0a85e;color:#122b2d;border:1px solid #b99656;border-radius:999px;margin:6px 2px;padding:9px 16px;font-weight:800;min-height:40px}
+.admin-shell-nav a.admin-shell-nav__tab--questionnaire:hover{background:#e2c38a;color:#122b2d}
+.admin-shell-nav{position:sticky;top:78px;z-index:19}
