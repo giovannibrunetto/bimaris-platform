@@ -263,7 +263,7 @@ test("acquired appointment detail displays structured price and one locality fie
   assert.match(page, /await isAuthorizedAdmin\(\)/);
 });
 
-test("citizen survey privacy page remains an unapproved notice without data collection", () => {
+test("citizen survey privacy notice has no collection controls and blocks real collection", () => {
   const page = read("../app/privacy-questionario/page.tsx");
   const css = read("../app/privacy-questionario/privacy-questionario.css");
   assert.match(page, /Jessica Lucchesi/);
@@ -277,9 +277,8 @@ test("citizen survey privacy page remains an unapproved notice without data coll
   assert.match(page, /12 mesi/);
   assert.match(page, /Spazio Economico Europeo/);
   assert.match(page, /Garante per la protezione dei dati personali/);
-  assert.match(page, /Versione 2026-11-16-v1/);
-  assert.match(page, /In verifica/);
-  assert.match(page, /Raccolta non ancora autorizzata/);
+  assert.match(page, /Versione 2026-11-17-v2/);
+  assert.match(page, /Raccolta reale disattivata/);
   assert.match(page, /robots: \{ index: false, follow: false, noarchive: true \}/);
   assert.doesNotMatch(page, /<form|<input|<textarea|fetch\(|createServiceClient/);
   assert.match(page, /Google Forms e Google Sheets non sono utilizzati/);
