@@ -88,7 +88,7 @@
 
 
 /* Admin itineraries: compact dashboard-like header and one visible navigation. */
-body:has(.admin-itineraries-local-nav) > * .admin-shell-nav{display:none!important}
+/* The shared administrative navigation must remain visible on itinerary pages. */
 .admin-itineraries-hero{padding:22px max(24px,calc((100% - 1140px)/2)) 24px!important}
 .admin-itineraries-hero h1{font-size:clamp(30px,3vw,39px)!important;margin:5px 0!important}
 .admin-itineraries-hero p{margin:5px 0!important}
