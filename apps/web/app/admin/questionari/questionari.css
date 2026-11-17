@@ -31,3 +31,8 @@
 .survey-admin__search input:focus-visible,.survey-admin__search button:focus-visible,.survey-admin__paging a:focus-visible{outline:3px solid #ae8548;outline-offset:2px}
 
 .survey-admin__question-number{display:block;margin-bottom:10px;color:#906725;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+
+.survey-admin__title-row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.survey-admin__open-questionnaire{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:11px 20px;border-radius:999px;background:#cba96c;color:#143438;text-decoration:none;font-weight:800;white-space:nowrap;border:1px solid #b68f4d}
+.survey-admin__open-questionnaire:hover{background:#dabb83}
+.survey-admin__open-questionnaire:focus-visible{outline:3px solid #a37939;outline-offset:3px}
