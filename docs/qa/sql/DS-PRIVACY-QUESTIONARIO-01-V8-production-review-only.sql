@@ -1,9 +1,12 @@
 -- REVIEW CANDIDATE ONLY. DO NOT APPLY TO PRODUCTION OR ADD TO AUTO-MIGRATION LIST.
--- DS-PRIVACY-QUESTIONARIO-01/V8 — consolidated REVIEW-ONLY Production candidate.\n-- Derived from V7; retains disabled collection gates and zero collected rows.\n-- DO NOT APPLY before independently validated backup and restore.
+-- DS-PRIVACY-QUESTIONARIO-01/V8 — consolidated REVIEW-ONLY Production candidate.
+-- Derived from V7; retains disabled collection gates and zero collected rows.
+-- DO NOT APPLY before independently validated backup and restore.
 -- Gate: backup/restore PASS, privacy/DPA confirmed, isolated SQL test PASS,
 -- explicit DDL Production authorization; site Vercel access remains protected.
 -- Precheck the intended project ref vhvccwvcqdhiovpopsze outside SQL.
-BEGIN;\nDO $guard$ BEGIN
+BEGIN;
+DO $guard$ BEGIN
  IF EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='survey_private')
  THEN RAISE EXCEPTION 'Existing survey schema: manual reconciliation required'; END IF;
 END $guard$;
@@ -142,7 +145,10 @@ END $$;
 REVOKE ALL ON FUNCTION public.consume_citizen_survey_live_limit(text) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.consume_citizen_survey_live_limit(text) TO service_role;
 
--- V8: removed the obsolete preliminary submission RPC. Only the final,\n-- production-rehearsal-disabled implementation appears below.\n\nCREATE FUNCTION survey_private.run_release_retention(p_reason text DEFAULT 'scheduled')
+-- V8: removed the obsolete preliminary submission RPC. Only the final,
+-- production-rehearsal-disabled implementation appears below.
+
+CREATE FUNCTION survey_private.run_release_retention(p_reason text DEFAULT 'scheduled')
 RETURNS void LANGUAGE plpgsql SECURITY INVOKER SET search_path='' SET statement_timeout='20s' SET lock_timeout='3s' AS $$
 DECLARE r integer; c integer; l integer;
 BEGIN
@@ -295,4 +301,5 @@ DO $assert$ BEGIN
   WHERE enabled OR NOT staging_only OR release_authorized_at IS NOT NULL OR release_authorized_by IS NOT NULL)
  THEN RAISE EXCEPTION 'survey_collection_gate_not_closed'; END IF;
 END $assert$;
-NOTIFY pgrst,'reload schema';\nCOMMIT;\n
+NOTIFY pgrst,'reload schema';
+COMMIT;
