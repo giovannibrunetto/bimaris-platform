@@ -76,3 +76,14 @@ test("incomplete or mismatched public-only configuration fails closed for all ro
   setEnv(); process.env.VERCEL_ENV = "development";
   assert.equal(proxy(request("/questionario-cittadini")).status, 503);
 });
+
+test("known isolated project remains closed when both custom flags are absent", () => {
+  setEnv();
+  delete process.env.BIMARIS_SURVEY_PUBLIC_ONLY;
+  delete process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID;
+  assert.equal(mode.isIsolatedSurveyRequested(), true);
+  assert.equal(mode.isIsolatedSurveyDeployment(), false);
+  for (const path of ["/", "/admin", "/area-operatore", "/mappa", "/questionario-cittadini", "/privacy-questionario", "/questionario-cittadini/invio"]) {
+    assert.equal(proxy(request(path)).status, 503, path);
+  }
+});
