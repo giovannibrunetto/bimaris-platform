@@ -25,7 +25,7 @@ const createServiceClient=()=>s.db?{rpc:async()=>{s.calls++;return s.saved?{data
 `+route;
 globalThis.surveyValidation=v;globalThis.surveySecurity=security;
 const {POST}=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(route)).toString('base64'));
-const payload=()=>({requestId:'12345678-1234-4123-8123-123456789abc',answers:[['Social network'],['Nessuna difficoltà'],['Escursioni e natura'],[],[]],idea:'',consent:'',email:'',website:''});
+const payload=()=>({requestId:'12345678-1234-4123-8123-123456789abc',answers:[['Social network'],['Nessuna difficoltà'],['Escursioni e natura'],['Ci sono, ma sono difficili da scoprire'],[]],idea:'',consent:'',email:'',website:''});
 const request=(body=JSON.stringify(payload()),headers={})=>new Request('https://test.example/questionario-cittadini/invio',{method:'POST',headers:{origin:'https://test.example','content-type':'application/json',...headers},body});
 for (const [name,setup,req,status] of [
  ['production',s=>s.configured=false,()=>request(),404],
