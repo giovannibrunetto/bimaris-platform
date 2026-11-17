@@ -7,13 +7,13 @@ export default function AdminNavLinks({ applicationsPending, operatorExperienceP
   const pathname = usePathname();
   const items = [
     { href: "/admin", label: "Dashboard", count: 0 },
+    { href: "/questionario-cittadini", label: "Apri il questionario ↗", count: 0, external: true },
     { href: "/admin/candidature", label: "Candidature", count: applicationsPending },
     { href: "/admin/contenuti", label: "Da esaminare", count: operatorExperiencePending },
     { href: "/admin/operatori", label: "Operatori", count: 0 },
     { href: "/admin/attivita", label: "Esperienze e appuntamenti", count: 0 },
     { href: "/admin/itinerari", label: "Itinerari", count: 0 },
     { href: "/admin/questionari", label: "Questionari e sondaggi", count: 0 },
-    { href: "/questionario-cittadini", label: "Apri il questionario ↗", count: 0, external: true },
   ];
   return <nav aria-label="Sezioni del Centro operativo" className="admin-shell-nav">
     <div className="admin-shell-nav__inner">
