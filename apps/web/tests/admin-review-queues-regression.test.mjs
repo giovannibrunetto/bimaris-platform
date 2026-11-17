@@ -309,6 +309,9 @@ test("survey privacy notice is isolated from shared navigation and consent overl
   assert.match(chrome, /if \(immersiveRoutes\.has\(pathname\)\) return null/);
   assert.match(consent, /pathname === "\/privacy-questionario"/);
   assert.match(tracker, /pathname === "\/privacy-questionario"/);
+  const clickTracker = read("../components/AnalyticsClickTracker.tsx");
+  assert.match(clickTracker, /if \(pathname === "\/privacy-questionario"\) return;/);
+  assert.match(clickTracker, /}, \[pathname\]\);/);
   assert.doesNotMatch(page, /href="\/(?!\/)/);
   assert.match(page, /Jessica Lucchesi/);
 });
