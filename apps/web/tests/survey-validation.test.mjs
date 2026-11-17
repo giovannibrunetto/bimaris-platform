@@ -69,3 +69,13 @@ test('welcome screen stays stationary without autofocus-induced scroll', async (
   assert.match(page, /step === -1 \? styles\.welcomeScreen : ""/);
   assert.match(css, /\.welcomeScreen\{animation:none!important;transform:none!important;\}/);
 });
+
+test('welcome screen is centered and viewport-locked without trapping short displays', async () => {
+  const page = await readFile(new URL('../app/questionario-cittadini/CitizenSurvey.tsx', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../app/questionario-cittadini/survey.module.css', import.meta.url), 'utf8');
+  assert.match(page, /step === -1 \? styles\.surveyWelcome : ""/);
+  assert.match(css, /\.surveyWelcome\{[^}]*height:100dvh;[^}]*overflow:hidden;[^}]*display:flex;/);
+  assert.match(css, /\.surveyWelcome \.layout\{[^}]*flex:1 1 auto;[^}]*align-items:center;/);
+  assert.match(css, /\.surveyWelcome \.panel\{[^}]*overflow-y:auto;/);
+  assert.match(css, /@media\(max-width:760px\)\{[^}]*\.surveyWelcome\{/);
+});
