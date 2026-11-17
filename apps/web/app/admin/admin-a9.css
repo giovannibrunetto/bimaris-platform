@@ -211,3 +211,52 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
     min-height:44px;
   }
 }
+
+/* DS-UX-ADMIN-NAV-P1: all eight destinations remain visible without horizontal scrolling. */
+.admin-shell-nav__inner{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;
+  gap:9px;
+  padding:12px clamp(16px,4vw,40px);
+  overflow:visible;
+  max-width:1200px;
+  width:100%;
+  box-sizing:border-box;
+}
+.admin-shell-nav a.admin-shell-nav__tab{
+  width:100%;
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  justify-content:center;
+  text-align:center;
+  padding:10px 11px;
+  line-height:1.35;
+  box-sizing:border-box;
+}
+.admin-shell-nav__badge{flex-shrink:0;}
+@media(max-width:900px){
+ .admin-shell-nav__inner{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(max-width:600px){
+ .admin-shell-nav{position:relative;top:auto;}
+ .admin-shell-nav__inner{
+   display:grid;
+   grid-template-columns:repeat(2,minmax(0,1fr));
+   gap:7px;
+   padding:10px 12px;
+   overflow:visible;
+ }
+ .admin-shell-nav a.admin-shell-nav__tab{min-height:48px;font-size:12px;padding:10px 8px;}
+}
+@media print {
+ .admin-shell-header{background:#fff!important;color:#15393b!important;border-bottom:2px solid #a7844c!important;box-shadow:none!important;}
+ .admin-shell-header h1,.admin-shell-header p,.admin-shell-header__identity strong,.admin-shell-header__identity span{color:#15393b!important;}
+ .admin-shell-header__eyebrow{color:#76551e!important;}
+ .admin-shell-header__actions a,.admin-shell-header__actions button{color:#15393b!important;background:#fff!important;}
+ .admin-shell-nav{position:static!important;top:auto!important;break-inside:avoid;background:#fff!important;box-shadow:none!important;}
+ .admin-shell-nav__inner{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;overflow:visible!important;}
+ .admin-shell-nav a.admin-shell-nav__tab{color:#15393b!important;background:#fff!important;border:1px solid #98805b!important;font-size:11px!important;}
+ .admin-shell-nav a.admin-shell-nav__tab--questionnaire{background:#e9dac0!important;}
+}
