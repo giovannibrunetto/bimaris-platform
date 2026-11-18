@@ -55,7 +55,7 @@ export default function CitizenSurvey({ testMode = false, liveMode = false }: { 
 
   return <div className={`${styles.survey} ${step === -1 ? styles.surveyWelcome : ""}`}>
     <header className={styles.topbar}>
-      <Link href="/" aria-label="BIMARIS — Messina da vivere" className={styles.wordmark}>BIMARIS <span>Messina da vivere</span></Link>
+      <Link href="/questionario-cittadini" aria-label="BIMARIS — torna all’inizio del questionario" className={styles.wordmark}>BIMARIS <span>Messina da vivere</span></Link>
       <span className={styles.preview}>{liveMode ? "Questionario cittadini" : testMode ? "Collaudo · solo dati fittizi" : "Anteprima · raccolta disattivata"}</span>
     </header>
     <div className={styles.layout}>
