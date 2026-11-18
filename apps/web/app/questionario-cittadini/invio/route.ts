@@ -1,6 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { surveyConfigured, surveyTestSession, sameOrigin, json, surveyLimit, readLimitedText } from "@/lib/survey/security";
-import { validateSurvey, PRIVACY_VERSION, LIVE_PRIVACY_VERSION, CONSENT_VERSION } from "@/lib/survey/validation";
+import { validateSurvey, PRIVACY_VERSION, CONSENT_VERSION } from "@/lib/survey/validation";
 import { launchConsent } from "../questions";
 import { surveyLiveConfigured, handleLiveSubmission } from "@/lib/survey/live";
 import { isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
@@ -35,28 +35,4 @@ export async function POST(request: Request) {
   // Never log the submitted payload or database diagnostics containing personal data.
   if (error || data !== true) return json({ error: "Invio non riuscito. Puoi riprovare senza duplicare le risposte." }, 503);
   return json({ ok: true, mode: "test" });
-}
-
-// Temporary, read-only Production diagnostic. Disabled unless explicitly enabled on the
-// isolated Vercel project. Never returns secrets, personal data or database error details.
-// Remove the diagnostic flag after the authentication test; the normal POST remains unchanged.
-export async function GET() {
-  const headers = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" };
-  if (!isIsolatedSurveyDeployment()
-    || process.env.VERCEL_ENV !== "production"
-    || process.env.BIMARIS_SURVEY_COLLECTION_MODE !== "disabled"
-    || process.env.BIMARIS_SURVEY_DIAGNOSTIC_MODE !== "true") {
-    return Response.json({ error: "not_found" }, { status: 404, headers });
-  }
-  try {
-    const db = createServiceClient();
-    if (!db) return Response.json({ diagnostic: "failed" }, { status: 503, headers });
-    const { data, error } = await db.rpc("citizen_survey_collection_open", {
-      p_privacy_version: LIVE_PRIVACY_VERSION,
-    });
-    if (error || data !== false) return Response.json({ diagnostic: "failed" }, { status: 503, headers });
-    return Response.json({ diagnostic: "pass", database_read: true, collection_open: false }, { status: 200, headers });
-  } catch {
-    return Response.json({ diagnostic: "failed" }, { status: 503, headers });
-  }
 }
