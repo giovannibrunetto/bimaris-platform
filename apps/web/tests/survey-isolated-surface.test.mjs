@@ -95,3 +95,10 @@ test("isolated submit never falls back to staging test submissions", async () =>
   assert.match(route, /if \(!surveyLiveConfigured\(\)\) return json\(\{ error: "raccolta_disattivata" \}, 503\)/);
   assert.match(live, /process\.env\.BIMARIS_SURVEY_PUBLIC_ONLY === "true"/);
 });
+
+// The main website remains inaccessible from the isolated survey deployment.
+test("survey brand link remains on an allowlisted route rather than the blocked homepage", async () => {
+  const component = await read("../app/questionario-cittadini/CitizenSurvey.tsx");
+  assert.match(component, /<Link href="\/questionario-cittadini" aria-label="BIMARIS — torna all’inizio del questionario"/);
+  assert.doesNotMatch(component, /<Link href="\/" aria-label="BIMARIS — Messina da vivere"/);
+});
