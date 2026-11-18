@@ -44,7 +44,7 @@ export async function handleLiveSubmission(request: Request) {
   const { data, error } = await db.rpc("submit_citizen_survey", {
     p_request_id: input.requestId, p_q1: input.q1, p_q2: input.q2, p_q3: input.q3, p_q4: input.q4,
     p_idea: input.idea, p_email: input.email, p_consent: input.consent,
-    p_privacy_version: PRIVACY_VERSION, p_consent_version: CONSENT_VERSION, p_consent_text: launchConsent,
+    p_privacy_version: LIVE_PRIVACY_VERSION, p_consent_version: CONSENT_VERSION, p_consent_text: launchConsent,
     p_rehearsal: false,
   });
   if (error || data !== true) return json({ error: "Invio non riuscito. Puoi riprovare senza duplicare le risposte." }, 503);
