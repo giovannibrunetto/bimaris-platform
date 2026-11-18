@@ -80,13 +80,20 @@ test('welcome screen is centered and viewport-locked without trapping short disp
   assert.match(css, /@media\(max-width:760px\)\{[^}]*\.surveyWelcome\{/);
 });
 
-test('admin displays rehearsal counts separately without exposing emails or altering live statistics', async () => {
+test('admin reporting reads Production only on the server and never exposes contact emails', async () => {
   const admin = await readFile(new URL('../app/admin/questionari/page.tsx', import.meta.url), 'utf8');
   const migration = await readFile(new URL('../../../supabase/migrations/20261117142500_citizen_survey_admin_rehearsal_readonly.sql', import.meta.url), 'utf8');
-  assert.match(admin, /db\.rpc\("admin_citizen_survey_test_summary"\)/);
-  assert.match(admin, /STAGING · SOLO COLLAUDI/);
-  assert.match(admin, /rehearsal\.rehearsal_responses/);
-  assert.match(admin, /rehearsal\.rehearsal_contacts/);
+  assert.match(admin, /isAuthorizedAdmin\(\)/);
+  assert.match(admin, /redirect\("\/admin\/login"\)/);
+  assert.match(admin, /BIMARIS_SURVEY_REPORTING_SECRET_KEY/);
+  assert.match(admin, /BIMARIS_SURVEY_REPORTING_URL/);
+  assert.match(admin, /db\.rpc\("admin_citizen_survey_summary"\)/);
+  assert.match(admin, /db\.rpc\("admin_citizen_survey_ideas"/);
+  assert.match(admin, /PRODUCTION · DATI REALI/);
+  assert.match(admin, /Le email sono conservate in un archivio separato/);
+  assert.doesNotMatch(admin, /\.from\("launch_contacts"\)/);
+  assert.doesNotMatch(admin, /process\.env\.NEXT_PUBLIC_BIMARIS_SURVEY_REPORTING_SECRET_KEY/);
+  // Historic Staging rehearsal function remains separately guarded.
   assert.match(migration, /WHERE rehearsal IS TRUE/);
   assert.match(migration, /REVOKE ALL ON FUNCTION public\.admin_citizen_survey_test_summary\(\) FROM PUBLIC, anon, authenticated/);
   assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.admin_citizen_survey_test_summary\(\) TO service_role/);
