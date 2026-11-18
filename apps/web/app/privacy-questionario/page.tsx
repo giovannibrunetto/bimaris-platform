@@ -5,7 +5,7 @@ import LivePrivacyQuestionario from "./LivePrivacyQuestionario";
 
 export const metadata: Metadata = {
   title: "Privacy questionario cittadini | BIMARIS",
-  description: "Informativa privacy in verifica per il questionario cittadini «A MESSINA NON C'È NENTI!» e l'eventuale avviso sul lancio BIMARIS.",
+  description: "Informativa sul trattamento dei dati del questionario cittadini «A MESSINA NON C’È NENTI!» e dell’eventuale comunicazione sul lancio BIMARIS.",
   robots: { index: false, follow: false, noarchive: true },
 };
 
