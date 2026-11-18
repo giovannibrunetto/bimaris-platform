@@ -17,7 +17,7 @@ GRANT USAGE ON SCHEMA survey_private TO service_role;
 
 CREATE TABLE survey_private.retention_policy (
   singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),
-  version text NOT NULL DEFAULT '2026-11-17-v2',
+  version text NOT NULL DEFAULT '2026-11-18-live-v1',
   response_months integer NOT NULL DEFAULT 12 CHECK(response_months=12),
   review_days integer NOT NULL DEFAULT 90 CHECK(review_days=90),
   launch_grace_days integer NOT NULL DEFAULT 30 CHECK(launch_grace_days=30),
@@ -59,7 +59,7 @@ CREATE TABLE survey_private.collection_control (
   singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),
   enabled boolean NOT NULL DEFAULT false,
   staging_only boolean NOT NULL DEFAULT true,
-  privacy_version text NOT NULL DEFAULT '2026-11-17-v2' CHECK(privacy_version='2026-11-17-v2'),
+  privacy_version text NOT NULL DEFAULT '2026-11-18-live-v1' CHECK(privacy_version='2026-11-18-live-v1'),
   release_authorized_by text,
   release_authorized_at timestamptz,
   CHECK(NOT enabled OR (NOT staging_only AND release_authorized_by IS NOT NULL AND release_authorized_at IS NOT NULL))
@@ -86,7 +86,7 @@ CREATE TABLE survey_private.launch_contacts (
   consent_at timestamptz NOT NULL DEFAULT now(),
   consent_text text NOT NULL,
   consent_version text NOT NULL CHECK(consent_version='launch-only-v1'),
-  privacy_version text NOT NULL CHECK(privacy_version='2026-11-17-v2'),
+  privacy_version text NOT NULL CHECK(privacy_version='2026-11-18-live-v1'),
   purpose text NOT NULL DEFAULT 'single_launch_announcement' CHECK(purpose='single_launch_announcement'),
   launch_announced_at timestamptz,
   rehearsal boolean NOT NULL,
@@ -133,7 +133,7 @@ CREATE FUNCTION public.consume_citizen_survey_live_limit(p_actor text)
 RETURNS boolean LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
 DECLARE n integer;
 BEGIN
-  IF NOT public.citizen_survey_collection_open('2026-11-17-v2') THEN RETURN false; END IF;
+  IF NOT public.citizen_survey_collection_open('2026-11-18-live-v1') THEN RETURN false; END IF;
   IF p_actor IS NULL OR p_actor !~ '^[a-f0-9]{64}$' THEN RETURN false; END IF;
   INSERT INTO survey_private.rate_limits(actor_hash) VALUES(p_actor)
   ON CONFLICT(actor_hash) DO UPDATE SET
@@ -196,7 +196,7 @@ BEGIN
     OR array_ndims(p_q3)<>1 OR array_lower(p_q3,1)<>1 OR cardinality(p_q3) NOT BETWEEN 1 AND 2
     OR NOT(p_q3 <@ ARRAY[1,2,3,4]::smallint[]) OR array_position(p_q3,NULL) IS NOT NULL
     OR (cardinality(p_q3)=2 AND p_q3[1]=p_q3[2]) OR length(p_idea)>1000 OR EXISTS(SELECT FROM generate_series(1,31) c WHERE c NOT IN (9,10,13) AND strpos(p_idea,chr(c))>0)
-    OR p_privacy_version IS DISTINCT FROM '2026-11-17-v2' OR p_consent_version IS DISTINCT FROM 'launch-only-v1'
+    OR p_privacy_version IS DISTINCT FROM '2026-11-18-live-v1' OR p_consent_version IS DISTINCT FROM 'launch-only-v1'
     OR (p_email IS NOT NULL AND (NOT p_consent OR length(p_email)>254 OR p_email<>lower(p_email)
       OR p_email !~ '^[a-z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?([.][a-z0-9]([a-z0-9-]*[a-z0-9])?)+$'))
     OR (p_consent AND (p_email IS NULL OR p_consent_text IS DISTINCT FROM 'Sì, desidero ricevere esclusivamente la comunicazione del lancio via email e ho letto l’informativa privacy')) THEN RAISE EXCEPTION 'invalid_submission';
