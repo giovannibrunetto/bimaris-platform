@@ -102,3 +102,17 @@ test("survey brand link remains on an allowlisted route rather than the blocked 
   assert.match(component, /<Link href="\/questionario-cittadini" aria-label="BIMARIS — torna all’inizio del questionario"/);
   assert.doesNotMatch(component, /<Link href="\/" aria-label="BIMARIS — Messina da vivere"/);
 });
+
+
+test("live notice is gated by the same server-side collection status as submissions", async () => {
+  const privacyPage = await read("../app/privacy-questionario/page.tsx");
+  const liveNotice = await read("../app/privacy-questionario/LivePrivacyQuestionario.tsx");
+  assert.match(privacyPage, /import \{ liveCollectionOpen \} from "@\/lib\/survey\/live"/);
+  assert.match(privacyPage, /if \(await liveCollectionOpen\(\)\) return <LivePrivacyQuestionario \/>/);
+  assert.match(privacyPage, /export const dynamic = "force-dynamic"/);
+  assert.match(liveNotice, /Jessica Lucchesi/);
+  assert.match(liveNotice, /Giovanni Brunetto/);
+  assert.match(liveNotice, /info@bimarisnet\.it/);
+  assert.match(liveNotice, /eu-west-1/);
+  assert.doesNotMatch(liveNotice, /Un accesso riservato di collaudo/);
+});
