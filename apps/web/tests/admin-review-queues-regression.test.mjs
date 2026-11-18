@@ -334,7 +334,8 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   assert.match(links, /href: "\/admin\/questionari"/);
   assert.doesNotMatch(links, /href: "\/questionario-cittadini"/);
   const surveyPage = read("../app/admin/questionari/page.tsx");
-  assert.match(surveyPage, /href="\/questionario-cittadini"/);
+  assert.match(surveyPage, /href="https:\/\/sondaggio\.bimarisnet\.it\/questionario-cittadini"/);
+  assert.match(surveyPage, /rel="noopener noreferrer"/);
   assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });
