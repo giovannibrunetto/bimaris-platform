@@ -114,5 +114,6 @@ test("live notice is gated by the same server-side collection status as submissi
   assert.match(liveNotice, /Giovanni Brunetto/);
   assert.match(liveNotice, /info@bimarisnet\.it/);
   assert.match(liveNotice, /eu-west-1/);
+  assert.match(liveNotice, /2026-11-18-live-v1/);
   assert.doesNotMatch(liveNotice, /Un accesso riservato di collaudo/);
 });
