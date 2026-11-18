@@ -6,7 +6,7 @@ export default function LivePrivacyQuestionario() {
       <p className="survey-privacy__eyebrow">BIMARIS · Messina da vivere</p>
       <h1>Informativa privacy del questionario cittadini</h1>
       <p className="survey-privacy__subtitle">«A MESSINA NON C’È NENTI!» — ricerca sulle esigenze dei cittadini di Messina.</p>
-      <p className="survey-privacy__version">Versione 2026-11-17-v2 · 18 novembre 2026</p>
+      <p className="survey-privacy__version">Versione 2026-11-18-live-v1 · 18 novembre 2026</p>
     </div></header>
     <div className="survey-privacy__container survey-privacy__content">
       <section aria-labelledby="live-owner">
