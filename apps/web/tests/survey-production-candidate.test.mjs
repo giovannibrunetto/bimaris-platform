@@ -9,6 +9,8 @@ test("V8 stays a review-only document and is transaction-wrapped", () => {
   assert.match(sql,/REVIEW CANDIDATE ONLY\. DO NOT APPLY TO PRODUCTION/);
   assert.match(sql,/^BEGIN;$/m);
   assert.match(sql,/^COMMIT;$/m);
+  assert.match(sql,/2026-11-18-live-v1/);
+  assert.doesNotMatch(sql,/2026-11-17-v2/);
   assert.ok(!file.pathname.includes("supabase/migrations/"));
 });
 test("exactly one definitive submit RPC; no rehearsal writes", () => {
