@@ -11,7 +11,7 @@ globalThis.liveTest = { db: true, open: true, limited: false, fail: '', calls: [
 globalThis.liveValidation = validation; globalThis.liveSecurity = security;
 const live = await load(`import {createHmac} from 'node:crypto';
 const {json,sameOrigin,readLimitedText}=globalThis.liveSecurity;
-const {validateSurvey,PRIVACY_VERSION,CONSENT_VERSION}=globalThis.liveValidation;
+const {validateSurvey,LIVE_PRIVACY_VERSION,CONSENT_VERSION}=globalThis.liveValidation;
 const launchConsent='Sì, desidero ricevere esclusivamente la comunicazione del lancio via email e ho letto l’informativa privacy';
 const createServiceClient=()=>globalThis.liveTest.db?{rpc:async(name,args)=>{
  const s=globalThis.liveTest;s.calls.push({name,args});
@@ -64,7 +64,7 @@ for(const [name,setup,req,status] of [
  assert.equal(response.status,status);assert.equal(response.headers.get('cache-control'),'no-store');
  const body=await response.text();assert.ok(!body.includes('DO_NOT_EXPOSE_PAYLOAD'));
  if(status!==200)assert.equal(globalThis.liveTest.saved,null);
- else {assert.equal(globalThis.liveTest.saved.p_privacy_version,'2026-11-17-v2');assert.equal(globalThis.liveTest.saved.p_rehearsal,false);}
+ else {assert.equal(globalThis.liveTest.saved.p_privacy_version,'2026-11-18-live-v1');assert.equal(globalThis.liveTest.saved.p_rehearsal,false);}
  const limit=globalThis.liveTest.calls.find(c=>c.name==='consume_citizen_survey_live_limit');
  if(limit){assert.match(limit.args.p_actor,/^[a-f0-9]{64}$/);assert.ok(!JSON.stringify(limit.args).includes('192.0.2.1'));}
 });
