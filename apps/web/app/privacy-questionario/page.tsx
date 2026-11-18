@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./privacy-questionario.css";
+import { liveCollectionOpen } from "@/lib/survey/live";
+import LivePrivacyQuestionario from "./LivePrivacyQuestionario";
 
 export const metadata: Metadata = {
   title: "Privacy questionario cittadini | BIMARIS",
@@ -7,7 +9,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, noarchive: true },
 };
 
-export default function PrivacyQuestionarioPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PrivacyQuestionarioPage() {
+  // Both the isolated deployment config AND DB release gate must be open.
+  // Otherwise retain the existing Staging/collaudo notice.
+  if (await liveCollectionOpen()) return <LivePrivacyQuestionario />;
   return <article className="survey-privacy">
     <header className="survey-privacy__hero">
       <div className="survey-privacy__container">
