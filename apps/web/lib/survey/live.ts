@@ -2,7 +2,7 @@ import "server-only";
 import { createHmac } from "node:crypto";
 import { createServiceClient } from "@/lib/supabase/server";
 import { json, sameOrigin, readLimitedText } from "./security";
-import { validateSurvey, PRIVACY_VERSION, CONSENT_VERSION } from "./validation";
+import { validateSurvey, LIVE_PRIVACY_VERSION, CONSENT_VERSION } from "./validation";
 import { launchConsent } from "../../app/questionario-cittadini/questions";
 
 // No environment variables are set by this change. Preview can NEVER collect live data.
@@ -21,7 +21,7 @@ export async function liveCollectionOpen() {
   if (!surveyLiveConfigured()) return false;
   const db = createServiceClient();
   if (!db) return false;
-  const { data, error } = await db.rpc("citizen_survey_collection_open", { p_privacy_version: PRIVACY_VERSION });
+  const { data, error } = await db.rpc("citizen_survey_collection_open", { p_privacy_version: LIVE_PRIVACY_VERSION });
   return !error && data === true;
 }
 export async function handleLiveSubmission(request: Request) {
