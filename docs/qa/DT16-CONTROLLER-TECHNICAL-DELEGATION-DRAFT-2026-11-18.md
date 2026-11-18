@@ -21,5 +21,18 @@ Le operazioni su dati personali devono essere limitate al minimo necessario, reg
 
 **Non caricare firme, documenti d'identità, ricevute nominative, credenziali, log personali o prove contrattuali riservate in questo repository.** Nel registro QA salvare soltanto esito e riferimento interno all'evidenza approvata.
 
+
+## Procedura di approvazione distinta
+
+**Da sottoporre direttamente alla titolare.** Il referente tecnico non può auto-attestare la volontà di Jessica solo per avere ricevuto il mandato a proseguire i lavori.
+
+Dopo aver letto l'intero testo, Jessica può confermare in un canale riconducibile a lei:
+
+> Approvo espressamente le istruzioni tecniche BIMARIS del 18 novembre 2026 a favore di Giovanni Brunetto, limitatamente alla gestione tecnica di Vercel e Supabase per il questionario cittadini, come descritte nel documento. Comprendo che questo assenso non autorizza la pubblicazione del sito, l'attivazione della raccolta reale, il trattamento ulteriore dei dati né operazioni su Production soggette a GO separato.
+
+L'attestazione effettiva (messaggio originale, email o documento sottoscritto) deve rimanere in archivio riservato con data e riferimento univoco. In GitHub registrare **solo** il riferimento interno non identificativo, la data dell'approvazione comunicata e l'esito della verifica, evitando copia della firma, email personale o altra prova riservata.
+
+Se Jessica non ha approvato questo preciso mandato, lo stato resta **NON APPROVATO**. Il suo assenso già comunicato per l'informativa privacy NON si estende a questo documento.
+
 ## Requisiti invariati
 La dichiarazione del referente del 18/11 («Jessica approva espressamente») riguarda la bozza informativa LIVE, non una delega tecnica. Backup cifrato DB e Storage, ripristino isolato, privacy operativa, DPA verificati e GO distinti per SQL/produzione restano HOLD. PR #58 unica candidata, DRAFT; nessun merge e nessuna apertura SSO.
