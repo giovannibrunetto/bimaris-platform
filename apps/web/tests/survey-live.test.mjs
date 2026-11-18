@@ -21,6 +21,7 @@ const createServiceClient=()=>globalThis.liveTest.db?{rpc:async(name,args)=>{
  s.saved=args;return {data:true,error:null};
 }}:null;
 ` + (await read('../lib/survey/live.ts')).replace(/^import .*;\n/gm, ''));
+test('live privacy version is distinct from staging',()=>{assert.equal(validation.PRIVACY_VERSION,'2026-11-17-v2');assert.equal(validation.LIVE_PRIVACY_VERSION,'2026-11-18-live-v1');});
 const env = () => {
  process.env.VERCEL_ENV='production'; process.env.BIMARIS_SURVEY_COLLECTION_MODE='live';
  process.env.VERCEL_PROJECT_ID='prj_NsbtPm214NbbweDhUQvPnSaFM1rH';
