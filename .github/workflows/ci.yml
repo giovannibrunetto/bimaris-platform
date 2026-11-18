@@ -29,4 +29,5 @@ jobs:
       - run: python3 scripts/tests/backup-production-windows-synthetic.py
       - run: node --test apps/web/tests/survey-production-candidate.test.mjs
       - run: node --test scripts/tests/business-account-tax-id-static.test.mjs
+      - run: node --test scripts/tests/survey-production-sql-safety.test.mjs
       - run: pnpm --filter @bimaris/web build
