@@ -175,7 +175,7 @@ test("consolidated content queue keeps operator reviews and event dossiers disti
   assert.match(page, /experience_origin","bimaris"/);
   assert.match(page, /verification_status","pending"/);
   assert.match(page, /\/admin\/operatori\/\$\{item\.operator_id\}\/revisioni-profilo/);
-  assert.match(page, /\/admin\/revisione-esperienza\?id=/);
+  assert.match(page, /\/admin\/esperienze\/\$\{encodeURIComponent\(item\.experience_id\)\}\/revisione#revision-changes-title/);
   assert.match(page, /\/admin\/eventi\/\$\{item\.id\}/);
   assert.doesNotMatch(page, /<form method="post"/);
 });
@@ -220,7 +220,7 @@ test("focused content review presents one grouped list without duplicated naviga
   assert.match(page, /Appuntamento · /);
   assert.match(page, /href="\/admin"/);
   assert.doesNotMatch(page, /admin-events__filters/);
-  assert.match(page, /const \{ categoria \} = await searchParams/);
+  assert.match(page, /const \{ categoria, state \} = await searchParams/);
   assert.doesNotMatch(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
 });
 
@@ -229,7 +229,7 @@ test("experience revision starts with a single compact heading and the changed c
   const css = read("../app/admin/esperienze/[id]/revisione/experience-revision.css");
   assert.match(page, /className="revision-workspace"/);
   assert.match(page, /className="revision-workspace__heading"/);
-  assert.match(page, /href="\/admin\/contenuti"/);
+  assert.match(page, /href="\/admin\/contenuti\?categoria=esperienze"/);
   assert.match(page, /Scheda esperienza/);
   assert.match(page, /Dossier operatore/);
   assert.match(page, /className="detail-panel revision-workspace__panel"/);
