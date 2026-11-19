@@ -25,3 +25,34 @@
   .cards > .experience-category-card { transition: none; }
   .cards > .experience-category-card:hover { transform: none; }
 }
+
+.experience-catalogue-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-block: 18px;
+}
+
+.experience-catalogue-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 15px;
+  border: 1px solid #bda47d;
+  border-radius: 999px;
+  color: #15383b;
+  background: #fffdf9;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.experience-catalogue-nav a:hover,
+.experience-catalogue-nav a[aria-current="page"] {
+  background: #e9d7b6;
+  border-color: #87612e;
+}
+
+.experience-catalogue-nav a:focus-visible {
+  outline: 3px solid #87612e;
+  outline-offset: 3px;
+}

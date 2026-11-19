@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExperienceExplorer } from "@/components/ExperienceExplorer";
 import { getPublishedExperiences } from "@/data/live";
+import { getPublishedAppointments } from "@/data/public-appointments";
 import { experienceCategories, isExperienceCategory } from "@/lib/experience-categories";
 import "./experience-categories.css";
 
@@ -9,28 +10,76 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Esperienze a Messina | BIMARIS",
-  description: "Esperienze selezionate a Messina e provincia: degustazioni, mare, avventura, trekking, visite guidate e laboratori scelti da BIMARIS.",
+  title: "Esperienze e appuntamenti a Messina | BIMARIS",
+  description: "Scopri le esperienze proposte dagli operatori e gli appuntamenti verificati da BIMARIS a Messina e provincia.",
 };
 
-export default async function ExperiencesPage({ searchParams }: { searchParams?: Promise<{ categoria?: string }> }) {
-  const experiences = await getPublishedExperiences();
+const views = [
+  { value: "tutti", label: "Tutti", href: "/esperienze" },
+  { value: "esperienze", label: "Esperienze", href: "/esperienze?tipo=esperienze" },
+  { value: "appuntamenti", label: "Appuntamenti", href: "/esperienze?tipo=appuntamenti" },
+] as const;
+
+const appointmentDate = new Intl.DateTimeFormat("it-IT", {
+  dateStyle: "long",
+  timeStyle: "short",
+  timeZone: "Europe/Rome",
+});
+const appointmentPrice = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
+
+export default async function ExperiencesPage({ searchParams }: {
+  searchParams?: Promise<{ categoria?: string; tipo?: string }>;
+}) {
+  const params = await searchParams;
+  const initialCategory = isExperienceCategory(params?.categoria) ? params.categoria : "all";
+  const selected = views.find(view => view.value === params?.tipo)?.value
+    ?? (initialCategory === "all" ? "tutti" : "esperienze");
+  const showExperiences = selected !== "appuntamenti";
+  const showAppointments = selected !== "esperienze";
+  const [experiences, appointments] = await Promise.all([
+    showExperiences ? getPublishedExperiences() : Promise.resolve([]),
+    showAppointments ? getPublishedAppointments() : Promise.resolve([]),
+  ]);
   const availableCategories = new Set(experiences.map(experience => experience.category));
-  const params = searchParams ? await searchParams : undefined;
-  const requestedCategory = params?.categoria;
-  const initialCategory = isExperienceCategory(requestedCategory)
-    ? requestedCategory
-    : "all";
 
   return (
     <>
       <section className="page-hero discovery-page-hero bimaris-ambient-hero">
-        <h1>Esperienze BIMARIS</h1>
-        <p>
-          Non un elenco di attività, ma una selezione di modi autentici per vivere Messina e il suo territorio: mare, sapori, natura, cultura e saperi locali.
-        </p>
+        <h1>Esperienze e appuntamenti</h1>
+        <p>Trova attività proposte dagli operatori BIMARIS ed eventi verificati a Messina e provincia.</p>
       </section>
 
+      <nav className="section experience-catalogue-nav" aria-label="Tipo di proposta">
+        {views.map(view => <Link
+          key={view.value}
+          href={view.href}
+          aria-current={selected === view.value ? "page" : undefined}
+        >{view.label}</Link>)}
+      </nav>
+
+      {showAppointments && (
+        <section className="section" aria-labelledby="public-appointments-heading">
+          <div className="section-head">
+            <h2 id="public-appointments-heading">Appuntamenti</h2>
+            <p>Eventi da fonti esterne, verificati prima della pubblicazione.</p>
+          </div>
+          {appointments.length === 0 ? <p>Nessun appuntamento in programma.</p> : (
+            <div className="cards">
+              {appointments.map(item => <article className="card" key={item.id}>
+                <div className="card-body">
+                  <p><time dateTime={item.startsAt}>{appointmentDate.format(new Date(item.startsAt))}</time></p>
+                  <h3>{item.title}</h3>
+                  {item.location && <p>{item.location}</p>}
+                  {item.price !== null && <p>{appointmentPrice.format(item.price)}</p>}
+                  {item.sourceUrl && <a className="text-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">Fonte originale ↗</a>}
+                </div>
+              </article>)}
+            </div>
+          )}
+        </section>
+      )}
+
+      {showExperiences && <>
       <section className="section sand discovery-page-first">
         <div className="section-head">
           <div>
@@ -44,7 +93,7 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
           {experienceCategories.map(category => (
             <Link
               className="card experience-category-card"
-              href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}
+              href={`/esperienze?tipo=esperienze&categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}
               key={category.slug}
               aria-labelledby={`experience-category-${category.slug}`}
             >
@@ -60,30 +109,17 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
           ))}
         </div>
       </section>
-
-      <section className="section" id="esperienze-disponibili">
-        <div className="section-head">
-          <div>
-            <div className="kicker">Selezione BIMARIS</div>
-            <h2>{experiences.length > 0 ? "Esperienze disponibili." : "La selezione delle esperienze."}</h2>
+        <section className="section" id="esperienze-disponibili" aria-labelledby="public-experiences-heading">
+          <div className="section-head">
+            <h2 id="public-experiences-heading">Esperienze</h2>
+            <p>Attività proposte dagli operatori BIMARIS. Cerca per categoria e zona.</p>
           </div>
-          <p>{experiences.length > 0 ? "Filtra le proposte per categoria e territorio e scopri l'operatore che le realizza." : "Ogni esperienza sarà pubblicata solo dopo la verifica della realtà che la propone e della sua coerenza con il territorio."}</p>
-        </div>
-
-        <ExperienceExplorer experiences={experiences} initialCategory={initialCategory} />
-        {experiences.length === 0 && (
-          <div className="detail-panel">
-            <div className="kicker">Prima della pubblicazione</div>
-            <h3>Stiamo costruendo la rete di esperienze BIMARIS.</h3>
-            <p>
-              Le attività non vengono inserite automaticamente: selezioniamo operatori, produttori e realtà locali in base a qualità, autenticità e legame con Messina e il suo territorio.
-            </p>
-            <div className="actions">
-              <Link className="button" href="/operatori/candidatura">Presenta la tua candidatura</Link>
-            </div>
-          </div>
-        )}
-      </section>
+          <ExperienceExplorer experiences={experiences} initialCategory={initialCategory} />
+          {experiences.length === 0 && <div className="actions">
+            <Link className="text-link" href="/operatori/candidatura">Presenta la tua candidatura →</Link>
+          </div>}
+        </section>
+      </>}
     </>
   );
 }

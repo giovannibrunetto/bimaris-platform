@@ -43,9 +43,9 @@ export default function Home() {
                 <span className="home-journey-number">02</span>
                 <div className="home-journey-path-copy">
                   <span className="home-journey-label">Vivi il territorio</span>
-                  <h3>Esperienze BIMARIS</h3>
-                  <p>Degustazioni, mare, natura, visite e attività selezionate per vivere Messina e il suo territorio.</p>
-                  <span className="home-journey-action">Scopri le esperienze <b>→</b></span>
+                  <h3>Esperienze e appuntamenti</h3>
+                  <p>Attività degli operatori ed eventi verificati per vivere Messina e il suo territorio.</p>
+                  <span className="home-journey-action">Scopri cosa fare <b>→</b></span>
                 </div>
               </Link>
 
