@@ -8,7 +8,7 @@ test("dashboard provides one consolidated content queue and combined activity re
   const dashboard = read("../app/admin/page.tsx");
   assert.match(dashboard, /href:"\/admin\/contenuti",label:"Contenuti da esaminare"/);
   assert.match(dashboard, /href: "\/admin\/attivita\?tipo=esperienze", label: "Esperienze online"/);
-  assert.match(dashboard, /label: "Appuntamenti acquisiti", value: acquiredAppointments/);
+  assert.match(dashboard, /href: "\/admin\/attivita\?view=acquisiti", label: "Appuntamenti acquisiti", value: acquiredAppointments/);
   assert.match(dashboard, /acquiredAppointments = allEventsRes\.count/);
   assert.match(dashboard, /\.neq\("experience_origin","bimaris"\)\.in\("review_status"/);
   assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
@@ -197,7 +197,8 @@ test("activity register excludes items in the operator and appointment review qu
   assert.match(page, /\.eq\("status","pending"\)\.neq\("experiences\.experience_origin","bimaris"\)/);
   assert.match(page, /!pendingRevisionIds\.has\(item\.id\) && item\.review_status !== "pending" && item\.review_status !== "submitted"/);
   assert.match(page, /item\.verification_status !== "pending" \|\| item\.published/);
-  assert.match(page, /href="\/admin\/contenuti"/);
+  assert.match(page, /\/admin\/contenuti\?categoria=appuntamenti/);
+  assert.match(page, /acquiredOnly \? allAppointments : registryAppointments/);
   assert.match(page, /href="\/admin\/esperienze\/nuova"/);
 });
 

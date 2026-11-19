@@ -54,7 +54,7 @@ export default async function AdminPage() {
   const statusItems = [
     { href: "/admin/operatori", label: "Operatori online", value: onlineOperators },
     { href: "/admin/attivita?tipo=esperienze", label: "Esperienze online", value: onlineExperiences },
-    { label: "Appuntamenti acquisiti", value: acquiredAppointments },
+    { href: "/admin/attivita?view=acquisiti", label: "Appuntamenti acquisiti", value: acquiredAppointments },
     { href: "/admin/itinerari", label: "Itinerari online", value: onlineItineraries },
   ];
 
@@ -84,11 +84,9 @@ export default async function AdminPage() {
             </div>
             <ul className="admin-dashboard__live-list">
               {statusItems.map(item => <li key={item.label}>
-                {item.href ? <Link href={item.href} className="admin-dashboard__live-item">
+                <Link href={item.href} className="admin-dashboard__live-item">
                   <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">→</span>
-                </Link> : <div className="admin-dashboard__live-item">
-                  <strong>{item.value}</strong><span>{item.label}</span>
-                </div>}
+                </Link>
               </li>)}
             </ul>
           </section>

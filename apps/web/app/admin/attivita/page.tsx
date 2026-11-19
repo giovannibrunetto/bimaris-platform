@@ -17,7 +17,8 @@ function dateLabel(value: string) {
 export default async function ActivitiesRegister({searchParams}:{searchParams:Promise<{tipo?:string;view?:string}>}) {
   if(!(await isAuthorizedAdmin())) redirect("/admin/login");
   const {tipo,view}=await searchParams;
-  const selected=tipo==="esperienze"||tipo==="appuntamenti"?tipo:"tutti";
+  const acquiredOnly = view === "acquisiti";
+  const selected=acquiredOnly ? "appuntamenti" : tipo==="esperienze"||tipo==="appuntamenti"?tipo:"tutti";
   const readyOnly=view==="ready";
   const db=createServiceClient();
   if(!db) throw new Error("Supabase non configurato");
@@ -38,7 +39,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   const experiences = readyOnly ? [] : registryExperiences;
   const appointments = readyOnly
     ? allAppointments.filter(v=>v.verification_status==="verified"&&!v.published)
-    : registryAppointments;
+    : acquiredOnly ? allAppointments : registryAppointments;
   const countOnlineExperiences=registryExperiences.filter(v=>v.published).length;
   const countPublishedAppointments=registryAppointments.filter(v=>v.published).length;
   const countReadyAppointments=allAppointments.filter(v=>v.verification_status==="verified"&&!v.published).length;
@@ -46,18 +47,18 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
     <AdminSectionHeader
       title="Esperienze e appuntamenti"
       description="Consulta le attività nel registro. Le proposte e le modifiche in attesa si trovano in Da esaminare."
-      actions={<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href="/admin/contenuti">Da esaminare →</Link></>}
+      actions={<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href={acquiredOnly ? "/admin/contenuti?categoria=appuntamenti" : "/admin/contenuti"}>Da esaminare →</Link></>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{registryExperiences.length}</strong><span>Esperienze nel registro</span><small>{countOnlineExperiences} online</small></div>
-        <div><strong>{registryAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
+        <div><strong>{acquiredOnly ? allAppointments.length : registryAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
         <div><strong>{countReadyAppointments}</strong><span>Approvati da pubblicare</span></div>
       </div>
       <nav className="admin-events__filters" aria-label="Filtra il registro">
         <Link href="/admin/attivita" aria-current={!readyOnly&&selected==="tutti"?"page":undefined}>Tutti</Link>
         <Link href="/admin/attivita?tipo=esperienze" aria-current={!readyOnly&&selected==="esperienze"?"page":undefined}>Esperienze</Link>
-        <Link href="/admin/attivita?tipo=appuntamenti" aria-current={!readyOnly&&selected==="appuntamenti"?"page":undefined}>Appuntamenti</Link>
+        <Link href={acquiredOnly ? "/admin/attivita?view=acquisiti" : "/admin/attivita?tipo=appuntamenti"} aria-current={!readyOnly&&selected==="appuntamenti"?"page":undefined}>{acquiredOnly ? "Tutti gli appuntamenti acquisiti" : "Appuntamenti"}</Link>
         <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({countReadyAppointments})</Link>
       </nav>
       {!readyOnly&&selected!=="appuntamenti"&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
@@ -70,10 +71,10 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
       {(readyOnly||selected!=="esperienze")&&<section className="admin-events__queue-group" aria-labelledby="registry-appointments">
         <h2 id="registry-appointments">Appuntamenti acquisiti <small>{appointments.length}</small></h2>
         <div className="admin-events__list">{appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
-          <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.published?"Pubblicato":item.verification_status==="rejected"?"Scartato":"Verificato · non pubblicato"} · {item.source_type?.trim()||"Origine non indicata"}</span>
+          <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.published?"Pubblicato":item.verification_status==="pending"?"Da verificare":item.verification_status==="rejected"?"Scartato":"Verificato · non pubblicato"} · {item.source_type?.trim()||"Origine non indicata"}</span>
             <h3>{item.title}</h3><p className="admin-events__date">{dateLabel(item.starts_at)}</p>
           </div>
-          <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Apri dossier →</Link>
+          {(item.verification_status !== "pending" || item.published) && <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Apri dossier →</Link>}
         </article>)}{appointments.length===0&&<div className="admin-events__empty">Nessun appuntamento per questo filtro.</div>}</div>
       </section>}
       <p className="admin-events__hint">Registro di consultazione: esperienze e appuntamenti sono presentati insieme, ma restano salvati nei rispettivi archivi fino alla validazione tecnica dell'integrazione MAI.</p>
