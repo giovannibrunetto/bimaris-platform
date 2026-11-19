@@ -4,13 +4,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { questions } from "@/app/questionario-cittadini/questions";
+import OpenAnswers, { type IdeasPage, type SearchResult } from "./OpenAnswers";
 import "./questionari.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 type Results = { responses:number; launch_contacts:number; choices:number[][]; latest_response_date:string|null };
-type IdeasPage = { total:number; page:number; page_size:number; items:{date:string;text:string}[] };
 
 function isResults(v:unknown):v is Results {
   if(!v || typeof v!=="object") return false;
@@ -39,22 +39,37 @@ function reportingClient() {
   if(url!=="https://vhvccwvcqdhiovpopsze.supabase.co" || !key || key.length<24) return null;
   return createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
 }
-export default async function QuestionariPage({searchParams}:{searchParams:Promise<{page?:string;q?:string}>}) {
+function answerPage(value: string | FormDataEntryValue | null | undefined) {
+  const page = typeof value === "string" ? Number(value) : 1;
+  return Number.isSafeInteger(page) && page >= 1 && page <= 100000 ? page : 1;
+}
+
+async function searchOpenAnswers(_state: SearchResult, form: FormData): Promise<SearchResult> {
+  "use server";
+
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
+
+  const term = form.get("q");
+  const search = typeof term === "string" ? term.trim().slice(0, 80) : "";
+  const page = answerPage(form.get("page"));
+  const db = reportingClient();
+  const result = await db?.rpc("admin_citizen_survey_ideas", { p_page: page, p_search: search });
+  const ideas = result && !result.error && isIdeas(result.data) ? result.data : null;
+  return { ideas, page, search };
+}
+
+export default async function QuestionariPage({searchParams}:{searchParams:Promise<{page?:string}>}) {
   // Existing server-side Super Admin gate validates the user session and AAL2.
   if(!(await isAuthorizedAdmin())) redirect("/admin/login");
   const params=await searchParams;
-  const candidate=Number(params?.page ?? "1");
-  const page=Number.isSafeInteger(candidate) && candidate>=1 && candidate<=100000?candidate:1;
-  const search=typeof params?.q==="string"?params.q.trim().slice(0,80):"";
+  const page = answerPage(params.page);
   const db=reportingClient();
   const [s,i]=db ? await Promise.all([
     db.rpc("admin_citizen_survey_summary"),
-    db.rpc("admin_citizen_survey_ideas",{p_page:page,p_search:search}),
+    db.rpc("admin_citizen_survey_ideas",{p_page:page,p_search:""}),
   ]) : [null,null];
   const data:Results|null=s && !s.error && isResults(s.data)?s.data:null;
   const ideas:IdeasPage|null=i && !i.error && isIdeas(i.data)?i.data:null;
-  const pages=ideas?Math.max(1,Math.ceil(ideas.total/20)):1;
-  const pageUrl=(n:number)=>"/admin/questionari?"+new URLSearchParams({page:String(n),...(search?{q:search}:{})}).toString();
   return <section className="survey-admin" aria-labelledby="survey-admin-heading">
     <div className="survey-admin__heading">
       <span className="survey-admin__eyebrow">Centro operativo / Questionari e sondaggi</span>
@@ -103,18 +118,7 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
           <span className="survey-admin__question-number">DOMANDA 5 DI 5 · RISPOSTA APERTA</span>
           <h3>{questions[4].title}</h3>
           <p className="survey-admin__caption">Risposte aperte non scadute: possono contenere informazioni personali inserite spontaneamente. Accesso riservato; non divulgarle.</p>
-          <form className="survey-admin__search" method="get" action="/admin/questionari">
-            <label htmlFor="survey-answer-search">Cerca nelle risposte aperte</label>
-            <div><input id="survey-answer-search" type="search" name="q" maxLength={80} defaultValue={search} placeholder="Parola o frase"/><button type="submit">Cerca</button></div>
-          </form>
-          {!ideas?<p className="survey-admin__notice" role="alert">Le risposte aperte non sono temporaneamente disponibili.</p>:<>
-            <p className="survey-admin__caption">{ideas.total.toLocaleString("it-IT")} risposte · pagina {page} di {pages}</p>
-            {ideas.items.length===0?<p>Nessuna risposta aperta disponibile.</p>:<ul>{ideas.items.map((v,k)=><li key={k}><span>{v.date}</span><p>{v.text}</p></li>)}</ul>}
-            <nav aria-label="Paginazione risposte aperte" className="survey-admin__paging">
-              {page>1&&<Link href={pageUrl(page-1)}>← Precedente</Link>}
-              {page<pages&&<Link href={pageUrl(page+1)}>Successiva →</Link>}
-            </nav>
-          </>}
+          <OpenAnswers initialIdeas={ideas} initialPage={page} searchAction={searchOpenAnswers} />
         </section>
       </div>
     </>}
