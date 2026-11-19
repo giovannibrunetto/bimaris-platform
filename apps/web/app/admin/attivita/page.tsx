@@ -75,7 +75,8 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
           <Link className="admin-events__examine" href={`/admin/esperienze/${item.id}${canPublish ? "#admin-decision" : ""}`}>
             {canPublish ? "Vai alla pubblicazione" : "Vedi esperienza"} →
           </Link>
-        </article>}){experiences.length===0&&<div className="admin-events__empty">Nessuna esperienza nel registro.</div>}</div>
+        </article>;
+        })}{experiences.length===0&&<div className="admin-events__empty">Nessuna esperienza nel registro.</div>}</div>
       </section>}
       {(readyOnly||selected!=="esperienze")&&<section className="admin-events__queue-group" aria-labelledby="registry-appointments">
         <h2 id="registry-appointments">Appuntamenti acquisiti <small>{appointments.length}</small></h2>
