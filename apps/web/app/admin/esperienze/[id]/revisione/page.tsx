@@ -1,3 +1,4 @@
+import { experienceRevisionBlocker } from "@/lib/experience-revision-blocker";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -19,10 +20,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const db = createServiceClient();
   if (!db) throw new Error("Supabase service client non configurato");
 
-  const { data: experience, error: experienceError } = await db.from("experiences").select("id,name,slug,published,operator_id,excerpt,description,duration_minutes,price_from,meeting_point,latitude,longitude,location_kind,territory_municipality_code").eq("id", id).maybeSingle();
+  const { data: experience, error: experienceError } = await db.from("experiences").select("id,name,slug,published,review_status,operator_id,excerpt,description,duration_minutes,price_from,meeting_point,latitude,longitude,location_kind,territory_municipality_code").eq("id", id).maybeSingle();
   if (experienceError) { console.error("BIMARIS review experience lookup failed", experienceError); throw new Error("Impossibile caricare la scheda dell'esperienza."); }
   if (!experience) notFound();
-  const { data: operator, error: operatorError } = await db.from("operators").select("name").eq("id", experience.operator_id).maybeSingle();
+  const { data: operator, error: operatorError } = await db.from("operators").select("name,published,selection_status").eq("id", experience.operator_id).maybeSingle();
   if (operatorError) console.error("BIMARIS review operator lookup failed", operatorError);
   const { data: revision } = await db.from("experience_revisions").select("id,status,submitted_at,content").eq("experience_id", id).eq("status", "pending").order("submitted_at", { ascending: false }).limit(1).maybeSingle();
   const [{ data: livePhotos }, { data: proposedRows }] = await Promise.all([
@@ -52,6 +53,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   });
   const photoChangesCount = addedPhotos.length + removedPhotos.length + updatedPhotos.length;
   const currentLabel=experience.published?"ONLINE ORA":"VERSIONE APPROVATA (NON PUBBLICATA)";
+  const blocker = operatorError ? "operator-status-unavailable" : experienceRevisionBlocker(experience, operator);
   const { state } = await searchParams;
   const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "Modifica non applicata. Lo stato dell’esperienza o dell’operatore è cambiato. Verifica le schede collegate e riapri il confronto.", "experience-not-approved": "Modifica non applicata. La versione di base dell’esperienza deve essere approvata.", "operator-not-selected": "Modifica non applicata. L’operatore deve essere selezionato prima di applicare la revisione.", "operator-not-published": "Modifica non applicata. L’operatore deve essere pubblicato prima di applicare la revisione.", "invalid-data": "Modifica non applicata. I dati della revisione non sono validi.", "action-error": "Operazione non riuscita." };
 
@@ -144,7 +146,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </details>
       <section id="admin-review-decision" className="revision-decisions" aria-label="Esito revisione esperienza" style={{scrollMarginTop:112}}>
         <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore.</p></div>
-        <div className="revision-decisions__grid">
+        {blocker ? <div className="revision-decision-card" role="status">
+          <h4>Decisione al momento bloccata</h4>
+          <p>{blocker === "operator-status-unavailable" ? "Non è stato possibile verificare lo stato dell’operatore. Ricarica la pagina per riprovare." : stateMessage[blocker]}</p>
+          {blocker === "experience-not-approved"
+            ? <Link className="text-link" href={`/admin/esperienze/${id}`}>Apri la scheda esperienza →</Link>
+            : blocker !== "operator-status-unavailable" && <Link className="text-link" href={`/admin/operatori/${experience.operator_id}`}>Apri il dossier operatore →</Link>}
+        </div> : <div className="revision-decisions__grid">
           <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
             <h4>Approva la modifica</h4>
             <p>Applica le modifiche dopo averne verificato la correttezza.</p>
@@ -165,7 +173,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             </div>
             <button className="revision-decision-card__button revision-decision-card__button--changes" name="action" value="request-changes">Richiedi correzioni</button>
           </form>
-        </div>
+        </div>}
       </section>
     </article>}
     </section>

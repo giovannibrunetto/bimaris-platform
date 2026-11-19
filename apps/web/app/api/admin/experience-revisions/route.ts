@@ -1,3 +1,4 @@
+import { experienceRevisionBlocker } from "@/lib/experience-revision-blocker";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -40,9 +41,9 @@ export async function POST(request:NextRequest){
   if(readError||!revision||revision.status!=="pending")return back("invalid-review-state");
   const operator=revision.operator as unknown as {name:string|null;email:string|null;published:boolean;selection_status:string}|null;
   const experience=revision.experience as unknown as {name:string;published:boolean;review_status:string}|null;
-  if(!experience||experience.review_status!=="approved")return back("experience-not-approved");
-  if(!operator||operator.selection_status!=="selected")return back("operator-not-selected");
-  if(!operator.published)return back("operator-not-published");
+  if (!experience || !operator) return back(experienceRevisionBlocker(experience, operator) ?? "invalid-source-state");
+  const blocker = experienceRevisionBlocker(experience, operator);
+  if (blocker) return back(blocker);
   const general=text(form.get("review_notes"),2000); const sections=reviewSections(form); const summary=reviewSummary(sections,general);
   if(action==="request-changes"){
    if(!summary)return back("review-note-required");
