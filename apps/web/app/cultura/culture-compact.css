@@ -38,13 +38,14 @@
 
 .culture-page .culture-entry-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   align-items: stretch;
 }
 
 .culture-page .culture-entry-card {
   position: relative;
+  text-decoration: none;
   overflow: hidden;
   min-height: 248px;
   padding: 26px 30px;
@@ -157,14 +158,14 @@
   }
 
   .culture-page .culture-entry-card {
-    min-height: 214px;
-    padding: 20px 26px;
+    min-height: 196px;
+    padding: 19px 24px;
   }
 
   .culture-page .culture-entry-card h2 {
     margin-top: 4px;
     margin-bottom: 8px;
-    font-size: clamp(32px, 2.8vw, 44px);
+    font-size: clamp(29px, 2.5vw, 38px);
   }
 
   .culture-page .culture-entry-card p {

@@ -31,25 +31,25 @@ export default function CulturePage() {
           </div>
 
           <div className="culture-entry-grid">
-            <article className="culture-entry-card culture-entry-card-story">
-              <div className="culture-entry-number">01</div>
+            <Link className="culture-entry-card culture-entry-card-story public-discovery-card" href="/ti-racconto-la-storia-di-messina">
+              <div className="culture-entry-number" aria-hidden="true">01</div>
               <div className="kicker">L'esperienza editoriale BIMARIS</div>
               <h2>Ti racconto la storia di Messina</h2>
               <p>
                 Entra nella storia della città per epoche e temi. I monumenti non sono più schede isolate: diventano tappe di un racconto che mostra come Messina si è trasformata nel tempo.
               </p>
-              <Link className="button" href="/ti-racconto-la-storia-di-messina">Inizia il racconto →</Link>
-            </article>
+              <span className="button">Inizia il racconto →</span>
+            </Link>
 
-            <article className="culture-entry-card culture-entry-card-places">
-              <div className="culture-entry-number">02</div>
+            <Link className="culture-entry-card culture-entry-card-places public-discovery-card" href="/cultura/monumenti">
+              <div className="culture-entry-number" aria-hidden="true">02</div>
               <div className="kicker">Esplorazione libera</div>
               <h2>Esplora i monumenti</h2>
               <p>
                 Consulta direttamente tutti i luoghi culturali selezionati da BIMARIS e apri la scheda del monumento, museo o architettura che vuoi conoscere.
               </p>
-              <Link className="button ghost" href="/cultura/monumenti">Esplora i luoghi →</Link>
-            </article>
+              <span className="button ghost">Esplora i luoghi →</span>
+            </Link>
           </div>
         </section>
       </div>
