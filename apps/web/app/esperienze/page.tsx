@@ -44,7 +44,7 @@ export default async function ExperiencesPage({ searchParams }: {
 
   return (
     <>
-      <section className="page-hero discovery-page-hero bimaris-ambient-hero experience-catalogue-hero">
+      <section className="ux-brand-05-hero ux-brand-05-hero--compact">
         <h1>Esperienze e appuntamenti</h1>
         <p>Trova attività proposte dagli operatori BIMARIS ed eventi verificati a Messina e provincia.</p>
       </section>
@@ -88,7 +88,7 @@ export default async function ExperiencesPage({ searchParams }: {
         <div className="cards">
           {experienceCategories.map(category => (
             <Link
-              className="card experience-category-card"
+              className="card experience-category-card public-discovery-card"
               href={`/esperienze?tipo=esperienze&categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}
               key={category.slug}
               aria-labelledby={`experience-category-${category.slug}`}

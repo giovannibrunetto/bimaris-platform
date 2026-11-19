@@ -33,7 +33,7 @@ export default async function HistoricalMapPage() {
 
   return (
     <div className="storytelling-page">
-      <section className="page-hero bimaris-ambient-hero storytelling-hero">
+      <section className="ux-brand-05-hero ux-brand-05-hero--compact">
         <h1>Ti racconto la storia di Messina</h1>
         <p>Non scegliere soltanto cosa vedere. Scegli quale Messina vuoi conoscere: BIMARIS collega eventi, epoche e luoghi per accompagnarti dentro la storia della città.</p>
       </section>
@@ -45,7 +45,7 @@ export default async function HistoricalMapPage() {
         </div>
 
         <div className="storytelling-grid">
-          {stories.map((story,index)=><Link className="storytelling-card" href={`/ti-racconto-la-storia-di-messina/${story.key}`} key={story.key} aria-label={`Entra nel racconto: ${story.title}`}>
+          {stories.map((story,index)=><Link className="storytelling-card public-discovery-card" href={`/ti-racconto-la-storia-di-messina/${story.key}`} key={story.key} aria-label={`Entra nel racconto: ${story.title}`}>
             <div className="storytelling-number">0{index+1}</div>
             <div className="kicker">{STORY_CHOICE_PERIODS[story.key] ?? story.theme}</div>
             <h3>{story.title}</h3>
