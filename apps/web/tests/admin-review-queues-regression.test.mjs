@@ -7,7 +7,8 @@ const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
 test("dashboard provides one consolidated content queue and combined activity registry", () => {
   const dashboard = read("../app/admin/page.tsx");
   assert.match(dashboard, /href:"\/admin\/contenuti",label:"Contenuti da esaminare"/);
-  assert.match(dashboard, /href:"\/admin\/attivita",label:"Esperienze e appuntamenti"/);
+  assert.match(dashboard, /href: "\/admin\/attivita\?tipo=esperienze", label: "Esperienze online"/);
+  assert.match(dashboard, /label: "Appuntamenti acquisiti", value: acquiredAppointments/);
   assert.match(dashboard, /acquiredAppointments = allEventsRes\.count/);
   assert.match(dashboard, /\.neq\("experience_origin","bimaris"\)\.in\("review_status"/);
   assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
@@ -345,6 +346,6 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   const surveyPage = read("../app/admin/questionari/page.tsx");
   assert.match(surveyPage, /href="https:\/\/sondaggio\.bimarisnet\.it\/questionario-cittadini"/);
   assert.match(surveyPage, /rel="noopener noreferrer"/);
-  assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(shellCss, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });
