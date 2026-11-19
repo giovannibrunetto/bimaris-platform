@@ -12,7 +12,13 @@ export const revalidate = 0;
 
 type Application = { id: string; business_name: string; status: string };
 type Exp = { id: string; name: string; operator_id: string | null; review_status: string; experience_origin: string };
-type ExpRevision = { id: string; experience_id: string; content: Record<string, unknown> | null; experiences: ({ name: string } & Record<string, unknown>) | ({ name: string } & Record<string, unknown>)[] | null }; experience_id: string; experiences: { name: string;
+type RevisionExperience = { name: string } & Record<string, unknown>;
+type ExpRevision = {
+  id: string;
+  experience_id: string;
+  content: Record<string, unknown> | null;
+  experiences: RevisionExperience | RevisionExperience[] | null;
+};
 type ProfileRevision = { id: string; operator_id: string; operators: { name: string } | { name: string }[] | null };
 type Event = { id: string; title: string; starts_at: string; source_type: string | null };
 function relatedName(v: { name: string } | { name: string }[] | null) {
