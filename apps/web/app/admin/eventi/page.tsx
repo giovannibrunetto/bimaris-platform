@@ -59,7 +59,7 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
     <AdminSectionHeader
       title="Eventi da verificare"
       description="Controlla le schede evento in attesa di verifica. Le proposte e le modifiche delle esperienze si esaminano nella sezione operatori."
-      actions={<><Link href="/admin/operatori">Operatori ed esperienze</Link></>}
+      actions={<><Link href="/admin">← Centro operativo</Link><Link href="/admin/operatori">Operatori ed esperienze</Link></>}
     />
     <section id="pending-events" className="admin-events__body" aria-label="Coda eventi">
       <div className="admin-events__container">

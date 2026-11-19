@@ -43,6 +43,7 @@ export default async function ContentReview() {
     <AdminSectionHeader
       title="Contenuti da esaminare"
       description="Esamina revisioni dei profili, proposte degli operatori e appuntamenti acquisiti."
+      actions={<Link href="/admin">← Centro operativo</Link>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
       {total===0&&<div className="admin-events__empty"><h3>Nessun contenuto in attesa</h3><p>Non ci sono revisioni o nuove proposte da esaminare.</p></div>}

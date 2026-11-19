@@ -40,7 +40,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
     <AdminSectionHeader
       title="Esperienze e appuntamenti"
       description="Consulta il dossier, lo stato e la fonte di ogni esperienza o appuntamento."
-      actions={<><Link href="/admin/contenuti">Contenuti da esaminare</Link></>}
+      actions={<><Link href="/admin">← Centro operativo</Link><Link href="/admin/contenuti">Contenuti da esaminare</Link></>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
