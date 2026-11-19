@@ -79,7 +79,7 @@ export default async function StoriesPage() {
               const cardImageFit = cardImageFits[story.slug] ?? "cover";
               const containClass = cardImageFit === "contain" ? " story-card-media--contain" : "";
               return (
-                <Link className="card story-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
+                <Link className="card story-card public-discovery-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
                   <div className={`card-media story-card-media${containClass}`} style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
                     {cardImage && cardImageFit === "contain" && (
                       <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
