@@ -1,30 +1,52 @@
-import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
-export const dynamic="force-dynamic"; export const revalidate=0;
-type Operator={id:string;slug:string;name:string;category:string|null;published:boolean;selection_status:string};
-type Experience={id:string;operator_id:string|null;name:string;published:boolean;review_status:string;experience_origin:string};
-type Revision={id:string;experience_id:string;status:string};
-type OperatorRevision={id:string;operator_id:string;status:string;created_at:string};
-function label(v:string){return ({draft:"Bozza",pending:"Da esaminare",submitted:"Da esaminare",approved:"Approvata",rejected:"Da correggere"} as Record<string,string>)[v]??v;}
-function operatorCategory(v:string|null){const c=v?.trim();return !c||c.toLowerCase()==="esperienze"?"Operatore":c;}
-export default async function Page({searchParams}:{searchParams:Promise<{view?:string}>}){
- const {view}=await searchParams;
- const pendingOnly=view==="pending";
- if(!(await isAuthorizedAdmin()))redirect("/admin/login");const db=createServiceClient();if(!db)throw new Error("Supabase non configurato");
- const [{data:operatorData,error:operatorsError},{data:experienceData,error:experiencesError},{data:revisionData,error:revisionsError},{data:operatorRevisionData,error:operatorRevisionsError}]=await Promise.all([db.from("operators").select("id,slug,name,category,published,selection_status,operator_code").order("created_at",{ascending:false}),db.from("experiences").select("id,operator_id,name,published,review_status,experience_origin").order("created_at",{ascending:false}),db.from("experience_revisions").select("id,experience_id,status").eq("status","pending"),db.from("operator_revisions").select("id,operator_id,status,created_at").eq("status","pending").order("created_at",{ascending:false})]);
- if(operatorsError||experiencesError||revisionsError||operatorRevisionsError)throw new Error("Impossibile caricare le code degli operatori e delle revisioni");
- const operators=(operatorData??[]) as Operator[],experiences=(experienceData??[]) as Experience[],operatorExperiences=experiences.filter(e=>e.experience_origin!=="bimaris"),bimarisExperiences=experiences.filter(e=>e.experience_origin==="bimaris"),revisions=(revisionData??[]) as Revision[],operatorRevisions=(operatorRevisionData??[]) as OperatorRevision[];const hasPendingRevision=(id:string)=>revisions.some(r=>r.experience_id===id);const needsReview=(e:Experience)=>e.review_status==="pending"||e.review_status==="submitted"||hasPendingRevision(e.id);const pendingInitial=operatorExperiences.filter(e=>e.review_status==="pending"||e.review_status==="submitted").length,pendingRevisions=revisions.filter(r=>operatorExperiences.some(e=>e.id===r.experience_id)).length,pendingProfiles=operatorRevisions.length,totalPending=pendingInitial+pendingRevisions+pendingProfiles;const unpublishedOperators=operators.filter(o=>!o.published).length;const onlineOperators=operators.filter(o=>o.published).length,onlineExperiences=experiences.filter(e=>e.published).length;const pendingForOperator=(id:string)=>operatorExperiences.filter(e=>e.operator_id===id&&needsReview(e)).length+(operatorRevisions.some(r=>r.operator_id===id)?1:0);const orderedOperators=[...operators].filter(o=>!pendingOnly||pendingForOperator(o.id)>0).sort((a,b)=>Number(!b.published)-Number(!a.published)||pendingForOperator(b.id)-pendingForOperator(a.id));
- return <>
- <AdminSectionHeader
-      title="Operatori ed esperienze"
-      description="Gestisci operatori, esperienze e revisioni da un unico spazio."
-      actions={<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href="/admin/esperienze">Tutte le esperienze →</Link></>}
-      summary={<><span><strong>{onlineOperators}</strong> {onlineOperators===1?"operatore online":"operatori online"}</span><span><strong>{onlineExperiences}</strong> {onlineExperiences===1?"esperienza online":"esperienze online"}</span><span><strong>{totalPending}</strong> da esaminare</span><span><strong>{unpublishedOperators}</strong> operatori non pubblicati</span></>}
+import AdminSectionHeader from "../AdminSectionHeader";
+import "../eventi/admin-events.css";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function OperatorsPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
+  if ((await searchParams).view === "pending") redirect("/admin/contenuti");
+
+  const db = createServiceClient();
+  if (!db) throw new Error("Supabase non configurato");
+  const { data, error } = await db.from("operators").select("id,slug,name,category,published")
+    .order("published", { ascending: true }).order("created_at", { ascending: false });
+  if (error) throw new Error("Impossibile caricare gli operatori");
+  const operators = data ?? [];
+  const online = operators.filter(operator => operator.published).length;
+
+  return <div className="admin-events">
+    <AdminSectionHeader
+      title="Operatori"
+      description="Consulta i profili degli operatori e accedi ai loro dossier."
+      summary={<><span><strong>{online}</strong> online</span><span><strong>{operators.length - online}</strong> non pubblicati</span></>}
     />
- {!pendingOnly&&bimarisExperiences.length>0&&<section style={{padding:"28px 20px",background:"#f2eadc",borderBottom:"1px solid #dfd0bd"}}><div style={{maxWidth:1180,margin:"0 auto"}}><div className="kicker">Curate da BIMARIS</div><h2>BIMARIS EXPERIENCE</h2><div style={{display:"grid",gap:10}}>{bimarisExperiences.map(e=><article key={e.id} style={{background:"#fff",border:"1px solid #d9c5a8",borderRadius:14,padding:"16px 18px",display:"flex",justifyContent:"space-between",gap:18,alignItems:"center",flexWrap:"wrap"}}><div><strong>{e.name}</strong><span className="muted" style={{display:"block"}}>{label(e.review_status)} · {e.published?"Online":"Non pubblicata"}</span></div><Link className="button ghost" href={`/admin/esperienze/${e.id}${needsReview(e)?"#admin-decision":""}`}>Apri →</Link></article>)}</div></div></section>}
- <section style={{padding:"32px 20px 70px",background:"#fffaf4",minHeight:"55vh"}}><div id="pending-operators" style={{maxWidth:1180,margin:"0 auto",scrollMarginTop:24}}><nav aria-label="Filtro operatori e revisioni" style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:20}}><Link className={pendingOnly?"button":"button ghost"} aria-current={pendingOnly?"page":undefined} href="/admin/operatori?view=pending#pending-operators">Da esaminare ({totalPending})</Link><Link className={!pendingOnly?"button":"button ghost"} aria-current={!pendingOnly?"page":undefined} href="/admin/operatori">Tutti gli operatori</Link></nav>{totalPending>0&&<div style={{marginBottom:18}}><div className="kicker">Priorità operative</div><h2>Richiede attenzione</h2><div className="muted">{pendingProfiles} {pendingProfiles===1?"profilo":"profili"} · {pendingInitial} {pendingInitial===1?"nuova esperienza":"nuove esperienze"} · {pendingRevisions} {pendingRevisions===1?"modifica esperienza":"modifiche esperienze"}</div></div>}<div style={{display:"grid",gap:16}}>{orderedOperators.map(o=>{const exps=operatorExperiences.filter(e=>e.operator_id===o.id&&(!pendingOnly||needsReview(e))),pendingExp=exps.filter(needsReview).length,pendingProfile=operatorRevisions.some(r=>r.operator_id===o.id),pending=pendingExp+(pendingProfile?1:0);return <article key={o.id} style={{background:"#fff",border:pending>0?"2px solid #d79a35":"1px solid #e2d9cd",borderRadius:18,padding:"22px 24px"}}><div style={{display:"flex",justifyContent:"space-between",gap:24,alignItems:"start",flexWrap:"wrap"}}><div><div className="eyebrow">{operatorCategory(o.category)} · {o.published?"Online":"Non pubblicato"}</div><h3>{o.name}</h3>{pending>0&&<strong>{pending} {pending===1?"elemento da esaminare":"elementi da esaminare"}</strong>}</div><div className="admin-operator-card-actions"><Link className="button ghost" href={`/admin/operatori/${o.id}`}>Dossier</Link>{o.published&&<Link className="text-link" href={`/operatori/${o.slug}`} target="_blank" rel="noreferrer">Scheda pubblica ↗</Link>}</div></div>{(exps.length>0||pendingProfile)&&<div style={{marginTop:18,borderTop:"1px solid rgba(3,17,26,.10)"}}><div className="admin-operator-grid" style={{padding:"10px 4px 8px",fontSize:11,fontWeight:800,textTransform:"uppercase"}}><span>Attività</span><span>Stato revisione</span><span>Pubblicazione</span><span>Azione</span></div>{pendingProfile&&<div className="admin-operator-grid" style={{padding:"14px 12px",borderTop:"1px solid rgba(3,17,26,.08)",background:"#fff5df"}}><strong>Modifica del profilo operatore</strong><span><strong>DA ESAMINARE</strong></span><span>{o.published?"Operatore online":"Operatore non pubblicato"}</span><Link className="button" href={`/admin/operatori/${o.id}/revisioni-profilo`}>Esamina →</Link></div>}{[...exps].sort((a,b)=>Number(needsReview(b))-Number(needsReview(a))).map(e=>{const review=needsReview(e);const revisionPending=hasPendingRevision(e.id);const reviewHref=revisionPending?`/admin/revisione-esperienza?id=${encodeURIComponent(e.id)}`:`/admin/esperienze/${e.id}#admin-decision`;return <div key={e.id} className="admin-operator-grid" style={{padding:review?"14px 12px":"14px 4px",borderTop:"1px solid rgba(3,17,26,.08)",background:review?"#fff5df":"transparent"}}><strong>{e.name}</strong><span>{review?<strong>DA ESAMINARE</strong>:label(e.review_status)}</span><span>{e.published?"Pubblicata":"Non pubblicata"}</span><Link className={review?"button":"text-link"} href={review?reviewHref:`/admin/esperienze/${e.id}`}>{review?"Esamina →":"Apri →"}</Link></div>})}</div>}{exps.length===0&&!pendingOnly&&!pendingProfile&&<div className="muted" style={{marginTop:16}}>Nessuna esperienza dell’operatore associata.</div>}</article>})}{orderedOperators.length===0&&<div className="detail-panel">{pendingOnly?"Nessun operatore o esperienza da esaminare.":"Nessun operatore presente."}</div>}</div></div></section>
- </>;
+    <section className="admin-events__body" aria-label="Schede operatori">
+      <div className="admin-events__container admin-events__list">
+        {operators.map(operator => {
+          const dossier = `/admin/operatori/${operator.id}`;
+          const category = operator.category?.trim();
+          return <article key={operator.id} className="admin-events__card admin-events__card--compact">
+            <div className="admin-events__card-main">
+              <span className="admin-events__eyebrow">
+                {category && category.toLowerCase() !== "esperienze" ? category : "Operatore"} · {operator.published ? "Online" : "Non pubblicato"}
+              </span>
+              <h3>{operator.name}</h3>
+            </div>
+            <div className="admin-operator-card-actions">
+              <Link className="admin-events__examine" href={dossier}>Apri dossier →</Link>
+              <Link className="text-link" href={`${dossier}?tab=esperienze`}>Esperienze associate →</Link>
+              {operator.published && <Link className="text-link" href={`/operatori/${operator.slug}`} target="_blank" rel="noreferrer">Scheda pubblica ↗</Link>}
+            </div>
+          </article>;
+        })}
+        {operators.length === 0 && <p className="admin-events__empty">Nessun operatore presente.</p>}
+      </div>
+    </section>
+  </div>;
 }

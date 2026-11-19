@@ -13,15 +13,14 @@ test("dashboard provides one consolidated content queue and combined activity re
   assert.match(dashboard, /await isAuthorizedAdmin\(\)/);
 });
 
-test("operator page offers pending and all views without hiding regular management", () => {
+test("operator directory links to dossiers and sends old review links to the consolidated queue", () => {
   const page = read("../app/admin/operatori/page.tsx");
-  assert.match(page, /const pendingOnly=view==="pending"/);
-  assert.match(page, /filter\(o=>!pendingOnly\|\|pendingForOperator\(o\.id\)>0\)/);
-  assert.match(page, /e\.operator_id===o\.id&&\(!pendingOnly\|\|needsReview\(e\)\)/);
-  assert.match(page, /!pendingOnly&&bimarisExperiences\.length>0/);
-  assert.match(page, /href="\/admin\/operatori\?view=pending#pending-operators"/);
-  assert.match(page, /href="\/admin\/operatori"/);
   assert.match(page, /await isAuthorizedAdmin\(\)/);
+  assert.match(page, /\.view === "pending"\) redirect\("\/admin\/contenuti"\)/);
+  assert.match(page, /db\.from\("operators"\)/);
+  assert.match(page, /\?tab=esperienze/);
+  assert.doesNotMatch(page, /\.from\("(experiences|experience_revisions|operator_revisions)"\)/);
+  assert.doesNotMatch(page, /#admin-decision|revisioni-profilo|Esamina →/);
 });
 
 test("events retain independent queue and MFA authorization", () => {
@@ -32,13 +31,9 @@ test("events retain independent queue and MFA authorization", () => {
   assert.doesNotMatch(events, /isAdminAuthenticated/);
 });
 
-test("failed operator queue queries cannot be misreported as an empty queue", () => {
+test("operator directory query errors remain visible", () => {
   const page = read("../app/admin/operatori/page.tsx");
-  for (const name of ["operatorsError", "experiencesError", "revisionsError", "operatorRevisionsError"]) {
-    assert.match(page, new RegExp(name));
-  }
-  assert.match(page, /if\(operatorsError\|\|experiencesError\|\|revisionsError\|\|operatorRevisionsError\)throw new Error/);
-  assert.doesNotMatch(page, /Non pubblicato · Da verificare/);
+  assert.match(page, /if \(error\) throw new Error\("Impossibile caricare gli operatori"\)/);
 });
 
 test("dashboard fails visibly if any of its ten count queries fail", () => {
@@ -53,13 +48,10 @@ test("dashboard excludes curated BIMARIS experience revisions from operator queu
   assert.match(dashboard, /\.neq\("experiences\.experience_origin", "bimaris"\)/);
 });
 
-test("pending operator profile revision renders as its own visible row, not header action", () => {
-  const page = read("../app/admin/operatori/page.tsx");
-  assert.match(page, /Modifica del profilo operatore/);
-  assert.match(page, /pendingProfile&&<div className="admin-operator-grid"/);
-  assert.match(page, /revisioni-profilo/);
-  assert.doesNotMatch(page, />Esamina modifica<\/Link>/);
-  assert.match(page, /pendingProfiles===1\?"profilo":"profili"/);
+test("pending operator profile revisions have an action in the consolidated queue", () => {
+  const page = read("../app/admin/contenuti/page.tsx");
+  assert.match(page, /Modifica profilo/);
+  assert.match(page, /href=\{\x60\/admin\/operatori\/\$\{item\.operator_id\}\/revisioni-profilo\x60\}>Esamina/);
 });
 
 test("dashboard uses the shared MFA header exactly once", () => {
@@ -196,6 +188,15 @@ test("combined activity registry counts every acquired appointment without doubl
   assert.match(page, /allAppointments\.filter\(v=>v\.verification_status==="verified"&&!v\.published\)/);
   assert.match(dashboard, /allEventsRes\.count/);
   assert.doesNotMatch(page, /\.insert\(|\.update\(|\.delete\(/);
+});
+
+test("activity register excludes items in the operator and appointment review queues", () => {
+  const page = read("../app/admin/attivita/page.tsx");
+  assert.match(page, /\.eq\("status","pending"\)\.neq\("experiences\.experience_origin","bimaris"\)/);
+  assert.match(page, /!pendingRevisionIds\.has\(item\.id\) && item\.review_status !== "pending" && item\.review_status !== "submitted"/);
+  assert.match(page, /item\.verification_status !== "pending" \|\| item\.published/);
+  assert.match(page, /href="\/admin\/contenuti"/);
+  assert.match(page, /href="\/admin\/esperienze\/nuova"/);
 });
 
 test("focused content review presents one grouped list without duplicated navigation", () => {
