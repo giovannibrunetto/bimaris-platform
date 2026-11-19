@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./experience-revision.css";
+import { experienceFieldChanges } from "@/lib/experience-review-fields";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,7 +11,6 @@ export const revalidate = 0;
 type Content = { name?: string | null; excerpt?: string | null; description?: string | null; duration_minutes?: number | null; price_from?: number | null; meeting_point?: string | null; latitude?: number | null; longitude?: number | null; location_kind?: "venue" | "departure" | null; territory_id?: string | null; territory_municipality_code?: string | null };
 type Photo = { id?: string; storage_path: string; alt_text: string | null; sort_order: number; is_cover: boolean; source_media_id?: string | null; url?: string };
 const publicMediaUrl = (path: string) => `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}/storage/v1/object/public/experience-media/${path.split("/").map(encodeURIComponent).join("/")}`;
-const changed = (a: unknown, b: unknown) => String(a ?? "") !== String(b ?? "");
 const show = (v: unknown) => v === null || v === undefined || v === "" ? "—" : String(v);
 
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ state?: string }> }) {
@@ -35,14 +35,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     return { ...photo, url: error ? "" : (data?.signedUrl ?? "") };
   }));
   const next = (revision?.content ?? {}) as Content;
-  const allFields: [string, unknown, unknown][] = [
-    ["Nome", experience.name, next.name], ["Testo breve", experience.excerpt, next.excerpt],
-    ["Descrizione", experience.description, next.description], ["Durata", experience.duration_minutes, next.duration_minutes],
-    ["Prezzo da", experience.price_from, next.price_from], ["Punto di incontro", experience.meeting_point, next.meeting_point],
-    ["Tipologia punto", experience.location_kind, next.location_kind], ["Latitudine", experience.latitude, next.latitude],
-    ["Longitudine", experience.longitude, next.longitude], ["Codice ISTAT comune", experience.territory_municipality_code, next.territory_municipality_code],
-  ];
-  const changedFields = allFields.filter(([, before, after]) => changed(before, after));
+  const changedFields = experienceFieldChanges(experience, next);
   const originalPhotos: Photo[] = ((livePhotos ?? []) as Photo[]).map(p => ({ ...p, url: publicMediaUrl(p.storage_path) }));
   // A retained image refers to its existing experience_media.id, not its storage path:
   // two different records may point to the same underlying image.
@@ -117,7 +110,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         <p className="revision-full-comparison__hint">Consulta tutti i campi e le fotografie soltanto quando serve un controllo approfondito.</p>
         <div className="revision-full-comparison__fields">
           {allFields.map(([label,before,after])=><div className="revision-full-comparison__field" key={label}>
-            <strong>{label} · {changed(before,after)?"modificato":"invariato"}</strong>
+            <strong>{label} · modificato</strong>
             <div className="revision-changes__values">
               <div><small>{currentLabel}</small><p>{show(before)}</p></div>
               <div><small>PROPOSTA OPERATORE</small><p>{show(after)}</p></div>
