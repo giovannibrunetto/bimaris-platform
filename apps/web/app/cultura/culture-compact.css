@@ -87,13 +87,7 @@
   margin-top: auto;
 }
 
-.culture-page .culture-entry-card-places .button.ghost {
-  background: var(--bimaris-abyssal-teal);
-  border-color: var(--bimaris-abyssal-teal);
-  color: #fff;
-}
-
-.culture-page .culture-entry-card-story .button {
+.culture-page .culture-entry-card .button {
   background: var(--bimaris-gold);
   border-color: var(--bimaris-gold);
   color: var(--bimaris-abyssal-teal);

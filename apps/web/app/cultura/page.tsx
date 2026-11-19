@@ -38,7 +38,7 @@ export default function CulturePage() {
               <p>
                 Scegli un luogo e scopri la sua storia nella scheda dedicata.
               </p>
-              <span className="button ghost">Esplora i luoghi →</span>
+              <span className="button">Esplora i luoghi →</span>
             </Link>
           </div>
         </section>
