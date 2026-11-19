@@ -81,3 +81,7 @@ body:has(.revision-workspace) .admin-status-guide{display:none}
 .revision-workspace .revision-section-heading{margin-bottom:13px}
 .revision-workspace__content{min-width:0}
 @media(max-width:720px){.revision-workspace{padding:17px 15px 34px}.revision-workspace__heading{align-items:flex-start;gap:12px}.revision-workspace__heading-copy{flex-basis:100%}.revision-workspace__links{width:100%;gap:7px}.revision-workspace__links a{flex:1 1 auto;font-size:12px}.revision-workspace__panel{padding:16px!important}}
+
+.revision-workspace #prima-modifica {
+  scroll-margin-top: 112px;
+}

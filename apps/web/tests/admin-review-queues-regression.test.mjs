@@ -175,7 +175,7 @@ test("consolidated content queue keeps operator reviews and event dossiers disti
   assert.match(page, /experience_origin","bimaris"/);
   assert.match(page, /verification_status","pending"/);
   assert.match(page, /\/admin\/operatori\/\$\{item\.operator_id\}\/revisioni-profilo/);
-  assert.match(page, /\/admin\/esperienze\/\$\{encodeURIComponent\(item\.experience_id\)\}\/revisione#revision-changes-title/);
+  assert.match(page, /\/admin\/esperienze\/\$\{encodeURIComponent\(item\.experience_id\)\}\/revisione#prima-modifica/);
   assert.match(page, /\/admin\/eventi\/\$\{item\.id\}/);
   assert.doesNotMatch(page, /<form method="post"/);
 });

@@ -121,7 +121,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
             const fields = current && item.content ? experienceFieldChanges(current, item.content).map(([label]) => label) : [];
             return <article className="admin-events__card admin-events__card--compact" key={`rev-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Modifica</span><h3>{relatedName(item.experiences)}</h3><p>{fields.length > 0 ? `Campi modificati: ${fields.join(", ")}. Confronta le versioni prima di decidere.` : "Apri il confronto per verificare le differenze, comprese le foto."}</p></div>
-            <Link className="admin-events__examine" href={`/admin/esperienze/${encodeURIComponent(item.experience_id)}/revisione#revision-changes-title`}>Confronta modifica →</Link>
+            <Link className="admin-events__examine" href={`/admin/esperienze/${encodeURIComponent(item.experience_id)}/revisione#prima-modifica`}>Confronta modifica →</Link>
           </article>;
           })}
           {experienceCount === 0 && <p className="admin-events__empty">Nessuna esperienza in attesa.</p>}

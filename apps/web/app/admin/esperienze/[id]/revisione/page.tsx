@@ -79,14 +79,14 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           ? <Link className="text-link" href={`/admin/esperienze/${id}`}>Apri la scheda esperienza →</Link>
           : <Link className="text-link" href="/admin/contenuti?categoria=esperienze">Torna alle esperienze da esaminare →</Link>}
     </div>}
-    {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel revision-workspace__panel">
+    {!revision ? <div id="prima-modifica" className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel revision-workspace__panel">
       <section className="revision-changes" aria-labelledby="revision-changes-title">
         <div className="revision-section-heading"><h3 id="revision-changes-title">Solo le modifiche da esaminare</h3>
           <p>{changedFields.length} {changedFields.length===1?"campo modificato":"campi modificati"} · {photoChangesCount} {photoChangesCount===1?"modifica fotografica":"modifiche fotografiche"}. I campi invariati sono nascosti.</p>
         </div>
-        {changedFields.length===0&&photoChangesCount===0&&<p className="revision-changes__empty">Nessuna differenza rilevata rispetto alla versione approvata. Controlla i dettagli prima di decidere.</p>}
+        {changedFields.length===0&&photoChangesCount===0&&<p id="prima-modifica" className="revision-changes__empty">Nessuna differenza rilevata rispetto alla versione approvata. Controlla i dettagli prima di decidere.</p>}
         <div className="revision-changes__fields">
-          {changedFields.map(([label,before,after])=><section key={label} className="revision-changes__field">
+          {changedFields.map(([label,before,after], index)=><section key={label} id={index === 0 ? "prima-modifica" : undefined} className="revision-changes__field">
             <h4>{label}</h4>
             <div className="revision-changes__values">
               <div><small>{currentLabel}</small><p>{show(before)}</p></div>
@@ -94,7 +94,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             </div>
           </section>)}
         </div>
-        {photoChangesCount>0&&<section className="revision-gallery" aria-label="Fotografie interessate dalla revisione">
+        {photoChangesCount>0&&<section id={changedFields.length === 0 ? "prima-modifica" : undefined} className="revision-gallery" aria-label="Fotografie interessate dalla revisione">
           <div className="revision-section-heading"><h3>Fotografie modificate</h3><p>Solo gli elementi aggiunti, rimossi o cambiati di posizione o copertina.</p></div>
           <div className="revision-gallery__changes">
             {addedPhotos.map((photo,i)=><figure className="revision-gallery__photo" key={photo.storage_path+"-add-"+i}>
