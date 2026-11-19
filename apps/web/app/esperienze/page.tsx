@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ExperienceExplorer } from "@/components/ExperienceExplorer";
 import { getPublishedExperiences } from "@/data/live";
-import type { CategorySlug } from "@/lib/types";
+import { experienceCategories, isExperienceCategory } from "@/lib/experience-categories";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -12,21 +12,12 @@ export const metadata: Metadata = {
   description: "Esperienze selezionate a Messina e provincia: degustazioni, mare, avventura, trekking, visite guidate e laboratori scelti da BIMARIS.",
 };
 
-const experienceCategories: Array<{ slug: CategorySlug; title: string; text: string }> = [
-  { slug: "degustazioni", title: "Degustazioni", text: "Cantine, produttori e incontri dedicati ai sapori del territorio." },
-  { slug: "mare", title: "Mare", text: "Navigazioni, attività nello Stretto e modi autentici di vivere il mare." },
-  { slug: "avventura", title: "Avventura", text: "Rafting e attività dinamiche per scoprire il territorio in modo diverso." },
-  { slug: "trekking-natura", title: "Trekking e natura", text: "Escursioni, sentieri e attività all'aperto tra monti e paesaggi messinesi." },
-  { slug: "visite-guidate", title: "Visite guidate", text: "Esperienze accompagnate per conoscere luoghi, storia e patrimonio locale." },
-  { slug: "artigianato-laboratori", title: "Artigianato e laboratori", text: "Botteghe, lavorazioni e attività pratiche legate ai saperi del territorio." },
-];
-
 export default async function ExperiencesPage({ searchParams }: { searchParams?: Promise<{ categoria?: string }> }) {
   const experiences = await getPublishedExperiences();
-  const availableCategories = new Set<CategorySlug>(experiences.map(experience => experience.category));
+  const availableCategories = new Set(experiences.map(experience => experience.category));
   const params = searchParams ? await searchParams : undefined;
   const requestedCategory = params?.categoria;
-  const initialCategory = requestedCategory && availableCategories.has(requestedCategory as CategorySlug)
+  const initialCategory = isExperienceCategory(requestedCategory)
     ? requestedCategory
     : "all";
 
@@ -52,14 +43,12 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
           {experienceCategories.map(category => (
             <article className="card" key={category.slug}>
               <div className="card-body">
-                <div className="kicker">{availableCategories.has(category.slug) ? "Esperienze disponibili" : "Categoria BIMARIS"}</div>
+                <div className="kicker">{availableCategories.has(category.slug) ? "Esperienze disponibili" : "Nessuna esperienza disponibile"}</div>
                 <h3>{category.title}</h3>
                 <p>{category.text}</p>
-                {availableCategories.has(category.slug) && (
-                  <Link className="text-link" href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}>
-                    Vedi le proposte →
-                  </Link>
-                )}
+                <Link className="text-link" href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}>
+                  {availableCategories.has(category.slug) ? "Vedi le proposte" : "Apri la categoria"} →
+                </Link>
               </div>
             </article>
           ))}
@@ -75,9 +64,8 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
           <p>{experiences.length > 0 ? "Filtra le proposte per categoria e territorio e scopri l'operatore che le realizza." : "Ogni esperienza sarà pubblicata solo dopo la verifica della realtà che la propone e della sua coerenza con il territorio."}</p>
         </div>
 
-        {experiences.length > 0 ? (
-          <ExperienceExplorer experiences={experiences} initialCategory={initialCategory} />
-        ) : (
+        <ExperienceExplorer experiences={experiences} initialCategory={initialCategory} />
+        {experiences.length === 0 && (
           <div className="detail-panel">
             <div className="kicker">Prima della pubblicazione</div>
             <h3>Stiamo costruendo la rete di esperienze BIMARIS.</h3>

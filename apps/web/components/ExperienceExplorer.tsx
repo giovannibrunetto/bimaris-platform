@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import type { Experience } from "@/lib/types";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { track } from "@/lib/analytics";
+import { experienceCategories, isExperienceCategory } from "@/lib/experience-categories";
 
 export function ExperienceExplorer({ experiences, initialCategory = "all" }: { experiences: Experience[]; initialCategory?: string }) {
   const searchParams = useSearchParams();
@@ -13,24 +14,27 @@ export function ExperienceExplorer({ experiences, initialCategory = "all" }: { e
   const categoryFromUrl = searchParams.get("categoria") ?? "all";
 
   useEffect(() => {
-    setCategory(categoryFromUrl);
+    setCategory(isExperienceCategory(categoryFromUrl) ? categoryFromUrl : "all");
   }, [categoryFromUrl]);
 
-  const categories = useMemo(() => {
-    const values = new Map<string, string>();
-    experiences.forEach(item => values.set(item.category, item.categoryName));
-    return Array.from(values.entries()).sort((a, b) => a[1].localeCompare(b[1], "it"));
-  }, [experiences]);
-
   const territories = useMemo(() => {
-    const values = new Map<string, string>();
-    experiences.forEach(item => values.set(item.territory, item.location));
-    return Array.from(values.entries()).sort((a, b) => a[1].localeCompare(b[1], "it"));
+    const values = new Map([
+      ["messina-stretto", "Messina"],
+      ["area-ionica", "Area Ionica"],
+      ["area-tirrenica", "Area Tirrenica"],
+    ]);
+    experiences.forEach(item => {
+      if (item.territory !== "milazzo-tirrenica" && !values.has(item.territory)) {
+        values.set(item.territory, item.location);
+      }
+    });
+    return Array.from(values.entries());
   }, [experiences]);
 
   const filtered = experiences.filter(item =>
     (category === "all" || item.category === category) &&
-    (territory === "all" || item.territory === territory),
+    (territory === "all" || item.territory === territory
+      || (territory === "area-tirrenica" && item.territory === "milazzo-tirrenica")),
   );
 
   function chooseCategory(value: string) {
@@ -51,13 +55,13 @@ export function ExperienceExplorer({ experiences, initialCategory = "all" }: { e
             <span>Categoria</span>
             <select value={category} onChange={event => chooseCategory(event.target.value)}>
               <option value="all">Tutte le categorie</option>
-              {categories.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
+              {experienceCategories.map(({ slug, title }) => <option key={slug} value={slug}>{title}</option>)}
             </select>
           </label>
           <label className="experience-filter-field">
-            <span>Territorio</span>
+            <span>Zona</span>
             <select value={territory} onChange={event => chooseTerritory(event.target.value)}>
-              <option value="all">Tutti i territori</option>
+              <option value="all">Tutte le zone</option>
               {territories.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
             </select>
           </label>
@@ -73,7 +77,7 @@ export function ExperienceExplorer({ experiences, initialCategory = "all" }: { e
         <div className="detail-panel experience-empty" role="status">
           <div className="kicker">Nessun risultato</div>
           <h3>Nessuna esperienza corrisponde ai filtri selezionati.</h3>
-          <p className="muted">Modifica la categoria o il territorio per vedere le altre proposte disponibili.</p>
+          <p className="muted">Modifica la categoria o la zona per vedere le altre proposte disponibili.</p>
         </div>
       )}
 
