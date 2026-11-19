@@ -44,7 +44,7 @@ export default async function ExperiencesPage({ searchParams }: {
 
   return (
     <>
-      <section className="page-hero discovery-page-hero bimaris-ambient-hero">
+      <section className="page-hero discovery-page-hero bimaris-ambient-hero experience-catalogue-hero">
         <h1>Esperienze e appuntamenti</h1>
         <p>Trova attività proposte dagli operatori BIMARIS ed eventi verificati a Messina e provincia.</p>
       </section>
@@ -58,10 +58,10 @@ export default async function ExperiencesPage({ searchParams }: {
       </nav>
 
       {showAppointments && (
-        <section className="section" aria-labelledby="public-appointments-heading">
+        <section className={`section experience-catalogue-section${appointments.length === 0 ? " experience-appointments-empty" : ""}`} aria-labelledby="public-appointments-heading">
           <div className="section-head">
             <h2 id="public-appointments-heading">Appuntamenti</h2>
-            <p>Eventi da fonti esterne, verificati prima della pubblicazione.</p>
+            {appointments.length > 0 && <p>Eventi da fonti esterne, verificati prima della pubblicazione.</p>}
           </div>
           {appointments.length === 0 ? <p>Nessun appuntamento in programma.</p> : (
             <div className="cards">
@@ -80,13 +80,9 @@ export default async function ExperiencesPage({ searchParams }: {
       )}
 
       {showExperiences && <>
-      <section className="section sand discovery-page-first">
+      <section className="section sand discovery-page-first experience-catalogue-section">
         <div className="section-head">
-          <div>
-            <div className="kicker">Cosa vuoi fare?</div>
-            <h2>Scegli come vivere il territorio.</h2>
-          </div>
-          <p>Esplora le categorie BIMARIS. Le proposte saranno visibili dopo la verifica e la pubblicazione delle singole esperienze.</p>
+          <h2>Scegli una categoria</h2>
         </div>
 
         <div className="cards">
@@ -109,7 +105,7 @@ export default async function ExperiencesPage({ searchParams }: {
           ))}
         </div>
       </section>
-        <section className="section" id="esperienze-disponibili" aria-labelledby="public-experiences-heading">
+        <section className="section experience-catalogue-section" id="esperienze-disponibili" aria-labelledby="public-experiences-heading">
           <div className="section-head">
             <h2 id="public-experiences-heading">Esperienze</h2>
             <p>Attività proposte dagli operatori BIMARIS. Cerca per categoria e zona.</p>
