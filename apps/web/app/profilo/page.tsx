@@ -6,22 +6,93 @@ import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live
 import { getPublishedStories } from "@/data/stories";
 import { getPublishedVillages } from "@/data/villages";
 import { getPublishedFoodProducts } from "@/data/food-products";
+import { getPublishedOperators } from "@/data/operators";
+import { getPublishedAppointments } from "@/data/public-appointments";
 import LogoutButton from "./LogoutButton";
 import ProfilePreferenceSummary from "./ProfilePreferenceSummary";
 
 export const dynamic = "force-dynamic";
 const labels:Record<string,string>={"cultura":"Cultura e monumenti","miti-leggende":"Miti e leggende","borghi":"Borghi","sapori":"Sapori e vino","food-wine":"Sapori e vino","mare":"Mare","natura-trekking":"Natura e trekking","avventura":"Avventura","esperienze":"Esperienze"};
-type Recommendation={key:string;href:string;title:string;copy:string;kind:string;score:number;featured:boolean;interestKey:string};
+type Recommendation={key:string;href:string;title:string;copy:string;kind:string;score:number;featured:boolean;interestKey:string;operatorSlug?:string};
 function experienceInterest(category:string){if(category==="degustazioni")return"sapori";if(category==="mare")return"mare";if(category==="avventura")return"avventura";if(category==="trekking-natura")return"natura-trekking";return"esperienze";}
 function contextBoost(key:string,companion?:string|null,time?:string|null,pace?:string|null){let boost=0;const add=(keys:string[],value:number)=>{if(keys.includes(key))boost+=value};if(companion==="famiglia")add(["cultura","borghi","mare"],.8);if(companion==="coppia")add(["sapori","mare","borghi"],.8);if(companion==="amici")add(["esperienze","avventura","sapori"],.8);if(companion==="solo")add(["cultura","natura-trekking","miti-leggende"],.65);if(time==="2-3-ore")add(["cultura","sapori","miti-leggende"],.55);if(time==="mezza-giornata")add(["cultura","sapori","mare","esperienze"],.45);if(time==="giornata")add(["natura-trekking","borghi","mare","avventura"],.6);if(time==="piu-giorni")add(["borghi","natura-trekking","esperienze"],.65);if(pace==="rilassato")add(["sapori","mare","borghi"],.5);if(pace==="equilibrato")add(["cultura","esperienze","mare"],.3);if(pace==="intenso")add(["cultura","natura-trekking","avventura","esperienze"],.55);return boost;}
 
+const appointmentDate = new Intl.DateTimeFormat("it-IT", {
+ day: "numeric", month: "long", timeZone: "Europe/Rome",
+});
+
+function matchingInterests(value: string) {
+ const categories = [
+  ["sapori", /gastronom|ristor|cantin|vino|degust|cucin|birr|pasticc|agritur|sapori/i],
+  ["mare", /\bmare\b|nautic|vela|immersion|snorkel|barca|kayak/i],
+  ["natura-trekking", /trekking|escursion|sentier|natura|parco/i],
+  ["avventura", /avventura|arrampicat|rafting|mountain bike/i],
+  ["cultura", /cultur|monument|muse|mostra|teatr|storic|artigian|visite? guidat/i],
+  ["miti-leggende", /mitolog|leggend/i],
+  ["borghi", /\bborg[oh]/i],
+ ] as const;
+ return categories.filter(([, pattern]) => pattern.test(value)).map(([key]) => key as string);
+}
+
+function bestInterest(keys: string[], scoreFor: (key: string) => number) {
+ const options = keys.length ? keys : ["esperienze"];
+ return options.reduce((best, key) => scoreFor(key) > scoreFor(best) ? key : best);
+}
+
 export default async function ProfiloPage({searchParams}:{searchParams:Promise<{onboarding?:string}>}){
  const supabase=await createUserServerClient();if(!supabase)redirect("/accedi");const{data:claimsData}=await supabase.auth.getClaims();const userId=typeof claimsData?.claims?.sub==="string"?claimsData.claims.sub:null;if(!userId)redirect("/accedi");
- const[{data:profile},{data:interests},{count:savedCount},{data:newsletter},culture,stories,villages,products,experiences]=await Promise.all([supabase.from("user_profiles").select("*").eq("user_id",userId).maybeSingle(),supabase.from("user_interests").select("*").eq("user_id",userId),supabase.from("user_saved_items").select("item_id",{count:"exact",head:true}).eq("user_id",userId),supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id",userId).maybeSingle(),getPublishedCultureEntries(),getPublishedStories(),getPublishedVillages(),getPublishedFoodProducts(),getPublishedExperiences()]);
- const{onboarding}=await searchParams;const ranked=[...(interests??[])].map(item=>({...item,score:Number(item.explicit_score??0)*2+Number(item.behavioral_score??0)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);const interestScores=new Map(ranked.map(item=>[item.interest_key,item.score]));const scoreFor=(key:string)=>Number(interestScores.get(key)??0)+contextBoost(key,profile?.travel_companion,profile?.typical_time_available,profile?.preferred_pace);
- const candidates:Recommendation[]=[...culture.map(item=>({key:`culture:${item.id}`,href:`/cultura/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Cultura",score:scoreFor("cultura"),featured:Boolean(item.featured),interestKey:"cultura"})),...stories.map(item=>({key:`story:${item.id}`,href:`/storie-miti-leggende/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Miti e leggende",score:scoreFor("miti-leggende"),featured:Boolean(item.featured),interestKey:"miti-leggende"})),...villages.map(item=>({key:`village:${item.id}`,href:`/borghi/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Borghi",score:scoreFor("borghi"),featured:Boolean(item.featured),interestKey:"borghi"})),...products.map(item=>({key:`product:${item.id}`,href:`/sapori-territori/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Sapori e territori",score:scoreFor("sapori"),featured:Boolean(item.featured),interestKey:"sapori"})),...experiences.map(item=>{const interestKey=experienceInterest(item.category);return{key:`experience:${item.id}`,href:`/esperienze/${item.slug}`,title:item.name,copy:item.excerpt,kind:item.categoryName,score:Math.max(scoreFor(interestKey),scoreFor("esperienze")*.8),featured:Boolean(item.featured),interestKey}})].filter(item=>item.score>0);
- const sortedCandidates=candidates.sort((a,b)=>(b.score+(b.featured?.25:0))-(a.score+(a.featured?.25:0))).filter((item,index,array)=>index===array.findIndex(other=>other.href===item.href));
- const interestOrder=[...new Set([...ranked.map(item=>item.interest_key),...sortedCandidates.map(item=>item.interestKey)])];const recommendations:Recommendation[]=[];let round=0;while(recommendations.length<6){let added=false;for(const interestKey of interestOrder){const pool=sortedCandidates.filter(item=>item.interestKey===interestKey&&!recommendations.some(selected=>selected.href===item.href));if(pool[round]){recommendations.push(pool[round]);added=true;if(recommendations.length===6)break;}}if(!added)break;round++;}for(const item of sortedCandidates){if(recommendations.length===6)break;if(!recommendations.some(selected=>selected.href===item.href))recommendations.push(item);}const primaryRecommendations=recommendations.slice(0,3);const hasMoreRecommendations=recommendations.length>3;const hasPreferences=ranked.length>0;
+ const[{data:profile},{data:interests},{count:savedCount},{data:newsletter},culture,stories,villages,products,experiences,operators,appointments]=await Promise.all([supabase.from("user_profiles").select("*").eq("user_id",userId).maybeSingle(),supabase.from("user_interests").select("*").eq("user_id",userId),supabase.from("user_saved_items").select("item_id",{count:"exact",head:true}).eq("user_id",userId),supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id",userId).maybeSingle(),getPublishedCultureEntries(),getPublishedStories(),getPublishedVillages(),getPublishedFoodProducts(),getPublishedExperiences(),getPublishedOperators(),getPublishedAppointments()]);
+ const{onboarding}=await searchParams;const ranked=[...(interests??[])].map(item=>({...item,score:Number(item.explicit_score??0)*2+Number(item.behavioral_score??0)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);const interestScores=new Map<string, number>();
+ for (const item of ranked) {
+  const key = item.interest_key === "food-wine" ? "sapori" : item.interest_key;
+  interestScores.set(key, Math.max(interestScores.get(key) ?? 0, item.score));
+ };const scoreFor=(key:string)=>Number(interestScores.get(key)??0)+contextBoost(key,profile?.travel_companion,profile?.typical_time_available,profile?.preferred_pace);
+ const candidates:Recommendation[]=[...culture.map(item=>({key:`culture:${item.id}`,href:`/cultura/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Cultura",score:scoreFor("cultura"),featured:Boolean(item.featured),interestKey:"cultura"})),...stories.map(item=>({key:`story:${item.id}`,href:`/storie-miti-leggende/${item.slug}`,title:item.title,copy:item.excerpt,kind:"Miti e leggende",score:scoreFor("miti-leggende"),featured:Boolean(item.featured),interestKey:"miti-leggende"})),...villages.map(item=>({key:`village:${item.id}`,href:`/borghi/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Borghi",score:scoreFor("borghi"),featured:Boolean(item.featured),interestKey:"borghi"})),...products.map(item=>({key:`product:${item.id}`,href:`/sapori-territori/${item.slug}`,title:item.name,copy:item.excerpt,kind:"Sapori e territori",score:scoreFor("sapori"),featured:Boolean(item.featured),interestKey:"sapori"})),...experiences.map(item=>{const interestKey=experienceInterest(item.category);return{key:`experience:${item.id}`,href:`/esperienze/${item.slug}`,title:item.name,copy:item.excerpt,kind:`Esperienza · ${item.categoryName}`,operatorSlug:item.operatorSlug,score:Math.max(scoreFor(interestKey),scoreFor("esperienze")*.8),featured:Boolean(item.featured),interestKey}}),
+  ...operators.map(operator => {
+   const keys = matchingInterests(operator.category ?? "");
+   for (const experience of experiences.filter(item => item.operatorSlug === operator.slug)) {
+    keys.push(experienceInterest(experience.category));
+   }
+   const interestKey = bestInterest(keys, scoreFor);
+   return {
+    key: `operator:${operator.id}`, href: `/operatori/${operator.slug}`,
+    title: operator.name, copy: operator.territoryName ?? "",
+    kind: operator.category ? `Operatore · ${operator.category}` : "Operatore",
+    score: scoreFor(interestKey), featured: false, interestKey, operatorSlug: operator.slug,
+   };
+  }),
+  ...appointments.map(appointment => {
+   const interestKey = bestInterest(matchingInterests(appointment.title), scoreFor);
+   return {
+    key: `appointment:${appointment.id}`,
+    href: appointment.sourceUrl ?? "/esperienze?tipo=appuntamenti",
+    title: appointment.title, copy: appointment.location ?? "",
+    kind: `Appuntamento · ${appointmentDate.format(new Date(appointment.startsAt))}`,
+    score: scoreFor(interestKey), featured: false, interestKey,
+   };
+  }),
+ ].filter(item => item.score > 0);
+ const sortedCandidates = candidates.sort((a, b) => (b.score + (b.featured ? .25 : 0)) - (a.score + (a.featured ? .25 : 0)));
+ const recommendations: Recommendation[] = [];
+ const usedInterests = new Set<string>();
+ const usedOperators = new Set<string>();
+ for (const item of sortedCandidates) {
+  if (usedInterests.has(item.interestKey) || (item.operatorSlug && usedOperators.has(item.operatorSlug))) continue;
+  recommendations.push(item);
+  usedInterests.add(item.interestKey);
+  if (item.operatorSlug) usedOperators.add(item.operatorSlug);
+  if (recommendations.length === 3) break;
+ }
+ for (const item of sortedCandidates) {
+  if (recommendations.length === 6) break;
+  if (recommendations.includes(item)) continue;
+  if (recommendations.length < 3 && item.operatorSlug && usedOperators.has(item.operatorSlug)) continue;
+  recommendations.push(item);
+  if (item.operatorSlug) usedOperators.add(item.operatorSlug);
+ }
+ const primaryRecommendations = recommendations.slice(0, 3);
+ const hasMoreRecommendations = recommendations.length > 3;
+ const hasPreferences = ranked.length > 0;
  return <div className="profile-page"><style>{`
  .profile-page{background:#f3efe6;color:#172a33;min-height:100vh;padding:28px 20px 70px}.profile-shell{max-width:1160px;margin:auto}.profile-hero{background:radial-gradient(circle at 86% 15%,rgba(202,168,106,.18),transparent 30%),linear-gradient(135deg,#0b2638,#061624 72%);color:#f3efe6;border-radius:30px;padding:clamp(36px,5vw,60px);padding-right:140px;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(6,22,36,.17)}.profile-hero:after{content:"";position:absolute;width:390px;height:390px;border:1px solid rgba(202,168,106,.19);border-radius:50%;right:-155px;top:-250px;box-shadow:0 0 0 72px rgba(202,168,106,.028)}.kicker,.profile-hero .kicker{color:#caa86a;letter-spacing:.17em;text-transform:uppercase;font-size:11px;font-weight:800}.profile-hero h1{font-family:Georgia,serif;color:#f3efe6;font-size:clamp(44px,5.5vw,68px);font-weight:400;letter-spacing:-.035em;line-height:.96;margin:10px 0 17px;position:relative;z-index:1}.profile-hero p{color:rgba(243,239,230,.7);max-width:730px;font-size:16px;line-height:1.65;margin:0;position:relative;z-index:1}.profile-success{margin:14px 2px 0;padding:11px 15px;border-radius:13px;color:#5c492a;background:rgba(202,168,106,.13);border:1px solid rgba(202,168,106,.25)}
  .profile-session-actions{position:absolute;right:26px;top:26px;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:7px}.profile-logout{border:1px solid rgba(202,168,106,.35);background:rgba(255,255,255,.055);color:#f3efe6;border-radius:999px;padding:9px 17px;font:inherit;font-weight:750;cursor:pointer;backdrop-filter:blur(8px)}.profile-logout:hover{background:rgba(202,168,106,.12)}.profile-logout:disabled{opacity:.6;cursor:wait}.profile-logout-error{font-size:12px;color:#fff;max-width:220px;text-align:right}
@@ -60,6 +131,6 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
    </div>
   </div>
  </section>
- <section className="profile-recommendations"><div className="recommendation-head"><h2>Scelti per te</h2></div>{primaryRecommendations.length?<><div className="recommendation-grid">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{recommendations.slice(3).map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3><p>{item.copy}</p><span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
+ <section className="profile-recommendations"><div className="recommendation-head"><h2>Scelti per te</h2></div>{primaryRecommendations.length?<><div className="recommendation-grid">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{recommendations.slice(3).map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
  </div></div>;
 }

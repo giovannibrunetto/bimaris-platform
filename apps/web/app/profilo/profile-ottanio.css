@@ -145,3 +145,13 @@
   .profile-page .overview-grid { grid-template-columns: minmax(0, 1fr); }
   .profile-page .overview-item:first-child { grid-column: auto; }
 }
+
+.profile-page .recommendation-card {
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}
+.profile-page .recommendation-card > .text-link {
+  margin-top: auto;
+  align-self: flex-start;
+}
