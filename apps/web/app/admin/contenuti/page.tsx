@@ -47,7 +47,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
     { key: "candidature", label: "Candidature", count: applications.length },
     { key: "profili", label: "Modifiche ai profili", count: profiles.length },
     { key: "esperienze", label: "Esperienze", count: experienceCount },
-    { key: "appuntamenti", label: "Appuntamenti", count: appointments.length },
+    { key: "appuntamenti", label: "Appuntamenti MAI", count: appointments.length },
   ];
   const { categoria } = await searchParams;
   const selected = categories.find(item => item.key === categoria)
@@ -57,7 +57,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
   return <div className="admin-events admin-content-review">
     <AdminSectionHeader
       title="Contenuti da esaminare"
-      description="Qui trovi candidature, modifiche ai profili e attività in attesa di verifica. Le esperienze sono attività proposte dagli operatori, come visite o laboratori. Gli appuntamenti sono eventi acquisiti da altre fonti, con una data specifica."
+      description="Qui trovi candidature, modifiche ai profili e attività in attesa di verifica. Le esperienze sono attività proposte dagli operatori, come visite o laboratori. Gli appuntamenti sono eventi con una data specifica provenienti da fonti esterne. Il MAI è il canale previsto per acquisirli."
       actions={<Link href="/admin">← Centro operativo</Link>}
     />
     <section className="admin-events__body"><div className="admin-events__container review-queue">
