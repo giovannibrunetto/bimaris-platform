@@ -38,9 +38,9 @@ test("operator directory query errors remain visible", () => {
   assert.match(page, /if \(error\) throw new Error\("Impossibile caricare gli operatori"\)/);
 });
 
-test("dashboard fails visibly if any of its ten count queries fail", () => {
+test("dashboard fails visibly if any of its nine count queries fail", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes,allEventsRes\]\.some\(result => result\.error\)/);
+  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes\]\.some\(result => result\.error\)/);
   assert.match(dashboard, /throw new Error\("Impossibile caricare i contatori della dashboard amministrativa"\)/);
 });
 
@@ -347,6 +347,6 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   const surveyPage = read("../app/admin/questionari/page.tsx");
   assert.match(surveyPage, /href="https:\/\/sondaggio\.bimarisnet\.it\/questionario-cittadini"/);
   assert.match(surveyPage, /rel="noopener noreferrer"/);
-  assert.match(shellCss, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+  assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });

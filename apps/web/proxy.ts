@@ -32,9 +32,13 @@ export function proxy(request: NextRequest) {
       "X-Robots-Tag": "noindex, nofollow, noarchive", "Cache-Control": "no-store",
     } });
   }
-  if (!isPrelaunchEnabled()) return NextResponse.next();
-
   const { pathname } = request.nextUrl;
+  if (!isPrelaunchEnabled()) {
+    if (pathname === "/itinerari" || pathname.startsWith("/itinerari/")) {
+      return NextResponse.redirect(new URL("/mappa/epoche", request.url));
+    }
+    return NextResponse.next();
+  }
 
   // The minimal public mode intentionally exposes only the root document and
   // Next.js build assets required to render it. Application-owned public files

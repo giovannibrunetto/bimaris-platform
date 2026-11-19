@@ -32,7 +32,7 @@ export default function Home() {
               <span className="home-journey-number">01</span>
               <div className="home-journey-path-copy">
                 <span className="home-journey-label">Entra nella storia della città</span>
-                <h3>Ti racconto Messina</h3>
+                <h3>Ti racconto la storia di Messina</h3>
                 <p>Epoche, eventi e luoghi si collegano per farti conoscere Messina attraverso le sue storie.</p>
                 <span className="home-journey-action">Inizia a scoprire <b>→</b></span>
               </div>

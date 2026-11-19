@@ -12,20 +12,19 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes, approvedEventsRes, allEventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, approvedEventsRes, allEventsRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experience_revisions").select("id,experiences!inner(experience_origin)", { count: "exact", head: true }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }),
   ]);
 
-  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,onlineItinsRes,eventsRes,approvedEventsRes,allEventsRes].some(result => result.error)) {
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes].some(result => result.error)) {
     throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
   }
 
@@ -38,7 +37,6 @@ export default async function AdminPage() {
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
-  const onlineItineraries = onlineItinsRes.count ?? 0;
   const acquiredAppointments = allEventsRes.count ?? 0;
 
   const reviewBreakdown = [
@@ -55,7 +53,6 @@ export default async function AdminPage() {
     { href: "/admin/operatori", label: "Operatori online", value: onlineOperators },
     { href: "/admin/attivita?tipo=esperienze", label: "Esperienze online", value: onlineExperiences },
     { href: "/admin/attivita?view=acquisiti", label: "Appuntamenti acquisiti", value: acquiredAppointments },
-    { href: "/admin/itinerari", label: "Itinerari online", value: onlineItineraries },
   ];
 
   return <div className="admin-dashboard">

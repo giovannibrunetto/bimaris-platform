@@ -11,7 +11,6 @@ export default function AdminNavLinks({ applicationsPending, operatorExperienceP
     { href: "/admin", label: "Dashboard", count: 0 },
     { href: "/admin/contenuti", label: "Da esaminare", count: applicationsPending + operatorExperiencePending },
     { href: "/admin/operatori", label: "Operatori", count: 0 },
-    { href: "/admin/itinerari", label: "Itinerari", count: 0 },
     { href: "/admin/questionari", label: "Questionari e sondaggi", count: 0 },
   ];
   if (hiddenOnAuthRoute) return null;

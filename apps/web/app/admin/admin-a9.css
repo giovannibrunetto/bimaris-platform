@@ -215,7 +215,7 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
 /* Keep the admin destinations visible without horizontal scrolling. */
 .admin-shell-nav__inner{
   display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-template-columns:repeat(4,minmax(0,1fr));
   align-items:stretch;
   gap:9px;
   padding:12px clamp(16px,4vw,40px);

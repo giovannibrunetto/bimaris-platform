@@ -83,8 +83,8 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
     <>
       <AdminSectionHeader
       title="Itinerari"
-      description="Gestisci i percorsi creati, organizza le tappe e prepara nuovi itinerari."
-      actions={<><Link href="/itinerari" target="_blank" rel="noreferrer">Visualizza itinerari pubblici ↗</Link></>}
+      description="Prepara itinerari e organizza le tappe. Il sito presenta i percorsi storici in Ti racconto la storia di Messina."
+      actions={<><Link href="/mappa/epoche" target="_blank" rel="noreferrer">Ti racconto la storia di Messina ↗</Link></>}
     />
       
 
@@ -97,7 +97,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
       <section className="admin-itineraries-managed" id="itinerari-gestiti">
         <div className="section-head">
           <div><div className="kicker">01 / GESTIONE</div><h2>Itinerari gestiti</h2></div>
-          <p><strong>{itineraries.length} itinerari</strong> nel gestionale · <strong>{itineraries.filter(item => item.published).length} online</strong>. I percorsi storici e personali sono gestiti separatamente.</p>
+          <p><strong>{itineraries.length} itinerari</strong> nel gestionale · <strong>{itineraries.filter(item => item.published).length} con stato pubblicato nel gestionale</strong>. I percorsi storici e personali sono gestiti separatamente.</p>
         </div>
 
         <div style={{ display: "grid", gap: 22 }}>
@@ -107,12 +107,11 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
               <article className="detail-panel admin-itinerary-card" key={itinerary.id}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
                   <div>
-                    <div className="eyebrow">{itinerary.territory ?? "Territorio non indicato"} · {itinerary.published ? "Online" : "Bozza"}</div>
+                    <div className="eyebrow">{itinerary.territory ?? "Territorio non indicato"} · {itinerary.published ? "Pubblicato nel gestionale" : "Bozza"}</div>
                     <h3 style={{ marginBottom: 6 }}>{itinerary.title}</h3>
                     <div className="muted">{itinerary.duration_minutes ? `${itinerary.duration_minutes} min` : "Durata da definire"} · {stops.length} {stops.length === 1 ? "tappa" : "tappe"}</div>
                   </div>
                   <div className="actions" style={{ marginTop: 0 }}>
-                    {itinerary.published && <Link className="text-link" href={`/itinerari/${itinerary.slug}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>}
                     <form method="post" action="/api/admin/itineraries">
                       <input type="hidden" name="itinerary_id" value={itinerary.id} />
                       <button className="button ghost" name="action" value={itinerary.published ? "unpublish" : "publish"} type="submit">{itinerary.published ? "Nascondi" : "Pubblica"}</button>

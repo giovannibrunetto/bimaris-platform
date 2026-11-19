@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Ti racconto Messina | BIMARIS",
+  title: "Ti racconto la storia di Messina | BIMARIS",
   description: "Tre racconti per conoscere Messina attraverso i luoghi del catalogo Cultura BIMARIS.",
 };
 
@@ -34,7 +34,7 @@ export default async function HistoricalMapPage() {
   return (
     <div className="storytelling-page">
       <section className="page-hero bimaris-ambient-hero storytelling-hero">
-        <h1>Ogni luogo è un pezzo di una storia più grande.</h1>
+        <h1>Ti racconto la storia di Messina</h1>
         <p>Non scegliere soltanto cosa vedere. Scegli quale Messina vuoi conoscere: BIMARIS collega eventi, epoche e luoghi per accompagnarti dentro la storia della città.</p>
       </section>
 
