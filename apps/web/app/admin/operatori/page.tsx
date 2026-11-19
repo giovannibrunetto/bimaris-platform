@@ -40,7 +40,6 @@ export default async function OperatorsPage({ searchParams }: { searchParams: Pr
             </div>
             <div className="admin-operator-card-actions">
               <Link className="admin-events__examine" href={dossier}>Apri dossier →</Link>
-              <Link className="text-link" href={`${dossier}?tab=esperienze`}>Esperienze associate →</Link>
               {operator.published && <Link className="text-link" href={`/operatori/${operator.slug}`} target="_blank" rel="noreferrer">Scheda pubblica ↗</Link>}
             </div>
           </article>;

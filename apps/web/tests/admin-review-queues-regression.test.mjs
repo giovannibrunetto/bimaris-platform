@@ -18,7 +18,8 @@ test("operator directory links to dossiers and sends old review links to the con
   assert.match(page, /await isAuthorizedAdmin\(\)/);
   assert.match(page, /\.view === "pending"\) redirect\("\/admin\/contenuti"\)/);
   assert.match(page, /db\.from\("operators"\)/);
-  assert.match(page, /\?tab=esperienze/);
+  assert.match(page, /href=\{dossier\}>Apri dossier/);
+  assert.doesNotMatch(page, /\?tab=esperienze|Esperienze associate/);
   assert.doesNotMatch(page, /\.from\("(experiences|experience_revisions|operator_revisions)"\)/);
   assert.doesNotMatch(page, /#admin-decision|revisioni-profilo|Esamina →/);
 });
