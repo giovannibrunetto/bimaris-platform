@@ -34,11 +34,11 @@ export default function CulturePage() {
             <article className="culture-entry-card culture-entry-card-story">
               <div className="culture-entry-number">01</div>
               <div className="kicker">L'esperienza editoriale BIMARIS</div>
-              <h2>Ti racconto Messina</h2>
+              <h2>Ti racconto la storia di Messina</h2>
               <p>
                 Entra nella storia della città per epoche e temi. I monumenti non sono più schede isolate: diventano tappe di un racconto che mostra come Messina si è trasformata nel tempo.
               </p>
-              <Link className="button" href="/mappa/epoche">Inizia il racconto →</Link>
+              <Link className="button" href="/ti-racconto-la-storia-di-messina">Inizia il racconto →</Link>
             </article>
 
             <article className="culture-entry-card culture-entry-card-places">

@@ -56,9 +56,9 @@
 }
 
 .culture-page .culture-entry-card-story {
-  background: var(--bimaris-abyssal-teal);
+  background: var(--bimaris-story-card-background);
   color: #fff;
-  border-color: rgba(202, 168, 106, .34);
+  border-color: var(--bimaris-story-card-border);
 }
 
 .culture-page .culture-entry-card-places {
