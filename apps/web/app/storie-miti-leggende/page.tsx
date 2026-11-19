@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Storia, miti e leggende di Messina | BIMARIS",
+  title: "Miti e leggende di Messina | BIMARIS",
   description: "Scopri miti e leggende di Messina e dello Stretto: Colapesce, Mata e Grifone, Fata Morgana, Scilla e Cariddi e i luoghi reali cui sono legati.",
   alternates: {
     canonical: "/storie-miti-leggende",
@@ -60,7 +60,7 @@ export default async function StoriesPage() {
   return (
     <>
       <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero ux-brand-05-hero ux-brand-05-hero--standard" style={{ minHeight: 0 }}>
-        <h1 style={{ marginTop: 0, marginBottom: 14 }}>Storia, miti e leggende</h1>
+        <h1 style={{ marginTop: 0, marginBottom: 14 }}>Miti e leggende</h1>
         <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
 

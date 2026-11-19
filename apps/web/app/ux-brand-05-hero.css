@@ -223,3 +223,11 @@ h2.public-discovery-section-title.public-discovery-section-title {
   --bimaris-story-card-background: radial-gradient(circle at 85% 12%, rgba(202, 168, 106, .16), transparent 28%), linear-gradient(145deg, #0b4249, #032126);
   --bimaris-story-card-border: rgba(202, 168, 106, .38);
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .stories-cards > .story-card.public-discovery-card:hover,
+  .village-cards > .village-card.public-discovery-card:hover {
+    outline: 2px solid #a77b3a;
+    outline-offset: 0;
+  }
+}
