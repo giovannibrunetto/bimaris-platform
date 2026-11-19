@@ -134,6 +134,27 @@
 
 }
 
+@media (min-width: 1024px) {
+  .culture-page .culture-entry-section.discovery-page-first {
+    padding-inline: clamp(18px, 6vw, 108px);
+  }
+
+  .culture-page .culture-entry-grid {
+    max-width: none;
+    gap: clamp(20px, 1.6vw, 28px);
+  }
+
+  .culture-page .culture-entry-card {
+    min-height: clamp(248px, 22vw, 304px);
+    padding: clamp(24px, 2.4vw, 38px);
+  }
+
+  .culture-page .culture-entry-card h2 {
+    font-size: clamp(34px, 2.8vw, 46px);
+    line-height: 1.08;
+  }
+}
+
 @media (max-width: 760px) {
   .culture-page .page-hero {
     padding-top: 0;
