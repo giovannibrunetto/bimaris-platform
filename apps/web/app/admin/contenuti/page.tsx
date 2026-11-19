@@ -103,11 +103,11 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Nuova proposta</span><h3>{item.name}</h3></div>
-            <Link className="admin-events__examine" href={`/admin/esperienze/${item.id}#admin-decision`}>Esamina →</Link>
+            <Link className="admin-events__examine" href={`/admin/esperienze/${item.id}#admin-decision`}>Esamina proposta →</Link>
           </article>)}
           {revisions.map(item=><article className="admin-events__card admin-events__card--compact" key={`rev-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Modifica</span><h3>{relatedName(item.experiences)}</h3></div>
-            <Link className="admin-events__examine" href={`/admin/revisione-esperienza?id=${encodeURIComponent(item.experience_id)}`}>Esamina →</Link>
+            <Link className="admin-events__examine" href={`/admin/revisione-esperienza?id=${encodeURIComponent(item.experience_id)}`}>Esamina modifica →</Link>
           </article>)}
           {experienceCount === 0 && <p className="admin-events__empty">Nessuna esperienza in attesa.</p>}
         </div>
@@ -119,14 +119,14 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
         <div className="admin-events__list">
           {appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Appuntamento · {item.source_type?.trim() || "Origine non indicata"}</span><h3>{item.title}</h3><p className="admin-events__date">{dated(item.starts_at)}</p></div>
-          <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Esamina →</Link>
+          <Link className="admin-events__examine" href={`/admin/eventi/${item.id}#admin-event-decision`}>Verifica appuntamento →</Link>
         </article>)}
           {appointments.length === 0 && <p className="admin-events__empty">Nessun appuntamento in attesa.</p>}
         </div>
         <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti e pubblicazione →</Link></p>
         </div>
       </section>}
-      <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
+      <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Puoi approvare, scartare o pubblicare dalla scheda della singola pratica.</p>
     </div></section>
   </div>;
 }

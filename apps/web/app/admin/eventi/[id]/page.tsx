@@ -101,7 +101,7 @@ export default async function AdminEventReview({ params }: { params: Promise<{ i
           </section>
           {event.import_batch_id && <p className="admin-events__audit">Lotto di acquisizione: <code>{event.import_batch_id}</code></p>}
         </article>
-        <section className="admin-events__decision" aria-label="Decisione amministratore">
+        <section id="admin-event-decision" className="admin-events__decision" style={{ scrollMarginTop: 190 }} aria-label="Decisione amministratore">
           <h2>{pending ? "Decisione sulla verifica" : approved ? "Pubblicazione" : "Nessuna azione disponibile"}</h2>
           {pending ? <>
             <p>L'approvazione valida questo evento, ma <strong>non lo pubblica</strong>. Lo scarto esclude questa occorrenza dalla coda; nessuna delle due azioni modifica le esperienze dell'operatore.</p>
