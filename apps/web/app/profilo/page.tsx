@@ -37,9 +37,9 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
  <section className="profile-overview" aria-label="Raccolta e impostazioni">
   <div className="overview-grid">
    <div className="overview-item">
-    <h2 className="overview-label">La tua raccolta</h2>
+    <h2 className="overview-label">I tuoi salvati</h2>
     <p className="overview-copy">{savedCount ?? 0} {savedCount === 1 ? "contenuto salvato" : "contenuti salvati"}</p>
-    <Link className="text-link" href="/profilo/raccolta">Apri la raccolta →</Link>
+    <Link className="text-link" href="/profilo/raccolta">Vedi i salvati →</Link>
    </div>
    <div className="overview-item">
     <h2 className="overview-label">Le tue preferenze</h2>
