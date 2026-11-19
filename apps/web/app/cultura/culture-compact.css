@@ -218,3 +218,25 @@
     letter-spacing: 0;
   }
 }
+/* On short Culture pages, the footer ends the viewport. */
+body:has(> main > .culture-landing-page) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+body > main:has(> .culture-landing-page) {
+  flex: 1 0 auto;
+  background: var(--bimaris-tortora);
+}
+
+@media (min-width: 761px) {
+  body > main:has(> .culture-landing-page) + footer {
+    padding-block: 5px;
+  }
+
+  body > main:has(> .culture-landing-page) + footer > a {
+    width: 108px;
+    height: 34px;
+  }
+}
