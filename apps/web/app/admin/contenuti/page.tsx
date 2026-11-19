@@ -22,7 +22,7 @@ function dated(v: string) {
   return Number.isNaN(date.getTime()) ? "Data da verificare" :
     new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(date);
 }
-export default async function ContentReview() {
+export default async function ContentReview({ searchParams }: { searchParams: Promise<{ categoria?: string }> }) {
   if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
@@ -43,8 +43,16 @@ export default async function ContentReview() {
   const revisions = (revisionsRes.data ?? []) as ExpRevision[];
   const appointments = (eventsRes.data ?? []) as Event[];
   const experienceCount = experiences.length + revisions.length;
-  const firstPendingSection = [applications.length, profiles.length, experienceCount, appointments.length]
-    .findIndex(count => count > 0);
+  const categories = [
+    { key: "candidature", label: "Candidature", count: applications.length },
+    { key: "profili", label: "Modifiche ai profili", count: profiles.length },
+    { key: "esperienze", label: "Esperienze", count: experienceCount },
+    { key: "appuntamenti", label: "Appuntamenti", count: appointments.length },
+  ];
+  const { categoria } = await searchParams;
+  const selected = categories.find(item => item.key === categoria)
+    ?? categories.find(item => item.count > 0)
+    ?? categories[0];
 
   return <div className="admin-events admin-content-review">
     <AdminSectionHeader
@@ -53,11 +61,18 @@ export default async function ContentReview() {
       actions={<Link href="/admin">← Centro operativo</Link>}
     />
     <section className="admin-events__body"><div className="admin-events__container review-queue">
-      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 0} aria-labelledby="review-applications">
-        <summary className="review-queue__summary">
-          <h2 id="review-applications">Candidature</h2>
-          <span className="review-queue__count" aria-label={`${applications.length} in attesa`}>{applications.length}</span>
-        </summary>
+      <nav className="review-queue__categories" aria-label="Categorie da esaminare">
+        {categories.map(category => <Link
+          key={category.key}
+          href={`/admin/contenuti?categoria=${category.key}`}
+          aria-current={category.key === selected.key ? "page" : undefined}
+          scroll={false}
+        >
+          <span>{category.label}</span>
+          <span className="review-queue__count">{category.count}</span>
+        </Link>)}
+      </nav>
+      {selected.key === "candidature" && <section className="review-queue__panel" aria-label={selected.label}>
         <div className="review-queue__content">
         <div className="admin-events__list">
           {applications.map(item => <article key={item.id} className="admin-events__card admin-events__card--compact">
@@ -73,12 +88,8 @@ export default async function ContentReview() {
         </div>
         <p><Link className="text-link" href="/admin/candidature?filter=closed">Storico candidature →</Link></p>
         </div>
-      </details>
-      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 1} aria-labelledby="review-profiles">
-        <summary className="review-queue__summary">
-          <h2 id="review-profiles">Modifiche ai profili</h2>
-          <span className="review-queue__count" aria-label={`${profiles.length} in attesa`}>{profiles.length}</span>
-        </summary>
+      </section>}
+      {selected.key === "profili" && <section className="review-queue__panel" aria-label={selected.label}>
         <div className="review-queue__content">
         <div className="admin-events__list">{profiles.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Modifica profilo</span><h3>{relatedName(item.operators)}</h3></div>
@@ -86,12 +97,8 @@ export default async function ContentReview() {
         </article>)}</div>
         {profiles.length === 0 && <p className="admin-events__empty">Nessuna modifica al profilo in attesa.</p>}
         </div>
-      </details>
-      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 2} aria-labelledby="review-experiences">
-        <summary className="review-queue__summary">
-          <h2 id="review-experiences">Esperienze</h2>
-          <span className="review-queue__count" aria-label={`${experienceCount} in attesa`}>{experienceCount}</span>
-        </summary>
+      </section>}
+      {selected.key === "esperienze" && <section className="review-queue__panel" aria-label={selected.label}>
         <div className="review-queue__content">
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
@@ -106,12 +113,8 @@ export default async function ContentReview() {
         </div>
         <p><Link className="text-link" href="/admin/attivita?tipo=esperienze">Registro esperienze e creazione →</Link></p>
         </div>
-      </details>
-      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 3} aria-labelledby="review-appointments">
-        <summary className="review-queue__summary">
-          <h2 id="review-appointments">Appuntamenti</h2>
-          <span className="review-queue__count" aria-label={`${appointments.length} in attesa`}>{appointments.length}</span>
-        </summary>
+      </section>}
+      {selected.key === "appuntamenti" && <section className="review-queue__panel" aria-label={selected.label}>
         <div className="review-queue__content">
         <div className="admin-events__list">
           {appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
@@ -122,7 +125,7 @@ export default async function ContentReview() {
         </div>
         <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti e pubblicazione →</Link></p>
         </div>
-      </details>
+      </section>}
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
     </div></section>
   </div>;

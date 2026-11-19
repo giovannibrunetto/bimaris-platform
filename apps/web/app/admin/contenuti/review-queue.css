@@ -1,75 +1,67 @@
 .review-queue {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
-.review-queue__group {
-  min-width: 0;
-  background: #fffdf9;
-  border: 1px solid #ddd4c6;
-  border-radius: 14px;
-}
-
-.review-queue__group[open] {
-  border-color: #b28a4b;
-}
-
-.review-queue__summary {
+.review-queue__categories {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid #d9cbb7;
+  gap: 4px;
+}
+
+.review-queue .review-queue__categories a {
+  display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 64px;
-  padding: 12px clamp(14px, 3vw, 22px);
-  cursor: pointer;
-  list-style: none;
-}
-
-.review-queue__summary::-webkit-details-marker { display: none; }
-
-.admin-content-review .review-queue__summary h2 {
-  margin: 0;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 48px;
+  padding: 9px 12px;
+  border-bottom: 3px solid transparent;
   color: #15383b;
-  font: 500 clamp(20px, 2.6vw, 27px)/1.2 Georgia, serif;
-  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
 }
 
-.review-queue__summary:focus-visible {
+.review-queue .review-queue__categories a:hover {
+  background: #f8f2e7;
+}
+
+.review-queue .review-queue__categories a[aria-current="page"] {
+  background: #f1e6d1;
+  border-bottom-color: #8c6330;
+  border-radius: 8px 8px 0 0;
+}
+
+.review-queue .review-queue__categories a:focus-visible {
   outline: 3px solid #80602f;
-  outline-offset: -4px;
-  border-radius: 14px;
-}
-
-.review-queue__summary::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border: solid #80602f;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.review-queue__group[open] .review-queue__summary::after {
-  transform: rotate(225deg);
+  outline-offset: -3px;
 }
 
 .review-queue__count {
-  min-width: 28px;
-  padding: 4px 7px;
-  border-radius: 8px;
-  background: #f2e7d2;
+  min-width: 24px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: #fffaf0;
   color: #684a24;
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
+.review-queue__panel,
 .review-queue__content {
   display: grid;
   gap: 12px;
-  padding: 12px clamp(14px, 3vw, 22px) 18px;
-  border-top: 1px solid #e7dfd1;
+  min-width: 0;
 }
 
 .review-queue__content > p { margin: 0; }
 .review-queue > .admin-events__hint { margin-block: 6px 0; }
+
+@media (max-width: 650px) {
+  .review-queue__categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

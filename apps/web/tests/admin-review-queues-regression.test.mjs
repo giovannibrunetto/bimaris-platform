@@ -204,10 +204,11 @@ test("focused content review presents one grouped list without duplicated naviga
   const css = read("../app/admin/eventi/admin-events.css");
   assert.match(page, /admin-content-review/);
   const nav = read("../app/admin/AdminNavLinks.tsx");
-  for (const section of ["applications", "profiles", "experiences", "appointments"]) {
-    assert.match(page, new RegExp('aria-labelledby="review-' + section + '"'));
+  for (const category of ["candidature", "profili", "esperienze", "appuntamenti"]) {
+    assert.match(page, new RegExp('selected.key === "' + category + '"'));
   }
-  assert.equal((page.match(/<details className="review-queue__group" name="admin-review-queue"/g) ?? []).length, 4);
+  assert.match(page, /href=\{\x60\/admin\/contenuti\?categoria=\$\{category\.key\}\x60\}/);
+  assert.match(page, /aria-current=\{category\.key === selected\.key \? "page" : undefined\}/);
   assert.match(page, /\.from\("operator_applications"\).*\.in\("status", \["new", "reviewing"\]\)/);
   assert.match(page, /\/admin\/candidature\/\$\{item\.id\}/);
   assert.match(nav, /count: applicationsPending \+ operatorExperiencePending/);
@@ -216,7 +217,7 @@ test("focused content review presents one grouped list without duplicated naviga
   assert.match(page, /Appuntamento · /);
   assert.match(page, /href="\/admin"/);
   assert.doesNotMatch(page, /admin-events__filters/);
-  assert.doesNotMatch(page, /searchParams/);
+  assert.match(page, /const \{ categoria \} = await searchParams/);
   assert.doesNotMatch(css, /body:has\(\.admin-content-review\) \.admin-shell-nav\{display:none\}/);
 });
 
