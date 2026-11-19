@@ -25,10 +25,6 @@
   text-decoration: none;
 }
 
-.review-queue .review-queue__categories a:hover {
-  background: #f8f2e7;
-}
-
 .review-queue .review-queue__categories a[aria-current="page"] {
   background: #f1e6d1;
   border-bottom-color: #8c6330;
@@ -38,6 +34,24 @@
 .review-queue .review-queue__categories a:focus-visible {
   outline: 3px solid #80602f;
   outline-offset: -3px;
+  background: #e9d7b6;
+}
+
+.review-queue .review-queue__categories a:focus-visible > span:first-child {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .review-queue .review-queue__categories a:hover {
+    background: #e9d7b6;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .review-queue .review-queue__categories a:hover > span:first-child {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 }
 
 .review-queue__count {
