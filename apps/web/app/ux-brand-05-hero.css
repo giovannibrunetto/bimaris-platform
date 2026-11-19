@@ -84,9 +84,23 @@
     font-size: 12px !important;
   }
 }
-/* Keep the existing map controls visible below the compact introduction. */
-@media (min-width: 761px) {
-  .map-page-section.ux-brand-05-map-content { padding-top: 24px; }
+/* Leave room for the site header, map introduction and legend above the fold. */
+@media (min-width: 1024px) {
+  .map-page-intro.ux-brand-05-hero.ux-brand-05-hero--compact {
+    padding-block: 16px !important;
+  }
+
+  .map-page-section.ux-brand-05-map-content {
+    padding-block: 8px 16px !important;
+  }
+
+  .ux-brand-05-map-content .bimaris-map-canvas-wrap {
+    height: clamp(320px, calc(100dvh - 260px), 760px);
+  }
+
+  .ux-brand-05-map-content .bimaris-map-period-desktop {
+    max-height: min(280px, max(150px, calc(100dvh - 400px)));
+  }
 }
 @media (max-width: 760px) {
   .map-page-section.ux-brand-05-map-content { padding-top: 20px; }
