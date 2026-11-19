@@ -54,3 +54,14 @@
 .storytelling-period{padding:18px}
 }
 @media(prefers-reduced-motion:reduce){.storytelling-card{transition:none}.storytelling-card:hover{transform:none}}
+
+/* Keep the chooser readable against the light editorial background. */
+.storytelling-page .storytelling-intro .storytelling-intro-copy h2 {
+  color: #132f32;
+}
+.storytelling-page .storytelling-intro .storytelling-intro-copy p {
+  color: #465e61;
+}
+.storytelling-page .storytelling-intro .storytelling-intro-copy .kicker {
+  color: #76551e;
+}

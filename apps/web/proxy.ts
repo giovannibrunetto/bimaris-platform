@@ -35,7 +35,11 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (!isPrelaunchEnabled()) {
     if (pathname === "/itinerari" || pathname.startsWith("/itinerari/")) {
-      return NextResponse.redirect(new URL("/mappa/epoche", request.url));
+      return NextResponse.redirect(new URL("/ti-racconto-la-storia-di-messina", request.url));
+    }
+    if (pathname === "/mappa/epoche" || pathname.startsWith("/mappa/epoche/")) {
+      const storyPath = pathname.slice("/mappa/epoche".length);
+      return NextResponse.redirect(new URL("/ti-racconto-la-storia-di-messina" + storyPath, request.url));
     }
     return NextResponse.next();
   }

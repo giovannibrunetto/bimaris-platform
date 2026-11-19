@@ -84,7 +84,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
       <AdminSectionHeader
       title="Itinerari"
       description="Prepara itinerari e organizza le tappe. Il sito presenta i percorsi storici in Ti racconto la storia di Messina."
-      actions={<><Link href="/mappa/epoche" target="_blank" rel="noreferrer">Ti racconto la storia di Messina ↗</Link></>}
+      actions={<><Link href="/ti-racconto-la-storia-di-messina" target="_blank" rel="noreferrer">Ti racconto la storia di Messina ↗</Link></>}
     />
       
 
@@ -200,7 +200,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
           {CULTURE_STORIES.map(story => (
             <article className="admin-itineraries-public-card" key={story.key}>
               <div><span className="admin-itineraries-public-status">Editoriale · Sul sito</span><h3>{story.title}</h3><p>{story.subtitle}</p></div>
-              <Link className="text-link" href={`/mappa/epoche/${story.key}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>
+              <Link className="text-link" href={`/ti-racconto-la-storia-di-messina/${story.key}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>
             </article>
           ))}
         </div>

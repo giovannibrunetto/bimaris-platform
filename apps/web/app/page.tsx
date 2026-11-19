@@ -28,7 +28,7 @@ export default function Home() {
           </div>
 
           <div className="home-journey-paths home-journey-paths-v2">
-            <Link className="home-journey-path home-journey-story" href="/mappa/epoche">
+            <Link className="home-journey-path home-journey-story" href="/ti-racconto-la-storia-di-messina">
               <span className="home-journey-number">01</span>
               <div className="home-journey-path-copy">
                 <span className="home-journey-label">Entra nella storia della città</span>
