@@ -14,8 +14,12 @@ export default async function AdminLoginPage() {
   const stableOrigin = "https://bimaris-platform-git-integration-cb5b41-giovannibrunetto84-1508.vercel.app";
   const requestHeaders = await headers();
   const requestHost = requestHeaders.get("host")?.toLowerCase() ?? "";
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL === "https://nzdeoimwikhoidtladnu.supabase.co" &&
-      requestHost !== new URL(stableOrigin).host) {
+  const isStaging = process.env.NEXT_PUBLIC_SUPABASE_URL === "https://nzdeoimwikhoidtladnu.supabase.co";
+  const testOrigin = "https://bimaris-platform-git-fix-dt16-is-347443-giovannibrunetto84-1508.vercel.app";
+  const allowedOrigin = isStaging && process.env.VERCEL_ENV === "preview" && requestHost === new URL(testOrigin).host
+    ? testOrigin
+    : stableOrigin;
+  if (isStaging && requestHost !== new URL(allowedOrigin).host) {
     redirect(stableOrigin + "/admin/login");
   }
   return (
@@ -24,7 +28,7 @@ export default async function AdminLoginPage() {
         <div className="admin-login__eyebrow">Area riservata · BIMARIS</div>
         <h1 id="admin-login-title">Amministrazione</h1>
         <p className="admin-login__description">Accesso individuale con autenticazione a due fattori.</p>
-        <AdminIndividualLogin />
+        <AdminIndividualLogin allowedOrigin={allowedOrigin} />
         <div className="admin-login__footnote">Accesso consentito esclusivamente agli amministratori autorizzati con MFA attiva.</div>
       </div>
     </section>

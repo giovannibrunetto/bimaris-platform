@@ -10,7 +10,7 @@ function client() {
   return createBrowserClient(url, key);
 }
 
-export default function AdminIndividualLogin() {
+export default function AdminIndividualLogin({ allowedOrigin }: { allowedOrigin: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +41,6 @@ export default function AdminIndividualLogin() {
     if (!supabase) { setError("Ambiente Staging non configurato."); setBusy(false); return; }
     // OAuth PKCE must begin and finish on the same allowlisted origin.
     // Do not silently fall back to Supabase Site URL on ephemeral previews.
-    const allowedOrigin = "https://bimaris-platform-git-integration-cb5b41-giovannibrunetto84-1508.vercel.app";
     if (window.location.origin !== allowedOrigin) {
       setError("Per accedere con Google, apri il dominio di collaudo stabile qui sotto.");
       window.location.assign(allowedOrigin + "/admin/login");
