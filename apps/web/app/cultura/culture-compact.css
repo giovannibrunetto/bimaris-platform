@@ -16,30 +16,12 @@
   background: var(--bimaris-tortora);
 }
 
-.culture-page .culture-entry-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
-  gap: 36px;
-  align-items: end;
-  margin-bottom: 18px;
-}
-
-.culture-page .culture-entry-head h2 {
-  margin: 5px 0 0;
-  font-family: Georgia, serif;
-  line-height: 1.02;
-}
-
-.culture-page .culture-entry-head > p {
-  margin: 0;
-  max-width: 520px;
-  line-height: 1.45;
-}
-
 .culture-page .culture-entry-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
+  max-width: 1040px;
+  margin-inline: auto;
   align-items: stretch;
 }
 
@@ -60,6 +42,10 @@
   background: var(--bimaris-story-card-background);
   color: #fff;
   border-color: var(--bimaris-story-card-border);
+}
+
+.culture-page .culture-entry-card-places .kicker {
+  color: #705d39;
 }
 
 .culture-page .culture-entry-card-places {
@@ -107,21 +93,6 @@
   color: var(--bimaris-abyssal-teal);
 }
 
-.culture-page .culture-entry-number {
-  position: absolute;
-  right: 22px;
-  top: 8px;
-  font-family: Georgia, serif;
-  font-size: 106px;
-  line-height: 1;
-  color: rgba(255,255,255,.055);
-  pointer-events: none;
-}
-
-.culture-page .culture-entry-card-places .culture-entry-number {
-  color: rgba(3,33,38,.055);
-}
-
 @media (min-width: 761px) {
   .culture-page .page-hero {
     padding-top: 16px;
@@ -142,19 +113,7 @@
 
   .culture-page .culture-entry-section.discovery-page-first {
     padding-top: 10px;
-    padding-bottom: 12px;
-  }
-
-  .culture-page .culture-entry-head {
-    margin-bottom: 12px;
-  }
-
-  .culture-page .culture-entry-head h2 {
-    font-size: clamp(32px, 2.8vw, 42px);
-  }
-
-  .culture-page .culture-entry-head > p {
-    line-height: 1.35;
+    padding-bottom: 44px;
   }
 
   .culture-page .culture-entry-card {
@@ -173,9 +132,6 @@
     line-height: 1.4;
   }
 
-  .culture-page .culture-entry-number {
-    font-size: 92px;
-  }
 }
 
 @media (max-width: 760px) {
@@ -200,23 +156,8 @@
     padding-bottom: 16px;
   }
 
-  .culture-page .culture-entry-head,
-  .culture-page .culture-entry-grid {
+    .culture-page .culture-entry-grid {
     grid-template-columns: 1fr;
-  }
-
-  .culture-page .culture-entry-head {
-    gap: 5px;
-    margin-bottom: 10px;
-  }
-
-  .culture-page .culture-entry-head h2 {
-    margin-top: 3px;
-  }
-
-  .culture-page .culture-entry-head > p {
-    max-width: none;
-    line-height: 1.4;
   }
 
   .culture-page .culture-entry-grid {
@@ -243,19 +184,6 @@
 
   .culture-page .culture-entry-card .button {
     margin-top: 2px;
-  }
-
-  .culture-page .culture-entry-number {
-    right: 16px;
-    top: 12px;
-    font-size: 74px;
-  }
-
-  .culture-page .culture-entry-card-places .culture-entry-number {
-    right: 14px;
-    top: 18px;
-    font-size: 68px;
-    color: rgba(3,33,38,.045);
   }
 
   /* Monument catalogue is a browsing page, not the compact /cultura decision surface. */
