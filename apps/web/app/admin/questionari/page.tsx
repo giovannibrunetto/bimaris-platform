@@ -1,3 +1,4 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import "server-only";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -71,13 +72,13 @@ export default async function QuestionariPage({searchParams}:{searchParams:Promi
   const data:Results|null=s && !s.error && isResults(s.data)?s.data:null;
   const ideas:IdeasPage|null=i && !i.error && isIdeas(i.data)?i.data:null;
   return <section className="survey-admin" aria-labelledby="survey-admin-heading">
-    <div className="survey-admin__heading">
-      <span className="survey-admin__eyebrow">Centro operativo / Questionari e sondaggi</span>
-      <div className="survey-admin__title-row">
-        <h2 id="survey-admin-heading">Questionario cittadini</h2>
-        <Link className="survey-admin__open-questionnaire" href="https://sondaggio.bimarisnet.it/questionario-cittadini" target="_blank" rel="noopener noreferrer">Apri il questionario pubblico ↗</Link>
-      </div>
-      <p>Risultati reali del sondaggio «A MESSINA NON C’È NENTI!» in Supabase Production. La consultazione è riservata ai Super Admin con MFA verificata.</p>
+    <div className="admin-section-heading--survey">
+      <AdminSectionHeader
+      title="Questionario cittadini"
+      description="Risultati reali del sondaggio «A MESSINA NON C’È NENTI!». Consultazione riservata ai Super Admin con MFA verificata."
+      id="survey-admin-heading"
+      actions={<><Link className="admin-section-heading__primary" href="https://sondaggio.bimarisnet.it/questionario-cittadini" target="_blank" rel="noopener noreferrer">Apri il questionario pubblico ↗</Link></>}
+    />
     </div>
     {!db || !data ? <div className="survey-admin__notice" role="alert">
       Statistiche Production non disponibili. Il collegamento riservato al server amministrativo non è ancora configurato o non è stato verificato.

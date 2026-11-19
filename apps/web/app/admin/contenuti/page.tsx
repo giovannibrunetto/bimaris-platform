@@ -1,3 +1,4 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -39,14 +40,10 @@ export default async function ContentReview() {
   const appointments = (eventsRes.data ?? []) as Event[];
   const total = profiles.length + experiences.length + revisions.length + appointments.length;
   return <div className="admin-events admin-content-review">
-    <header className="admin-events__hero"><div className="admin-events__container">
-      <span className="admin-events__eyebrow">Amministrazione / Azioni richieste</span>
-      <h1>Contenuti da esaminare</h1>
-      <p>Un solo punto d'ingresso per revisioni dei profili, proposte degli operatori e appuntamenti acquisiti. Le procedure di esame rimangono protette e distinte.</p>
-      <nav className="admin-events__links" aria-label="Navigazione amministrativa">
-        <Link href="/admin">← Centro operativo</Link>
-      </nav>
-    </div></header>
+    <AdminSectionHeader
+      title="Contenuti da esaminare"
+      description="Esamina revisioni dei profili, proposte degli operatori e appuntamenti acquisiti."
+    />
     <section className="admin-events__body"><div className="admin-events__container">
       {total===0&&<div className="admin-events__empty"><h3>Nessun contenuto in attesa</h3><p>Non ci sono revisioni o nuove proposte da esaminare.</p></div>}
       {profiles.length>0&&<section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>

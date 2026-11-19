@@ -1,3 +1,4 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -36,12 +37,11 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   const countPendingAppointments=allAppointments.filter(v=>v.verification_status==="pending"&&!v.published).length;
   const countReadyAppointments=allAppointments.filter(v=>v.verification_status==="verified"&&!v.published).length;
   return <div className="admin-events">
-    <header className="admin-events__hero"><div className="admin-events__container">
-      <span className="admin-events__eyebrow">Amministrazione / Stato piattaforma</span>
-      <h1>Esperienze e appuntamenti</h1>
-      <p>Un unico registro di consultazione. Ogni contenuto mantiene il suo dossier, lo stato reale e la fonte: gli appuntamenti acquisiti non vengono duplicati come esperienze.</p>
-      <nav className="admin-events__links"><Link href="/admin">← Centro operativo</Link><Link href="/admin/contenuti">Contenuti da esaminare</Link></nav>
-    </div></header>
+    <AdminSectionHeader
+      title="Esperienze e appuntamenti"
+      description="Consulta il dossier, lo stato e la fonte di ogni esperienza o appuntamento."
+      actions={<><Link href="/admin/contenuti">Contenuti da esaminare</Link></>}
+    />
     <section className="admin-events__body"><div className="admin-events__container">
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{allExperiences.length}</strong><span>Esperienze totali</span><small>{countOnlineExperiences} online</small></div>

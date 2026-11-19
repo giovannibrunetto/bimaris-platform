@@ -1,3 +1,4 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
 import AdminItineraryCreate from "./AdminItineraryCreate";
 import { CULTURE_STORIES } from "@/data/ti-racconto-messina";
@@ -80,14 +81,11 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
 
   return (
     <>
-      <section className="admin-itineraries-hero">
-        <div className="kicker">BIMARIS / PANNELLO DI CONTROLLO</div>
-        <h1>Itinerari</h1>
-        <p>Gestisci i percorsi creati, organizza le tappe e prepara nuovi itinerari.</p>
-        <div className="actions" style={{marginTop:18}}>
-          <Link href="/itinerari" target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minHeight:44,padding:"10px 18px",borderRadius:10,background:"#f5e7c9",color:"#183439",fontWeight:750,textDecoration:"none",border:"1px solid #d3ae6e"}}>Visualizza itinerari pubblici ↗</Link>
-        </div>
-      </section>
+      <AdminSectionHeader
+      title="Itinerari"
+      description="Gestisci i percorsi creati, organizza le tappe e prepara nuovi itinerari."
+      actions={<><Link href="/itinerari" target="_blank" rel="noreferrer">Visualizza itinerari pubblici ↗</Link></>}
+    />
       
 
       {message && (

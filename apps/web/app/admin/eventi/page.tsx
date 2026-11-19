@@ -1,3 +1,4 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -55,17 +56,11 @@ export default async function AdminEventsPage({ searchParams }: { searchParams: 
   const approvedRows = (approvedData ?? []) as Row[];
 
   return <div className="admin-events">
-    <header className="admin-events__hero">
-      <div className="admin-events__container">
-        <div className="admin-events__eyebrow">Amministrazione / Verifica eventi</div>
-        <h1>Eventi da verificare</h1>
-        <p>Questa coda contiene le schede evento in attesa di controllo. Le proposte e le modifiche delle esperienze degli operatori si esaminano in una sezione separata.</p>
-        <nav className="admin-events__links" aria-label="Navigazione amministrativa">
-          <Link href="/admin">← Centro operativo</Link>
-          <Link href="/admin/operatori">Operatori ed esperienze</Link>
-        </nav>
-      </div>
-    </header>
+    <AdminSectionHeader
+      title="Eventi da verificare"
+      description="Controlla le schede evento in attesa di verifica. Le proposte e le modifiche delle esperienze si esaminano nella sezione operatori."
+      actions={<><Link href="/admin/operatori">Operatori ed esperienze</Link></>}
+    />
     <section id="pending-events" className="admin-events__body" aria-label="Coda eventi">
       <div className="admin-events__container">
         {status && notifications[status] && <p role="status" className="admin-events__notice">{notifications[status]}</p>}
