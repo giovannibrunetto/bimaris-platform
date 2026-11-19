@@ -53,7 +53,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const photoChangesCount = addedPhotos.length + removedPhotos.length + updatedPhotos.length;
   const currentLabel=experience.published?"ONLINE ORA":"VERSIONE APPROVATA (NON PUBBLICATA)";
   const { state } = await searchParams;
-  const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "La versione pubblicata o l'operatore non sono più in uno stato compatibile con l'applicazione.", "action-error": "Operazione non riuscita." };
+  const stateMessage: Record<string, string> = { "approved-applied": "Modifica approvata e applicata.", "changes-requested": "Correzioni inviate all'operatore.", "review-note-required": "Indica almeno una correzione prima di rinviare la proposta.", "invalid-review-state": "La proposta non è più in attesa di revisione.", "invalid-source-state": "Modifica non applicata. Lo stato dell’esperienza o dell’operatore è cambiato. Verifica le schede collegate e riapri il confronto.", "experience-not-approved": "Modifica non applicata. La versione di base dell’esperienza deve essere approvata.", "operator-not-selected": "Modifica non applicata. L’operatore deve essere selezionato prima di applicare la revisione.", "operator-not-published": "Modifica non applicata. L’operatore deve essere pubblicato prima di applicare la revisione.", "invalid-data": "Modifica non applicata. I dati della revisione non sono validi.", "action-error": "Operazione non riuscita." };
 
   return <div className="revision-workspace">
     <div className="revision-workspace__heading">
@@ -63,13 +63,20 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         <p>{operator?.name ?? "Operatore"} · {revision?.submitted_at ? `Proposta del ${new Date(revision.submitted_at).toLocaleDateString("it-IT", {timeZone:"Europe/Rome"})}` : "Modifica proposta"}</p>
       </div>
       <nav className="revision-workspace__links" aria-label="Navigazione revisione">
-        <Link href="/admin/contenuti">← Da esaminare</Link>
+        <Link href="/admin/contenuti?categoria=esperienze">← Esperienze da esaminare</Link>
         <Link href={`/admin/esperienze/${id}`}>Scheda esperienza</Link>
         <Link href={`/admin/operatori/${experience.operator_id}`}>Dossier operatore</Link>
       </nav>
     </div>
     <section className="revision-workspace__content">
-    {state && <div style={{ padding: 12, marginBottom: 14, background: "#fff", border: "1px solid #d7c7b6" }}>{stateMessage[state] ?? state}</div>}
+    {state && <div id="revision-outcome" role="status" style={{ padding: 16, marginBottom: 14, scrollMarginTop: "6rem", background: "#fff", border: "1px solid #d7c7b6" }}>
+      <p>{stateMessage[state] ?? "Esito della revisione non disponibile."}</p>
+      {state === "operator-not-selected" || state === "operator-not-published"
+        ? <Link className="text-link" href={`/admin/operatori/${experience.operator_id}`}>Apri il dossier operatore →</Link>
+        : state === "experience-not-approved"
+          ? <Link className="text-link" href={`/admin/esperienze/${id}`}>Apri la scheda esperienza →</Link>
+          : <Link className="text-link" href="/admin/contenuti?categoria=esperienze">Torna alle esperienze da esaminare →</Link>}
+    </div>}
     {!revision ? <div className="detail-panel"><h2>Nessuna revisione in attesa</h2><p>Per questa esperienza non risultano modifiche da esaminare.</p></div> : <article className="detail-panel revision-workspace__panel">
       <section className="revision-changes" aria-labelledby="revision-changes-title">
         <div className="revision-section-heading"><h3 id="revision-changes-title">Solo le modifiche da esaminare</h3>

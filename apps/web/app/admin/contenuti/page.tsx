@@ -29,7 +29,7 @@ function dated(v: string) {
   return Number.isNaN(date.getTime()) ? "Data da verificare" :
     new Intl.DateTimeFormat("it-IT",{dateStyle:"medium",timeStyle:"short",timeZone:"Europe/Rome"}).format(date);
 }
-export default async function ContentReview({ searchParams }: { searchParams: Promise<{ categoria?: string }> }) {
+export default async function ContentReview({ searchParams }: { searchParams: Promise<{ categoria?: string; state?: string }> }) {
   if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
@@ -56,7 +56,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
     { key: "esperienze", label: "Esperienze", count: experienceCount },
     { key: "appuntamenti", label: "Appuntamenti MAI", count: appointments.length },
   ];
-  const { categoria } = await searchParams;
+  const { categoria, state } = await searchParams;
   const selected = categories.find(item => item.key === categoria)
     ?? categories.find(item => item.count > 0)
     ?? categories[0];
@@ -68,6 +68,9 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
       actions={<Link href="/admin">← Centro operativo</Link>}
     />
     <section className="admin-events__body"><div className="admin-events__container review-queue">
+      {(state === "invalid-data" || state === "invalid-review-state" || state === "action-error") && <p id="experience-queue-outcome" role="status" className="admin-events__empty">
+        Revisione non elaborata. Apri nuovamente la pratica dalla coda delle esperienze.
+      </p>}
       <nav className="review-queue__categories" aria-label="Categorie da esaminare">
         {categories.map(category => <Link
           key={category.key}
