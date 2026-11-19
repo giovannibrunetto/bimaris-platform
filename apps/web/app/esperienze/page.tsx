@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ExperienceExplorer } from "@/components/ExperienceExplorer";
 import { getPublishedExperiences } from "@/data/live";
 import { experienceCategories, isExperienceCategory } from "@/lib/experience-categories";
+import "./experience-categories.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -41,16 +42,21 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
 
         <div className="cards">
           {experienceCategories.map(category => (
-            <article className="card" key={category.slug}>
+            <Link
+              className="card experience-category-card"
+              href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}
+              key={category.slug}
+              aria-labelledby={`experience-category-${category.slug}`}
+            >
               <div className="card-body">
                 <div className="kicker">{availableCategories.has(category.slug) ? "Esperienze disponibili" : "Nessuna esperienza disponibile"}</div>
-                <h3>{category.title}</h3>
+                <h3 id={`experience-category-${category.slug}`}>{category.title}</h3>
                 <p>{category.text}</p>
-                <Link className="text-link" href={`/esperienze?categoria=${encodeURIComponent(category.slug)}#esperienze-disponibili`}>
+                <span className="text-link" aria-hidden="true">
                   {availableCategories.has(category.slug) ? "Vedi le proposte" : "Apri la categoria"} →
-                </Link>
+                </span>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
