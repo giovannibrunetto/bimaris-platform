@@ -31,7 +31,7 @@ export default async function VillagesPage() {
         {villages.length > 0 ? (
           <div className="cards village-cards">
             {villages.map(village => (
-              <article className="card village-card" key={village.id}>
+              <article className="card village-card public-discovery-card" key={village.id}>
                 {village.imageUrl && (
                   <div className="village-card-media">
                     <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />

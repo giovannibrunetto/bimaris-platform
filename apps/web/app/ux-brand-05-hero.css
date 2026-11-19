@@ -178,7 +178,7 @@
   }
 }
 
-/* Shared interaction for the full-card links in the home discovery destinations. */
+/* Shared interaction for clickable cards and cards containing links. */
 .public-discovery-card.public-discovery-card {
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
@@ -193,7 +193,7 @@
   }
 }
 
-.public-discovery-card.public-discovery-card:focus-visible {
+.public-discovery-card.public-discovery-card:focus-within {
   outline: 3px solid #87612e;
   outline-offset: 3px;
   border-color: #a77b3a;
