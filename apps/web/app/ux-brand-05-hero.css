@@ -227,7 +227,7 @@ h2.public-discovery-section-title.public-discovery-section-title {
 @media (hover: hover) and (pointer: fine) {
   .stories-cards > .story-card.public-discovery-card:hover,
   .village-cards > .village-card.public-discovery-card:hover {
-    outline: 1px solid rgba(167, 123, 58, .7);
+    outline: 1px solid rgba(167, 123, 58, .35);
     outline-offset: 0;
   }
 }
