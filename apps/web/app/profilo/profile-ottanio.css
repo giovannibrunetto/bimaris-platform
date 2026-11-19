@@ -155,3 +155,15 @@
   margin-top: auto;
   align-self: flex-start;
 }
+
+@media (min-width: 851px) {
+  .profile-page .recommendation-grid-primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .profile-page .recommendation-grid-primary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

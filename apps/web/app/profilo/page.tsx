@@ -73,25 +73,17 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
   }),
  ].filter(item => item.score > 0);
  const sortedCandidates = candidates.sort((a, b) => (b.score + (b.featured ? .25 : 0)) - (a.score + (a.featured ? .25 : 0)));
- const recommendations: Recommendation[] = [];
- const usedInterests = new Set<string>();
- const usedOperators = new Set<string>();
- for (const item of sortedCandidates) {
-  if (usedInterests.has(item.interestKey) || (item.operatorSlug && usedOperators.has(item.operatorSlug))) continue;
-  recommendations.push(item);
-  usedInterests.add(item.interestKey);
-  if (item.operatorSlug) usedOperators.add(item.operatorSlug);
-  if (recommendations.length === 3) break;
- }
- for (const item of sortedCandidates) {
-  if (recommendations.length === 6) break;
-  if (recommendations.includes(item)) continue;
-  if (recommendations.length < 3 && item.operatorSlug && usedOperators.has(item.operatorSlug)) continue;
-  recommendations.push(item);
-  if (item.operatorSlug) usedOperators.add(item.operatorSlug);
- }
- const primaryRecommendations = recommendations.slice(0, 3);
- const hasMoreRecommendations = recommendations.length > 3;
+ const primaryRecommendations = ["culture", "story", "village", "experience"].flatMap(section => {
+  const item = sortedCandidates.find(candidate => candidate.key.startsWith(`${section}:`));
+  return item ? [item] : [];
+ });
+ const primaryKeys = new Set(primaryRecommendations.map(item => item.key));
+ const extraRecommendations = sortedCandidates.filter(item => !primaryKeys.has(item.key));
+ const additionalRecommendations = [
+  ...extraRecommendations.filter(item => /^(operator|appointment):/.test(item.key)),
+  ...extraRecommendations.filter(item => !/^(operator|appointment):/.test(item.key)),
+ ].slice(0, 6);
+ const hasMoreRecommendations = additionalRecommendations.length > 0;
  const hasPreferences = ranked.length > 0;
  return <div className="profile-page"><style>{`
  .profile-page{background:#f3efe6;color:#172a33;min-height:100vh;padding:28px 20px 70px}.profile-shell{max-width:1160px;margin:auto}.profile-hero{background:radial-gradient(circle at 86% 15%,rgba(202,168,106,.18),transparent 30%),linear-gradient(135deg,#0b2638,#061624 72%);color:#f3efe6;border-radius:30px;padding:clamp(36px,5vw,60px);padding-right:140px;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(6,22,36,.17)}.profile-hero:after{content:"";position:absolute;width:390px;height:390px;border:1px solid rgba(202,168,106,.19);border-radius:50%;right:-155px;top:-250px;box-shadow:0 0 0 72px rgba(202,168,106,.028)}.kicker,.profile-hero .kicker{color:#caa86a;letter-spacing:.17em;text-transform:uppercase;font-size:11px;font-weight:800}.profile-hero h1{font-family:Georgia,serif;color:#f3efe6;font-size:clamp(44px,5.5vw,68px);font-weight:400;letter-spacing:-.035em;line-height:.96;margin:10px 0 17px;position:relative;z-index:1}.profile-hero p{color:rgba(243,239,230,.7);max-width:730px;font-size:16px;line-height:1.65;margin:0;position:relative;z-index:1}.profile-success{margin:14px 2px 0;padding:11px 15px;border-radius:13px;color:#5c492a;background:rgba(202,168,106,.13);border:1px solid rgba(202,168,106,.25)}
@@ -131,6 +123,6 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
    </div>
   </div>
  </section>
- <section className="profile-recommendations"><div className="recommendation-head"><h2>Scelti per te</h2></div>{primaryRecommendations.length?<><div className="recommendation-grid">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{recommendations.slice(3).map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
+ <section className="profile-recommendations"><div className="recommendation-head"><h2>Scelti per te</h2></div>{(primaryRecommendations.length || hasMoreRecommendations)?<><div className="recommendation-grid recommendation-grid-primary">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{additionalRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
  </div></div>;
 }
