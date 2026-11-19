@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "../eventi/admin-events.css";
+import "./review-queue.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -41,15 +42,23 @@ export default async function ContentReview() {
   const experiences = (expsRes.data ?? []) as Exp[];
   const revisions = (revisionsRes.data ?? []) as ExpRevision[];
   const appointments = (eventsRes.data ?? []) as Event[];
+  const experienceCount = experiences.length + revisions.length;
+  const firstPendingSection = [applications.length, profiles.length, experienceCount, appointments.length]
+    .findIndex(count => count > 0);
+
   return <div className="admin-events admin-content-review">
     <AdminSectionHeader
       title="Contenuti da esaminare"
       description="Qui trovi candidature, modifiche ai profili e attività in attesa di verifica. Le esperienze sono attività proposte dagli operatori, come visite o laboratori. Gli appuntamenti sono eventi acquisiti da altre fonti, con una data specifica."
       actions={<Link href="/admin">← Centro operativo</Link>}
     />
-    <section className="admin-events__body"><div className="admin-events__container">
-      <section className="admin-events__queue-group" aria-labelledby="review-applications">
-        <h2 id="review-applications">Candidature <small>{applications.length}</small></h2>
+    <section className="admin-events__body"><div className="admin-events__container review-queue">
+      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 0} aria-labelledby="review-applications">
+        <summary className="review-queue__summary">
+          <h2 id="review-applications">Candidature</h2>
+          <span className="review-queue__count" aria-label={`${applications.length} in attesa`}>{applications.length}</span>
+        </summary>
+        <div className="review-queue__content">
         <div className="admin-events__list">
           {applications.map(item => <article key={item.id} className="admin-events__card admin-events__card--compact">
             <div className="admin-events__card-main">
@@ -63,16 +72,27 @@ export default async function ContentReview() {
           {applications.length === 0 && <p className="admin-events__empty">Nessuna candidatura in attesa.</p>}
         </div>
         <p><Link className="text-link" href="/admin/candidature?filter=closed">Storico candidature →</Link></p>
-      </section>
-      <section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>
+        </div>
+      </details>
+      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 1} aria-labelledby="review-profiles">
+        <summary className="review-queue__summary">
+          <h2 id="review-profiles">Modifiche ai profili</h2>
+          <span className="review-queue__count" aria-label={`${profiles.length} in attesa`}>{profiles.length}</span>
+        </summary>
+        <div className="review-queue__content">
         <div className="admin-events__list">{profiles.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Modifica profilo</span><h3>{relatedName(item.operators)}</h3></div>
           <Link className="admin-events__examine" href={`/admin/operatori/${item.operator_id}/revisioni-profilo`}>Esamina →</Link>
         </article>)}</div>
         {profiles.length === 0 && <p className="admin-events__empty">Nessuna modifica al profilo in attesa.</p>}
-      </section>
-      <section className="admin-events__queue-group" aria-labelledby="review-experiences">
-        <h2 id="review-experiences">Esperienze <small>{experiences.length + revisions.length}</small></h2>
+        </div>
+      </details>
+      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 2} aria-labelledby="review-experiences">
+        <summary className="review-queue__summary">
+          <h2 id="review-experiences">Esperienze</h2>
+          <span className="review-queue__count" aria-label={`${experienceCount} in attesa`}>{experienceCount}</span>
+        </summary>
+        <div className="review-queue__content">
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Nuova proposta</span><h3>{item.name}</h3></div>
@@ -82,12 +102,17 @@ export default async function ContentReview() {
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Modifica</span><h3>{relatedName(item.experiences)}</h3></div>
             <Link className="admin-events__examine" href={`/admin/revisione-esperienza?id=${encodeURIComponent(item.experience_id)}`}>Esamina →</Link>
           </article>)}
-          {experiences.length + revisions.length === 0 && <p className="admin-events__empty">Nessuna esperienza in attesa.</p>}
+          {experienceCount === 0 && <p className="admin-events__empty">Nessuna esperienza in attesa.</p>}
         </div>
         <p><Link className="text-link" href="/admin/attivita?tipo=esperienze">Registro esperienze e creazione →</Link></p>
-      </section>
-      <section className="admin-events__queue-group" aria-labelledby="review-appointments">
-        <h2 id="review-appointments">Appuntamenti <small>{appointments.length}</small></h2>
+        </div>
+      </details>
+      <details className="review-queue__group" name="admin-review-queue" open={firstPendingSection === 3} aria-labelledby="review-appointments">
+        <summary className="review-queue__summary">
+          <h2 id="review-appointments">Appuntamenti</h2>
+          <span className="review-queue__count" aria-label={`${appointments.length} in attesa`}>{appointments.length}</span>
+        </summary>
+        <div className="review-queue__content">
         <div className="admin-events__list">
           {appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Appuntamento · {item.source_type?.trim() || "Origine non indicata"}</span><h3>{item.title}</h3><p className="admin-events__date">{dated(item.starts_at)}</p></div>
@@ -96,7 +121,8 @@ export default async function ContentReview() {
           {appointments.length === 0 && <p className="admin-events__empty">Nessun appuntamento in attesa.</p>}
         </div>
         <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti e pubblicazione →</Link></p>
-      </section>
+        </div>
+      </details>
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
     </div></section>
   </div>;

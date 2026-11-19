@@ -207,6 +207,7 @@ test("focused content review presents one grouped list without duplicated naviga
   for (const section of ["applications", "profiles", "experiences", "appointments"]) {
     assert.match(page, new RegExp('aria-labelledby="review-' + section + '"'));
   }
+  assert.equal((page.match(/<details className="review-queue__group" name="admin-review-queue"/g) ?? []).length, 4);
   assert.match(page, /\.from\("operator_applications"\).*\.in\("status", \["new", "reviewing"\]\)/);
   assert.match(page, /\/admin\/candidature\/\$\{item\.id\}/);
   assert.match(nav, /count: applicationsPending \+ operatorExperiencePending/);
