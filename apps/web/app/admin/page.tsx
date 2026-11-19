@@ -43,9 +43,8 @@ export default async function AdminPage() {
 
   const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents+eventsToPublish;
   const workItems=[
-    {href:"/admin/contenuti",label:"Contenuti da esaminare",description:`${pendingProfileRevs} profili · ${pendingExperiences+pendingRevs} esperienze · ${pendingEvents} appuntamenti`,value:pendingOperatorArea+pendingEvents},
+    {href:"/admin/contenuti",label:"Contenuti da esaminare",description:`${pendingApps} candidature · ${pendingProfileRevs} profili · ${pendingExperiences+pendingRevs} esperienze · ${pendingEvents} appuntamenti`,value:pendingApps+pendingOperatorArea+pendingEvents},
     {href:"/admin/attivita?view=ready",label:"Contenuti pronti da pubblicare",description:`${eventsToPublish} appuntamenti verificati in attesa di pubblicazione`,value:eventsToPublish},
-    {href:"/admin/candidature?filter=pending#pending-candidatures",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
   ];
   const liveItems=[
     {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
@@ -60,7 +59,7 @@ export default async function AdminPage() {
           <div className="admin-dashboard__summary-copy">
             <span className="admin-dashboard__eyebrow">Riepilogo operativo</span>
             <h2>Le priorità di oggi</h2>
-            <p>{pendingTotal===0?"Nessuna attività attualmente in attesa nei tre ambiti monitorati.":"Attività in attesa di valutazione nei tre ambiti monitorati."}</p>
+            <p>{pendingTotal===0?"Nessuna attività attualmente in attesa.":"Attività in attesa di valutazione."}</p>
           </div>
           <div className="admin-dashboard__total" aria-label={`${pendingTotal} attività in attesa`}>
             <strong>{pendingTotal}</strong>

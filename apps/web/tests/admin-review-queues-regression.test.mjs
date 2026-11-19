@@ -203,9 +203,14 @@ test("focused content review presents one grouped list without duplicated naviga
   const page = read("../app/admin/contenuti/page.tsx");
   const css = read("../app/admin/eventi/admin-events.css");
   assert.match(page, /admin-content-review/);
-  assert.match(page, /Esperienze e appuntamenti/);
-  assert.match(page, /profiles.length>0/);
-  assert.match(page, /experiences.length>0\|\|revisions.length>0\|\|appointments.length>0/);
+  const nav = read("../app/admin/AdminNavLinks.tsx");
+  for (const section of ["applications", "profiles", "experiences", "appointments"]) {
+    assert.match(page, new RegExp('aria-labelledby="review-' + section + '"'));
+  }
+  assert.match(page, /\.from\("operator_applications"\).*\.in\("status", \["new", "reviewing"\]\)/);
+  assert.match(page, /\/admin\/candidature\/\$\{item\.id\}/);
+  assert.match(nav, /count: applicationsPending \+ operatorExperiencePending/);
+  assert.doesNotMatch(nav, /href: "\/admin\/(candidature|attivita)"/);
   assert.match(page, /Esperienza · Modifica/);
   assert.match(page, /Appuntamento · /);
   assert.match(page, /href="\/admin"/);

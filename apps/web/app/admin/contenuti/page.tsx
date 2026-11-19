@@ -8,6 +8,7 @@ import "../eventi/admin-events.css";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+type Application = { id: string; business_name: string; status: string };
 type Exp = { id: string; name: string; operator_id: string | null; review_status: string; experience_origin: string };
 type ExpRevision = { id: string; experience_id: string; experiences: { name: string; experience_origin: string } | { name: string; experience_origin: string }[] | null };
 type ProfileRevision = { id: string; operator_id: string; operators: { name: string } | { name: string }[] | null };
@@ -25,35 +26,53 @@ export default async function ContentReview() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [profilesRes, expsRes, revisionsRes, eventsRes] = await Promise.all([
+  const [applicationsRes, profilesRes, expsRes, revisionsRes, eventsRes] = await Promise.all([
+    db.from("operator_applications").select("id,business_name,status").in("status", ["new", "reviewing"]).order("created_at", { ascending: false }),
     db.from("operator_revisions").select("id,operator_id,operators(name)").eq("status","pending").order("created_at",{ascending:false}),
     db.from("experiences").select("id,name,operator_id,review_status,experience_origin").neq("experience_origin","bimaris").in("review_status",["pending","submitted"]).order("created_at",{ascending:false}),
     db.from("experience_revisions").select("id,experience_id,experiences!inner(name,experience_origin)").eq("status","pending").neq("experiences.experience_origin","bimaris"),
     db.from("events").select("id,title,starts_at,source_type").eq("verification_status","pending").eq("published",false).order("starts_at",{ascending:true}),
   ]);
-  if (profilesRes.error || expsRes.error || revisionsRes.error || eventsRes.error) {
+  if (applicationsRes.error || profilesRes.error || expsRes.error || revisionsRes.error || eventsRes.error) {
     throw new Error("Impossibile caricare le attività da esaminare");
   }
+  const applications = (applicationsRes.data ?? []) as Application[];
   const profiles = (profilesRes.data ?? []) as ProfileRevision[];
   const experiences = (expsRes.data ?? []) as Exp[];
   const revisions = (revisionsRes.data ?? []) as ExpRevision[];
   const appointments = (eventsRes.data ?? []) as Event[];
-  const total = profiles.length + experiences.length + revisions.length + appointments.length;
   return <div className="admin-events admin-content-review">
     <AdminSectionHeader
       title="Contenuti da esaminare"
-      description="Esamina revisioni dei profili, proposte degli operatori e appuntamenti acquisiti."
+      description="Qui trovi candidature, modifiche ai profili e attività in attesa di verifica. Le esperienze sono attività proposte dagli operatori, come visite o laboratori. Gli appuntamenti sono eventi acquisiti da altre fonti, con una data specifica."
       actions={<Link href="/admin">← Centro operativo</Link>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
-      {total===0&&<div className="admin-events__empty"><h3>Nessun contenuto in attesa</h3><p>Non ci sono revisioni o nuove proposte da esaminare.</p></div>}
-      {profiles.length>0&&<section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>
+      <section className="admin-events__queue-group" aria-labelledby="review-applications">
+        <h2 id="review-applications">Candidature <small>{applications.length}</small></h2>
+        <div className="admin-events__list">
+          {applications.map(item => <article key={item.id} className="admin-events__card admin-events__card--compact">
+            <div className="admin-events__card-main">
+              <span className="admin-events__eyebrow">{item.status === "reviewing" ? "In valutazione" : "Nuova candidatura"}</span>
+              <h3>{item.business_name}</h3>
+            </div>
+            <Link className="admin-events__examine" href={`/admin/candidature/${item.id}`}>
+              {item.status === "reviewing" ? "Continua valutazione →" : "Esamina candidatura →"}
+            </Link>
+          </article>)}
+          {applications.length === 0 && <p className="admin-events__empty">Nessuna candidatura in attesa.</p>}
+        </div>
+        <p><Link className="text-link" href="/admin/candidature?filter=closed">Storico candidature →</Link></p>
+      </section>
+      <section className="admin-events__queue-group" aria-labelledby="review-profiles"><h2 id="review-profiles">Profili operatore <small>{profiles.length}</small></h2>
         <div className="admin-events__list">{profiles.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Modifica profilo</span><h3>{relatedName(item.operators)}</h3></div>
           <Link className="admin-events__examine" href={`/admin/operatori/${item.operator_id}/revisioni-profilo`}>Esamina →</Link>
         </article>)}</div>
-      </section>}
-      {(experiences.length>0||revisions.length>0||appointments.length>0)&&<section className="admin-events__queue-group" aria-labelledby="review-experiences"><h2 id="review-experiences">Esperienze e appuntamenti <small>{experiences.length+revisions.length+appointments.length}</small></h2>
+        {profiles.length === 0 && <p className="admin-events__empty">Nessuna modifica al profilo in attesa.</p>}
+      </section>
+      <section className="admin-events__queue-group" aria-labelledby="review-experiences">
+        <h2 id="review-experiences">Esperienze <small>{experiences.length + revisions.length}</small></h2>
         <div className="admin-events__list">
           {experiences.map(item=><article className="admin-events__card admin-events__card--compact" key={`exp-${item.id}`}>
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Nuova proposta</span><h3>{item.name}</h3></div>
@@ -63,11 +82,21 @@ export default async function ContentReview() {
             <div className="admin-events__card-main"><span className="admin-events__eyebrow">Esperienza · Modifica</span><h3>{relatedName(item.experiences)}</h3></div>
             <Link className="admin-events__examine" href={`/admin/revisione-esperienza?id=${encodeURIComponent(item.experience_id)}`}>Esamina →</Link>
           </article>)}
+          {experiences.length + revisions.length === 0 && <p className="admin-events__empty">Nessuna esperienza in attesa.</p>}
+        </div>
+        <p><Link className="text-link" href="/admin/attivita?tipo=esperienze">Registro esperienze e creazione →</Link></p>
+      </section>
+      <section className="admin-events__queue-group" aria-labelledby="review-appointments">
+        <h2 id="review-appointments">Appuntamenti <small>{appointments.length}</small></h2>
+        <div className="admin-events__list">
           {appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">Appuntamento · {item.source_type?.trim() || "Origine non indicata"}</span><h3>{item.title}</h3><p className="admin-events__date">{dated(item.starts_at)}</p></div>
           <Link className="admin-events__examine" href={`/admin/eventi/${item.id}`}>Esamina →</Link>
-        </article>)}</div>
-      </section>}
+        </article>)}
+          {appointments.length === 0 && <p className="admin-events__empty">Nessun appuntamento in attesa.</p>}
+        </div>
+        <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti e pubblicazione →</Link></p>
+      </section>
       <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Approvazioni, scarti e pubblicazioni si effettuano esclusivamente nei rispettivi dossier.</p>
     </div></section>
   </div>;
