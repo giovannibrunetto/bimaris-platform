@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./experience-revision.css";
-import { experienceFieldChanges } from "@/lib/experience-review-fields";
+import { experienceFieldComparison } from "@/lib/experience-review-fields";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -35,7 +35,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     return { ...photo, url: error ? "" : (data?.signedUrl ?? "") };
   }));
   const next = (revision?.content ?? {}) as Content;
-  const changedFields = experienceFieldChanges(experience, next);
+  const allFields = experienceFieldComparison(experience, next);
+  const changedFields = allFields.filter(([, , , changed]) => changed);
   const originalPhotos: Photo[] = ((livePhotos ?? []) as Photo[]).map(p => ({ ...p, url: publicMediaUrl(p.storage_path) }));
   // A retained image refers to its existing experience_media.id, not its storage path:
   // two different records may point to the same underlying image.
@@ -109,8 +110,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         <summary>Mostra confronto completo e gallerie</summary>
         <p className="revision-full-comparison__hint">Consulta tutti i campi e le fotografie soltanto quando serve un controllo approfondito.</p>
         <div className="revision-full-comparison__fields">
-          {allFields.map(([label,before,after])=><div className="revision-full-comparison__field" key={label}>
-            <strong>{label} · modificato</strong>
+          {allFields.map(([label,before,after,changed])=><div className="revision-full-comparison__field" key={label}>
+            <strong>{label} · {changed ? "modificato" : "invariato"}</strong>
             <div className="revision-changes__values">
               <div><small>{currentLabel}</small><p>{show(before)}</p></div>
               <div><small>PROPOSTA OPERATORE</small><p>{show(after)}</p></div>

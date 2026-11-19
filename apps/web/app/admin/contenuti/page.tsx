@@ -5,7 +5,7 @@ import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "../eventi/admin-events.css";
 import "./review-queue.css";
-import { experienceFieldChanges, experienceReviewFields } from "@/lib/experience-review-fields";
+import { experienceFieldChanges } from "@/lib/experience-review-fields";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -38,7 +38,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
     db.from("operator_applications").select("id,business_name,status").in("status", ["new", "reviewing"]).order("created_at", { ascending: false }),
     db.from("operator_revisions").select("id,operator_id,operators(name)").eq("status","pending").order("created_at",{ascending:false}),
     db.from("experiences").select("id,name,operator_id,review_status,experience_origin").neq("experience_origin","bimaris").in("review_status",["pending","submitted"]).order("created_at",{ascending:false}),
-    db.from("experience_revisions").select(`id,experience_id,content,experiences!inner(experience_origin,${experienceReviewFields})`).eq("status","pending").neq("experiences.experience_origin","bimaris"),
+    db.from("experience_revisions").select("id,experience_id,content,experiences!inner(experience_origin,name,excerpt,description,duration_minutes,price_from,meeting_point,location_kind,latitude,longitude,territory_municipality_code)").eq("status","pending").neq("experiences.experience_origin","bimaris"),
     db.from("events").select("id,title,starts_at,source_type").eq("verification_status","pending").eq("published",false).order("starts_at",{ascending:true}),
   ]);
   if (applicationsRes.error || profilesRes.error || expsRes.error || revisionsRes.error || eventsRes.error) {

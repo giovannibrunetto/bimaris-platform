@@ -41,12 +41,15 @@ const fields = [
  ]
 ] as const;
 
-export const experienceReviewFields = fields.map(([, key]) => key).join(",");
-
-export function experienceFieldChanges(current: Record<string, unknown>, proposed: Record<string, unknown>) {
-  return fields.flatMap(([label, key]) => {
+export function experienceFieldComparison(current: Record<string, unknown>, proposed: Record<string, unknown>) {
+  return fields.map(([label, key]) => {
     const before = current[key];
     const after = proposed[key];
-    return String(before ?? "") === String(after ?? "") ? [] : [[label, before, after] as const];
+    const changed = String(before ?? "") !== String(after ?? "");
+    return [label, before, after, changed] as const;
   });
+}
+
+export function experienceFieldChanges(current: Record<string, unknown>, proposed: Record<string, unknown>) {
+  return experienceFieldComparison(current, proposed).filter(([, , , changed]) => changed);
 }
