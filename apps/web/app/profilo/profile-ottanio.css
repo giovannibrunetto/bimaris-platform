@@ -2,11 +2,11 @@
 .profile-hero{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018))!important;border:1px solid rgba(216,169,79,.24)!important;box-shadow:0 30px 90px rgba(0,0,0,.22)!important;backdrop-filter:blur(14px)}
 .profile-hero h1,.overview-head h2,.overview-value,.recommendation-head h2,.recommendation-card h3{color:#f7f2e9!important}
 .profile-hero p,.overview-copy,.profile-preference-note,.recommendation-head p,.recommendation-card p,.empty-recommendations p{color:rgba(247,242,233,.66)!important}
-.kicker,.profile-hero .kicker,.overview-label,.profile-preference-tag small{color:#d8a94f!important}
+.profile-page .kicker,.profile-hero .kicker,.overview-label,.profile-preference-tag small{color:#d8a94f!important}
 .profile-success{color:#f7f2e9!important;background:rgba(216,169,79,.09)!important;border-color:rgba(216,169,79,.28)!important}
 .profile-preference-tag,.interest-tag{background:rgba(255,255,255,.075)!important;border-color:rgba(216,169,79,.2)!important;color:#f7f2e9!important}
 .profile-preference-tag strong{color:#f7f2e9!important}
-.overview-action,.text-link{color:#d8a94f!important}
+.profile-page .overview-action,.profile-page .text-link{color:#d8a94f!important}
 .status-dot{background:#d8a94f!important;box-shadow:0 0 0 4px rgba(216,169,79,.12)!important}
 .profile-recommendations:before{background:#d8a94f!important}
 .recommendation-card{background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.025))!important;border-color:rgba(216,169,79,.18)!important;box-shadow:0 24px 70px rgba(0,0,0,.15)!important;backdrop-filter:blur(12px)}
@@ -88,4 +88,60 @@
 @media (prefers-reduced-motion:reduce){
   .profile-page .overview-item,
   .profile-page .recommendation-card{transition:none !important;transform:none !important}
+}
+
+/* Personal dashboard: quick actions first, recommendations next. */
+.profile-page .profile-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(16px, 2.2vw, 28px);
+}
+.profile-page .profile-hero::after { content: none; }
+.profile-page .profile-hero h1 {
+  margin: 0;
+  padding: 0;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+.profile-page .profile-session-actions { position: static; flex: none; }
+.profile-page .profile-overview {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.profile-page .overview-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
+}
+.profile-page .overview-item,
+.profile-page .overview-item:first-child {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+.profile-page .overview-item > .text-link { align-self: flex-start; margin-top: auto; }
+.profile-page .overview-item h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.profile-page .profile-preference-summary { padding: 0; margin-bottom: 10px; }
+.profile-page .interest-tag,
+.profile-page .profile-preference-tag { padding: 4px 8px; }
+.profile-page .profile-recommendations {
+  margin-top: 26px;
+  padding: 22px 0 0;
+  border: 0;
+  background: transparent;
+}
+.profile-page .profile-recommendations::before { left: 0; right: 0; }
+.profile-page .recommendation-head h2 { font-size: clamp(28px, 3vw, 38px); }
+.profile-page .recommendation-grid { margin-top: 14px; }
+.profile-page .recommendation-card { padding: 16px; }
+@media (max-width: 850px) {
+  .profile-page .overview-grid { grid-template-columns: minmax(0, 1fr); }
+  .profile-page .overview-item:first-child { grid-column: auto; }
 }
