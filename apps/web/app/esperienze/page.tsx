@@ -82,7 +82,7 @@ export default async function ExperiencesPage({ searchParams }: {
       {showExperiences && <>
       <section className="section sand discovery-page-first experience-catalogue-section">
         <div className="section-head">
-          <h2>Scegli una categoria</h2>
+          <h2 className="public-discovery-section-title">Scegli una categoria</h2>
         </div>
 
         <div className="cards">

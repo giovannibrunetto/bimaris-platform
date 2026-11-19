@@ -40,7 +40,7 @@ export default async function HistoricalMapPage() {
 
       <section className="section bimaris-ambient-section storytelling-intro">
         <div className="storytelling-intro-copy">
-          <div><div className="kicker">Da dove vuoi cominciare?</div><h2>Scegli un racconto.</h2></div>
+          <div><div className="kicker">Da dove vuoi cominciare?</div><h2 className="public-discovery-section-title">Scegli un racconto</h2></div>
           <p>Tre storie, tre epoche diverse. Scegli quella che vuoi conoscere: i luoghi e i capitoli ti accompagneranno dentro il racconto.</p>
         </div>
 
