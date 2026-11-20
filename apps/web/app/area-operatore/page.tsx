@@ -8,7 +8,6 @@ import WizardReviewGuide from "./WizardReviewGuide";
 import OperatorLogoutButton from "./OperatorLogoutButton";
 import OperatorWorkspaceSwitcher from "./OperatorWorkspaceSwitcher";
 import OperatorWorkspacePanels from "./OperatorWorkspacePanels";
-import B2BNewMatchAlerts from "./B2BNewMatchAlerts";
 import "./operator-area.css";
 export const dynamic="force-dynamic";export const revalidate=0;
 type Operator={id:string;slug:string;name:string;category:string|null;published:boolean;selection_status:string;address:string|null;phone:string|null;whatsapp:string|null;email:string|null;website:string|null;instagram:string|null};
@@ -70,7 +69,6 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   <div className="operator-premium-header__actions"><span className="operator-premium-status">{activeRow.operator.published?"Profilo online":"Profilo non pubblicato"}</span>{activeRow.operator.published&&<a href={`/operatori/${activeRow.operator.slug}`} className="operator-premium-public">Scheda pubblica ↗</a>}<OperatorLogoutButton/></div>
  </header>}
  {activeRow&&<OperatorWorkspaceSwitcher activities={rows.map(r=>({id:r.operator_id,slug:r.operator.slug,name:r.operator.name}))} selectedSlug={activeRow.operator.slug}/>}
- {activeRow&&<B2BNewMatchAlerts operatorId={activeRow.operator_id}/>}
  {visibleRows.map(({role,operator_id,operator})=>{
   const m=metrics.get(operator.slug)??{total:0,whatsapp:0,phone:0,directions:0,website:0,instagram:0,booking:0};
   const operatorExperiences=experiencesByOperator.get(operator_id)??[];
