@@ -38,3 +38,54 @@
  .operator-workspace-content{padding-top:18px}
  .operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{padding:18px}
 }
+
+
+/* DS UX-01 · PR58 — Reuse the approved Area Personale ottanio/gold palette. */
+.operator-premium-area{--operator-octane:#0a292d;--operator-deep:#071b1f;--operator-gold:#d8a94f;--operator-paper:#f7f2e9;min-height:calc(100vh - 70px);background:radial-gradient(circle at 8% 0%,rgba(34,91,94,.28),transparent 38%),radial-gradient(circle at 96% 82%,rgba(216,169,79,.055),transparent 34%),linear-gradient(135deg,#071b1f 0%,#0a292d 50%,#081d20 100%);color:var(--operator-paper)}
+.operator-premium-header{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018));border:1px solid rgba(216,169,79,.24);box-shadow:0 24px 65px rgba(0,0,0,.16);backdrop-filter:blur(14px)}
+.operator-premium-header h1,.operator-premium-header p,.operator-premium-public{color:var(--operator-paper)}
+.operator-premium-kicker,.operator-premium-status{color:var(--operator-gold)}
+.operator-premium-status:before{background:var(--operator-gold)}
+.operator-premium-shell>.operator-workspace-switcher{background:rgba(255,255,255,.045);border:1px solid rgba(216,169,79,.18);color:var(--operator-paper);border-radius:14px}
+.operator-premium-shell .operator-workspace-switcher__activity select{background:rgba(7,27,31,.82);border-color:rgba(216,169,79,.45);color:var(--operator-paper)}
+.operator-premium-shell .operator-workspace-switcher__link{color:var(--operator-paper)}
+.operator-premium-shell .operator-workspace-switcher__link[aria-current=page]{color:var(--operator-gold);border-bottom-color:var(--operator-gold)}
+.operator-workspace-tabs{border-bottom:1px solid rgba(216,169,79,.24)}
+.operator-workspace-tabs__button{color:rgba(247,242,233,.8)}
+.operator-workspace-tabs__button:hover{color:#fff;background:rgba(255,255,255,.09)}
+.operator-workspace-tabs__button[aria-current=page]{color:#091f22;background:var(--operator-gold);box-shadow:none}
+.operator-workspace-tabs__count{background:var(--operator-deep);color:var(--operator-paper)}
+.operator-premium-area .experience-studio__head h2,
+.operator-premium-area .experience-studio__head p,
+.operator-premium-area .operator-profile-card h2,
+.operator-premium-area .operator-impact__head h2,
+.operator-premium-area .operator-impact .eyebrow,
+.operator-premium-area .collaboration-inbox h2{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-studio__head{border-bottom-color:rgba(216,169,79,.25)}
+.operator-premium-area .operator-experiences .experience-studio{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-list{gap:12px}
+.operator-premium-area .operator-experiences .experience-card{background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))!important;color:var(--operator-paper)!important;border:1px solid rgba(216,169,79,.24)!important;border-radius:16px!important;box-shadow:0 10px 26px rgba(0,0,0,.08)!important}
+.operator-premium-area .operator-experiences .experience-card h3,
+.operator-premium-area .operator-experiences .experience-card p,
+.operator-premium-area .operator-experiences .experience-card strong,
+.operator-premium-area .operator-experiences .experience-card span{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-card .eyebrow{color:var(--operator-gold)}
+.operator-premium-area .operator-experiences .experience-card .text-link{color:var(--operator-gold)}
+.operator-premium-area .operator-experiences .experience-card .button{border-color:var(--operator-gold)}
+.operator-premium-area .operator-profile-card,
+.operator-premium-area .operator-impact,
+.operator-premium-area .collaboration-inbox{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border-color:rgba(216,169,79,.18);color:var(--operator-paper)}
+.operator-premium-area .operator-profile-card p,
+.operator-premium-area .operator-impact__head>span,
+.operator-premium-area .collaboration-inbox p{color:rgba(247,242,233,.75)}
+.operator-premium-area .operator-profile-card .eyebrow,.operator-premium-area .collaboration-inbox .eyebrow{color:var(--operator-gold)}
+.operator-premium-area .operator-impact__metrics>div{background:rgba(255,255,255,.055)!important;border-color:rgba(216,169,79,.18)!important}
+.operator-premium-area .operator-impact__metrics strong{color:var(--operator-gold)}
+.operator-premium-area .operator-impact__metrics span{color:var(--operator-paper)}
+.operator-premium-area .operator-profile-card__form{background:var(--operator-paper);color:#0a292d;padding:22px;border-radius:16px}
+.operator-premium-area .operator-profile-card__form .eyebrow{color:#806025}
+.operator-premium-area .operator-profile-card__form p{color:#526463}
+.operator-premium-area .operator-profile-card__form label,.operator-premium-area .operator-profile-card__form strong{color:#0a292d}
+.operator-premium-area .operator-profile-card__form input{color:#0a292d}
+.operator-premium-area .experience-manager__collaboration{background:linear-gradient(135deg,#16474b,#09282d);border-color:rgba(216,169,79,.44)}
+@media(prefers-reduced-motion:reduce){.operator-premium-header,.operator-premium-area .experience-card{transition:none!important}}
