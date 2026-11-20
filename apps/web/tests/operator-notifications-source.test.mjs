@@ -56,6 +56,10 @@ test("notification body opens its destination without a redundant action link",(
  assert.doesNotMatch(bell,/operator-notice__item-actions/);
  assert.match(css,/\.operator-notice__item-link:hover/);
 });
+test("operator bell remains below the sticky site header during scrolling",()=>{
+ assert.match(css,/\.operator-notice\{[^}]*z-index:1\}/);
+ assert.match(css,/body:has\(\.operator-subpage\) \.site-header\{background:#082529;z-index:30\}/);
+});
 test("mobile notification panel remains constrained to viewport",()=>{
  assert.match(css,/@media\(max-width:650px\)/);
  assert.match(css,/\.operator-notice__panel\{position:fixed;/);
