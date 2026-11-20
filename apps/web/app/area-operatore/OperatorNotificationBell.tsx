@@ -8,15 +8,26 @@ const categoryLabels:Record<string,string>={experience:"Esperienze",profile:"Pro
 export default function OperatorNotificationBell({operatorId}:{operatorId:string}){
  const [opened,setOpened]=useState(false),[payload,setPayload]=useState<Payload|null>(null),[error,setError]=useState(""),[busy,setBusy]=useState("");
  const root=useRef<HTMLDivElement>(null);
+ const activeOperatorRef=useRef(operatorId);
+ activeOperatorRef.current=operatorId;
+ const lastLoadRef=useRef(0);
  const load=useCallback(async()=>{
+  const sequence=++lastLoadRef.current;
   try{
    const res=await fetch(`/api/operator/notifications?operatorId=${encodeURIComponent(operatorId)}`,{cache:"no-store"});
    if(!res.ok)throw new Error("notification-fetch");
    const result=await res.json() as Payload;
+   if(sequence!==lastLoadRef.current||activeOperatorRef.current!==operatorId)return;
    setPayload(result);setError("");
-  }catch{setError("Non è stato possibile caricare le notifiche.");}
+  }catch{
+   if(sequence===lastLoadRef.current&&activeOperatorRef.current===operatorId)setError("Non è stato possibile caricare le notifiche.");
+  }
  },[operatorId]);
- useEffect(()=>{setOpened(false);setPayload(null);void load();},[load]);
+ useEffect(()=>{
+  setOpened(false);setPayload(null);setError("");setBusy("");
+  void load();
+  return()=>{lastLoadRef.current++;};
+ },[load]);
  useEffect(()=>{
   if(!opened)return;
   function close(event:MouseEvent){if(root.current&&!root.current.contains(event.target as Node))setOpened(false);}
@@ -25,14 +36,16 @@ export default function OperatorNotificationBell({operatorId}:{operatorId:string
   return()=>{document.removeEventListener("mousedown",close);document.removeEventListener("keydown",escape);};
  },[opened]);
  async function read(n:Notice){
+  const requestedOperatorId=operatorId;
   setBusy(n.id);
   try{
    const res=await fetch("/api/operator/notifications",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({operatorId,kind:n.kind,notificationId:n.id,action:"read"})});
    if(!res.ok)throw new Error("notification-update");
+   if(activeOperatorRef.current!==requestedOperatorId)return;
    setPayload(p=>p?{...p,notifications:p.notifications.map(item=>item.id===n.id&&item.kind===n.kind?{...item,read:true}:item),unread:Math.max(0,p.unread-(n.read?0:1))}:p);
    setError("");
-  }catch{setError("Impossibile segnare la notifica come letta.");}
-  finally{setBusy("");}
+  }catch{if(activeOperatorRef.current===requestedOperatorId)setError("Impossibile segnare la notifica come letta.");}
+  finally{if(activeOperatorRef.current===requestedOperatorId)setBusy("");}
  }
  const unread=payload?.unread??0;
  return <div className="operator-notice" ref={root}>
