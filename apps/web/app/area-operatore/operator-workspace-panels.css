@@ -211,3 +211,33 @@
  .operator-premium-area .operator-workspace-content .operator-profile-card__head h2,
  .operator-premium-area .operator-workspace-content .operator-impact__head h2{font-size:28px}
 }
+
+
+/* PR58 UX-01 — Match the subtle premium card lift used elsewhere in BIMARIS. */
+.operator-premium-area .operator-workspace-content .experience-manager__card {
+  position:relative;
+  transform:scale(1);
+  transform-origin:center center;
+  will-change:transform;
+  transition:transform .24s cubic-bezier(.2,.75,.25,1),border-color .24s ease,box-shadow .24s ease!important;
+}
+@media(hover:hover) and (pointer:fine) {
+  .operator-premium-area .operator-workspace-content .experience-manager__card:hover {
+    z-index:2;
+    transform:scale(1.025);
+    border-color:#d8a94f!important;
+    box-shadow:0 14px 32px rgba(0,0,0,.24),0 0 0 1px rgba(216,169,79,.24)!important;
+  }
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card:focus-within {
+  z-index:2;
+  border-color:#d8a94f!important;
+  box-shadow:0 0 0 2px rgba(216,169,79,.3)!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .operator-premium-area .operator-workspace-content .experience-manager__card {
+    will-change:auto;
+    transition:none!important;
+    transform:none!important;
+  }
+}
