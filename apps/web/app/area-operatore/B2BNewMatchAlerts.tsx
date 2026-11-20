@@ -1,6 +1,5 @@
 "use client";
 import {useEffect,useState} from "react";
-import Link from "next/link";
 
 type Notice={id:string;name:string;slug:string;score:number;createdAt:string;read:boolean};
 type Payload={notifications:Notice[];unread:number;emailEnabled:boolean};
@@ -29,10 +28,10 @@ export default function B2BNewMatchAlerts({operatorId,showPreferences=false}:{op
   finally{setBusy(false)}
  }
  if(!data&&!error)return null;
- if(!showPreferences&&(!data||data.unread===0))return null;
+ if(!showPreferences)return null;
  return <section className="b2b-alerts" aria-label="Nuove opportunità di collaborazione">
-  <div className="b2b-alerts__heading"><strong>{data?.unread?"Nuove opportunità B2B":"Avvisi nuove collaborazioni"}</strong>{data?.unread?<span>{data.unread} da leggere</span>:null}</div>
-  {data?.notifications.filter(n=>!n.read).slice(0,5).map(n=><div className="b2b-alerts__notice" key={n.id}><div><strong>{n.name}</strong><p>Nuova compatibilità: {n.score}%</p></div><div className="b2b-alerts__actions"><Link href={`/area-operatore/network-b2b?operatore=${encodeURIComponent(operatorId)}`}>Apri Network B2B</Link><button type="button" disabled={busy} onClick={()=>void action({action:"read",notificationId:n.id})}>Segna come letta</button></div></div>)}
+  <div className="b2b-alerts__heading"><strong>Preferenze avvisi B2B</strong></div>
+
   {showPreferences&&<label className="b2b-alerts__preference"><input type="checkbox" disabled={busy||!data} checked={data?.emailEnabled??false} onChange={e=>void action({action:"preference",emailEnabled:e.target.checked})}/><span>Ricevi anche una email quando nasce una nuova compatibilità</span></label>}
   {error&&<p role="status" className="b2b-alerts__error">{error}</p>}
  </section>
