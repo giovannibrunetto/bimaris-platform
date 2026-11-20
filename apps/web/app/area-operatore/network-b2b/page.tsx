@@ -31,7 +31,7 @@ export default async function B2BPage({searchParams}:{searchParams:Promise<{oper
     const item = one(r.operators);
     return item ? [{ id: r.operator_id, slug: item.slug, name: item.name }] : [];
   });
-  return <main className="operator-subpage"><div className="operator-subpage__shell">
+  return <main className="operator-subpage operator-subpage--b2b"><div className="operator-subpage__shell">
       <header className="operator-subpage__heading"><div className="eyebrow">Area Operatore · Network B2B</div><h1>La tua rete professionale</h1><p>Presenta ciò che offri e trova opportunità di collaborazione con altri operatori BIMARIS.</p></header>
       <OperatorWorkspaceSwitcher activities={activities} selectedSlug={operator.slug}/>
       <B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/>
