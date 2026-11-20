@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendReviewNotification } from "@/lib/review-notifications";
+import { recordOperatorNotice } from "@/lib/operator-notifications";
 
 const LIVE_MEDIA_BUCKET="experience-media";
 const REVISION_MEDIA_BUCKET="experience-revision-media";
@@ -51,6 +52,7 @@ export async function POST(request:NextRequest){
    if(!summary)return back("review-note-required");
    const {error}=await supabase.from("experience_revisions").update({status:"rejected",review_notes:summary,review_sections:sections,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",revisionId).eq("status","pending"); if(error)throw error;
    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes:summary});
+   await recordOperatorNotice({operatorId:revision.operator_id,category:"experience",eventKey:`experience-revision-changes:${revisionId}`,title:"Modifica esperienza: correzioni richieste",description:`Per “${experience.name}” sono state richieste alcune correzioni.`,targetPath:"/area-operatore"});
    return back("changes-requested");
   }
   if(action==="approve-apply"){
@@ -81,6 +83,7 @@ export async function POST(request:NextRequest){
     }
     const result=Array.isArray(applied)?applied[0]:applied; const name=typeof result?.experience_name==="string"?result.experience_name:experience.name;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:general||null});
+    await recordOperatorNotice({operatorId:revision.operator_id,category:"experience",eventKey:`experience-revision-applied:${revisionId}`,title:"Modifica esperienza approvata",description:`La revisione di “${name}” è stata approvata e applicata.`,targetPath:"/area-operatore"});
     return back("approved-applied");
    }catch(error){
     for(const item of [...promoted].reverse())await supabase.from("experience_revision_media").update({storage_path:item.privatePath}).eq("id",item.id).eq("revision_id",revisionId).eq("storage_path",item.livePath);
