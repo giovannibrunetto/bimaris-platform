@@ -109,3 +109,18 @@
  .operator-subpage--b2b .b2b-network__group-heading p{margin:3px 0 0;font-size:14px}
  .operator-subpage--b2b .b2b-compact-choice{padding:12px 16px}
 }
+
+
+/* DS-B2B-NOTIFY-01 — readable internal match alerts and email preference. */
+.b2b-alerts{width:100%;padding:18px 22px;border:1px solid rgba(216,169,79,.45);border-radius:18px;background:linear-gradient(140deg,#153c3e,#0b2b2d);color:#f7f2e9}
+.b2b-alerts__heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.b2b-alerts__heading strong{font-size:17px}
+.b2b-alerts__heading span{font-size:12px;color:#e2ba65;font-weight:800}
+.b2b-alerts__notice{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid rgba(216,169,79,.2)}
+.b2b-alerts__notice p{font-size:13px;color:#e8dfd0;margin:4px 0 0}
+.b2b-alerts__actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.b2b-alerts__actions a,.b2b-alerts__actions button{font:inherit;font-size:13px;color:#e7bf6e;text-decoration:underline;text-underline-offset:3px;background:transparent;border:0;cursor:pointer}
+.b2b-alerts__preference{display:flex;align-items:center;gap:11px;margin-top:12px;font-size:14px;color:#f7f2e9;cursor:pointer}
+.b2b-alerts__preference input{width:19px;height:19px;accent-color:#d8a94f}
+.b2b-alerts__error{margin:10px 0 0;font-size:13px;color:#ffd8b5}
+@media(max-width:650px){.b2b-alerts{padding:15px}.b2b-alerts__notice{align-items:flex-start}}
