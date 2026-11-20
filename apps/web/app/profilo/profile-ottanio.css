@@ -167,3 +167,68 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+
+/* PR58 responsive UX — structured preference hierarchy, without changing saved selections. */
+.profile-page .profile-preference-interests{min-width:0}
+.profile-page .profile-preference-section-title{
+ margin:0 0 9px;
+ color:#d8a94f;
+ font-family:inherit;
+ font-size:11px;
+ font-weight:800;
+ letter-spacing:.10em;
+ line-height:1.45;
+ text-transform:uppercase;
+}
+.profile-page .profile-preference-interests .interest-tags{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:flex-start;
+ gap:7px;
+ margin:0;
+}
+.profile-page .profile-preference-interests .interest-tag{
+ display:inline-flex;
+ max-width:100%;
+ padding:6px 10px;
+ font-size:12px;
+ line-height:1.35;
+ font-weight:650;
+ border:1px solid rgba(216,169,79,.28)!important;
+ background:rgba(216,169,79,.085)!important;
+ color:#f7f2e9!important;
+ overflow-wrap:anywhere;
+}
+.profile-page .profile-preference-summary{
+ padding:12px 0 0;
+ margin:14px 0 12px;
+ border-top:1px solid rgba(216,169,79,.20);
+}
+.profile-page .profile-preference-details{display:grid;gap:0;margin:0;min-width:0}
+.profile-page .profile-preference-detail{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
+ align-items:baseline;
+ column-gap:10px;
+ padding:6px 0;
+ min-width:0;
+}
+.profile-page .profile-preference-detail dt{
+ color:rgba(247,242,233,.72);
+ font-size:12px;
+ line-height:1.4;
+}
+.profile-page .profile-preference-detail dd{
+ margin:0;
+ color:#f7f2e9;
+ font-size:13px;
+ font-weight:750;
+ line-height:1.45;
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+@media(max-width:480px){
+ .profile-page .profile-preference-interests .interest-tag{font-size:12px;padding:5px 9px}
+ .profile-page .profile-preference-detail{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+}
