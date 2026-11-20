@@ -1,0 +1,36 @@
+/* PR58 — Calendar and B2B share the approved Area Operatore visual system. */
+.operator-subpage{--operator-gold:#d8a94f;--operator-paper:#f7f2e9;background:radial-gradient(circle at 8% 0%,rgba(34,91,94,.28),transparent 38%),radial-gradient(circle at 96% 82%,rgba(216,169,79,.055),transparent 34%),linear-gradient(135deg,#071b1f 0%,#0a292d 50%,#081d20 100%);color:var(--operator-paper);min-height:calc(100vh - 75px);padding:28px 20px 65px}
+.operator-subpage__shell{width:100%;max-width:1160px;margin:0 auto;display:grid;gap:20px;min-width:0}
+.operator-subpage__heading{padding:24px 30px;border:1px solid rgba(216,169,79,.24);background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018));border-radius:24px}
+.operator-subpage__heading .eyebrow{color:#d8a94f!important}
+.operator-subpage__heading h1{font:400 clamp(33px,4.2vw,48px)/1.08 Georgia,serif;color:#f7f2e9;margin:8px 0}
+.operator-subpage__heading p{color:rgba(247,242,233,.76);font-size:15px;max-width:740px;line-height:1.5;margin:0}
+.operator-subpage .operator-workspace-switcher{min-height:0;padding:10px 18px;border-radius:16px;background:rgba(255,255,255,.045);border-color:rgba(216,169,79,.22);box-shadow:none}
+.operator-subpage .operator-workspace-switcher__activity select{min-height:42px;background:#071b1f;border-color:rgba(216,169,79,.45);color:#f7f2e9}
+.operator-subpage__surface,.operator-subpage .operator-calendar-panel,.operator-subpage .operator-calendar-help,.operator-subpage .b2b-network__panel,.operator-subpage .b2b-network__matches{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;border:1px solid rgba(216,169,79,.20)!important;border-radius:22px!important;box-shadow:0 14px 46px rgba(0,0,0,.10)!important;color:#f7f2e9!important}
+.operator-subpage .operator-calendar-panel{padding:28px 30px!important}
+.operator-subpage .operator-calendar-panel h2,.operator-subpage .operator-calendar-help h2,.operator-subpage .b2b-network__panel h2,.operator-subpage .b2b-network__matches h2{color:#f7f2e9!important;font-family:Georgia,serif;font-weight:400}
+.operator-subpage .operator-calendar-panel>p,.operator-subpage .operator-calendar-help p,.operator-subpage .b2b-network__group-heading p{color:rgba(247,242,233,.75)!important}
+.operator-subpage .operator-calendar-panel .eyebrow,.operator-subpage .operator-calendar-help .eyebrow,.operator-subpage .b2b-network__group-index{color:#d8a94f!important}
+.operator-subpage .operator-calendar-help{padding:26px!important;position:static!important}
+.operator-subpage .operator-calendar-help strong{color:#f7f2e9}
+.operator-subpage .operator-calendar-help__note{background:rgba(216,169,79,.11)!important;color:#f7f2e9;border:1px solid rgba(216,169,79,.25)}
+.operator-subpage .operator-calendar-panel textarea{background:rgba(247,242,233,.97)!important;color:#082a2d!important}
+.operator-subpage .operator-calendar-panel .button,.operator-subpage .b2b-network__actions .button{background:#d8a94f;color:#071b1f;border-color:#d8a94f}
+.operator-subpage .operator-calendar-panel form>div>span{color:rgba(247,242,233,.7)!important}
+.operator-subpage .b2b-network{width:100%;max-width:1160px;min-width:0;margin:0 auto!important}
+.operator-subpage .b2b-network__panel{width:100%;max-width:none!important;padding:clamp(20px,3vw,36px)!important;margin:0 auto!important}
+.operator-subpage .b2b-network__group{border-bottom:1px solid rgba(216,169,79,.18);padding-bottom:24px;margin-bottom:24px}
+.operator-subpage .b2b-network__group:last-of-type{border-bottom:0}
+.operator-subpage .b2b-network__group-heading h2,.operator-subpage .b2b-options__legend,.operator-subpage .b2b-network__field>strong{color:#f7f2e9!important}
+.operator-subpage .b2b-options__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px}
+.operator-subpage .b2b-option{background:rgba(255,255,255,.055)!important;border:1px solid rgba(216,169,79,.25)!important;border-radius:14px;color:#f7f2e9!important;min-width:0}
+.operator-subpage .b2b-option--selected{background:#123b3c!important;border-color:#d8a94f!important}
+.operator-subpage .b2b-option span{color:inherit}
+.operator-subpage .b2b-network__optin{background:rgba(216,169,79,.08)!important;border:1px solid rgba(216,169,79,.28)!important;color:#f7f2e9!important;border-radius:14px}
+.operator-subpage .b2b-network__input{background:#f7f2e9!important;color:#071b1f!important;border-color:rgba(216,169,79,.5)!important}
+.operator-subpage .b2b-network__matches{padding:26px}
+.operator-subpage :is(a,button,input,textarea,select):focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
+@media(min-width:900px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(270px,.85fr);align-items:start;gap:18px}}
+@media(max-width:899px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:1fr;gap:15px}}
+@media(max-width:650px){.operator-subpage{padding:16px 14px 40px}.operator-subpage__heading{padding:21px 19px;border-radius:19px}.operator-subpage .operator-calendar-panel,.operator-subpage .operator-calendar-help,.operator-subpage .b2b-network__panel{padding:19px!important}.operator-subpage .b2b-options__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.operator-subpage .b2b-option{padding:12px!important}}
