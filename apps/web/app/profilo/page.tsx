@@ -111,7 +111,7 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
       <h3 className="profile-preference-section-title">Cosa ti piace</h3>
       <div className="interest-tags">
        {[...new Set(ranked.map(item => labels[item.interest_key] ?? item.interest_key))].slice(0, 6).map(label => (
-        <span className="interest-tag" key={label}>{label}</span>
+        <span className="interest-tag" key={label}><span className="interest-tag__check" aria-hidden="true">✓</span><span className="interest-tag__label">{label}</span></span>
        ))}
       </div>
      </div>
