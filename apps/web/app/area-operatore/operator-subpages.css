@@ -34,3 +34,19 @@
 @media(min-width:900px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(270px,.85fr);align-items:start;gap:18px}}
 @media(max-width:899px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:1fr;gap:15px}}
 @media(max-width:650px){.operator-subpage{padding:16px 14px 40px}.operator-subpage__heading{padding:21px 19px;border-radius:19px}.operator-subpage .operator-calendar-panel,.operator-subpage .operator-calendar-help,.operator-subpage .b2b-network__panel{padding:19px!important}.operator-subpage .b2b-options__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.operator-subpage .b2b-option{padding:12px!important}}
+
+
+/* PR58: B2B opt-in contrast — dark surface and readable label in all states. */
+.operator-subpage .b2b-network .b2b-network__optin{
+  background:#12383b!important;
+  color:#f7f2e9!important;
+  border:1px solid rgba(216,169,79,.55)!important;
+}
+.operator-subpage .b2b-network .b2b-network__optin,
+.operator-subpage .b2b-network .b2b-network__optin *:not(input){
+  color:#f7f2e9!important;
+}
+.operator-subpage .b2b-network .b2b-network__optin input[type="checkbox"]{
+  accent-color:#d8a94f;
+  flex-shrink:0;
+}
