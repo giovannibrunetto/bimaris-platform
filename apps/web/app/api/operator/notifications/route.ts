@@ -42,6 +42,16 @@ export async function POST(request:NextRequest){
  if(!operatorId)return error(400,"Attività mancante");
  const ctx=await authorized(operatorId);
  if("failure" in ctx)return ctx.failure;
+ if(body?.action==="read-all"){
+  // Membership was verified above. Mark only notices belonging to this operator.
+  // On a partial failure, return an error so the client refreshes the authoritative state.
+  const now=new Date().toISOString();
+  const {error:firstError}=await ctx.service!.from("operator_notifications").update({read_at:now}).eq("operator_id",operatorId).is("read_at",null);
+  if(firstError)return error(503,"Impossibile segnare tutte le notifiche come lette");
+  const {error:secondError}=await ctx.service!.from("b2b_match_notifications").update({read_at:now}).eq("operator_id",operatorId).is("read_at",null);
+  if(secondError)return error(503,"Impossibile segnare tutte le notifiche come lette");
+  return NextResponse.json({ok:true});
+ }
  if(body?.action!=="read"||!["b2b","operator"].includes(body?.kind)||typeof body?.notificationId!=="string"||!(/^[\da-f-]{36}$/i.test(body.notificationId)))return error(400,"Richiesta non valida");
  const table=body.kind==="b2b"?"b2b_match_notifications":"operator_notifications";
  const {error:writeError}=await ctx.service!.from(table).update({read_at:new Date().toISOString()}).eq("operator_id",operatorId).eq("id",body.notificationId).is("read_at",null);
