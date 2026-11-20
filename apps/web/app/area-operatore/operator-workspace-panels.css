@@ -1,0 +1,40 @@
+/* PR58 – Operator workspace. Match the restrained visual language of Area Personale. */
+.operator-premium-area{min-height:calc(100vh - 70px);padding:28px 20px 64px;background:#f3efe6;color:#0b2638}
+.operator-premium-shell{max-width:1160px;margin:0 auto}
+.operator-premium-header{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:30px clamp(26px,4vw,46px);border-radius:26px;background:radial-gradient(circle at 85% 15%,rgba(202,168,106,.16),transparent 32%),linear-gradient(135deg,#0b2638,#061624 75%);color:#f3efe6;box-shadow:0 20px 55px rgba(6,22,36,.12)}
+.operator-premium-heading{min-width:0}
+.operator-premium-kicker{font-size:11px;letter-spacing:.17em;font-weight:800;color:#caa86a}
+.operator-premium-header h1{margin:8px 0 7px;font-family:Georgia,serif;font-size:clamp(38px,4.6vw,58px);font-weight:400;line-height:1.02;letter-spacing:-.035em;color:#f3efe6}
+.operator-premium-header p{margin:0;font-size:14px;line-height:1.5;color:#d4dadd}
+.operator-premium-header__actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px}
+.operator-premium-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#e6d8b4;white-space:nowrap}
+.operator-premium-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#caa86a}
+.operator-premium-public{color:#f3efe6;font-size:13px;text-decoration:underline;text-underline-offset:4px;font-weight:700}
+.operator-premium-header .button,.operator-premium-header button{min-height:36px}
+.operator-premium-shell>.operator-workspace-switcher{margin-top:14px;min-height:0!important;padding:10px 18px!important;border-radius:15px;box-shadow:none}
+.operator-premium-shell>.operator-workspace-switcher .operator-workspace-switcher__activity select{min-height:40px}
+.operator-workspace-panel{margin-top:24px;min-width:0}
+.operator-workspace-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:0 4px 14px;border-bottom:1px solid rgba(11,38,56,.18)}
+.operator-workspace-tabs__button{display:inline-flex;gap:8px;align-items:center;min-height:43px;padding:10px 18px;border-radius:999px;border:1px solid transparent;background:transparent;color:#26444a;font:inherit;font-size:14px;font-weight:750;cursor:pointer}
+.operator-workspace-tabs__button:hover{background:#e8e0d3}
+.operator-workspace-tabs__button[aria-current=page]{background:#0b3035;color:white;box-shadow:0 5px 15px rgba(7,33,38,.12)}
+.operator-workspace-tabs__button:focus-visible,.operator-premium-public:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+.operator-workspace-tabs__count{display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#caa86a;color:#0b3035;font-size:11px}
+.operator-workspace-content{padding:24px 0 0}
+.operator-workspace-content[hidden]{display:none!important}
+.operator-premium-area .operator-experiences .experience-studio{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
+.operator-premium-area .operator-experiences .experience-studio__head{border-bottom:1px solid rgba(11,38,56,.15)}
+.operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{background:rgba(255,255,255,.65);box-shadow:0 10px 32px rgba(6,22,36,.045);border:1px solid rgba(11,38,56,.10);border-radius:20px;padding:26px}
+.operator-premium-area .operator-experiences .experience-card{background:rgba(255,255,255,.78)!important}
+.operator-premium-empty{padding:50px 28px;background:#fff;border-radius:20px}
+@media(max-width:760px){
+ .operator-premium-area{padding:15px 14px 40px}
+ .operator-premium-header{align-items:flex-start;flex-direction:column;padding:24px 22px;gap:16px}
+ .operator-premium-header h1{font-size:42px}
+ .operator-premium-header__actions{justify-content:flex-start}
+ .operator-workspace-panel{margin-top:16px}
+ .operator-workspace-tabs{gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .operator-workspace-tabs__button{padding:9px 13px;font-size:13px;white-space:nowrap}
+ .operator-workspace-content{padding-top:18px}
+ .operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{padding:18px}
+}
