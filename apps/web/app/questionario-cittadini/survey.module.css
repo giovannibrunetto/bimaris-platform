@@ -83,13 +83,13 @@
     flex:0 0 auto;
     max-height:none;
   }
-  /* Show the entire official banner on narrow screens: never crop its payoff. */
+  /* Keep welcome layout bounded while showing the full logo and payoff. */
   .surveyWelcome .visual{
-    height:auto;
+    height:clamp(64px,12dvh,100px);
   }
   .surveyWelcome .visual img{
     width:100%;
-    height:auto;
+    height:100%;
     object-fit:contain;
     object-position:center;
   }
