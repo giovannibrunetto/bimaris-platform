@@ -54,16 +54,16 @@ export async function POST(request:NextRequest){
     if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
     const now=new Date().toISOString();
     const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
-    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
     await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-approved:${experienceId}`,title:"Esperienza approvata",description:`“${experience.name}” è stata approvata ed è in attesa di pubblicazione.`,targetPath:"/area-operatore?tab=esperienze"});
+    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
     return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=experience-approved-awaiting-publication`,request.url),303);
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
    const snapshot=experience.review_status==="rejected"&&Object.keys(existingSnapshot as object).length?existingSnapshot:correctionSnapshot(experience as unknown as Record<string,unknown>,sections);
    const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,review_snapshot:snapshot,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).in("review_status",["pending","rejected"]);if(error)throw error;
-   if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
    await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-corrections:${experienceId}:${targetStep}`,title:"Correzioni richieste all’esperienza",description:`“${experience.name}” richiede alcune modifiche.`,targetPath:"/area-operatore?tab=esperienze"});
+   if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
    return operator?operatorDossier(request,operator.id,"changes-requested"):back(request,"changes-requested");
   }
   if(action==="publish"){
