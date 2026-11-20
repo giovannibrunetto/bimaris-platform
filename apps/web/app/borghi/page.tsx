@@ -46,7 +46,7 @@ export default async function VillagesPage() {
                   <div className="kicker">{village.territory?.name ?? "Territorio messinese"}</div>
                   <h3>{village.name}</h3>
                   <p>{village.excerpt}</p>
-                  <Link className="text-link" href={`/borghi/${village.slug}`}>Scopri il borgo →</Link>
+                  <Link className="text-link village-card-primary-link" href={`/borghi/${village.slug}`} aria-label={`Scopri il borgo di ${village.name}`}>Scopri il borgo →</Link>
                 </div>
               </article>
             ))}
