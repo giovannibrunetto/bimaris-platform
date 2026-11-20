@@ -45,6 +45,11 @@ test("bell supports unread count, mark read and dismiss actions",()=>{
  assert.match(api,/\.from\("operator_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
  assert.match(api,/\.from\("b2b_match_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
  assert.match(bell,/event\.key==="Escape"/);
+ assert.match(bell,/createPortal\(/);
+ assert.match(bell,/aria-modal="true"/);
+ assert.match(bell,/void openNotice\(n\)/);
+ assert.match(bell,/action:"read"/);
+ assert.match(bell,/router\.push\(n.url\)/);
  assert.match(bell,/aria-expanded=\{opened\}/);
 });
 test("notification body opens its destination without a redundant action link",()=>{
@@ -62,8 +67,9 @@ test("operator bell remains below the sticky site header during scrolling",()=>{
 });
 test("mobile notification panel remains constrained to viewport",()=>{
  assert.match(css,/@media\(max-width:650px\)/);
- assert.match(css,/\.operator-notice__panel\{position:fixed;/);
- assert.match(css,/left:12px;right:12px;width:auto/);
+ assert.match(css,/\.operator-notice__overlay\{position:fixed;inset:0;z-index:1100/);
+ assert.match(css,/display:grid;place-items:center/);
+ assert.match(css,/max-height:calc\(100dvh - 24px\)/);
 });
 test("notification database and service are idempotent and private",()=>{
  assert.match(schema,/unique\(operator_id,event_key\)/);
