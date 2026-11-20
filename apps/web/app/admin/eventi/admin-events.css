@@ -88,3 +88,9 @@
 .admin-content-review .admin-events__hero{padding-top:25px;padding-bottom:26px}
 .admin-content-review .admin-events__body{padding-top:22px}
 .admin-content-review .admin-events__queue-group:first-of-type{margin-top:4px}
+
+/* Operator cards: stable primary action and subordinate public-profile link. */
+.admin-operator-card-actions{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;flex-shrink:0}
+.admin-operator-card-public-link{display:inline-block;margin-top:2px;font-size:13px;font-weight:700;color:#225057;text-decoration:underline;text-underline-offset:3px}
+.admin-operator-card-public-link:focus-visible{outline:2px solid #225057;outline-offset:4px}
+@media(max-width:700px){.admin-operator-card-actions{width:100%}.admin-operator-card-actions .admin-events__examine{width:100%}}
