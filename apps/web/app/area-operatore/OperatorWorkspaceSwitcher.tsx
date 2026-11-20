@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import OperatorNotificationBell from "./OperatorNotificationBell";
 import "./workspace-switcher.css";
 
 type Activity = { id: string; slug: string; name: string };
@@ -37,6 +38,7 @@ export default function OperatorWorkspaceSwitcher({ activities, selectedSlug }: 
           {activities.map(a => <option key={a.id} value={a.slug}>{a.name}</option>)}
         </select>
       </div>
+      <OperatorNotificationBell operatorId={active.id}/>
       <div className="operator-workspace-switcher__divider" aria-hidden="true" />
       <div className="operator-workspace-switcher__sections">
         {sections.map(s => {
