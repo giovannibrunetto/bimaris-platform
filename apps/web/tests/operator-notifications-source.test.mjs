@@ -34,9 +34,9 @@ test("bell lives in shared operator switcher without duplicated inline banner",(
  assert.doesNotMatch(page,/<B2BNewMatchAlerts/);
 });
 test("operator switches cannot display late responses from a different operator",()=>{
- assert.match(bell,/activeOperatorRef\.current!==operatorId/);
- assert.match(bell,/lastLoadRef\.current/);
- assert.match(bell,/activeOperatorRef\.current!==requestedOperatorId/);
+ assert.match(bell,/loadedOperatorId===operatorId\?payload:null/);
+ assert.match(bell,/sequence!==lastLoadRef\.current/);
+ assert.match(bell,/sourceGeneration!==lastLoadRef\.current/);
 });
 test("bell supports unread count, mark read and dismiss actions",()=>{
  assert.match(bell,/operator-notice__badge/);
