@@ -124,4 +124,8 @@ test("PR58 personal preferences separate topics from visit style without changin
  assert.match(summary,/preferredPace\?paceLabels/);
  assert.match(css,/\.profile-page \.profile-preference-section-title/);
  assert.match(css,/\.profile-page \.profile-preference-detail/);
+ assert.match(page,/className="interest-tag__check" aria-hidden="true"/);
+ assert.match(page,/className="interest-tag__label"/);
+ assert.match(css,/@media\(max-width:650px\)\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(css,/@media\(max-width:345px\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)/);
 });
