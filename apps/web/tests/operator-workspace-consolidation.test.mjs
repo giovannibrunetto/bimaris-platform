@@ -93,3 +93,17 @@ test("PR58 compact mobile operator header and navigation retain operator selecto
  assert.match(switcher,/<OperatorNotificationBell operatorId=\{active.id\}\/>/);
  assert.match(switcher,/aria-label="Attività che gestisci"/);
 });
+
+
+test("PR58 B2B email choice appears only in final recap before save",()=>{
+ const b2b=read("../app/area-operatore/network-b2b/B2BNetwork.tsx");
+ const preference="{canManage&&step===3&&<B2BNewMatchAlerts operatorId={operatorId} showPreferences />}";
+ const recap=b2b.indexOf('className="b2b-flow__summary"');
+ const choice=b2b.indexOf(preference);
+ const save=b2b.indexOf('"Salva e trova compatibilità"');
+ assert.ok(recap>=0&&choice>recap&&save>choice,"Preference must appear after recap and before save");
+ assert.equal(b2b.split("<B2BNewMatchAlerts").length-1,1,"One preference control only");
+ const alerts=read("../app/area-operatore/B2BNewMatchAlerts.tsx");
+ assert.match(alerts,/checked={data\?\.emailEnabled\?\?false}/);
+ assert.match(alerts,/action:"preference"/);
+});
