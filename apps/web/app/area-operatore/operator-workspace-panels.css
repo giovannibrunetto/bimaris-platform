@@ -99,3 +99,115 @@
 .operator-profile-overview dd{margin:0;overflow-wrap:anywhere;color:#f7f2e9;font-size:16px;line-height:1.45}
 .operator-profile-card--overview .operator-profile-card__head .button{white-space:nowrap}
 @media(max-width:650px){.operator-profile-card--overview{padding:20px!important}.operator-profile-overview{grid-template-columns:1fr;margin-top:15px}.operator-profile-card--overview .operator-profile-card__head{align-items:flex-start;flex-direction:column}.operator-profile-card--overview .operator-profile-card__head .button{width:100%}}
+
+
+/* DS UX-01 / PR58 — Unified Profile, Experiences and Statistics.
+   The older ExperienceManager rules use a pale surface. Override only
+   the read-only overview; keep creation/editor forms legible and unchanged. */
+.operator-premium-area .operator-workspace-content>.operator-experiences,
+.operator-premium-area .operator-workspace-content>.operator-profile-card,
+.operator-premium-area .operator-workspace-content>.operator-impact{
+  width:100%;
+  min-width:0;
+}
+.operator-premium-area .operator-workspace-content>.operator-experiences>.experience-manager,
+.operator-premium-area .operator-workspace-content>.operator-profile-card,
+.operator-premium-area .operator-workspace-content>.operator-impact{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(216,169,79,.20)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 46px rgba(0,0,0,.10)!important;
+  color:#f7f2e9!important;
+  padding:30px 32px!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head{
+  padding-bottom:17px;
+  border-bottom:1px solid rgba(216,169,79,.22)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head h2,
+.operator-premium-area .operator-workspace-content .operator-profile-card__head h2,
+.operator-premium-area .operator-workspace-content .operator-impact__head h2{
+  color:#f7f2e9!important;
+  font-family:Georgia,serif;
+  font-weight:400;
+  font-size:clamp(29px,2.6vw,38px);
+  line-height:1.12;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head p,
+.operator-premium-area .operator-workspace-content .operator-profile-card__head p{
+  color:rgba(247,242,233,.76)!important;
+  font-size:14px;
+  line-height:1.5;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__create-primary{
+  margin-top:18px;
+  margin-bottom:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card{
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))!important;
+  border:1px solid rgba(216,169,79,.22)!important;
+  border-radius:16px!important;
+  color:#f7f2e9!important;
+  box-shadow:none!important;
+  overflow:hidden;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card:hover,
+.operator-premium-area .operator-workspace-content .experience-manager__card:focus-within{
+  border-color:rgba(216,169,79,.6)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card summary,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary strong,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary small,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary dd,
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__details{
+  color:#f7f2e9!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__excerpt,
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__facts dt{
+  color:rgba(247,242,233,.72)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card summary>span{
+  color:#f0cf89!important;
+  background:rgba(216,169,79,.15)!important;
+  border-radius:999px;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__detail-label,
+.operator-premium-area .operator-workspace-content .experience-manager__secondary,
+.operator-premium-area .operator-workspace-content .experience-manager__show-all{
+  color:#e8bd6c!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__secondary{
+  border:1px solid rgba(216,169,79,.58)!important;
+  background:transparent!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__secondary:hover{
+  background:rgba(216,169,79,.12)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__create-primary>.button{
+  background:#d8a94f!important;
+  color:#081d20!important;
+  border-color:#d8a94f!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration{
+  margin-top:22px;
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(216,169,79,.24)!important;
+  box-shadow:none!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration strong{color:#f7f2e9!important}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration p{color:rgba(247,242,233,.74)!important}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration a{background:#d8a94f!important;color:#071b1f!important}
+.operator-premium-area .operator-workspace-content .operator-impact__metrics>div{
+  border-radius:14px!important;
+}
+@media(max-width:700px){
+ .operator-premium-area .operator-workspace-content>.operator-experiences>.experience-manager,
+ .operator-premium-area .operator-workspace-content>.operator-profile-card,
+ .operator-premium-area .operator-workspace-content>.operator-impact{padding:20px 17px!important;border-radius:18px!important}
+ .operator-premium-area .operator-workspace-content .experience-manager__head h2,
+ .operator-premium-area .operator-workspace-content .operator-profile-card__head h2,
+ .operator-premium-area .operator-workspace-content .operator-impact__head h2{font-size:28px}
+}
