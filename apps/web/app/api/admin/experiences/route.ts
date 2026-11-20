@@ -54,7 +54,7 @@ export async function POST(request:NextRequest){
     const now=new Date().toISOString();
     const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
-    return operatorDossier(request,operator.id,"experience-approved-awaiting-publication");
+    return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=experience-approved-awaiting-publication`,request.url),303);
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
