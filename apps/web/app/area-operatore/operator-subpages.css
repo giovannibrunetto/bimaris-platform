@@ -50,3 +50,24 @@
   accent-color:#d8a94f;
   flex-shrink:0;
 }
+
+
+/* PR58 UX-01 — B2B guided flow: one short step at a time. */
+.operator-subpage .b2b-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.operator-subpage .b2b-flow__step{display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;min-height:48px;padding:9px 10px;border:1px solid rgba(216,169,79,.27);border-radius:13px;background:rgba(255,255,255,.035);color:rgba(247,242,233,.82);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.operator-subpage .b2b-flow__step>span{display:grid;place-items:center;flex:none;height:24px;min-width:24px;border:1px solid currentColor;border-radius:50%;font-size:11px}
+.operator-subpage .b2b-flow__step.is-current{background:#d8a94f;color:#071b1f;border-color:#d8a94f}
+.operator-subpage .b2b-flow__step:hover:not(.is-current){border-color:#d8a94f;color:#f7f2e9}
+.operator-subpage .b2b-flow__hint{color:rgba(247,242,233,.72);font-size:13px;margin:-13px 0 -3px}
+.operator-subpage .b2b-flow__actions{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.operator-subpage .b2b-flow__actions button{min-height:44px;padding:10px 19px;border-radius:999px;font-weight:750;cursor:pointer}
+.operator-subpage .b2b-flow__actions .button{background:#d8a94f;color:#071b1f;border:1px solid #d8a94f}
+.operator-subpage .b2b-flow__back{background:transparent;border:1px solid rgba(216,169,79,.58);color:#f7f2e9}
+.operator-subpage .b2b-flow__summary-list{display:grid;gap:0;margin:0}
+.operator-subpage .b2b-flow__summary-list>div{display:grid;grid-template-columns:190px minmax(0,1fr) auto;align-items:start;gap:14px;padding:15px 0;border-top:1px solid rgba(216,169,79,.2)}
+.operator-subpage .b2b-flow__summary-list dt{color:#d8a94f;font-size:12px;font-weight:800}
+.operator-subpage .b2b-flow__summary-list dd{margin:0;color:#f7f2e9;overflow-wrap:anywhere;font-size:14px;line-height:1.5}
+.operator-subpage .b2b-flow__summary-list button{background:transparent;color:#d8a94f;border:0;text-decoration:underline;text-underline-offset:4px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.operator-subpage .b2b-flow__feedback{margin:0;padding:12px 16px;border:1px solid rgba(216,169,79,.4);border-radius:12px;color:#f7f2e9}
+@media(max-width:700px){.operator-subpage .b2b-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.operator-subpage .b2b-flow__step{font-size:12px;padding:8px}.operator-subpage .b2b-flow__summary-list>div{grid-template-columns:minmax(0,1fr) auto;gap:5px 12px}.operator-subpage .b2b-flow__summary-list dt{grid-column:1/-1}.operator-subpage .b2b-flow__actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){.operator-subpage .b2b-flow__step{transition:none!important}}
