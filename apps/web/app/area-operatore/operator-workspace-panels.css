@@ -280,3 +280,23 @@
  .operator-premium-header h1{font-size:32px}
  .operator-workspace-tabs__button{padding:8px 9px;font-size:12px}
 }
+
+/* PR58 iPhone SE QA — coherent expandable experiences control, both states.
+   Override legacy ivory background + gold-on-ivory contrast. */
+@media(max-width:600px){
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all{
+  background:#0d3236!important;
+  color:#f0c779!important;
+  border:1px solid #d8a94f!important;
+  box-shadow:none!important;
+  min-height:46px;
+  transition:background-color .2s ease,border-color .2s ease;
+ }
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all:hover{
+  background:#194348!important;
+ }
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all:focus-visible{
+  outline:3px solid #d8a94f;
+  outline-offset:3px;
+ }
+}
