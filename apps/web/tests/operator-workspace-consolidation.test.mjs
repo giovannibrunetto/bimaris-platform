@@ -107,3 +107,21 @@ test("PR58 B2B email choice appears only in final recap before save",()=>{
  assert.match(alerts,/checked={data\?\.emailEnabled\?\?false}/);
  assert.match(alerts,/action:"preference"/);
 });
+
+
+test("PR58 personal preferences separate topics from visit style without changing source data",()=>{
+ const page=read("../app/profilo/page.tsx");
+ const summary=read("../app/profilo/ProfilePreferenceSummary.tsx");
+ const css=read("../app/profilo/profile-ottanio.css");
+ assert.match(page,/className="profile-preference-interests"/);
+ assert.match(page,/>Cosa ti piace<\/h3>/);
+ assert.match(page,/ranked\.map\(item => labels\[item.interest_key\]/);
+ assert.match(summary,/>Come preferisci vivere Messina<\/h3>/);
+ assert.match(summary,/<dl className="profile-preference-details">/);
+ assert.match(summary,/<dt>\{item.label==="Tempo"\?"Quanto tempo":item.label\}<\/dt>/);
+ assert.match(summary,/travelCompanion\?companionLabels/);
+ assert.match(summary,/typicalTime\?timeLabels/);
+ assert.match(summary,/preferredPace\?paceLabels/);
+ assert.match(css,/\.profile-page \.profile-preference-section-title/);
+ assert.match(css,/\.profile-page \.profile-preference-detail/);
+});
