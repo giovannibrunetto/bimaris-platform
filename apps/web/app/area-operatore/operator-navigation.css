@@ -293,16 +293,16 @@
   border-radius:20px !important;
 }
 .b2b-network__optin {
-  background:#fff !important;
-  border:1px solid #d6cebf !important;
+  background:#12383b !important;
+  border:1px solid rgba(216,169,79,.55) !important;
   border-radius:16px !important;
   min-height:62px;
   padding:14px 18px !important;
-  color:var(--operator-text);
+  color:#f7f2e9 !important;
 }
 .b2b-network__optin:has(input:checked) {
-  background:#f3ecdd !important;
-  border-color:var(--operator-gold) !important;
+  background:#12383b !important;
+  border-color:#d8a94f !important;
 }
 .b2b-network__optin input { accent-color:var(--operator-petrol); }
 .operator-calendar-workspace,
@@ -319,8 +319,7 @@
 
 /* UX-B2B-01 — the same external panel treatment for selection and consent.
    Consent remains a checkbox, not an activity selector. */
-.operator-calendar-workspace nav.operator-activity-selector[aria-label="Seleziona attività"],
-.b2b-network label.b2b-network__optin {
+.operator-calendar-workspace nav.operator-activity-selector[aria-label="Seleziona attività"] {
   box-sizing:border-box;
   width:100%;
   min-height:62px;
@@ -331,9 +330,18 @@
   background:#f8f8f5 !important;
   box-shadow:none !important;
 }
+.b2b-network label.b2b-network__optin,
 .b2b-network label.b2b-network__optin:has(input:checked) {
-  background:#f8f8f5 !important;
-  border-color:#d6cebf !important;
+  box-sizing:border-box;
+  width:100%;
+  min-height:62px;
+  margin:0 !important;
+  padding:14px 18px !important;
+  border:1px solid #d8a94f !important;
+  border-radius:16px !important;
+  background:#12383b !important;
+  color:#f7f2e9 !important;
+  box-shadow:none !important;
 }
 .operator-calendar-workspace nav.operator-activity-selector[aria-label="Seleziona attività"] {
   display:flex !important;
