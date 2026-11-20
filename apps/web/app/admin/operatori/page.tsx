@@ -37,10 +37,10 @@ export default async function OperatorsPage({ searchParams }: { searchParams: Pr
                 {category && category.toLowerCase() !== "esperienze" ? category : "Operatore"} · {operator.published ? "Online" : "Non pubblicato"}
               </span>
               <h3>{operator.name}</h3>
+              {operator.published && <Link className="admin-operator-card-public-link" href={`/operatori/${operator.slug}`} target="_blank" rel="noreferrer">Scheda pubblica ↗</Link>}
             </div>
             <div className="admin-operator-card-actions">
               <Link className="admin-events__examine" href={dossier}>Apri dossier →</Link>
-              {operator.published && <Link className="text-link" href={`/operatori/${operator.slug}`} target="_blank" rel="noreferrer">Scheda pubblica ↗</Link>}
             </div>
           </article>;
         })}
