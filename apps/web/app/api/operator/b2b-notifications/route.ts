@@ -1,6 +1,7 @@
 import {NextRequest,NextResponse} from "next/server";
 import {createUserServerClient} from "@/lib/supabase/user-server";
 import {createServiceClient} from "@/lib/supabase/server";
+import {refreshB2BNotificationsFor} from "@/lib/b2b-notifications";
 export const dynamic="force-dynamic";
 
 async function context(operatorId:string){
@@ -18,6 +19,10 @@ export async function GET(req:NextRequest){
  if(!operatorId)return NextResponse.json({error:"Missing operatorId"},{status:400});
  const ctx=await context(operatorId);if("error" in ctx)return ctx.error;
  const db=ctx.service!;
+ // On-demand refresh covers new partners even before the scheduled daily scan.
+ try{await refreshB2BNotificationsFor(operatorId)}catch(err){
+  console.error("B2B notification refresh failed",err instanceof Error?err.message:"unknown");
+ }
  const [{data:notifications,error:e1},{data:pref,error:e2}]=await Promise.all([
   db.from("b2b_match_notifications").select("id,partner_operator_id,match_score,first_detected_at,read_at").eq("operator_id",operatorId).order("first_detected_at",{ascending:false}).limit(30),
   db.from("b2b_notification_preferences").select("email_enabled").eq("operator_id",operatorId).maybeSingle()
