@@ -32,7 +32,7 @@ test("calendar cannot silently fall back to a different operator for unrecognize
   const calendar = read("../app/area-operatore/calendario/page.tsx");
   assert.match(calendar, /const active=requested\?rows\.find\(r=>r\.operator_id===requested\|\|r\.operator\.slug===requested\)\?\?null:rows\[0\]\?\?null/);
   assert.match(calendar, /active&&<OperatorWorkspaceSwitcher/);
-  assert.match(calendar, /active&&<div className="operator-calendar-grid">/);
+  assert.match(calendar, /active&&<div className="operator-subpage__calendar-grid">/);
 });
 
 test("admin consolidation retains individual MFA and corrected dashboard", () => {
