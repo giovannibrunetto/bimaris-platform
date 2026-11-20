@@ -83,8 +83,15 @@
     flex:0 0 auto;
     max-height:none;
   }
+  /* Show the entire official banner on narrow screens: never crop its payoff. */
   .surveyWelcome .visual{
-    height:clamp(64px,12dvh,100px);
+    height:auto;
+  }
+  .surveyWelcome .visual img{
+    width:100%;
+    height:auto;
+    object-fit:contain;
+    object-position:center;
   }
   .surveyWelcome .panel{
     align-self:stretch;
