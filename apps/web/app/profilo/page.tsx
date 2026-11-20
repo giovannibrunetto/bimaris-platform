@@ -107,10 +107,13 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
    <div className="overview-item">
     <h2 className="overview-label">Le tue preferenze</h2>
     {hasPreferences ? (
-     <div className="interest-tags">
-      {[...new Set(ranked.map(item => labels[item.interest_key] ?? item.interest_key))].slice(0, 6).map(label => (
-       <span className="interest-tag" key={label}>{label}</span>
-      ))}
+     <div className="profile-preference-interests">
+      <h3 className="profile-preference-section-title">Cosa ti piace</h3>
+      <div className="interest-tags">
+       {[...new Set(ranked.map(item => labels[item.interest_key] ?? item.interest_key))].slice(0, 6).map(label => (
+        <span className="interest-tag" key={label}>{label}</span>
+       ))}
+      </div>
      </div>
     ) : <p className="overview-copy">Scegli i tuoi interessi per ricevere suggerimenti.</p>}
     <ProfilePreferenceSummary travelCompanion={profile?.travel_companion} typicalTime={profile?.typical_time_available} preferredPace={profile?.preferred_pace} />
