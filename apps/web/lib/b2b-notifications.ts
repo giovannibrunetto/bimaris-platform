@@ -19,6 +19,7 @@ export async function reconcileB2BNotifications(){
  if(pe||oe)throw new Error(pe?.message??oe?.message??"B2B read failed");
  const byId=new Map(((operators??[]) as Operator[]).map(o=>[o.id,o]));
  const active=(profiles??[] as Profile[]).filter(p=>eligible(byId.get(p.operator_id)));
+ const activeIds=new Set(active.map(p=>p.operator_id));
  let created=0;
  for(const mine of active){
   const operator=byId.get(mine.operator_id)!;
@@ -45,9 +46,9 @@ export async function reconcileB2BNotifications(){
   const {data:pending,error:pendingError}=await db.from("b2b_match_notifications").select("id,operator_id,partner_operator_id,match_score,email_sent_at,email_claimed_at").is("email_sent_at",null).order("first_detected_at",{ascending:true}).limit(100);
   if(pendingError)throw new Error(pendingError.message);
   for(const item of (pending??[]) as Notification[]){
-   if(!opted.has(item.operator_id)||!eligible(byId.get(item.partner_operator_id)))continue;
+   if(!opted.has(item.operator_id)||!activeIds.has(item.operator_id)||!eligible(byId.get(item.partner_operator_id)))continue;
    const {data:claimed,error:claimError}=await db.from("b2b_match_notifications").update({email_claimed_at:new Date().toISOString()})
-      .eq("id",item.id).is("email_sent_at",null).is("email_claimed_at",null).select("id").maybeSingle();
+      .eq("id",item.id).is("email_sent_at",null).or(`email_claimed_at.is.null,email_claimed_at.lt.${new Date(Date.now()-15*60*1000).toISOString()}`).select("id").maybeSingle();
    if(claimError)throw new Error(claimError.message);
    if(!claimed)continue;
    try{
@@ -62,7 +63,7 @@ export async function reconcileB2BNotifications(){
     const origin="https://www.bimarisnet.it";
     const url=origin+"/area-operatore/network-b2b";
     const response=await fetch("https://api.resend.com/emails",{
-      method:"POST",headers:{"Authorization":`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},
+      method:"POST",headers:{"Authorization":`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json","Idempotency-Key":`bimaris-b2b-match-${item.id}`},
       body:JSON.stringify({from:sender,to:[address],subject:"BIMARIS · Nuova opportunità di collaborazione",html:`<div style="font-family:Arial,sans-serif;max-width:620px;margin:auto"><h1>Una nuova opportunità su BIMARIS</h1><p>${escapeHtml(partner.name)} potrebbe essere compatibile con la tua attività (compatibilità ${item.match_score}%).</p><p><a href="${url}">Consulta il Network B2B</a></p><p style="font-size:12px">Puoi disattivare questi avvisi dalla tua Area Operatore.</p></div>`})
     });
     if(!response.ok)throw new Error(`Resend response ${response.status}`);
