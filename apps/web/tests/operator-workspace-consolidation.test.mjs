@@ -129,3 +129,15 @@ test("PR58 personal preferences separate topics from visit style without changin
  assert.match(css,/@media\(max-width:650px\)\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
  assert.match(css,/@media\(max-width:345px\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)/);
 });
+
+
+test("PR58 tablet at 768px keeps activity and bell in first row",()=>{
+ const css=read("../app/area-operatore/workspace-switcher.css");
+ const tablet=css.slice(css.indexOf("/* PR58 tablet QA (601–950px)"));
+ assert.match(tablet,/@media\(min-width:601px\) and \(max-width:950px\)/);
+ assert.match(tablet,/grid-template-columns:minmax\(0,1fr\) 48px/);
+ assert.match(tablet,/\.operator-workspace-switcher__activity\{[\s\S]*?grid-column:1;\s*grid-row:1/);
+ assert.match(tablet,/\.operator-workspace-switcher>\.operator-notice\{\s*grid-column:2;\s*grid-row:1/);
+ assert.match(tablet,/\.operator-workspace-switcher__sections\{\s*grid-column:1\/-1;\s*grid-row:2/);
+ assert.match(css,/@media\(max-width:600px\)/);
+});
