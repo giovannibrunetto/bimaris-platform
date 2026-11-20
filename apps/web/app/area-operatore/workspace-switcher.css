@@ -53,3 +53,57 @@
  .operator-workspace-switcher__activity-icon{display:none}
  .operator-workspace-switcher__activity{gap:5px}
 }
+
+
+/* PR58 tablet QA (601–950px): activity and bell share the top row.
+   Mobile <=600px keeps its previously approved compact arrangement. */
+@media(min-width:601px) and (max-width:950px){
+ .operator-workspace-switcher{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 48px;
+  align-items:center;
+  column-gap:14px;
+  row-gap:10px;
+  min-height:0;
+  padding:12px 18px;
+ }
+ .operator-workspace-switcher__activity{
+  grid-column:1;
+  grid-row:1;
+  display:flex;
+  flex:none;
+  min-width:0;
+  width:100%;
+  gap:12px;
+  flex-wrap:nowrap;
+ }
+ .operator-workspace-switcher__activity select{
+  flex:1 1 auto;
+  width:auto;
+  max-width:none;
+  min-width:0;
+  min-height:44px;
+ }
+ .operator-workspace-switcher>.operator-notice{
+  grid-column:2;
+  grid-row:1;
+  justify-self:end;
+ }
+ .operator-workspace-switcher__divider{display:none}
+ .operator-workspace-switcher__sections{
+  grid-column:1/-1;
+  grid-row:2;
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  padding-top:6px;
+  border-top:1px solid rgba(216,169,79,.23);
+ }
+ .operator-workspace-switcher__link{
+  min-height:48px;
+  padding:8px 6px;
+  font-size:13px;
+ }
+}
