@@ -231,3 +231,25 @@ h2.public-discovery-section-title.public-discovery-section-title {
     outline-offset: 0;
   }
 }
+
+
+/* PR58: Village discovery cards are entirely actionable, not only their CTA text.
+   The image-credit source link remains independently clickable. */
+.village-cards > .village-card.public-discovery-card{
+ position:relative;
+ cursor:pointer;
+}
+.village-cards > .village-card .village-card-primary-link::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:1;
+}
+.village-cards > .village-card .village-card-media a{
+ position:relative;
+ z-index:2;
+}
+.village-cards > .village-card:focus-within{
+ outline:3px solid #87612e;
+ outline-offset:3px;
+}
