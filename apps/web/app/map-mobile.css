@@ -304,3 +304,167 @@
   }
   .bimaris-map-canvas-wrap .gm-style-iw-d > div { max-width: 216px !important; }
 }
+
+/* PR58 P1 mobile map UX: remove side rails and give markers the full canvas.
+   The filter sheet is portaled to document.body to avoid Google Maps clipping. */
+.bimaris-map-mobile-filter-trigger{display:none}
+@media(max-width:760px){
+ .bimaris-map-filter-overlay,
+ .bimaris-map-period-overlay{
+  display:none!important;
+ }
+ .bimaris-map-card-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+ .bimaris-map-card-head .bimaris-map-count{flex:1 1 100%;min-width:0}
+ .bimaris-map-mobile-filter-trigger{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:flex-start;
+  gap:9px;
+  min-height:44px;
+  margin:0 0 4px;
+  padding:9px 17px;
+  border:1px solid #caa86a;
+  border-radius:999px;
+  background:#07343b;
+  color:#f7f2e9;
+  font-size:14px;
+  font-weight:750;
+  cursor:pointer;
+ }
+ .bimaris-map-mobile-filter-trigger span{color:#d8a94f;font-size:21px;line-height:1}
+ .bimaris-map-mobile-filter-trigger:focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
+}
+.bimaris-map-mobile-backdrop{
+ position:fixed;
+ inset:0;
+ z-index:1200;
+ display:flex;
+ align-items:flex-end;
+ justify-content:center;
+ background:rgba(3,17,20,.76);
+ backdrop-filter:blur(4px);
+ padding:12px 12px max(12px,env(safe-area-inset-bottom));
+}
+.bimaris-map-mobile-dialog{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ width:min(560px,100%);
+ max-height:min(84dvh,760px);
+ min-height:0;
+ overflow:hidden;
+ padding:19px 18px 15px;
+ background:#0b2d31;
+ border:1px solid rgba(216,169,79,.68);
+ border-radius:22px 22px 18px 18px;
+ box-shadow:0 25px 75px rgba(0,0,0,.4);
+ color:#f7f2e9;
+}
+.bimaris-map-mobile-dialog-head{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:14px;
+ padding-bottom:13px;
+ border-bottom:1px solid rgba(216,169,79,.23);
+}
+.bimaris-map-mobile-dialog-head strong{
+ display:block;
+ font-family:Georgia,serif;
+ font-size:23px;
+ line-height:1.2;
+ font-weight:500;
+}
+.bimaris-map-mobile-dialog-head p{
+ margin:5px 0 0;
+ font-size:13px;
+ line-height:1.4;
+ color:#c4d0cc;
+}
+.bimaris-map-mobile-dialog-head .bimaris-map-mobile-close{
+ flex:none;
+ width:40px;
+ height:40px;
+ background:rgba(255,255,255,.075);
+ border:1px solid rgba(216,169,79,.28);
+ border-radius:50%;
+ color:#fff;
+ font-size:24px;
+ cursor:pointer;
+}
+.bimaris-map-mobile-dialog-scroll{
+ flex:1 1 auto;
+ min-height:0;
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ padding:15px 1px 10px;
+ scrollbar-width:thin;
+}
+.bimaris-map-mobile-fieldset{
+ border:0;
+ padding:0;
+ margin:0 0 17px;
+ min-width:0;
+}
+.bimaris-map-mobile-fieldset legend{
+ padding:0 0 9px;
+ color:#d8a94f;
+ font-size:13px;
+ font-weight:800;
+}
+.bimaris-map-mobile-options{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;
+}
+.bimaris-map-mobile-options button{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:6px;
+ padding:11px 12px;
+ min-height:49px;
+ border:1px solid rgba(216,169,79,.35);
+ border-radius:12px;
+ background:#183d40;
+ color:#f7f2e9;
+ font-size:13px;
+ font-weight:650;
+ line-height:1.3;
+ text-align:left;
+ overflow-wrap:anywhere;
+ cursor:pointer;
+}
+.bimaris-map-mobile-options button.active{
+ border-color:#d8a94f;
+ background:#d8a94f;
+ color:#09292d;
+}
+.bimaris-map-mobile-options button small{flex:none;font-size:11px;opacity:.82}
+.bimaris-map-mobile-options button:focus-visible,
+.bimaris-map-mobile-dialog-footer button:focus-visible,
+.bimaris-map-mobile-close:focus-visible{outline:3px solid #e8bd6c;outline-offset:2px}
+.bimaris-map-mobile-dialog-footer{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+ gap:10px;
+ padding-top:14px;
+ border-top:1px solid rgba(216,169,79,.23);
+}
+.bimaris-map-mobile-dialog-footer button{
+ min-height:46px;
+ padding:10px;
+ border-radius:999px;
+ font-size:13px;
+ font-weight:800;
+ cursor:pointer;
+}
+.bimaris-map-mobile-reset{color:#e8bd6c;background:transparent;border:1px solid rgba(216,169,79,.55)}
+.bimaris-map-mobile-apply{color:#08272b;background:#d8a94f;border:1px solid #d8a94f}
+@media(max-width:345px){
+ .bimaris-map-mobile-options{grid-template-columns:minmax(0,1fr)}
+}
+@media(min-width:761px){
+ .bimaris-map-mobile-backdrop{display:none}
+}
