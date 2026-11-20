@@ -13,3 +13,43 @@
 .operator-workspace-switcher__link:focus-visible,.operator-workspace-switcher__activity select:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
 @media(max-width:950px){.operator-workspace-switcher{flex-wrap:wrap;gap:12px;min-height:0}.operator-workspace-switcher__activity{flex:1 1 100%}.operator-workspace-switcher__activity select{max-width:none}.operator-workspace-switcher__divider{display:none}.operator-workspace-switcher__sections{flex:1 1 100%;border-top:1px solid rgba(255,255,255,.22)}}
 @media(max-width:540px){.operator-workspace-switcher{padding:12px;border-radius:16px}.operator-workspace-switcher__activity{flex-wrap:wrap;gap:8px}.operator-workspace-switcher__activity select{width:100%}.operator-workspace-switcher__sections{gap:3px}.operator-workspace-switcher__link{flex-direction:column;gap:5px;font-size:11px;overflow-wrap:anywhere;padding:12px 2px 9px}.operator-workspace-switcher__section-icon{font-size:19px}}
+
+
+/* PR58 mobile QA / 375x667 — two-row operator navigation, bell next to activity selector.
+   Scoped to narrow screens, preserving existing desktop and tablet layout. */
+@media(max-width:600px){
+ .operator-workspace-switcher{
+  display:grid;grid-template-columns:minmax(0,1fr) 44px;
+  column-gap:9px;row-gap:8px;align-items:center;
+  min-height:0;padding:10px!important;border-radius:16px;
+ }
+ .operator-workspace-switcher__activity{
+  display:flex;align-items:center;flex-wrap:nowrap;gap:8px;
+  width:100%;min-width:0;flex:none;
+ }
+ .operator-workspace-switcher__activity-label{gap:5px;font-size:13px;flex:none}
+ .operator-workspace-switcher__activity-icon{font-size:18px}
+ .operator-workspace-switcher__activity select{
+  flex:1 1 0;width:auto;min-width:0;max-width:none;
+  min-height:42px;padding:8px 27px 8px 10px;font-size:14px;
+ }
+ .operator-workspace-switcher>.operator-notice{grid-column:2;grid-row:1;justify-self:end}
+ .operator-workspace-switcher__divider{display:none}
+ .operator-workspace-switcher__sections{
+  grid-column:1/-1;grid-row:2;min-width:0;width:100%;
+  flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;border-top:1px solid rgba(216,169,79,.23);padding-top:6px;
+ }
+ .operator-workspace-switcher__link{
+  min-height:54px;padding:6px 2px 7px;gap:4px;
+  flex-direction:column;line-height:1.2;font-size:11px;
+  overflow-wrap:normal;word-break:normal;
+ }
+ .operator-workspace-switcher__section-icon,
+ .operator-workspace-switcher__section-icon svg{width:20px;height:20px;font-size:20px}
+}
+@media(max-width:345px){
+ .operator-workspace-switcher__activity-label{font-size:12px}
+ .operator-workspace-switcher__activity-icon{display:none}
+ .operator-workspace-switcher__activity{gap:5px}
+}
