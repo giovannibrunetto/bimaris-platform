@@ -78,3 +78,18 @@ test("validated login eye, account header and no-op operator profile revision pr
   assert.match(revision, /profile=unchanged/);
   assert.match(revision, /pendingError/);
 });
+
+
+test("PR58 compact mobile operator header and navigation retain operator selector and bell",()=>{
+ const panelsCss=read("../app/area-operatore/operator-workspace-panels.css");
+ const switchCss=read("../app/area-operatore/workspace-switcher.css");
+ const switcher=read("../app/area-operatore/OperatorWorkspaceSwitcher.tsx");
+ assert.match(panelsCss,/PR58 mobile UX-01 \/ iPhone SE 375x667/);
+ assert.match(panelsCss,/\.operator-premium-header\{\s*padding:16px 18px;gap:10px/);
+ assert.match(panelsCss,/\.operator-premium-shell>\.operator-workspace-switcher\{\s*margin-top:10px;padding:10px!important/);
+ assert.match(switchCss,/grid-template-columns:minmax\(0,1fr\) 44px/);
+ assert.match(switchCss,/\.operator-workspace-switcher>\.operator-notice\{grid-column:2;grid-row:1/);
+ assert.match(switchCss,/\.operator-workspace-switcher__sections\{\s*grid-column:1\/-1;grid-row:2/);
+ assert.match(switcher,/<OperatorNotificationBell operatorId=\{active.id\}\/>/);
+ assert.match(switcher,/aria-label="Attività che gestisci"/);
+});
