@@ -1,5 +1,9 @@
 /* OP-NOTIFY-01 — all operator subpages use a single notification centre. */
-.operator-notice{position:relative;display:flex;align-items:center;justify-content:center;flex:none;z-index:20}
+/* Keep the notification trigger below the global sticky header (z-index:20) while scrolling. */
+.operator-notice{position:relative;display:flex;align-items:center;justify-content:center;flex:none;z-index:1}
+/* Opaque operator header prevents the navigation underneath from bleeding through. */
+body:has(.operator-premium-area) .site-header,
+body:has(.operator-subpage) .site-header{background:#082529;z-index:30}
 .operator-notice__trigger{position:relative;display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(216,169,79,.52);border-radius:50%;background:rgba(255,255,255,.055);color:#d8a94f;cursor:pointer}
 .operator-notice__trigger:hover,.operator-notice__trigger[aria-expanded=true]{background:rgba(216,169,79,.15);border-color:#d8a94f}
 .operator-notice__badge{position:absolute;top:-6px;right:-9px;min-width:19px;height:19px;padding:0 4px;display:grid;place-items:center;border-radius:999px;background:#d8a94f;color:#071b1f;font-size:11px;font-weight:850;border:2px solid #0a292d}
