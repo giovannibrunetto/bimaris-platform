@@ -76,7 +76,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   const pendingCollaborations=collaborationsByOperator.get(operator_id)??[];
   const cards=[["Persone in azione",m.total],["WhatsApp",m.whatsapp],["Prenotazioni",m.booking],["Come raggiungerti",m.directions],["Telefonate",m.phone],["Visite al sito",m.website],["Instagram",m.instagram]] as const;
   return <OperatorWorkspacePanels key={operator_id}
-    initialTab={params.collaboration?"collaborations":"experiences"}
+    initialTab={params.collaboration?"collaborations":params.experience?"experiences":"profile"}
     collaborationCount={pendingCollaborations.length}
     collaborations={canManage&&(pendingCollaborations.length>0||Boolean(params.collaboration))?<CollaborationInbox operatorId={operator_id} items={pendingCollaborations}/>:undefined}
     experiences={canManage?<div className="operator-experiences"><ExperienceManager operatorId={operator_id} experiences={operatorExperiences} interests={interests} activities={activities} territories={territories} initialExperienceId={params.experience} initialStep={params.step==="collaborazione"?5:undefined}/><WizardReviewGuide experiences={operatorExperiences}/></div>:<section className="operator-experiences" aria-label="Accesso in sola lettura"><h2>Le tue esperienze</h2><p>La gestione delle esperienze è riservata ai titolari e ai manager dell'attività.</p></section>}
