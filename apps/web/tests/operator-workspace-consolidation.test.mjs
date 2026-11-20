@@ -161,3 +161,14 @@ test("PR58 P1 mobile map filters keep canvas unobstructed and preserve categorie
  assert.match(css,/\.bimaris-map-mobile-dialog-scroll\{[\s\S]*?overflow-y:auto/);
  assert.match(css,/\.bimaris-map-mobile-apply/);
 });
+
+
+test("PR58: village cards use a stretched primary link while retaining external photo credit",()=>{
+ const page=read("../app/borghi/page.tsx");
+ const css=read("../app/ux-brand-05-hero.css");
+ assert.match(page,/className="text-link village-card-primary-link"/);
+ assert.match(page,/aria-label=\{\x60Scopri il borgo di \$\{village.name\}\x60\}/);
+ assert.match(page,/Fonte immagine:[\s\S]*?href="https:\/\/www\.comune\.sanmarcodalunzio\.me\.it\/"/);
+ assert.match(css,/\.village-cards > \.village-card \.village-card-primary-link::after\{[\s\S]*?inset:0;[\s\S]*?z-index:1;/);
+ assert.match(css,/\.village-cards > \.village-card \.village-card-media a\{[\s\S]*?z-index:2;/);
+});
