@@ -31,7 +31,7 @@ export async function GET(request:NextRequest){
  const {data:operators,error:operatorError}=ids.length?await db.from("operators").select("id,name,published,selection_status").in("id",ids):{data:[],error:null};
  if(operatorError)return error(503,"Impossibile leggere le notifiche");
  const partnerNames=new Map((operators??[]).filter(p=>p.published&&p.selection_status==="selected").map(p=>[p.id,p.name]));
- const base:Notice[]=(events??[]).map(n=>({id:n.id,kind:"operator",category:n.category,title:n.title,description:n.description,url:n.target_path,createdAt:n.created_at,read:!!n.read_at}));
+ const base:Notice[]=(events??[]).map(n=>{const url=new URL(n.target_path,"https://bimaris.internal");url.searchParams.set("operatore",operatorId);return {id:n.id,kind:"operator",category:n.category,title:n.title,description:n.description,url:url.pathname+url.search,createdAt:n.created_at,read:!!n.read_at};});
  const matches:Notice[]=(b2b??[]).filter(n=>partnerNames.has(n.partner_operator_id)).map(n=>({id:n.id,kind:"b2b",category:"collaboration",title:"Nuova opportunità B2B",description:`${partnerNames.get(n.partner_operator_id)} · Compatibilità ${n.match_score}%`,url:`/area-operatore/network-b2b?operatore=${encodeURIComponent(operatorId)}`,createdAt:n.first_detected_at,read:!!n.read_at}));
  const notices=[...base,...matches].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,40);
  return NextResponse.json({notifications:notices,unread:notices.filter(n=>!n.read).length},{headers:{"Cache-Control":"no-store"}});
