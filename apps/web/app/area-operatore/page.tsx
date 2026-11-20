@@ -16,10 +16,10 @@ function relatedOperator(v:Operator|Operator[]|null){return Array.isArray(v)?v[0
 function correctionStep(sections:ReviewSections|null,fallback:number){if(!sections)return fallback;if(sections.name||sections.excerpt||sections.basics)return 0;if(sections.description)return 1;if(sections.details||sections.location)return 2;if(sections.media)return 3;return fallback;}
 function cleanReviewNote(note:string|null){return note?.replace(/^Nota generale:\s*/i,"")??null;}
 const metricCard={padding:"20px 18px",border:"1px solid rgba(202,168,106,.22)",borderRadius:16,background:"#fbfaf7",display:"grid",gap:7,minWidth:0};
-export default async function OperatorAreaPage({searchParams}:{searchParams:Promise<{operatore?:string;collaboration?:string;experience?:string;step?:string;invito?:string}>}){const requestedParams=await searchParams;
+export default async function OperatorAreaPage({searchParams}:{searchParams:Promise<{operatore?:string;collaboration?:string;experience?:string;step?:string;invito?:string;tab?:string}>}){const requestedParams=await searchParams;
  const returnQuery=new URLSearchParams();
  for(const [key,value] of Object.entries(requestedParams)){
-  if(typeof value==="string"&&["operatore","experience","step","collaboration","invito"].includes(key))returnQuery.set(key,value);
+  if(typeof value==="string"&&["operatore","experience","step","collaboration","invito","tab"].includes(key))returnQuery.set(key,value);
  }
  const returnPath="/area-operatore"+(returnQuery.size?"?"+returnQuery.toString():"");
  const signInUrl="/accedi?next="+encodeURIComponent(returnPath);
@@ -76,7 +76,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   const pendingCollaborations=collaborationsByOperator.get(operator_id)??[];
   const cards=[["Persone in azione",m.total],["WhatsApp",m.whatsapp],["Prenotazioni",m.booking],["Come raggiungerti",m.directions],["Telefonate",m.phone],["Visite al sito",m.website],["Instagram",m.instagram]] as const;
   return <OperatorWorkspacePanels key={operator_id}
-    initialTab={params.collaboration?"collaborations":params.experience?"experiences":"profile"}
+    initialTab={params.collaboration?"collaborations":params.experience||params.tab==="esperienze"?"experiences":params.tab==="statistiche"?"impact":"profile"}
     collaborationCount={pendingCollaborations.length}
     collaborations={canManage&&(pendingCollaborations.length>0||Boolean(params.collaboration))?<CollaborationInbox operatorId={operator_id} items={pendingCollaborations}/>:undefined}
     experiences={canManage?<div className="operator-experiences"><ExperienceManager operatorId={operator_id} experiences={operatorExperiences} interests={interests} activities={activities} territories={territories} initialExperienceId={params.experience} initialStep={params.step==="collaborazione"?5:undefined}/><WizardReviewGuide experiences={operatorExperiences}/></div>:<section className="operator-experiences" aria-label="Accesso in sola lettura"><h2>Le tue esperienze</h2><p>La gestione delle esperienze è riservata ai titolari e ai manager dell'attività.</p></section>}
