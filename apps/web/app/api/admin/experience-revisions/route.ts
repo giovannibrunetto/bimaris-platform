@@ -43,7 +43,9 @@ export async function POST(request:NextRequest){
   const experience=revision.experience as unknown as {name:string;published:boolean;review_status:string}|null;
   if (!experience || !operator) return back(experienceRevisionBlocker(experience, operator) ?? "invalid-source-state");
   const blocker = experienceRevisionBlocker(experience, operator);
-  if (blocker) return back(blocker);
+  // A published operator is required to apply a revision, not to request a correction.
+  // Keep all other source-state guards in place for either decision.
+  if (blocker && !(action === "request-changes" && blocker === "operator-not-published")) return back(blocker);
   const general=text(form.get("review_notes"),2000); const sections=reviewSections(form); const summary=reviewSummary(sections,general);
   if(action==="request-changes"){
    if(!summary)return back("review-note-required");
