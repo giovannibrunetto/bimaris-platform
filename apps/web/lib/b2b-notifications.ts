@@ -8,6 +8,34 @@ type Notification={id:string;operator_id:string;partner_operator_id:string;match
 function escapeHtml(value:string){return value.replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]??ch));}
 function eligible(op:Operator|undefined){return !!op&&op.published&&op.selection_status==="selected";}
 
+/** Lightweight per-operator refresh on dashboard open; no email is sent here. */
+export async function refreshB2BNotificationsFor(operatorId:string){
+ const db=createServiceClient();
+ if(!db)throw new Error("Supabase service unavailable");
+ const [{data:mine,error:myError},{data:profiles,error:profileError},{data:operators,error:operatorError}]=await Promise.all([
+   db.from("operator_b2b_profiles").select("*").eq("operator_id",operatorId).eq("enabled",true).maybeSingle(),
+   db.from("operator_b2b_profiles").select("*").eq("enabled",true).neq("operator_id",operatorId),
+   db.from("operators").select("id,name,published,selection_status,territory_id")
+ ]);
+ if(myError||profileError||operatorError)throw new Error("Unable to refresh B2B matches");
+ const map=new Map(((operators??[]) as Operator[]).map(o=>[o.id,o]));
+ const current=map.get(operatorId);
+ if(!mine||!eligible(current))return 0;
+ let created=0;
+ for(const candidate of (profiles??[]) as Profile[]){
+  const partner=map.get(candidate.operator_id);
+  if(!eligible(partner))continue;
+  const score=scoreB2BMatch(mine as Profile,candidate,!!current?.territory_id&&current.territory_id===partner!.territory_id);
+  if(!score||score.score<55)continue;
+  const {data,error}=await db.from("b2b_match_notifications").upsert({
+    operator_id:operatorId,partner_operator_id:candidate.operator_id,match_score:score.score
+  },{onConflict:"operator_id,partner_operator_id",ignoreDuplicates:true}).select("id");
+  if(error)throw new Error(error.message);
+  if(data?.length)created++;
+ }
+ return created;
+}
+
 /** Deterministic periodic reconciliation. Never sends emails from Preview or Staging. */
 export async function reconcileB2BNotifications(){
  const db=createServiceClient();
