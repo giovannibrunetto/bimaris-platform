@@ -146,21 +146,21 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </details>
       <section id="admin-review-decision" className="revision-decisions" aria-label="Esito revisione esperienza" style={{scrollMarginTop:112}}>
         <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>{blocker ? "Prima di decidere, risolvi il blocco indicato qui sotto. Nessuna modifica è stata applicata." : "Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore."}</p></div>
-        {blocker ? <div className="revision-decision-card" role="status">
+        {blocker && blocker !== "operator-not-published" ? <div className="revision-decision-card" role="status">
           <h4>Decisione al momento bloccata</h4>
           <p>{blocker === "operator-status-unavailable" ? "Non è stato possibile verificare lo stato dell’operatore. Ricarica la pagina per riprovare." : stateMessage[blocker]}</p>
           {blocker === "experience-not-approved"
             ? <Link className="text-link" href={`/admin/esperienze/${id}`}>Apri la scheda esperienza →</Link>
             : blocker !== "operator-status-unavailable" && <Link className="text-link" href={`/admin/operatori/${experience.operator_id}`}>Apri il dossier operatore →</Link>}
         </div> : <div className="revision-decisions__grid">
-          <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
+          {blocker === "operator-not-published" ? <div className="revision-decision-card" role="status"><h4>Approvazione non disponibile</h4><p>L’operatore non è online. Puoi richiedere correzioni ora, ma potrai approvare e applicare la proposta solo dopo la pubblicazione del profilo.</p><Link className="text-link" href={`/admin/operatori/${experience.operator_id}`}>Apri il dossier operatore →</Link></div> : <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
             <h4>Approva la modifica</h4>
             <p>Applica le modifiche dopo averne verificato la correttezza.</p>
             <input type="hidden" name="revision_id" value={revision.id}/>
             <label htmlFor="revision-approval-note">Nota facoltativa</label>
             <textarea id="revision-approval-note" name="review_notes" rows={4} placeholder="Eventuali indicazioni sulla revisione approvata"/>
             <button className="revision-decision-card__button revision-decision-card__button--approve" name="action" value="approve-apply">Approva e applica</button>
-          </form>
+          </form>}
           <form method="post" action="/api/admin/experience-revisions" className="revision-decision-card">
             <h4>Richiedi correzioni</h4>
             <p>Specifica soltanto gli elementi che devono essere modificati prima di una nuova valutazione.</p>
