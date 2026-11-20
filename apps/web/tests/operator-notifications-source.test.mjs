@@ -40,7 +40,10 @@ test("operator switches cannot display late responses from a different operator"
 });
 test("bell supports unread count, mark read and dismiss actions",()=>{
  assert.match(bell,/operator-notice__badge/);
- assert.match(bell,/action:"read"/);
+ assert.match(bell,/action:"read-all"/);
+ assert.match(api,/if\(body\?\.action==="read-all"\)/);
+ assert.match(api,/\.from\("operator_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
+ assert.match(api,/\.from\("b2b_match_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
  assert.match(bell,/event\.key==="Escape"/);
  assert.match(bell,/aria-expanded=\{opened\}/);
 });
@@ -48,7 +51,9 @@ test("notification body opens its destination without a redundant action link",(
  assert.match(bell,/<Link className="operator-notice__item-link" href=\{n.url\}/);
  assert.match(bell,/<strong>\{n.title\}<\/strong><span>\{n.description\}<\/span>/);
  assert.doesNotMatch(bell,/>Apri sezione<\/Link>/);
- assert.match(bell,/!n.read&&<div className="operator-notice__item-actions"><button/);
+ assert.match(bell,/className="operator-notice__read-all"/);
+ assert.match(bell,/Segna tutte come lette/);
+ assert.doesNotMatch(bell,/operator-notice__item-actions/);
  assert.match(css,/\.operator-notice__item-link:hover/);
 });
 test("mobile notification panel remains constrained to viewport",()=>{
