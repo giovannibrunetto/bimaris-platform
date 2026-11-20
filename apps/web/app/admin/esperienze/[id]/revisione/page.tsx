@@ -145,7 +145,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         </section>
       </details>
       <section id="admin-review-decision" className="revision-decisions" aria-label="Esito revisione esperienza" style={{scrollMarginTop:112}}>
-        <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore.</p></div>
+        <div className="revision-section-heading"><h3>Decisione sulla modifica proposta</h3><p>{blocker ? "Prima di decidere, risolvi il blocco indicato qui sotto. Nessuna modifica è stata applicata." : "Scegli uno dei due esiti. L’approvazione applica la modifica alla versione approvata; la richiesta di correzioni la rinvia all’operatore."}</p></div>
         {blocker ? <div className="revision-decision-card" role="status">
           <h4>Decisione al momento bloccata</h4>
           <p>{blocker === "operator-status-unavailable" ? "Non è stato possibile verificare lo stato dell’operatore. Ricarica la pagina per riprovare." : stateMessage[blocker]}</p>
