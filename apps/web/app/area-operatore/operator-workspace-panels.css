@@ -89,3 +89,13 @@
 .operator-premium-area .operator-profile-card__form input{color:#0a292d}
 .operator-premium-area .experience-manager__collaboration{background:linear-gradient(135deg,#16474b,#09282d);border-color:rgba(216,169,79,.44)}
 @media(prefers-reduced-motion:reduce){.operator-premium-header,.operator-premium-area .experience-card{transition:none!important}}
+
+
+/* PR58: selecting Profile displays the information, not another intermediate action. */
+.operator-profile-card--overview{padding:26px 30px!important}
+.operator-profile-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:20px 0 0}
+.operator-profile-overview__item{min-width:0;padding:16px 0;border-top:1px solid rgba(216,169,79,.22)}
+.operator-profile-overview dt{color:#d8a94f;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:11px;margin-bottom:7px}
+.operator-profile-overview dd{margin:0;overflow-wrap:anywhere;color:#f7f2e9;font-size:16px;line-height:1.45}
+.operator-profile-card--overview .operator-profile-card__head .button{white-space:nowrap}
+@media(max-width:650px){.operator-profile-card--overview{padding:20px!important}.operator-profile-overview{grid-template-columns:1fr;margin-top:15px}.operator-profile-card--overview .operator-profile-card__head{align-items:flex-start;flex-direction:column}.operator-profile-card--overview .operator-profile-card__head .button{width:100%}}
