@@ -51,8 +51,8 @@ export async function POST(request:NextRequest){
   if(action==="request-changes"){
    if(!summary)return back("review-note-required");
    const {error}=await supabase.from("experience_revisions").update({status:"rejected",review_notes:summary,review_sections:sections,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",revisionId).eq("status","pending"); if(error)throw error;
-   if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes:summary});
    await recordOperatorNotice({operatorId:revision.operator_id,category:"experience",eventKey:`experience-revision-changes:${revisionId}`,title:"Modifica esperienza: correzioni richieste",description:`Per “${experience.name}” sono state richieste alcune correzioni.`,targetPath:"/area-operatore?tab=esperienze"});
+   if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes:summary});
    return back("changes-requested");
   }
   if(action==="approve-apply"){
@@ -82,8 +82,8 @@ export async function POST(request:NextRequest){
      if(cleanup.error)console.error("BIMARIS revision private media cleanup failed",cleanup.error);
     }
     const result=Array.isArray(applied)?applied[0]:applied; const name=typeof result?.experience_name==="string"?result.experience_name:experience.name;
-    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:general||null});
     await recordOperatorNotice({operatorId:revision.operator_id,category:"experience",eventKey:`experience-revision-applied:${revisionId}`,title:"Modifica esperienza approvata",description:`La revisione di “${name}” è stata approvata e applicata.`,targetPath:"/area-operatore?tab=esperienze"});
+    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:general||null});
     return back("approved-applied");
    }catch(error){
     for(const item of [...promoted].reverse())await supabase.from("experience_revision_media").update({storage_path:item.privatePath}).eq("id",item.id).eq("revision_id",revisionId).eq("storage_path",item.livePath);
