@@ -58,7 +58,7 @@ export default function B2BNetwork({ operatorId, operatorName, canManage }: Prop
     <section ref={profilePanelRef} className="b2b-network__panel" style={{scrollMarginTop:"clamp(90px, 12vh, 132px)"}}>
       
       <div className="b2b-network__group"><div className="b2b-network__group-heading"><span className="b2b-network__group-index">01</span><div><h2>Il tuo profilo nella rete</h2><p>Indica cosa puoi offrire agli altri operatori.</p></div></div>
-      <label className="b2b-network__optin"><input type="checkbox" checked={profile.enabled} disabled={!canManage} onChange={e=>setProfile({...profile,enabled:e.target.checked})}/> Voglio comparire nel Network B2B BIMARIS</label>
+      <label className="b2b-network__optin b2b-network__optin--contrast"><input type="checkbox" checked={profile.enabled} disabled={!canManage} onChange={e=>setProfile({...profile,enabled:e.target.checked})}/><span className="b2b-network__optin-text" style={{color:"#f7f2e9",fontWeight:750}}>Voglio comparire nel Network B2B BIMARIS</span></label>
       <Multi title="Cosa offri agli altri operatori?" options={B2B_TAGS} value={profile.offer_tags} onChange={v=>setProfile({...profile,offer_tags:v})}/>
       <label className="b2b-network__field"><strong>Descrivi ciò che offri</strong><textarea value={profile.offer_summary??""} onChange={e=>setProfile({...profile,offer_summary:e.target.value})} rows={4} className="b2b-network__input" placeholder="Es. escursioni guidate per piccoli gruppi, anche in inglese, con partenza da Messina…"/></label>
       </div>
