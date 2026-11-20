@@ -69,7 +69,7 @@ export default function B2BNetwork({ operatorId, operatorName, canManage }: Prop
   const back=()=>{setMessage("");setStep(s=>Math.max(s-1,0) as 0|1|2|3);};
   return <div className="b2b-network">
     <section ref={profilePanelRef} className="b2b-network__panel" style={{scrollMarginTop:"clamp(90px, 12vh, 132px)"}}>
-      <B2BNewMatchAlerts operatorId={operatorId} showPreferences={canManage}/>
+      <B2BNewMatchAlerts operatorId={operatorId} showPreferences={canManage&&step===3}/>
       <nav className="b2b-flow" aria-label="Passaggi del profilo Network B2B">
         {steps.map((label,index)=><button key={label} type="button" className={`b2b-flow__step${step===index?" is-current":""}`} aria-current={step===index?"step":undefined} onClick={()=>{setMessage("");setStep(index as 0|1|2|3)}}><span>{index+1}</span>{label}</button>)}
       </nav>
