@@ -13,11 +13,11 @@ type Props = {
  collaborationCount: number;
 };
 
-export default function OperatorWorkspacePanels({initialTab="experiences",experiences,profile,impact,collaborations,collaborationCount}:Props){
+export default function OperatorWorkspacePanels({initialTab="profile",experiences,profile,impact,collaborations,collaborationCount}:Props){
  const [active,setActive]=useState<Tab>(initialTab);
  const tabs: {id:Tab;label:string;count?:number}[] = [
-  {id:"experiences",label:"Esperienze"},
   {id:"profile",label:"Profilo"},
+  {id:"experiences",label:"Esperienze"},
   ...(collaborations ? [{id:"collaborations" as Tab,label:"Collaborazioni",count:collaborationCount}] : []),
   {id:"impact",label:"Statistiche"},
  ];
