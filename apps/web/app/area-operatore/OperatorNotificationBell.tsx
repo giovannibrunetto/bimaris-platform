@@ -33,17 +33,21 @@ export default function OperatorNotificationBell({operatorId}:{operatorId:string
   document.addEventListener("mousedown",close);document.addEventListener("keydown",escape);
   return()=>{document.removeEventListener("mousedown",close);document.removeEventListener("keydown",escape);};
  },[opened]);
- async function read(n:Notice){
+ async function readAll(){
   const sourceGeneration=lastLoadRef.current;
-  setBusy(n.id);
+  setBusy("all");
   try{
-   const res=await fetch("/api/operator/notifications",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({operatorId,kind:n.kind,notificationId:n.id,action:"read"})});
+   const res=await fetch("/api/operator/notifications",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({operatorId,action:"read-all"})});
    if(!res.ok)throw new Error("notification-update");
    if(sourceGeneration!==lastLoadRef.current)return;
-   setPayload(p=>p?{...p,notifications:p.notifications.map(item=>item.id===n.id&&item.kind===n.kind?{...item,read:true}:item),unread:Math.max(0,p.unread-(n.read?0:1))}:p);
+   setPayload(p=>p?{...p,notifications:p.notifications.map(item=>({...item,read:true})),unread:0}:p);
    setError("");
-  }catch{if(sourceGeneration===lastLoadRef.current)setError("Impossibile segnare la notifica come letta.");}
-  finally{if(sourceGeneration===lastLoadRef.current)setBusy("");}
+  }catch{
+   if(sourceGeneration===lastLoadRef.current){
+    setError("Impossibile segnare tutte le notifiche come lette.");
+    await load();
+   }
+  }finally{if(sourceGeneration===lastLoadRef.current)setBusy("");}
  }
  const visiblePayload=loadedOperatorId===operatorId?payload:null;
  const unread=visiblePayload?.unread??0;
@@ -53,7 +57,7 @@ export default function OperatorNotificationBell({operatorId}:{operatorId:string
    {unread>0&&<span className="operator-notice__badge" aria-hidden="true">{unread>99?"99+":unread}</span>}
   </button>
   {opened&&<div className="operator-notice__panel" role="dialog" aria-modal="false" aria-label="Notifiche dell'attività">
-   <div className="operator-notice__head"><strong>Notifiche</strong><button type="button" onClick={()=>setOpened(false)} aria-label="Chiudi notifiche">×</button></div>
+   <div className="operator-notice__head"><strong>Notifiche</strong><div className="operator-notice__head-actions">{unread>0&&<button className="operator-notice__read-all" type="button" disabled={busy==="all"} onClick={()=>void readAll()}>{busy==="all"?"Aggiornamento…":"Segna tutte come lette"}</button>}<button className="operator-notice__close" type="button" onClick={()=>setOpened(false)} aria-label="Chiudi notifiche">×</button></div></div>
    <p className="operator-notice__subhead">{unread>0?`${unread} ${unread===1?"novità da leggere":"novità da leggere"}`:"Tutte le novità della tua attività, in un unico posto."}</p>
    {error&&<p role="status" className="operator-notice__error">{error}<button onClick={()=>void load()} type="button">Riprova</button></p>}
    {visiblePayload&&visiblePayload.notifications.length===0&&<p className="operator-notice__empty">Nessuna novità al momento.</p>}
@@ -61,7 +65,7 @@ export default function OperatorNotificationBell({operatorId}:{operatorId:string
     {visiblePayload?.notifications.map(n=><article className={`operator-notice__item${n.read?" is-read":""}`} key={n.kind+":"+n.id}>
      <div className="operator-notice__item-top"><span>{categoryLabels[n.category]??"BIMARIS"}</span>{!n.read&&<span className="operator-notice__unread" aria-label="Da leggere"/>}</div>
      <Link className="operator-notice__item-link" href={n.url} onClick={()=>setOpened(false)} aria-label={`Apri: ${n.title}`}><strong>{n.title}</strong><span>{n.description}</span></Link>
-     {!n.read&&<div className="operator-notice__item-actions"><button type="button" disabled={busy===n.id} onClick={()=>void read(n)}>{busy===n.id?"Aggiornamento…":"Segna come letta"}</button></div>}
+
     </article>)}
    </div>
   </div>}
