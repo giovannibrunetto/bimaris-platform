@@ -141,3 +141,23 @@ test("PR58 tablet at 768px keeps activity and bell in first row",()=>{
  assert.match(tablet,/\.operator-workspace-switcher__sections\{\s*grid-column:1\/-1;\s*grid-row:2/);
  assert.match(css,/@media\(max-width:600px\)/);
 });
+
+
+test("PR58 P1 mobile map filters keep canvas unobstructed and preserve categories and historical periods",()=>{
+ const map=read("../components/BimarisGoogleMapV2.tsx");
+ const css=read("../app/map-mobile.css");
+ assert.match(map,/className="bimaris-map-mobile-filter-trigger"/);
+ assert.match(map,/createPortal\(/);
+ assert.match(map,/role="dialog" aria-modal="true" aria-label="Filtri della mappa"/);
+ assert.match(map,/Filtri della mappa/);
+ assert.match(map,/FILTERS\.map\(item=><button/);
+ assert.match(map,/PERIODS\.map\(\(item,index\)=><button/);
+ assert.match(map,/onClick=\{\(\)=>chooseFilter\(item.key\)\}/);
+ assert.match(map,/onClick=\{\(\)=>choosePeriod\(index\)\}/);
+ assert.match(map,/chooseFilter\("all"\);setSelectedPeriods\(\[\]\)/);
+ assert.match(map,/setMobileFiltersOpen\(false\)/);
+ assert.match(css,/@media\(max-width:760px\)\{/);
+ assert.match(css,/\.bimaris-map-filter-overlay,\s*\.bimaris-map-period-overlay\{\s*display:none!important/);
+ assert.match(css,/\.bimaris-map-mobile-dialog-scroll\{[\s\S]*?overflow-y:auto/);
+ assert.match(css,/\.bimaris-map-mobile-apply/);
+});
