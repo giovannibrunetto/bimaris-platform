@@ -21,4 +21,4 @@
 .operator-notice__error{color:#ffd8b5}
 .operator-notice__error button{margin-left:10px}
 .operator-notice__trigger:focus-visible,.operator-notice__panel button:focus-visible,.operator-notice__panel a:focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
-@media(max-width:650px){.operator-notice__panel{right:-10px;max-height:65vh}.operator-notice__trigger{width:42px;height:42px}}
+@media(max-width:650px){.operator-notice__panel{position:fixed;top:clamp(90px,16vh,145px);left:12px;right:12px;width:auto;max-width:none;max-height:calc(100dvh - 165px);z-index:1000}.operator-notice__trigger{width:42px;height:42px}}
