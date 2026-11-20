@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { track } from "@/lib/analytics";
 
 declare global { interface Window { google?: any } }
@@ -26,7 +27,27 @@ function mapsRouteUrl(points:BimarisMapPoint[],mode:Mode){ if(!points.length)ret
 
 export function BimarisGoogleMap({points,initialVisiblePointKeys}:{points:BimarisMapPoint[];initialVisiblePointKeys?:string[]}){
  const el=useRef<HTMLDivElement|null>(null), map=useRef<any>(null), info=useRef<any>(null), markers=useRef<any[]>([]), cache=useRef(new Map<string,{lat:number;lng:number}>()), routeManuallyCollapsed=useRef(false), initialFitDone=useRef(false), lastFitScope=useRef("");
- const [selectedPeriods,setSelectedPeriods]=useState<string[]>([]), [status,setStatus]=useState<"loading"|"ready"|"error">("loading"), [filter,setFilter]=useState<Filter>("all"), [selected,setSelected]=useState<string[]>([]), [mode,setMode]=useState<Mode>("walking"), [routeExpanded,setRouteExpanded]=useState(false), [periodMenuOpen,setPeriodMenuOpen]=useState(false), [contextScopeActive,setContextScopeActive]=useState(Boolean(initialVisiblePointKeys?.length));
+ const [selectedPeriods,setSelectedPeriods]=useState<string[]>([]), [status,setStatus]=useState<"loading"|"ready"|"error">("loading"), [filter,setFilter]=useState<Filter>("all"), [selected,setSelected]=useState<string[]>([]), [mode,setMode]=useState<Mode>("walking"), [routeExpanded,setRouteExpanded]=useState(false), [periodMenuOpen,setPeriodMenuOpen]=useState(false), [mobileFiltersOpen,setMobileFiltersOpen]=useState(false), [contextScopeActive,setContextScopeActive]=useState(Boolean(initialVisiblePointKeys?.length));
+ const mobileFilterTrigger=useRef<HTMLButtonElement>(null), mobileFilterClose=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{
+  if(!mobileFiltersOpen)return;
+  const previous=document.body.style.overflow;
+  document.body.style.overflow="hidden";
+  mobileFilterClose.current?.focus();
+  function handleKey(event:KeyboardEvent){
+   if(event.key==="Escape"){setMobileFiltersOpen(false);return;}
+   if(event.key!=="Tab")return;
+   const dialog=document.querySelector<HTMLElement>(".bimaris-map-mobile-dialog");
+   if(!dialog)return;
+   const controls=Array.from(dialog.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
+   if(!controls.length)return;
+   const first=controls[0], last=controls[controls.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+  document.addEventListener("keydown",handleKey);
+  return()=>{document.removeEventListener("keydown",handleKey);document.body.style.overflow=previous;mobileFilterTrigger.current?.focus();};
+ },[mobileFiltersOpen]);
  const initialVisibleSet=useMemo(()=>new Set(initialVisiblePointKeys??[]),[initialVisiblePointKeys]);
  const selectedPoints=useMemo(()=>selected.map(k=>points.find(p=>keyOf(p)===k)).filter(Boolean) as BimarisMapPoint[],[points,selected]);
  const routeUrl=mapsRouteUrl(selectedPoints,mode); const count=(f:Filter)=>f==="all"?points.length:points.filter(p=>p.filterCategories.includes(f)).length;
@@ -48,9 +69,32 @@ export function BimarisGoogleMap({points,initialVisiblePointKeys}:{points:Bimari
   })();return()=>{cancelled=true;};
  },[visiblePoints,selected,status,filter,selectedPeriods,contextScopeActive]);
 
- return <div className="bimaris-map-card"><div className="bimaris-map-card-head"><div><div className="map-card-eyebrow">Esplora la mappa</div></div><div className="bimaris-map-count" aria-live="polite">{visiblePoints.length} {visiblePoints.length===1?"punto visibile":"punti visibili"} su {points.length} totali · {selected.length>=10?"limite di 10 tappe raggiunto":"seleziona fino a 10 tappe"}</div></div><div className="bimaris-map-layout"><div className="bimaris-map-main"><div className="bimaris-map-canvas-wrap"><div ref={el} className="bimaris-map-canvas" aria-label="Mappa interattiva BIMARIS" />{status==="loading"&&<div className="bimaris-map-status">Caricamento mappa...</div>}{status==="error"&&<div className="bimaris-map-status">Mappa temporaneamente non disponibile.</div>}{status==="ready"&&visiblePoints.length===0&&<div className="bimaris-map-empty" role="status"><strong>Nessun punto disponibile</strong><span>Il filtro “{filterLabel}”{selectedPeriodLabels.length?` nelle epoche “${selectedPeriodLabels.join(", ")}”`:""} non contiene punti nella selezione attuale.</span><button type="button" onClick={()=>chooseFilter("all")}>Mostra tutti i punti</button></div>}
+ return <div className="bimaris-map-card"><div className="bimaris-map-card-head"><div><div className="map-card-eyebrow">Esplora la mappa</div></div><div className="bimaris-map-count" aria-live="polite">{visiblePoints.length} {visiblePoints.length===1?"punto visibile":"punti visibili"} su {points.length} totali · {selected.length>=10?"limite di 10 tappe raggiunto":"seleziona fino a 10 tappe"}</div><button ref={mobileFilterTrigger} className="bimaris-map-mobile-filter-trigger" type="button" aria-haspopup="dialog" aria-expanded={mobileFiltersOpen} onClick={()=>setMobileFiltersOpen(true)}><span aria-hidden="true">☷</span> Filtri{filter!=="all"||selectedPeriods.length>0?" · Attivi":""}</button></div><div className="bimaris-map-layout"><div className="bimaris-map-main"><div className="bimaris-map-canvas-wrap"><div ref={el} className="bimaris-map-canvas" aria-label="Mappa interattiva BIMARIS" />{status==="loading"&&<div className="bimaris-map-status">Caricamento mappa...</div>}{status==="error"&&<div className="bimaris-map-status">Mappa temporaneamente non disponibile.</div>}{status==="ready"&&visiblePoints.length===0&&<div className="bimaris-map-empty" role="status"><strong>Nessun punto disponibile</strong><span>Il filtro “{filterLabel}”{selectedPeriodLabels.length?` nelle epoche “${selectedPeriodLabels.join(", ")}”`:""} non contiene punti nella selezione attuale.</span><button type="button" onClick={()=>chooseFilter("all")}>Mostra tutti i punti</button></div>}
  <div className="bimaris-map-filter-overlay"><div className="bimaris-map-filter-desktop" aria-label="Filtra i punti della mappa">{FILTERS.map(item=><button key={item.key} type="button" className={filter===item.key?"active":""} onClick={()=>chooseFilter(item.key)}>{item.label}<span>{count(item.key)}</span></button>)}</div><div className="bimaris-map-filter-mobile" aria-label="Filtra i punti della mappa">{FILTERS.map(item=><button key={item.key} type="button" className={filter===item.key?"active":""} aria-pressed={filter===item.key} onClick={()=>chooseFilter(item.key)}>{item.shortLabel}<span>{count(item.key)}</span></button>)}</div></div>
  {(filter==="cultura"||filter==="borghi")&&<div className="bimaris-map-period-overlay"><div className="bimaris-map-period-desktop" aria-label="Filtra per periodo storico">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>{periodMenuOpen&&<div className="bimaris-map-period-mobile" aria-label="Filtra per periodo storico">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>}</div>}</div><div className="bimaris-map-legend">B = borgo · P = luogo del borgo · C = cultura · M = miti e leggende · E = esperienza · O = operatore</div></div>
  <aside className={`bimaris-route-panel ${routeExpanded?"expanded":"collapsed"}`}><button type="button" className="bimaris-route-panel-toggle" aria-expanded={routeExpanded} onClick={()=>setRouteExpanded(v=>{const n=!v;routeManuallyCollapsed.current=!n;return n;})}><span><strong>Il mio percorso</strong><small>{selected.length>=10?"10/10 · limite raggiunto":`${selected.length}/10 tappe`}</small></span><span>{routeExpanded?"−":"+"}</span></button>{routeExpanded&&<div className="bimaris-route-panel-body"><div className="bimaris-route-panel-mode"><button type="button" className={mode==="walking"?"active":""} onClick={()=>setMode("walking")}>A piedi</button><button type="button" className={mode==="driving"?"active":""} onClick={()=>setMode("driving")}>In auto</button></div>{selectedPoints.length?<><ol className="bimaris-route-list">{selectedPoints.map((point,index)=><li key={keyOf(point)}><span>{index+1}</span><div><strong>{point.title}</strong><small>{kindLabel(point.kind)}</small></div><button type="button" aria-label={`Rimuovi ${point.title}`} onClick={()=>toggle(point)}>×</button></li>)}</ol><div className="bimaris-route-panel-actions"><button type="button" className="button" onClick={()=>{setSelected([]);info.current?.close();}}>Svuota percorso</button>{routeUrl&&<a className="button" href={routeUrl} target="_blank" rel="noreferrer" onClick={()=>track("route_open",{mode,stops:selectedPoints.length})}>Apri percorso in Google Maps</a>}</div></>:<p>Apri un punto sulla mappa e aggiungilo al tuo percorso.</p>}</div>}</aside>
- </div></div>;
+ </div> {mobileFiltersOpen&&typeof document!=="undefined"&&createPortal(
+  <div className="bimaris-map-mobile-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMobileFiltersOpen(false);}}>
+   <section className="bimaris-map-mobile-dialog" role="dialog" aria-modal="true" aria-label="Filtri della mappa">
+    <div className="bimaris-map-mobile-dialog-head">
+     <div><strong>Filtri della mappa</strong><p>Scegli cosa visualizzare sulla mappa BIMARIS.</p></div>
+     <button ref={mobileFilterClose} type="button" className="bimaris-map-mobile-close" onClick={()=>setMobileFiltersOpen(false)} aria-label="Chiudi filtri">×</button>
+    </div>
+    <div className="bimaris-map-mobile-dialog-scroll">
+     <fieldset className="bimaris-map-mobile-fieldset">
+      <legend>Categorie</legend>
+      <div className="bimaris-map-mobile-options">{FILTERS.map(item=><button key={item.key} type="button" aria-pressed={filter===item.key} className={filter===item.key?"active":""} onClick={()=>chooseFilter(item.key)}><span>{item.label}</span><small>{count(item.key)}</small></button>)}</div>
+     </fieldset>
+     {(filter==="cultura"||filter==="borghi")&&<fieldset className="bimaris-map-mobile-fieldset">
+      <legend>Epoche storiche</legend>
+      <div className="bimaris-map-mobile-options">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>
+     </fieldset>}
+    </div>
+    <div className="bimaris-map-mobile-dialog-footer">
+     <button type="button" className="bimaris-map-mobile-reset" onClick={()=>{chooseFilter("all");setSelectedPeriods([]);}}>Azzera filtri</button>
+     <button type="button" className="bimaris-map-mobile-apply" onClick={()=>setMobileFiltersOpen(false)}>Mostra {visiblePoints.length} {visiblePoints.length===1?"risultato":"risultati"}</button>
+    </div>
+   </section>
+  </div>,document.body)}
+</div>;
 }
