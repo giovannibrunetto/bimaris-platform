@@ -241,3 +241,42 @@
     transform:none!important;
   }
 }
+
+
+/* PR58 mobile UX-01 / iPhone SE 375x667 — bring operational content above the fold.
+   Does not modify data, desktop sizing or the content of Profile/Experiences/Statistics. */
+@media(max-width:600px){
+ .operator-premium-area{padding:12px 12px 38px}
+ .operator-premium-header{
+  padding:16px 18px;gap:10px;
+  align-items:stretch;border-radius:20px;
+ }
+ .operator-premium-kicker{font-size:10px;letter-spacing:.14em}
+ .operator-premium-header h1{font-size:36px;line-height:1.03;margin:4px 0 4px}
+ .operator-premium-header p{font-size:13px;line-height:1.35}
+ .operator-premium-header__actions{
+  justify-content:flex-start;align-items:center;
+  flex-wrap:wrap;gap:7px 12px;
+ }
+ .operator-premium-status{font-size:11px}
+ .operator-premium-public{font-size:12px}
+ .operator-premium-header__actions .button,
+ .operator-premium-header__actions button{
+  min-height:36px;padding:7px 13px;
+  font-size:13px;
+ }
+ .operator-premium-shell>.operator-workspace-switcher{
+  margin-top:10px;padding:10px!important;min-height:0!important;
+ }
+ .operator-workspace-panel{margin-top:10px}
+ .operator-workspace-tabs{padding:0 0 8px;gap:3px}
+ .operator-workspace-tabs__button{
+  min-height:40px;padding:8px 12px;font-size:13px;
+ }
+ .operator-workspace-content{padding-top:12px}
+}
+@media(max-width:345px){
+ .operator-premium-header{padding:14px 15px}
+ .operator-premium-header h1{font-size:32px}
+ .operator-workspace-tabs__button{padding:8px 9px;font-size:12px}
+}
