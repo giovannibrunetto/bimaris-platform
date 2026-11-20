@@ -60,8 +60,8 @@ export default function OperatorNotificationBell({operatorId}:{operatorId:string
    <div className="operator-notice__list">
     {visiblePayload?.notifications.map(n=><article className={`operator-notice__item${n.read?" is-read":""}`} key={n.kind+":"+n.id}>
      <div className="operator-notice__item-top"><span>{categoryLabels[n.category]??"BIMARIS"}</span>{!n.read&&<span className="operator-notice__unread" aria-label="Da leggere"/>}</div>
-     <strong>{n.title}</strong><p>{n.description}</p>
-     <div className="operator-notice__item-actions"><Link href={n.url} onClick={()=>setOpened(false)}>Apri sezione</Link>{!n.read&&<button type="button" disabled={busy===n.id} onClick={()=>void read(n)}>{busy===n.id?"Aggiornamento…":"Segna come letta"}</button>}</div>
+     <Link className="operator-notice__item-link" href={n.url} onClick={()=>setOpened(false)} aria-label={`Apri: ${n.title}`}><strong>{n.title}</strong><span>{n.description}</span></Link>
+     {!n.read&&<div className="operator-notice__item-actions"><button type="button" disabled={busy===n.id} onClick={()=>void read(n)}>{busy===n.id?"Aggiornamento…":"Segna come letta"}</button></div>}
     </article>)}
    </div>
   </div>}
