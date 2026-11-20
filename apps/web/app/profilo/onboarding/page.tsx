@@ -14,7 +14,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
 
   const [{ data: profile }, { data: selected }, { data: newsletter }] = await Promise.all([
     supabase.from("user_profiles").select("display_name,travel_companion,typical_time_available,preferred_pace").eq("user_id", userId).maybeSingle(),
-    supabase.from("user_interests").select("interest_key").eq("user_id", userId),
+    supabase.from("user_interests").select("interest_key").eq("user_id", userId).gt("explicit_score", 0),
     supabase.from("newsletter_preferences").select("subscribed,personalized").eq("user_id", userId).maybeSingle(),
   ]);
 
