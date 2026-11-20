@@ -88,3 +88,24 @@
 .operator-subpage .b2b-network__group{display:grid;gap:18px}
 .operator-subpage .b2b-network__group .b2b-network__field{gap:8px}
 @media(max-width:650px){.operator-subpage .b2b-compact-choice{padding:13px}.operator-subpage .b2b-compact-choice__head{gap:10px}.operator-subpage .b2b-compact-choice__head h3{font-size:14px}.operator-subpage .b2b-compact-choice__head p{font-size:12px}.operator-subpage .b2b-compact-choice__toggle{padding:8px 10px}.operator-subpage .b2b-compact-choice .b2b-options__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* PR58 UX-01 — B2B desktop density: preserve text sizes, remove repeated empty space. */
+@media(min-width:900px){
+ .operator-subpage--b2b{padding-top:16px;padding-bottom:38px}
+ .operator-subpage--b2b .operator-subpage__shell{gap:12px}
+ .operator-subpage--b2b .operator-subpage__heading{padding:15px 26px;border-radius:18px}
+ .operator-subpage--b2b .operator-subpage__heading h1{font-size:clamp(30px,3vw,40px);margin:4px 0}
+ .operator-subpage--b2b .operator-subpage__heading p{font-size:14px}
+ .operator-subpage--b2b .operator-workspace-switcher{min-height:62px;padding:6px 15px;gap:18px;border-radius:15px}
+ .operator-subpage--b2b .operator-workspace-switcher__activity select{min-height:38px}
+ .operator-subpage--b2b .operator-workspace-switcher__link{padding:5px 4px 4px;gap:6px}
+ .operator-subpage--b2b .operator-workspace-switcher__divider{height:32px}
+ .operator-subpage--b2b .b2b-network__panel{padding:24px 30px!important;gap:14px}
+ .operator-subpage--b2b .b2b-flow__step{min-height:43px}
+ .operator-subpage--b2b .b2b-flow__hint{margin:0;font-size:13px}
+ .operator-subpage--b2b .b2b-network__group{gap:13px;padding-bottom:12px;margin-bottom:0}
+ .operator-subpage--b2b .b2b-network__group-heading h2{font-size:clamp(25px,2.4vw,31px);margin:0}
+ .operator-subpage--b2b .b2b-network__group-heading p{margin:3px 0 0;font-size:14px}
+ .operator-subpage--b2b .b2b-compact-choice{padding:12px 16px}
+}
