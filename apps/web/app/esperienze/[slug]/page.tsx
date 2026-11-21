@@ -16,7 +16,6 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
 <div className="experience-page-surface">
 <section className="section experience-overview">
   <header className="experience-overview-heading">
-    {returnOperator && <Link className="text-link experience-operator-back" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}`}>← Torna alla scheda operatore</Link>}
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
     <h1>{experience.name}</h1>
     <p>{experience.excerpt}</p>
@@ -43,10 +42,10 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
   {partners.length>0&&<div className="detail-panel experience-detail-panel"><div className="kicker">Rete BIMARIS</div><h3>Un'esperienza costruita insieme</h3><p>Questa esperienza nasce dalla collaborazione tra operatori della rete BIMARIS.</p><ul className="list">{partners.map(partner=><li key={partner.slug??partner.name}><strong>{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</strong>{partner.activity&&<><br/>{partner.activity}</>}</li>)}</ul></div>}
 </section>
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card card-hit-area" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
+{returnOperator && <nav className="section experience-overview" aria-label="Navigazione scheda esperienza"><Link className="text-link" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}`}>← Torna alla scheda operatore</Link></nav>}
 </div>
 <style>{`
 html:has(.experience-page-surface){scroll-padding-top:80px}
-.experience-operator-back{display:inline-block;margin-bottom:10px}
 .experience-page-surface{background:var(--sand,#f3efe6);color:var(--ink,#101820);min-height:inherit}
 .experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px)}
 .experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(30px,3.25vw,44px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
