@@ -183,7 +183,7 @@ test("PR58 operator location cards preserve two exclusive choices and confirmed 
  assert.match(picker,/location-choice__option/);
  assert.match(picker,/location-choice__copy/);
  assert.match(picker,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
- assert.match(picker,/@media\(max-width:600px\)\{[^}]*\.location-choice\{grid-template-columns:minmax\(0,1fr\)/);
+ assert.match(picker,/@media\(max-width:600px\)\{[\s\S]*?\.location-choice\{grid-template-columns:minmax\(0,1fr\)/);
  assert.match(picker,/\.location-choice__option:has\(:checked\)/);
  assert.match(picker,/\.location-choice__option:has\(:focus-visible\)/);
  assert.match(picker,/onChange\(\{\.\.\.value,locationKind:"venue"\}\)/);
