@@ -15,6 +15,7 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
 <UserBehaviorSignal contentType="experience" contentId={experience.slug} interestKey={interestKey} weight={0.75}/>
 <div className="experience-page-surface">
 <section className="section experience-overview">
+  <nav className="experience-page-back" aria-label="Navigazione di ritorno"><Link href={returnOperator ? `/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":origin.da==="area-operatore"?"?da=area-operatore":""}` : "/esperienze"}>← {returnOperator ? "Torna alla scheda operatore" : "Torna a esperienze e appuntamenti"}</Link></nav>
   <header className="experience-overview-heading">
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
     <h1>{experience.name}</h1>
@@ -27,7 +28,6 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
         <img src={experience.imageUrl} alt={experience.imageAlt ?? experience.name} decoding="async"/>
       </figure>
     )}
-      {returnOperator && <nav className="experience-return" aria-label="Navigazione scheda esperienza"><Link className="text-link" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":origin.da==="area-operatore"?"?da=area-operatore":""}`}>← Torna alla scheda operatore</Link></nav>}
     </div>
     <div className="experience-summary-content">
     <aside className="detail-panel experience-info-panel"><ul className="list"><li><strong>Operatore</strong><br/>{experience.operatorSlug?<Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link>:experience.operatorName}</li>{partners.length>0&&<li><strong>In collaborazione con</strong><br/>{partners.map((partner,index)=><span key={partner.slug??partner.name}>{index>0?", ":""}{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</span>)}</li>}{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
@@ -45,38 +45,39 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card card-hit-area" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
 </div>
 <style>{`
-html:has(.experience-page-surface){scroll-padding-top:80px}
-.experience-page-surface{background:var(--sand,#f3efe6);color:var(--ink,#101820);min-height:inherit}
-.experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px)}
-.experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(30px,3.25vw,44px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
-.experience-overview-heading p{margin:0 0 16px;max-width:90ch}
-.experience-summary{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start;gap:16px 24px}
-.experience-summary-text-only{grid-template-columns:minmax(0,1fr)}
-.experience-summary-photo{margin:0}
-.experience-summary-photo img{display:block;width:100%;aspect-ratio:16/10;max-height:310px;object-fit:cover;border-radius:18px}
-.experience-summary-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:10px}
-.experience-overview .experience-info-panel{padding:20px;min-width:0;overflow-wrap:anywhere}
-.experience-overview .experience-info-panel .list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));gap:12px}
-.experience-overview .experience-info-panel .list li{padding:0;border:0}
-.experience-summary-story,.experience-summary-content{min-width:0}
-.experience-summary-content{display:grid;gap:16px}
-.experience-summary-description{min-width:0;overflow-wrap:anywhere}
-.experience-summary-text-only .experience-summary-story:not(:has(.experience-return)){display:none}
-.experience-return{margin-top:14px}
-.experience-overview .kicker,.experience-overview .text-link{color:#80551e}
-.experience-overview .experience-info-panel{background:inherit;border:1px solid #d9c69e}
-.experience-page-surface .experience-summary-actions .button.ghost,
-.experience-page-surface .experience-summary-actions button[aria-pressed]{
-  background:transparent;border:1px solid #9d9383;color:var(--ink,#101820);box-shadow:none
-}
-.experience-page-surface .experience-summary-actions .button.ghost:hover,
-.experience-page-surface .experience-summary-actions button[aria-pressed]:hover{background:#f1e8d6}
-.experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]{
-  background:var(--gold,#caa86a);border-color:#ab874b;color:var(--ink,#101820)
-}
-.experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]:hover{background:#d5b578}
-.experience-detail-title{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,32px);line-height:1.15;margin:0 0 6px}
-.experience-detail-copy,.experience-selection{font-size:clamp(16px,1.5vw,18px);line-height:1.45;color:var(--ink,#101820);margin:0}
-.experience-selection{margin-top:8px}
-.experience-detail-panel{margin-top:28px;padding:clamp(24px,3vw,34px);border:1px solid var(--line);border-radius:18px;background:#fff}.experience-detail-panel h3,.experience-info-panel h3{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,30px);line-height:1.15;margin:8px 0 16px}.experience-detail-panel p:last-child{margin-bottom:0}.experience-info-panel{align-self:start;padding:clamp(24px,3vw,34px);border-radius:18px}.experience-info-panel .list{margin:0;padding:0;list-style:none}.experience-info-panel .list li{padding:14px 0;border-bottom:1px solid var(--line)}.experience-info-panel .list li:last-child{border-bottom:0}.experience-booking-note{margin-top:18px}.experience-overview .text-link:focus-visible{outline:3px solid var(--color-accent,#CAA86A);outline-offset:3px}@media(max-width:760px){.experience-summary{grid-template-columns:1fr;gap:16px}.experience-detail-panel{margin-top:20px;padding:22px}.experience-detail-copy{line-height:1.65}}`}</style>
+html:has(.experience-page-surface){scroll-padding-top:90px}
+.experience-page-surface{background:#f5f2eb;color:#123139;min-height:inherit}
+.experience-overview{max-width:1160px;margin-inline:auto;padding:clamp(22px,3vw,40px) clamp(18px,4vw,48px) 64px}
+.experience-page-back{margin:0 0 24px}
+.experience-page-back a{display:inline-flex;align-items:center;min-height:42px;padding:9px 16px;border:1px solid #c8b68e;border-radius:999px;background:#fffdf9;color:#123d43;font-size:13px;font-weight:750}
+.experience-page-back a:hover,.experience-page-back a:focus-visible{border-color:#ab8541;background:#f8eddb;outline-offset:3px}
+.experience-overview-heading{margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid #d9ccb2}
+.experience-overview-heading .kicker{color:#8c6934;font-size:11px;line-height:1.7;letter-spacing:.12em}
+.experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(34px,4.2vw,54px);line-height:1.12;font-weight:500;margin:12px 0;color:#103c40;overflow-wrap:anywhere}
+.experience-overview-heading p{margin:0;max-width:74ch;color:#4d5b59;font-size:clamp(15px,1.6vw,18px);line-height:1.65}
+.experience-summary{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.experience-summary-story{min-width:0}
+.experience-summary-photo{margin:0;overflow:hidden;border-radius:20px;background:#dae2dc;border:1px solid #e0d1af}
+.experience-summary-photo img{display:block;width:100%;aspect-ratio:2/1;max-height:460px;object-fit:cover}
+.experience-summary-content{display:grid;grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr);gap:22px;align-items:start;min-width:0}
+.experience-summary-text-only .experience-summary-story{display:none}
+.experience-overview .experience-info-panel{padding:clamp(20px,2.6vw,30px);background:#fffdf9;border:1px solid #d8c59d;border-top:4px solid #b89959;border-radius:18px;min-width:0;overflow-wrap:anywhere;box-shadow:0 10px 30px rgba(20,42,43,.04)}
+.experience-overview .experience-info-panel .list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px 14px;margin:0;padding:0;list-style:none}
+.experience-overview .experience-info-panel .list li{padding:0;font-size:14px;line-height:1.55;border:0;color:#26464a}
+.experience-overview .experience-info-panel .list li strong{display:inline-block;margin-bottom:3px;color:#6f613f;font-size:11px;letter-spacing:.055em;text-transform:uppercase}
+.experience-overview .text-link{color:#785921}
+.experience-booking-note{margin:16px 0 0;font-size:13px;line-height:1.6}
+.experience-summary-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:22px;padding-top:17px;border-top:1px solid #e7ddcc}
+.experience-summary-description{padding:clamp(24px,3vw,34px);background:#fff;border:1px solid #e4d9c3;border-radius:18px;min-width:0;overflow-wrap:anywhere;box-shadow:0 10px 30px rgba(20,42,43,.04)}
+.experience-detail-title{font-family:Georgia,serif;font-size:clamp(26px,2.8vw,34px);font-weight:500;line-height:1.15;margin:0 0 18px;color:#103c40}
+.experience-detail-copy,.experience-selection{font-size:clamp(15px,1.5vw,17px);line-height:1.75;color:#293e40;margin:0;white-space:pre-line}
+.experience-selection{margin-top:24px;padding:16px 18px;border-left:3px solid #caa86a;background:#f8f5ed;border-radius:0 10px 10px 0}
+.experience-page-surface .experience-summary-actions .button.ghost,.experience-page-surface .experience-summary-actions button[aria-pressed]{background:transparent;border:1px solid #9d9383;color:#123139;box-shadow:none}
+.experience-page-surface .experience-summary-actions .button.ghost:hover,.experience-page-surface .experience-summary-actions button[aria-pressed]:hover{background:#f1e8d6}
+.experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]{background:#caa86a;border-color:#ab874b;color:#123139}
+.experience-detail-panel{margin-top:25px;padding:clamp(22px,3vw,34px);border:1px solid #d8c59d;border-radius:18px;background:#fff}
+.experience-detail-panel h3{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,30px);line-height:1.15;margin:8px 0 16px}
+@media(max-width:860px){.experience-summary-content{grid-template-columns:1fr}.experience-summary-photo img{aspect-ratio:16/10}.experience-overview .experience-info-panel .list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.experience-overview{padding:18px 16px 42px}.experience-overview-heading{margin-bottom:18px;padding-bottom:18px}.experience-overview-heading h1{font-size:clamp(30px,9vw,42px)}.experience-summary{gap:14px}.experience-summary-content{gap:14px}.experience-summary-photo{border-radius:14px}.experience-summary-photo img{aspect-ratio:4/3}.experience-overview .experience-info-panel,.experience-summary-description{padding:20px;border-radius:14px}.experience-overview .experience-info-panel .list{grid-template-columns:1fr 1fr;gap:15px 10px}.experience-detail-copy{line-height:1.65}.experience-page-back{margin-bottom:18px}}
+`}</style>
 </>;}
