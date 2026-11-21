@@ -6,7 +6,7 @@ import { track } from "@/lib/analytics";
 
 export function ExperienceCard({ experience }: { experience: Experience }) {
   return (
-    <article className="card culture-card">
+    <article className="card culture-card card-hit-area">
       {experience.imageUrl ? (
         <div className="culture-card-media">
           <img src={experience.imageUrl} alt={experience.imageAlt ?? experience.name} loading="lazy" decoding="async" />
@@ -27,7 +27,8 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
           {experience.bookable && <span>Prenotabile</span>}
         </div>
         <Link
-          className="text-link"
+          className="text-link card-primary-link"
+          aria-label={`Scopri ${experience.name}`}
           href={`/esperienze/${experience.slug}`}
           onClick={() => track("experience_view", { experience_id: experience.id, source: "card" })}
         >
