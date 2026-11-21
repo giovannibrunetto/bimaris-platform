@@ -27,11 +27,12 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
  return <div className="operator-detail-page">
   <style>{`
     html:has(.operator-detail-hero){scroll-padding-top:80px}
+    body:has(.operator-detail-page) .site-header{background:var(--bimaris-abyssal-teal)}
     .operator-detail-page{background:var(--bimaris-ivory);color:var(--ink)}
     .operator-detail-page :is(.operator-detail-grid,.section-head) .kicker{color:var(--color-text)}
     .operator-detail-shell{width:min(1120px,calc(100% - 48px));margin-inline:auto}
     .operator-detail-intro,.operator-detail-contact{padding:clamp(18px,2vw,26px)}
-    .operator-detail-contact{background:var(--bimaris-tortora);border:1px solid var(--bimaris-gold);border-radius:18px}
+    .operator-detail-contact{background:var(--bimaris-ivory);border:1px solid var(--bimaris-gold);border-radius:18px}
     .operator-detail-page .operator-detail-shell .section-head h2{font-size:clamp(28px,3vw,38px)}
     .operator-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;overflow-wrap:anywhere}
     .operator-detail-back{display:inline-block;margin-bottom:12px;color:var(--bimaris-gold);font-weight:700}
@@ -40,7 +41,7 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
   `}</style>
   <section className="operator-detail-hero" style={{position:"relative",overflow:"hidden",minHeight:heroImage?"clamp(220px,28vh,310px)":"0",display:"flex",alignItems:"flex-end",background:"var(--bimaris-abyssal-teal)",color:"#fff"}}>
    {heroImage&&<img src={heroImage} alt={heroAlt} decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:.72}}/>}
-   <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(3,33,38,.12) 5%,rgba(3,33,38,.36) 48%,rgba(3,33,38,.92) 100%)"}}/>
+   <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(3,33,38,.12) 5%,rgba(3,33,38,.36) 48%,var(--bimaris-abyssal-teal) 100%)"}}/>
    <div className="operator-detail-shell" style={{position:"relative",zIndex:1,paddingBlock:"32px 24px"}}>
     {fromProfile&&<Link className="operator-detail-back" href="/profilo">← Torna all’Area personale</Link>}
     <div className="kicker" style={{color:"var(--bimaris-gold)"}}>{operator.category??"Operatore selezionato"} · BIMARIS</div>
