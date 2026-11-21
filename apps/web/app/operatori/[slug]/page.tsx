@@ -34,6 +34,14 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
     .operator-detail-intro,.operator-detail-contact{padding:clamp(18px,2vw,26px)}
     .operator-detail-contact{background:var(--bimaris-ivory);border:1px solid var(--bimaris-gold);border-radius:18px}
     .operator-detail-page .operator-detail-shell .section-head h2{font-size:clamp(28px,3vw,38px)}
+    .operator-experiences{border-top:1px solid var(--line);padding-block:24px}
+    .operator-experiences h2{font:400 clamp(26px,3vw,38px)/1.15 Georgia,serif;margin:0 0 18px}
+    .operator-experiences-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}
+    @media(min-width:701px){
+      .operator-experiences-grid > .card:only-child{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);align-items:stretch}
+      .operator-experiences-grid > .card:only-child > :is(.culture-card-media,.card-media){height:auto;min-height:200px}
+      .operator-experiences-grid > .card:only-child > .culture-card-media img{position:absolute;inset:0}
+    }
     .operator-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;overflow-wrap:anywhere}
     .operator-detail-back{display:inline-block;margin-bottom:12px;color:var(--bimaris-gold);font-weight:700}
     .operator-detail-back:hover{text-decoration:underline}
@@ -62,7 +70,7 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
 
   {events.length>0&&<section className="operator-detail-shell"><div className="section-head"><div><div className="kicker">Prossimi appuntamenti</div><h2>Calendario di {operator.name}</h2></div><p>Eventi e aggiornamenti verificati collegati direttamente a questa realtà.</p></div><div className="cards">{events.map(event=><article key={event.id} className="card" style={{padding:24}}><div className="eyebrow">{formatEventDate(event.starts_at)}</div><h3 style={{margin:"8px 0 10px"}}>{event.title}</h3>{event.location&&<p style={{margin:"0 0 8px",fontWeight:700}}>{event.location}</p>}{event.description&&<p style={{margin:"0 0 14px",color:"var(--muted)"}}>{event.description}</p>}{event.source_url&&<a className="text-link" href={event.source_url} target="_blank" rel="noreferrer">Fonte ufficiale{event.source_label?` · ${event.source_label}`:""} →</a>}</article>)}</div></section>}
 
-  {experiences.length>0&&<section className="operator-detail-shell"><div className="section-head"><div><div className="kicker">Cosa puoi vivere</div><h2>Le esperienze di {operator.name}</h2></div><p>Attività proposte da questa realtà e selezionate da BIMARIS.</p></div><div className="cards">{experiences.map(experience=><ExperienceCard key={experience.id} experience={experience}/>)}</div></section>}
+  {experiences.length>0&&<section className="operator-detail-shell operator-experiences" aria-labelledby="operator-experiences-title"><h2 id="operator-experiences-title">Le esperienze di {operator.name}</h2><div className="operator-experiences-grid">{experiences.map(experience=><ExperienceCard key={experience.id} experience={experience}/>)}</div></section>}
   <section className="operator-detail-shell" style={{paddingTop:30,paddingBottom:50}}><Link className="text-link" href="/operatori">← Tutti gli operatori</Link></section>
  </div>;
 }
