@@ -172,3 +172,24 @@ test("PR58: village cards use a stretched primary link while retaining external 
  assert.match(css,/\.village-cards > \.village-card \.village-card-primary-link::after\{[\s\S]*?inset:0;[\s\S]*?z-index:1;/);
  assert.match(css,/\.village-cards > \.village-card \.village-card-media a\{[\s\S]*?z-index:2;/);
 });
+
+test("PR58 operator location cards preserve two exclusive choices and confirmed coordinates",()=>{
+ const picker=read("../app/area-operatore/ExperienceLocationPicker.tsx");
+ const manager=read("../app/area-operatore/ExperienceManager.tsx");
+ assert.match(picker,/role="radiogroup" aria-label="Tipo di punto geografico"/);
+ assert.equal((picker.match(/name="experience-location-kind"/g)||[]).length,2);
+ assert.match(picker,/checked=\{value\.locationKind==="venue"\}/);
+ assert.match(picker,/checked=\{value\.locationKind==="departure"\}/);
+ assert.match(picker,/location-choice__option/);
+ assert.match(picker,/location-choice__copy/);
+ assert.match(picker,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(picker,/@media\(max-width:600px\)\{[^}]*\.location-choice\{grid-template-columns:minmax\(0,1fr\)/);
+ assert.match(picker,/\.location-choice__option:has\(:checked\)/);
+ assert.match(picker,/\.location-choice__option:has\(:focus-visible\)/);
+ assert.match(picker,/onChange\(\{\.\.\.value,locationKind:"venue"\}\)/);
+ assert.match(picker,/onChange\(\{\.\.\.value,locationKind:"departure"\}\)/);
+ assert.match(picker,/next\.trim\(\)===value\.meetingPoint\.trim\(\)/);
+ assert.match(picker,/googleMapsPlaceId:"",latitude:"",longitude:""/);
+ assert.match(picker,/latitude:String\(item\.latitude\),longitude:String\(item\.longitude\)/);
+ assert.match(manager,/<ExperienceLocationPicker/);
+});
