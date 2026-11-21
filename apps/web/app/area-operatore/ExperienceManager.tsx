@@ -3,6 +3,7 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import { experienceCategoryLabel, isExperienceCategory, resolveExperienceCategory } from "@/lib/experience-categories";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 import {createBrowserClient} from "@supabase/ssr";
 import {optimizeExperienceImages} from "@/lib/optimize-experience-image";
 import {deleteExperienceMedia,uploadExperienceMedia,uploadRevisionMedia,deleteRevisionMedia} from "@/lib/experience-media-persistence";
@@ -12,7 +13,7 @@ import ExperienceCollaborationStep,{type ExperienceCollaboration} from "./Experi
 import "./experience-manager.css";
 import ExperienceLocationPicker,{type ExperienceLocation} from "./ExperienceLocationPicker";
 
-type Experience={category?:{slug:string;name:string}|null;interests?:{intent_key:string}[];activities?:{activity_key:string}[];id:string;name:string;excerpt:string|null;description:string|null;duration_minutes:number|null;price_from:number|null;category_id:string|null;territory_id:string|null;locality:string|null;meeting_point:string|null;google_maps_place_id:string|null;latitude:number|null;longitude:number|null;location_kind:"venue"|"departure"|null;published:boolean;review_status:string;review_notes:string|null;draft_step:number};
+type Experience={category?:{slug:string;name:string}|null;interests?:{intent_key:string}[];activities?:{activity_key:string}[];id:string;slug:string;name:string;excerpt:string|null;description:string|null;duration_minutes:number|null;price_from:number|null;category_id:string|null;territory_id:string|null;locality:string|null;meeting_point:string|null;google_maps_place_id:string|null;latitude:number|null;longitude:number|null;location_kind:"venue"|"departure"|null;published:boolean;review_status:string;review_notes:string|null;draft_step:number};
 type BookingRequirement="none"|"recommended"|"required";
 type WeatherDependency="none"|"partial"|"required";
 type Draft={name:string;excerpt:string;description:string;duration:string;price:string;territoryId:string;locality:string;location:ExperienceLocation;interestKeys:string[];activityKeys:string[];bookingRequirement:BookingRequirement;bookingNoticeDays:string;bookingCutoffTime:string;weatherDependency:WeatherDependency;weatherConstraints:string[]};
@@ -34,7 +35,7 @@ function isAuthWriteError(error:unknown){
 function safeStep(v:number|null|undefined){return Math.max(0,Math.min(5,Number.isFinite(v)?Number(v):0))}
 function complete(d:Draft){return Boolean(d.interestKeys.length&&d.activityKeys.length&&d.location.meetingPoint.trim()&&d.location.latitude!==""&&d.location.longitude!==""&&Number.isFinite(Number(d.location.latitude))&&Number.isFinite(Number(d.location.longitude)))}
 
-export default function ExperienceManager({operatorId,experiences,interests,activities,territories,initialExperienceId,initialStep}:{operatorId:string;experiences:Experience[];interests:KeyOption[];activities:KeyOption[];territories:Option[];initialExperienceId?:string;initialStep?:number}){
+export default function ExperienceManager({operatorId,operatorSlug,experiences,interests,activities,territories,initialExperienceId,initialStep}:{operatorId:string;operatorSlug:string;experiences:Experience[];interests:KeyOption[];activities:KeyOption[];territories:Option[];initialExperienceId?:string;initialStep?:number}){
  const router=useRouter();
  const wizardRef=useRef<HTMLDivElement|null>(null);
  const openedDeepLinkRef=useRef<string|null>(null);
@@ -282,7 +283,11 @@ export default function ExperienceManager({operatorId,experiences,interests,acti
      ?<button key={e.id} type="button" className="experience-manager__card experience-manager__card-choice" disabled={!approved||busy||open} onClick={()=>proposeRevision(e)}>
        {overview}
       </button>
-     :<details key={e.id} className="experience-manager__card">
+     :e.published&&e.slug
+      ?<Link key={e.id} className="experience-manager__card experience-manager__card-public" href={`/esperienze/${encodeURIComponent(e.slug)}?operatore=${encodeURIComponent(operatorSlug)}&da=area-operatore`} aria-label={`Apri la scheda pubblica di ${e.name}`}>
+        {overview}<small className="experience-manager__detail-label">Apri scheda pubblica →</small>
+       </Link>
+      :<details key={e.id} className="experience-manager__card">
        <summary>{overview}<small className="experience-manager__detail-label">Dettagli dell’esperienza</small></summary>
        <div className="experience-manager__details">
         {e.description&&<p>{e.description}</p>}
