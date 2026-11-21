@@ -43,6 +43,8 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
  const [results,setResults]=useState<Candidate[]>([]);
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
+ const [searchState,setSearchState]=useState<"idle"|"searching"|"results"|"no-results"|"unavailable">("idle");
+ const requestId=useRef(0);
  const [mapOpen,setMapOpen]=useState(false);
  const [mapError,setMapError]=useState("");
  const [pending,setPending]=useState<{latitude:number;longitude:number}|null>(null);
@@ -53,6 +55,30 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
 
  // Recover the persisted location when an existing draft is reopened or loaded.
  useEffect(()=>{setQuery(value.meetingPoint);},[value.meetingPoint]);
+ // Search only after typing stops. Late Google responses must not overwrite newer suggestions.
+ useEffect(()=>{
+  const term=query.trim();
+  const isConfirmed=term===value.meetingPoint.trim()&&value.latitude!==""&&value.longitude!=="";
+  const active=++requestId.current;
+  if(term.length<4||isConfirmed){setResults([]);setSearchState("idle");setBusy(false);return;}
+  setSearchState("searching");
+  const timer=window.setTimeout(async()=>{
+   setBusy(true);
+   try{
+    const maps=await googleMaps();
+    const response=await new maps.Geocoder().geocode({address:term,region:"IT"});
+    if(requestId.current!==active)return;
+    const found:Candidate[]=(response.results??[]).slice(0,5).flatMap((item:any)=>item.geometry?.location?[{address:String(item.formatted_address??term),placeId:String(item.place_id??""),latitude:item.geometry.location.lat(),longitude:item.geometry.location.lng()}]:[]);
+    setResults(found);
+    setSearchState(found.length?"results":"no-results");
+   }catch(err){
+    if(requestId.current!==active)return;
+    const noResults=err instanceof Error&&/ZERO_RESULTS|zero results/i.test(err.message);
+    setResults([]);setSearchState(noResults?"no-results":"unavailable");
+   }finally{if(requestId.current===active)setBusy(false);}
+  },650);
+  return()=>{window.clearTimeout(timer);requestId.current++;};
+ },[query,value.meetingPoint,value.latitude,value.longitude]);
 
  useEffect(()=>{
   if(!mapOpen)return;
@@ -83,30 +109,15 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   const name=query.trim();
   if(!name)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
   onChange({...value,meetingPoint:name,googleMapsPlaceId:"",latitude:String(pending.latitude),longitude:String(pending.longitude)});
-  setResults([]);setMapOpen(false);setMapError("");
+  setResults([]);setMapOpen(false);setMapError("");setSearchState("idle");
  };
 
  const confirmed=value.latitude!==""&&value.longitude!==""&&Number.isFinite(Number(value.latitude))&&Number.isFinite(Number(value.longitude));
  const changeQuery=(next:string)=>{
-  setQuery(next);setResults([]);setError("");
+  setQuery(next);setResults([]);setError("");setSearchState("idle");
   // Re-entering an unchanged saved address must not invalidate its confirmed coordinates.
   if(next.trim()===value.meetingPoint.trim())return;
   onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""});
- };
- const verify=async()=>{
-  if(!query.trim()){setError("Inserisci un nome o un indirizzo.");return}
-  setBusy(true);setError("");setResults([]);
-  try{
-   const maps=await googleMaps();
-   const r=await new maps.Geocoder().geocode({address:query.trim(),region:"IT"});
-   const found:Candidate[]=(r.results??[]).slice(0,5).flatMap((item:any)=>{
-    if(!item.geometry?.location)return[];
-    return [{address:String(item.formatted_address??query),placeId:String(item.place_id??""),latitude:item.geometry.location.lat(),longitude:item.geometry.location.lng()}];
-   });
-   if(!found.length)setError("Nessun punto identificato. Prova con un indirizzo più preciso.");
-   setResults(found);
-  }catch(err){setError(err instanceof Error?err.message:"Impossibile verificare il luogo.")}
-  finally{setBusy(false)}
  };
  return <div className="experience-location-picker">
   <strong>Punto geografico di riferimento</strong>
@@ -116,11 +127,13 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="departure"} onChange={()=>onChange({...value,locationKind:"departure"})}/><span className="location-choice__copy"><strong>Punto di ritrovo o partenza</strong><small>Il punto da cui prende avvio l’esperienza</small></span></label>
   </div>
   <label>Nome del luogo o indirizzo
-   <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)}/>
+   <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)} autoComplete="off" aria-describedby="location-search-guidance"/>
   </label>
+  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. Se il luogo non compare, indicalo sulla mappa.</p>
+  {searchState==="searching"&&<p className="location-search-state" role="status">Ricerca del luogo su Google Maps…</p>}
+  {(searchState==="no-results"||searchState==="unavailable")&&<div className="location-fallback" role="status"><strong>{searchState==="no-results"?"Luogo non trovato su Google Maps.":"Ricerca Google Maps non disponibile."}</strong><p>Puoi comunque scegliere il punto preciso sulla mappa, senza perdere il nome inserito.</p><button type="button" onClick={()=>{setMapOpen(true);setMapError("");setPending(null)}}>Scegli un punto sulla mappa</button></div>}
   <div className="location-actions">
-   <button type="button" onClick={verify} disabled={busy}>{busy?"Ricerca in corso…":"Verifica su Google Maps"}</button>
-   <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Seleziona il punto sulla mappa"}</button>
+   <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Indica il punto sulla mappa"}</button>
   </div>
   {mapOpen&&<div className="manual-location">
    <p>Individua il luogo reale, tocca la mappa e, se necessario, trascina il segnaposto. Per un trekking scegli il punto di partenza o ritrovo, non il centro della località.</p>
@@ -131,7 +144,7 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    <button type="button" onClick={confirmManual} disabled={!pending||mapLoading}>Conferma questo punto</button>
   </div>}
   {error&&<p role="alert">{error}</p>}
-  {results.length>0&&<div className="location-results" aria-label="Risultati Google Maps"><p>Conferma il punto corretto:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);setResults([])}}>{item.address} — Conferma</button>)}</div>}
+  {results.length>0&&<div className="location-results" aria-label="Suggerimenti Google Maps"><p>Scegli il luogo corretto tra i suggerimenti Google Maps:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{requestId.current++;onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);setResults([]);setSearchState("idle");}}>{item.address} — Seleziona</button>)}</div>}
   {confirmed&&!mapOpen&&<p className="location-confirmed" role="status">Punto confermato: {value.meetingPoint} ({Number(value.latitude).toFixed(5)}, {Number(value.longitude).toFixed(5)})</p>}
   <style jsx>{`
    .experience-location-picker{display:grid;gap:12px;padding:18px;border:1px solid #bdad8a;border-radius:14px;background:#f8f5ee;color:#153038;margin:16px 0}
@@ -156,7 +169,14 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    .experience-location-picker>label{display:grid;gap:7px;font-weight:600;font-size:14px}
    .experience-location-picker input[type=text]{width:100%;padding:12px;border:1px solid #afa38a;border-radius:9px;background:#fff;color:#173136}
    .experience-location-picker button{padding:12px 15px;text-align:left;border:1px solid #84704a;border-radius:10px;background:#fff;color:#153038;cursor:pointer}
-   .location-results{display:grid;gap:9px}
+   .location-results{display:grid;gap:9px;padding:12px;border:1px solid #d5c5a6;border-radius:12px;background:#fff}
+   .location-results button{width:100%;border-color:#d5c5a6;text-align:left}
+   .location-results button:hover{background:#f5ecda}
+   .location-guidance{color:#475b5c}
+   .location-search-state{font-weight:600;color:#385e64}
+   .location-fallback{display:grid;gap:8px;padding:12px;border:1px solid #b58d46;border-radius:12px;background:#fff}
+   .location-fallback strong{font-size:14px}
+   .location-fallback button{justify-self:start}
    .location-confirmed{color:#205c3d;font-weight:650}
   `}</style>
  </div>;
