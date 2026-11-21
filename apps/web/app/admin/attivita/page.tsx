@@ -31,13 +31,13 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   if(experiencesResult.error||appointmentsResult.error||revisionsResult.error) throw new Error("Impossibile caricare il registro delle attività");
   const allExperiences=(experiencesResult.data??[]) as Experience[];
   const allAppointments=(appointmentsResult.data??[]) as Appointment[];
-  // The reviewed-but-unpublished view concerns imported appointments only: experience publication
-  // has an independent workflow; do not imply they share the same DB status model yet.
+  // Experiences and appointments retain independent approval workflows; this view only groups ready items.
   const pendingRevisionIds = new Set((revisionsResult.data ?? []).map(revision => revision.experience_id));
   const registryExperiences = allExperiences.filter(item => item.experience_origin === "bimaris"
     || (!pendingRevisionIds.has(item.id) && item.review_status !== "pending" && item.review_status !== "submitted"));
   const registryAppointments = allAppointments.filter(item => item.verification_status !== "pending" || item.published);
-  const experiences = readyOnly ? [] : registryExperiences;
+  const readyExperiences=registryExperiences.filter(item=>item.review_status==="approved"&&!item.published&&(item.experience_origin==="bimaris"||(Array.isArray(item.operator)?item.operator[0]?.published:item.operator?.published)===true));
+  const experiences = readyOnly ? readyExperiences : registryExperiences;
   const appointments = readyOnly
     ? allAppointments.filter(v=>v.verification_status==="verified"&&!v.published)
     : acquiredOnly ? allAppointments : registryAppointments;
@@ -54,15 +54,15 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{registryExperiences.length}</strong><span>Esperienze nel registro</span><small>{countOnlineExperiences} online</small></div>
         <div><strong>{acquiredOnly ? allAppointments.length : registryAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
-        <div><strong>{countReadyAppointments}</strong><span>Appuntamenti pronti da pubblicare</span></div>
+        <div><strong>{readyExperiences.length+countReadyAppointments}</strong><span>Attività pronte da pubblicare</span><small>{readyExperiences.length} esperienze · {countReadyAppointments} appuntamenti</small></div>
       </div>
       <nav className="admin-events__filters" aria-label="Filtra il registro">
         <Link href="/admin/attivita" aria-current={!readyOnly&&selected==="tutti"?"page":undefined}>Tutti</Link>
         <Link href="/admin/attivita?tipo=esperienze" aria-current={!readyOnly&&selected==="esperienze"?"page":undefined}>Esperienze</Link>
         <Link href={acquiredOnly ? "/admin/attivita?view=acquisiti" : "/admin/attivita?tipo=appuntamenti"} aria-current={!readyOnly&&selected==="appuntamenti"?"page":undefined}>{acquiredOnly ? "Tutti gli appuntamenti acquisiti" : "Appuntamenti"}</Link>
-        <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({countReadyAppointments})</Link>
+        <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({readyExperiences.length+countReadyAppointments})</Link>
       </nav>
-      {!readyOnly&&selected!=="appuntamenti"&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
+      {(readyOnly||selected!=="appuntamenti")&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
         <h2 id="registry-experiences">Esperienze <small>{experiences.length}</small></h2>
         <div className="admin-events__list">{experiences.map(item=>{
           const operator = Array.isArray(item.operator) ? item.operator[0] : item.operator;
