@@ -19,7 +19,9 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   ]);
 
   const { errore, modifica } = await searchParams;
-  const selectedKeys = (selected ?? []).map(item => item.interest_key);
+  const selectedKeys = [...new Set((selected ?? []).map(item =>
+    item.interest_key === "culture" ? "cultura" : item.interest_key === "food-wine" ? "sapori" : item.interest_key
+  ))];
   const editMode = modifica === "preferenze" || selectedKeys.length > 0;
 
   return <CinematicOnboarding
