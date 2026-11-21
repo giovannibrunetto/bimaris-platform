@@ -27,6 +27,7 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
         <img src={experience.imageUrl} alt={experience.imageAlt ?? experience.name} decoding="async"/>
       </figure>
     )}
+      {returnOperator && <nav className="experience-return" aria-label="Navigazione scheda esperienza"><Link className="text-link" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}`}>← Torna alla scheda operatore</Link></nav>}
     </div>
     <div className="experience-summary-content">
     <aside className="detail-panel experience-info-panel"><ul className="list"><li><strong>Operatore</strong><br/>{experience.operatorSlug?<Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link>:experience.operatorName}</li>{partners.length>0&&<li><strong>In collaborazione con</strong><br/>{partners.map((partner,index)=><span key={partner.slug??partner.name}>{index>0?", ":""}{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</span>)}</li>}{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
@@ -42,7 +43,6 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
   {partners.length>0&&<div className="detail-panel experience-detail-panel"><div className="kicker">Rete BIMARIS</div><h3>Un'esperienza costruita insieme</h3><p>Questa esperienza nasce dalla collaborazione tra operatori della rete BIMARIS.</p><ul className="list">{partners.map(partner=><li key={partner.slug??partner.name}><strong>{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</strong>{partner.activity&&<><br/>{partner.activity}</>}</li>)}</ul></div>}
 </section>
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card card-hit-area" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
-{returnOperator && <nav className="section experience-overview" aria-label="Navigazione scheda esperienza"><Link className="text-link" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}`}>← Torna alla scheda operatore</Link></nav>}
 </div>
 <style>{`
 html:has(.experience-page-surface){scroll-padding-top:80px}
@@ -61,7 +61,8 @@ html:has(.experience-page-surface){scroll-padding-top:80px}
 .experience-summary-story,.experience-summary-content{min-width:0}
 .experience-summary-content{display:grid;gap:16px}
 .experience-summary-description{min-width:0;overflow-wrap:anywhere}
-.experience-summary-text-only .experience-summary-story{display:none}
+.experience-summary-text-only .experience-summary-story:not(:has(.experience-return)){display:none}
+.experience-return{margin-top:14px}
 .experience-overview .kicker,.experience-overview .text-link{color:#80551e}
 .experience-overview .experience-info-panel{background:inherit;border:1px solid #d9c69e}
 .experience-page-surface .experience-summary-actions .button.ghost,
