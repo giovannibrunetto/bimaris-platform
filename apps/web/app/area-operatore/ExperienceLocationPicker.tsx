@@ -112,8 +112,8 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   <strong>Punto geografico di riferimento</strong>
   <p>Seleziona il luogo effettivo oppure, per trekking e itinerari, il punto di ritrovo o partenza. È questo il punto usato per valutare gli spostamenti.</p>
   <div className="location-choice" role="radiogroup" aria-label="Tipo di punto geografico">
-   <label><input type="radio" name="experience-location-kind" checked={value.locationKind==="venue"} onChange={()=>onChange({...value,locationKind:"venue"})}/> Luogo di svolgimento</label>
-   <label><input type="radio" name="experience-location-kind" checked={value.locationKind==="departure"} onChange={()=>onChange({...value,locationKind:"departure"})}/> Punto di ritrovo o partenza</label>
+   <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="venue"} onChange={()=>onChange({...value,locationKind:"venue"})}/><span className="location-choice__copy"><strong>Luogo di svolgimento</strong><small>Il punto in cui si tiene l’esperienza</small></span></label>
+   <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="departure"} onChange={()=>onChange({...value,locationKind:"departure"})}/><span className="location-choice__copy"><strong>Punto di ritrovo o partenza</strong><small>Il punto da cui prende avvio l’esperienza</small></span></label>
   </div>
   <label>Nome del luogo o indirizzo
    <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)}/>
@@ -137,16 +137,21 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
    .experience-location-picker{display:grid;gap:12px;padding:18px;border:1px solid #bdad8a;border-radius:14px;background:#f8f5ee;color:#153038;margin:16px 0}
    .experience-location-picker strong{font-size:17px}
    .experience-location-picker p{margin:0;line-height:1.5;font-size:13px}
-   .location-choice{display:flex;flex-wrap:wrap;gap:10px}
-   .experience-location-picker .location-choice > label{display:flex;align-items:center;gap:10px;flex:1 1 230px;min-width:0;min-height:44px;margin:0;padding:10px 12px;border:1px solid var(--color-border,#d7dfdc);border-radius:12px;color:var(--color-text,#172326);cursor:pointer}
-   .experience-location-picker .location-choice > label:has(:checked){border-color:var(--bimaris-gold,#caa86a);background:var(--bimaris-tortora,#e7e0d3)}
-   .experience-location-picker .location-choice > label:has(:focus-visible){outline:2px solid var(--bimaris-abyssal-teal,#032126);outline-offset:2px}
-   .experience-location-picker .location-choice > label > input[type="radio"]{width:16px;height:16px;min-height:0;min-width:0;flex:0 0 16px;margin:0;padding:0;accent-color:var(--bimaris-abyssal-teal,#032126)}
+   .location-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+   .experience-location-picker .location-choice > .location-choice__option{display:flex;align-items:center;gap:12px;min-width:0;min-height:76px;margin:0;padding:14px;border:1.5px solid #cfc5b4;border-radius:14px;background:#fff;color:#032126;cursor:pointer;transition:border-color .15s ease,background-color .15s ease,box-shadow .15s ease}
+   .experience-location-picker .location-choice > .location-choice__option:has(:checked){border-color:#b58d46;background:#f5ecda;box-shadow:inset 0 0 0 1px #b58d46}
+   .experience-location-picker .location-choice > .location-choice__option:has(:focus-visible){outline:3px solid #032126;outline-offset:3px}
+   .experience-location-picker .location-choice > .location-choice__option > input[type="radio"]{appearance:auto;width:20px!important;height:20px!important;min-height:20px!important;min-width:20px!important;flex:0 0 20px;margin:0!important;padding:0!important;accent-color:#032126}
+   .location-choice__copy{display:grid;gap:3px;min-width:0}
+   .experience-location-picker .location-choice__copy strong{font-size:14px;line-height:1.25;color:#032126}
+   .experience-location-picker .location-choice__copy small{font-size:12px;line-height:1.4;color:#536263}
+   @media(hover:hover){.experience-location-picker .location-choice > .location-choice__option:hover{border-color:#b58d46}}
+   @media(prefers-reduced-motion:reduce){.experience-location-picker .location-choice > .location-choice__option{transition:none}}
    .location-actions{display:flex;flex-wrap:wrap;gap:10px}
    .location-actions button{flex:1 1 210px}
    .manual-location{display:grid;gap:12px}
    .manual-location-map{height:340px;width:100%;border:1px solid #aa9978;border-radius:12px;overflow:hidden}
-   @media(max-width:600px){.manual-location-map{height:290px}.location-choice{display:grid;gap:12px}}
+   @media(max-width:600px){.manual-location-map{height:290px}.location-choice{grid-template-columns:minmax(0,1fr);gap:10px}.experience-location-picker .location-choice > .location-choice__option{min-height:68px}}
 
    .experience-location-picker>label{display:grid;gap:7px;font-weight:600;font-size:14px}
    .experience-location-picker input[type=text]{width:100%;padding:12px;border:1px solid #afa38a;border-radius:9px;background:#fff;color:#173136}
