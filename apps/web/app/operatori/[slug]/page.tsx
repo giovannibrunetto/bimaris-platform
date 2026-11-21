@@ -43,15 +43,12 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
       .operator-experiences-grid > .card:only-child > .culture-card-media img{position:absolute;inset:0}
     }
     .operator-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;overflow-wrap:anywhere}
-    .operator-detail-back{display:inline-block;margin-bottom:12px;color:var(--bimaris-gold);font-weight:700}
-    .operator-detail-back:hover{text-decoration:underline}
     @media(max-width:700px){.operator-detail-shell{width:calc(100% - 32px)}.operator-detail-grid{grid-template-columns:1fr}}
   `}</style>
   <section className="operator-detail-hero" style={{position:"relative",overflow:"hidden",minHeight:heroImage?"clamp(220px,28vh,310px)":"0",display:"flex",alignItems:"flex-end",background:"var(--bimaris-abyssal-teal)",color:"#fff"}}>
    {heroImage&&<img src={heroImage} alt={heroAlt} decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:.72}}/>}
    <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(3,33,38,.12) 5%,rgba(3,33,38,.36) 48%,var(--bimaris-abyssal-teal) 100%)"}}/>
    <div className="operator-detail-shell" style={{position:"relative",zIndex:1,paddingBlock:"32px 24px"}}>
-    {fromProfile&&<Link className="operator-detail-back" href="/profilo">← Torna all’Area personale</Link>}
     <div className="kicker" style={{color:"var(--bimaris-gold)"}}>{operator.category??"Operatore selezionato"} · BIMARIS</div>
     <h1 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:.98,margin:"8px 0 10px",maxWidth:850,color:"#fff"}}>{operator.name}</h1>
     <p style={{maxWidth:720,fontSize:"clamp(17px,2.2vw,21px)",lineHeight:1.65,color:"rgba(255,255,255,.9)",margin:0}}>{operator.description}</p>
@@ -71,6 +68,6 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
   {events.length>0&&<section className="operator-detail-shell"><div className="section-head"><div><div className="kicker">Prossimi appuntamenti</div><h2>Calendario di {operator.name}</h2></div><p>Eventi e aggiornamenti verificati collegati direttamente a questa realtà.</p></div><div className="cards">{events.map(event=><article key={event.id} className="card" style={{padding:24}}><div className="eyebrow">{formatEventDate(event.starts_at)}</div><h3 style={{margin:"8px 0 10px"}}>{event.title}</h3>{event.location&&<p style={{margin:"0 0 8px",fontWeight:700}}>{event.location}</p>}{event.description&&<p style={{margin:"0 0 14px",color:"var(--muted)"}}>{event.description}</p>}{event.source_url&&<a className="text-link" href={event.source_url} target="_blank" rel="noreferrer">Fonte ufficiale{event.source_label?` · ${event.source_label}`:""} →</a>}</article>)}</div></section>}
 
   {experiences.length>0&&<section className="operator-detail-shell operator-experiences" aria-labelledby="operator-experiences-title"><h2 id="operator-experiences-title">Le esperienze di {operator.name}</h2><div className="operator-experiences-grid">{experiences.map(experience=><ExperienceCard key={experience.id} experience={experience} href={`/esperienze/${experience.slug}?operatore=${encodeURIComponent(operator.slug)}${fromProfile?"&da=profilo":""}`}/>)}</div></section>}
-  <section className="operator-detail-shell" style={{paddingTop:30,paddingBottom:50}}><Link className="text-link" href="/operatori">← Tutti gli operatori</Link></section>
+  <section className="operator-detail-shell" style={{paddingTop:30,paddingBottom:50}}>{fromProfile ? <Link className="text-link" href="/profilo">← Torna all’Area personale</Link> : <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>}</section>
  </div>;
 }
