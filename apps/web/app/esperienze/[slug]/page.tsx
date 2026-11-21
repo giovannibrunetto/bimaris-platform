@@ -11,6 +11,7 @@ function legacyInterest(category?:string){if(category==="degustazioni")return "s
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const{slug}=await params;const experience=await getPublishedExperienceBySlug(slug);if(!experience)return{};return{title:`${experience.name} | Esperienze BIMARIS`,description:experience.excerpt,openGraph:experience.imageUrl?{images:[experience.imageUrl]}:undefined};}
 export default async function ExperienceDetailPage({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const experience=await getPublishedExperienceBySlug(slug);if(!experience)notFound();const[products,partners]=await Promise.all([getPublishedFoodProductsByExperienceId(experience.id),getPublishedExperiencePartners(experience.id)]);const interestKey=experience.interestKey??legacyInterest(experience.category);const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??[])];return <>
 <UserBehaviorSignal contentType="experience" contentId={experience.slug} interestKey={interestKey} weight={0.75}/>
+<div className="experience-page-surface">
 <section className="section experience-overview">
   <header className="experience-overview-heading">
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
@@ -39,8 +40,10 @@ export default async function ExperienceDetailPage({params}:{params:Promise<{slu
   {partners.length>0&&<div className="detail-panel experience-detail-panel"><div className="kicker">Rete BIMARIS</div><h3>Un'esperienza costruita insieme</h3><p>Questa esperienza nasce dalla collaborazione tra operatori della rete BIMARIS.</p><ul className="list">{partners.map(partner=><li key={partner.slug??partner.name}><strong>{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</strong>{partner.activity&&<><br/>{partner.activity}</>}</li>)}</ul></div>}
 </section>
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link" href={`/sapori-territori/${product.slug}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
+</div>
 <style>{`
-.experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px);background:#f6efe2;border-radius:20px;color:#30271d}
+.experience-page-surface{background:var(--sand,#f3efe6);color:var(--ink,#101820);min-height:inherit}
+.experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px)}
 .experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(30px,3.25vw,44px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
 .experience-overview-heading p{margin:0 0 16px;max-width:90ch}
 .experience-summary{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start;gap:16px 24px}
@@ -56,12 +59,19 @@ export default async function ExperienceDetailPage({params}:{params:Promise<{slu
 .experience-summary-description{min-width:0;overflow-wrap:anywhere}
 .experience-summary-text-only .experience-summary-story{display:none}
 .experience-overview .kicker,.experience-overview .text-link{color:#80551e}
-.experience-overview .experience-info-panel{background:#fffaf0;border:1px solid #ddcca9}
-.experience-summary-actions :is(a,button){background:#ecd7a9;color:#382913}
-.experience-summary-actions :is(a,button):hover{background:#e2c48a;color:#382913}
-
+.experience-overview .experience-info-panel{background:#fbf8f0;border:1px solid #d9c69e}
+.experience-page-surface .experience-summary-actions .button.ghost,
+.experience-page-surface .experience-summary-actions button[aria-pressed]{
+  background:transparent;border:1px solid #9d9383;color:var(--ink,#101820);box-shadow:none
+}
+.experience-page-surface .experience-summary-actions .button.ghost:hover,
+.experience-page-surface .experience-summary-actions button[aria-pressed]:hover{background:#f1e8d6}
+.experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]{
+  background:var(--gold,#caa86a);border-color:#ab874b;color:var(--ink,#101820)
+}
+.experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]:hover{background:#d5b578}
 .experience-detail-title{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,32px);line-height:1.15;margin:0 0 6px}
-.experience-detail-copy,.experience-selection{font-size:clamp(16px,1.5vw,18px);line-height:1.45;color:#514438;margin:0}
+.experience-detail-copy,.experience-selection{font-size:clamp(16px,1.5vw,18px);line-height:1.45;color:var(--ink,#101820);margin:0}
 .experience-selection{margin-top:8px}
 .experience-detail-panel{margin-top:28px;padding:clamp(24px,3vw,34px);border:1px solid var(--line);border-radius:18px;background:#fff}.experience-detail-panel h3,.experience-info-panel h3{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,30px);line-height:1.15;margin:8px 0 16px}.experience-detail-panel p:last-child{margin-bottom:0}.experience-info-panel{align-self:start;padding:clamp(24px,3vw,34px);border-radius:18px}.experience-info-panel .list{margin:0;padding:0;list-style:none}.experience-info-panel .list li{padding:14px 0;border-bottom:1px solid var(--line)}.experience-info-panel .list li:last-child{border-bottom:0}.experience-booking-note{margin-top:18px}.experience-overview .text-link:focus-visible{outline:3px solid var(--color-accent,#CAA86A);outline-offset:3px}@media(max-width:760px){.experience-summary{grid-template-columns:1fr;gap:16px}.experience-detail-panel{margin-top:20px;padding:22px}.experience-detail-copy{line-height:1.65}}`}</style>
 </>;}
