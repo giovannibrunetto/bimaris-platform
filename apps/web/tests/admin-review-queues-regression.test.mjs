@@ -366,3 +366,14 @@ test("admin detail shell uses one non-sticky shared navigation and compact heade
  assert.match(css,/\.admin-experience-review__decision\{position:static!important/);
  assert.match(css,/max-height:235px!important/);
 });
+
+test("approved experience shows publication action alongside its dossier, not after history",()=>{
+ const page=read("../app/admin/esperienze/[id]/page.tsx");
+ const css=read("../app/admin/esperienze/[id]/admin-experience-review.css");
+ assert.match(page,/admin-experience-review__workspace--publish/);
+ assert.match(page,/admin-experience-review__summary-grid--approved/);
+ assert.match(page,/className="admin-experience-review__publish"/);
+ assert.equal((page.match(/name="action" value="publish"/g)||[]).length,1);
+ assert.match(css,/\.admin-experience-review__summary-grid--approved/);
+ assert.match(css,/\.admin-experience-review__publish\{/);
+});

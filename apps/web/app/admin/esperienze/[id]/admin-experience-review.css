@@ -95,3 +95,27 @@
  .admin-experience-review__summary{padding:16px!important}
  .admin-experience-review__cover img{max-height:220px!important}
 }
+
+/* DT approved experience: integrated publication action and natural portrait media. */
+.admin-experience-review__workspace--publish{grid-template-columns:minmax(0,1fr) minmax(290px,340px);gap:18px}
+.admin-experience-review__workspace--publish .admin-experience-review__summary{min-width:0}
+.admin-experience-review__summary-grid--approved{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(190px,260px)!important;gap:22px!important;align-items:start!important}
+.admin-experience-review__summary-grid--approved .admin-experience-review__cover{order:0!important;max-width:260px!important;justify-self:end}
+.admin-experience-review__summary-grid--approved .admin-experience-review__cover img{width:100%!important;height:auto!important;max-height:320px!important;aspect-ratio:auto!important;object-fit:contain!important;background:transparent!important;border-radius:12px!important;box-shadow:none!important}
+.admin-experience-review__summary-grid--approved .admin-experience-review__facts{min-width:0}
+.admin-experience-review__publish{align-self:start;display:grid;gap:14px;background:#fffaf1;border:1px solid #d4b983;border-top:4px solid #c9a362;border-radius:16px;padding:22px;min-width:0;box-shadow:0 8px 22px rgba(18,43,45,.055);scroll-margin-top:24px}
+.admin-experience-review__publish-kicker{font-size:11px;font-weight:800;color:#916326;letter-spacing:.12em}
+.admin-experience-review__publish h2{font-size:clamp(22px,2vw,27px);line-height:1.22;margin:0;color:#13373a;font-family:Georgia,serif}
+.admin-experience-review__publish p{margin:0;color:#344e4e;font-size:15px;line-height:1.55}
+.admin-experience-review__publish button{width:100%;min-height:48px;font-size:15px;font-weight:800}
+.admin-experience-review__publish small{font-size:12px;line-height:1.5;color:#697471}
+@media(max-width:1120px){
+ .admin-experience-review__workspace--publish{grid-template-columns:minmax(0,1fr)}
+ .admin-experience-review__publish{max-width:none}
+}
+@media(max-width:640px){
+ .admin-experience-review__summary-grid--approved{grid-template-columns:minmax(0,1fr)!important}
+ .admin-experience-review__summary-grid--approved .admin-experience-review__cover{justify-self:start;order:-1!important;width:min(100%,300px)!important}
+ .admin-experience-review__summary-grid--approved .admin-experience-review__cover img{max-height:290px!important}
+ .admin-experience-review__publish{padding:18px}
+}
