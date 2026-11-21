@@ -44,13 +44,20 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
         {narrative?<section><div className="kicker">Il racconto</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{narrative.title}</h2>{narrative.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>:<><div className="kicker">Il borgo</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>Identità e territorio</h2><p style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{village.description}</p>{village.identity&&<><h3>Perché è unico</h3><p>{village.identity}</p></>}{village.history&&<><h3>Storia</h3><p>{village.history}</p></>}</>}
         {points.length>0&&<VillageRouteBuilder villageName={village.name} points={points}/>} 
       </article>
-      <aside className="detail-panel" style={{alignSelf:"start",height:"auto",minHeight:0}}>
+      <aside className="detail-panel village-visit-panel">
+        <style>{`
+          .detail-panel.village-visit-panel{margin-top:24px;padding:clamp(18px,3vw,28px);border:1px solid var(--color-border);border-radius:18px;background:var(--bimaris-ivory)}
+          .village-visit-panel .kicker{color:var(--color-text-muted)}
+          .village-visit-panel .village-visit-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+          .village-visit-actions .button.ghost.village-directions{background:transparent;border:1px solid var(--bimaris-gold);color:var(--color-text);box-shadow:none}
+          .village-visit-actions .text-link{display:inline-flex;align-items:center;min-height:44px;padding-inline:8px}
+        `}</style>
         <div className="kicker">Esplora il territorio</div>
         <h3 style={{marginTop:8,marginBottom:10}}>Continua il viaggio da {village.name}</h3>
         <p style={{color:"#6e7680",lineHeight:1.55,marginTop:0}}>Scopri il borgo e continua a esplorare luoghi, sapori ed esperienze del territorio.</p>
-        <div className="actions" style={{marginTop:20}}>
+        <div className="actions village-visit-actions">
           <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora sulla mappa BIMARIS</Link>
-          <a className="button ghost" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi con Google Maps</a>
+          <a className="button ghost village-directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi con Google Maps</a>
           <Link className="text-link" href="/borghi">Scopri gli altri borghi →</Link>
         </div>
       </aside>
