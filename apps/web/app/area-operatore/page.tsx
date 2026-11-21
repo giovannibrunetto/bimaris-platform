@@ -66,7 +66,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
  {rows.length===0?<section className="operator-premium-empty"><h1>Nessuna attività collegata</h1><p>Il tuo account è attivo, ma non è ancora associato a un operatore BIMARIS.</p><OperatorLogoutButton/></section>:<>
  {activeRow&&<header className="operator-premium-header">
   <div className="operator-premium-heading"><div className="operator-premium-kicker">IL TUO SPAZIO · BIMARIS</div><h1>{activeRow.operator.name}</h1><p>Gestisci la tua attività e le esperienze su BIMARIS.</p></div>
-  <div className="operator-premium-header__actions"><span className="operator-premium-status">{activeRow.operator.published?"Profilo online":"Profilo non pubblicato"}</span>{activeRow.operator.published&&<a href={`/operatori/${activeRow.operator.slug}`} className="operator-premium-public">Scheda pubblica ↗</a>}<OperatorLogoutButton/></div>
+  <div className="operator-premium-header__actions"><span className="operator-premium-status">{activeRow.operator.published?"Profilo online":"Profilo non pubblicato"}</span>{activeRow.operator.published&&<a href={`/operatori/${activeRow.operator.slug}?da=area-operatore`} className="operator-premium-public">Scheda pubblica ↗</a>}<OperatorLogoutButton/></div>
  </header>}
  {activeRow&&<OperatorWorkspaceSwitcher activities={rows.map(r=>({id:r.operator_id,slug:r.operator.slug,name:r.operator.name}))} selectedSlug={activeRow.operator.slug}/>}
  {visibleRows.map(({role,operator_id,operator})=>{
