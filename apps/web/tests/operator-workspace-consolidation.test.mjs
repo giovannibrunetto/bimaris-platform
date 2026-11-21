@@ -193,3 +193,21 @@ test("PR58 operator location cards preserve two exclusive choices and confirmed 
  assert.match(picker,/latitude:String\(item\.latitude\),longitude:String\(item\.longitude\)/);
  assert.match(manager,/<ExperienceLocationPicker/);
 });
+
+test("PR58 location lookup guides typing with debounced Google suggestions and a manual fallback",()=>{
+ const picker=read("../app/area-operatore/ExperienceLocationPicker.tsx");
+ assert.match(picker,/const requestId=useRef\(0\)/);
+ assert.match(picker,/term\.length<4/);
+ assert.match(picker,/},650\)/);
+ assert.match(picker,/requestId\.current!==active/);
+ assert.match(picker,/new maps\.Geocoder\(\)\.geocode\(\{address:term,region:"IT"\}\)/);
+ assert.match(picker,/setSearchState\(found\.length\?"results":"no-results"\)/);
+ assert.match(picker,/aria-label="Suggerimenti Google Maps"/);
+ assert.match(picker,/Luogo non trovato su Google Maps/);
+ assert.match(picker,/Ricerca Google Maps non disponibile/);
+ assert.match(picker,/Scegli un punto sulla mappa/);
+ assert.match(picker,/onChange\(\{\.\.\.value,meetingPoint:item\.address,googleMapsPlaceId:item\.placeId,latitude:String\(item\.latitude\),longitude:String\(item\.longitude\)\}\)/);
+ assert.match(picker,/if\(!pending\)/);
+ assert.match(picker,/if\(!name\)/);
+ assert.doesNotMatch(picker,/Verifica su Google Maps/);
+});
