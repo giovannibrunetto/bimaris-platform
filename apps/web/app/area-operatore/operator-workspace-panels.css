@@ -1,0 +1,302 @@
+/* PR58 – Operator workspace. Match the restrained visual language of Area Personale. */
+.operator-premium-area{min-height:calc(100vh - 70px);padding:28px 20px 64px;background:#f3efe6;color:#0b2638}
+.operator-premium-shell{max-width:1160px;margin:0 auto}
+.operator-premium-header{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:30px clamp(26px,4vw,46px);border-radius:26px;background:radial-gradient(circle at 85% 15%,rgba(202,168,106,.16),transparent 32%),linear-gradient(135deg,#0b2638,#061624 75%);color:#f3efe6;box-shadow:0 20px 55px rgba(6,22,36,.12)}
+.operator-premium-heading{min-width:0}
+.operator-premium-kicker{font-size:11px;letter-spacing:.17em;font-weight:800;color:#caa86a}
+.operator-premium-header h1{margin:8px 0 7px;font-family:Georgia,serif;font-size:clamp(38px,4.6vw,58px);font-weight:400;line-height:1.02;letter-spacing:-.035em;color:#f3efe6}
+.operator-premium-header p{margin:0;font-size:14px;line-height:1.5;color:#d4dadd}
+.operator-premium-header__actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px}
+.operator-premium-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#e6d8b4;white-space:nowrap}
+.operator-premium-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#caa86a}
+.operator-premium-public{color:#f3efe6;font-size:13px;text-decoration:underline;text-underline-offset:4px;font-weight:700}
+.operator-premium-header .button,.operator-premium-header button{min-height:36px}
+.operator-premium-shell>.operator-workspace-switcher{margin-top:14px;min-height:0!important;padding:10px 18px!important;border-radius:15px;box-shadow:none}
+.operator-premium-shell>.operator-workspace-switcher .operator-workspace-switcher__activity select{min-height:40px}
+.operator-workspace-panel{margin-top:24px;min-width:0}
+.operator-workspace-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:0 4px 14px;border-bottom:1px solid rgba(11,38,56,.18)}
+.operator-workspace-tabs__button{display:inline-flex;gap:8px;align-items:center;min-height:43px;padding:10px 18px;border-radius:999px;border:1px solid transparent;background:transparent;color:#26444a;font:inherit;font-size:14px;font-weight:750;cursor:pointer}
+.operator-workspace-tabs__button:hover{background:#e8e0d3}
+.operator-workspace-tabs__button[aria-current=page]{background:#0b3035;color:white;box-shadow:0 5px 15px rgba(7,33,38,.12)}
+.operator-workspace-tabs__button:focus-visible,.operator-premium-public:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+.operator-workspace-tabs__count{display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#caa86a;color:#0b3035;font-size:11px}
+.operator-workspace-content{padding:24px 0 0}
+.operator-workspace-content[hidden]{display:none!important}
+.operator-premium-area .operator-experiences .experience-studio{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
+.operator-premium-area .operator-experiences .experience-studio__head{border-bottom:1px solid rgba(11,38,56,.15)}
+.operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{background:rgba(255,255,255,.65);box-shadow:0 10px 32px rgba(6,22,36,.045);border:1px solid rgba(11,38,56,.10);border-radius:20px;padding:26px}
+.operator-premium-area .operator-experiences .experience-card{background:rgba(255,255,255,.78)!important}
+.operator-premium-empty{padding:50px 28px;background:#fff;border-radius:20px}
+@media(max-width:760px){
+ .operator-premium-area{padding:15px 14px 40px}
+ .operator-premium-header{align-items:flex-start;flex-direction:column;padding:24px 22px;gap:16px}
+ .operator-premium-header h1{font-size:42px}
+ .operator-premium-header__actions{justify-content:flex-start}
+ .operator-workspace-panel{margin-top:16px}
+ .operator-workspace-tabs{gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .operator-workspace-tabs__button{padding:9px 13px;font-size:13px;white-space:nowrap}
+ .operator-workspace-content{padding-top:18px}
+ .operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{padding:18px}
+}
+
+
+/* DS UX-01 · PR58 — Reuse the approved Area Personale ottanio/gold palette. */
+.operator-premium-area{--operator-octane:#0a292d;--operator-deep:#071b1f;--operator-gold:#d8a94f;--operator-paper:#f7f2e9;min-height:calc(100vh - 70px);background:radial-gradient(circle at 8% 0%,rgba(34,91,94,.28),transparent 38%),radial-gradient(circle at 96% 82%,rgba(216,169,79,.055),transparent 34%),linear-gradient(135deg,#071b1f 0%,#0a292d 50%,#081d20 100%);color:var(--operator-paper)}
+.operator-premium-header{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018));border:1px solid rgba(216,169,79,.24);box-shadow:0 24px 65px rgba(0,0,0,.16);backdrop-filter:blur(14px)}
+.operator-premium-header h1,.operator-premium-header p,.operator-premium-public{color:var(--operator-paper)}
+.operator-premium-kicker,.operator-premium-status{color:var(--operator-gold)}
+.operator-premium-status:before{background:var(--operator-gold)}
+.operator-premium-shell>.operator-workspace-switcher{background:rgba(255,255,255,.045);border:1px solid rgba(216,169,79,.18);color:var(--operator-paper);border-radius:14px}
+.operator-premium-shell .operator-workspace-switcher__activity select{background:rgba(7,27,31,.82);border-color:rgba(216,169,79,.45);color:var(--operator-paper)}
+.operator-premium-shell .operator-workspace-switcher__link{color:var(--operator-paper)}
+.operator-premium-shell .operator-workspace-switcher__link[aria-current=page]{color:var(--operator-gold);border-bottom-color:var(--operator-gold)}
+.operator-workspace-tabs{border-bottom:1px solid rgba(216,169,79,.24)}
+.operator-workspace-tabs__button{color:rgba(247,242,233,.8)}
+.operator-workspace-tabs__button:hover{color:#fff;background:rgba(255,255,255,.09)}
+.operator-workspace-tabs__button[aria-current=page]{color:#091f22;background:var(--operator-gold);box-shadow:none}
+.operator-workspace-tabs__count{background:var(--operator-deep);color:var(--operator-paper)}
+.operator-premium-area .experience-studio__head h2,
+.operator-premium-area .experience-studio__head p,
+.operator-premium-area .operator-profile-card h2,
+.operator-premium-area .operator-impact__head h2,
+.operator-premium-area .operator-impact .eyebrow,
+.operator-premium-area .collaboration-inbox h2{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-studio__head{border-bottom-color:rgba(216,169,79,.25)}
+.operator-premium-area .operator-experiences .experience-studio{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-list{gap:12px}
+.operator-premium-area .operator-experiences .experience-card{background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))!important;color:var(--operator-paper)!important;border:1px solid rgba(216,169,79,.24)!important;border-radius:16px!important;box-shadow:0 10px 26px rgba(0,0,0,.08)!important}
+.operator-premium-area .operator-experiences .experience-card h3,
+.operator-premium-area .operator-experiences .experience-card p,
+.operator-premium-area .operator-experiences .experience-card strong,
+.operator-premium-area .operator-experiences .experience-card span{color:var(--operator-paper)}
+.operator-premium-area .operator-experiences .experience-card .eyebrow{color:var(--operator-gold)}
+.operator-premium-area .operator-experiences .experience-card .text-link{color:var(--operator-gold)}
+.operator-premium-area .operator-experiences .experience-card .button{border-color:var(--operator-gold)}
+.operator-premium-area .operator-profile-card,
+.operator-premium-area .operator-impact,
+.operator-premium-area .collaboration-inbox{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border-color:rgba(216,169,79,.18);color:var(--operator-paper)}
+.operator-premium-area .operator-profile-card p,
+.operator-premium-area .operator-impact__head>span,
+.operator-premium-area .collaboration-inbox p{color:rgba(247,242,233,.75)}
+.operator-premium-area .operator-profile-card .eyebrow,.operator-premium-area .collaboration-inbox .eyebrow{color:var(--operator-gold)}
+.operator-premium-area .operator-impact__metrics>div{background:rgba(255,255,255,.055)!important;border-color:rgba(216,169,79,.18)!important}
+.operator-premium-area .operator-impact__metrics strong{color:var(--operator-gold)}
+.operator-premium-area .operator-impact__metrics span{color:var(--operator-paper)}
+.operator-premium-area .operator-profile-card__form{background:var(--operator-paper);color:#0a292d;padding:22px;border-radius:16px}
+.operator-premium-area .operator-profile-card__form .eyebrow{color:#806025}
+.operator-premium-area .operator-profile-card__form p{color:#526463}
+.operator-premium-area .operator-profile-card__form label,.operator-premium-area .operator-profile-card__form strong{color:#0a292d}
+.operator-premium-area .operator-profile-card__form input{color:#0a292d}
+.operator-premium-area .experience-manager__collaboration{background:linear-gradient(135deg,#16474b,#09282d);border-color:rgba(216,169,79,.44)}
+@media(prefers-reduced-motion:reduce){.operator-premium-header,.operator-premium-area .experience-card{transition:none!important}}
+
+
+/* PR58: selecting Profile displays the information, not another intermediate action. */
+.operator-profile-card--overview{padding:26px 30px!important}
+.operator-profile-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:20px 0 0}
+.operator-profile-overview__item{min-width:0;padding:16px 0;border-top:1px solid rgba(216,169,79,.22)}
+.operator-profile-overview dt{color:#d8a94f;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:11px;margin-bottom:7px}
+.operator-profile-overview dd{margin:0;overflow-wrap:anywhere;color:#f7f2e9;font-size:16px;line-height:1.45}
+.operator-profile-card--overview .operator-profile-card__head .button{white-space:nowrap}
+@media(max-width:650px){.operator-profile-card--overview{padding:20px!important}.operator-profile-overview{grid-template-columns:1fr;margin-top:15px}.operator-profile-card--overview .operator-profile-card__head{align-items:flex-start;flex-direction:column}.operator-profile-card--overview .operator-profile-card__head .button{width:100%}}
+
+
+/* DS UX-01 / PR58 — Unified Profile, Experiences and Statistics.
+   The older ExperienceManager rules use a pale surface. Override only
+   the read-only overview; keep creation/editor forms legible and unchanged. */
+.operator-premium-area .operator-workspace-content>.operator-experiences,
+.operator-premium-area .operator-workspace-content>.operator-profile-card,
+.operator-premium-area .operator-workspace-content>.operator-impact{
+  width:100%;
+  min-width:0;
+}
+.operator-premium-area .operator-workspace-content>.operator-experiences>.experience-manager,
+.operator-premium-area .operator-workspace-content>.operator-profile-card,
+.operator-premium-area .operator-workspace-content>.operator-impact{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;
+  border:1px solid rgba(216,169,79,.20)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 46px rgba(0,0,0,.10)!important;
+  color:#f7f2e9!important;
+  padding:30px 32px!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head{
+  padding-bottom:17px;
+  border-bottom:1px solid rgba(216,169,79,.22)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head h2,
+.operator-premium-area .operator-workspace-content .operator-profile-card__head h2,
+.operator-premium-area .operator-workspace-content .operator-impact__head h2{
+  color:#f7f2e9!important;
+  font-family:Georgia,serif;
+  font-weight:400;
+  font-size:clamp(29px,2.6vw,38px);
+  line-height:1.12;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__head p,
+.operator-premium-area .operator-workspace-content .operator-profile-card__head p{
+  color:rgba(247,242,233,.76)!important;
+  font-size:14px;
+  line-height:1.5;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__create-primary{
+  margin-top:18px;
+  margin-bottom:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card{
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))!important;
+  border:1px solid rgba(216,169,79,.22)!important;
+  border-radius:16px!important;
+  color:#f7f2e9!important;
+  box-shadow:none!important;
+  overflow:hidden;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card:hover,
+.operator-premium-area .operator-workspace-content .experience-manager__card:focus-within{
+  border-color:rgba(216,169,79,.6)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card summary,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary strong,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary small,
+.operator-premium-area .operator-workspace-content .experience-manager__card summary dd,
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__details{
+  color:#f7f2e9!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__excerpt,
+.operator-premium-area .operator-workspace-content .experience-manager__card .experience-manager__facts dt{
+  color:rgba(247,242,233,.72)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card summary>span{
+  color:#f0cf89!important;
+  background:rgba(216,169,79,.15)!important;
+  border-radius:999px;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__detail-label,
+.operator-premium-area .operator-workspace-content .experience-manager__secondary,
+.operator-premium-area .operator-workspace-content .experience-manager__show-all{
+  color:#e8bd6c!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__secondary{
+  border:1px solid rgba(216,169,79,.58)!important;
+  background:transparent!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__secondary:hover{
+  background:rgba(216,169,79,.12)!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__create-primary>.button{
+  background:#d8a94f!important;
+  color:#081d20!important;
+  border-color:#d8a94f!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration{
+  margin-top:22px;
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(216,169,79,.24)!important;
+  box-shadow:none!important;
+}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration strong{color:#f7f2e9!important}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration p{color:rgba(247,242,233,.74)!important}
+.operator-premium-area .operator-workspace-content .experience-manager__collaboration a{background:#d8a94f!important;color:#071b1f!important}
+.operator-premium-area .operator-workspace-content .operator-impact__metrics>div{
+  border-radius:14px!important;
+}
+@media(max-width:700px){
+ .operator-premium-area .operator-workspace-content>.operator-experiences>.experience-manager,
+ .operator-premium-area .operator-workspace-content>.operator-profile-card,
+ .operator-premium-area .operator-workspace-content>.operator-impact{padding:20px 17px!important;border-radius:18px!important}
+ .operator-premium-area .operator-workspace-content .experience-manager__head h2,
+ .operator-premium-area .operator-workspace-content .operator-profile-card__head h2,
+ .operator-premium-area .operator-workspace-content .operator-impact__head h2{font-size:28px}
+}
+
+
+/* PR58 UX-01 — Match the subtle premium card lift used elsewhere in BIMARIS. */
+.operator-premium-area .operator-workspace-content .experience-manager__card {
+  position:relative;
+  transform:scale(1);
+  transform-origin:center center;
+  will-change:transform;
+  transition:transform .24s cubic-bezier(.2,.75,.25,1),border-color .24s ease,box-shadow .24s ease!important;
+}
+@media(hover:hover) and (pointer:fine) {
+  .operator-premium-area .operator-workspace-content .experience-manager__card:hover {
+    z-index:2;
+    transform:scale(1.025);
+    border-color:#d8a94f!important;
+    box-shadow:0 14px 32px rgba(0,0,0,.24),0 0 0 1px rgba(216,169,79,.24)!important;
+  }
+}
+.operator-premium-area .operator-workspace-content .experience-manager__card:focus-within {
+  z-index:2;
+  border-color:#d8a94f!important;
+  box-shadow:0 0 0 2px rgba(216,169,79,.3)!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .operator-premium-area .operator-workspace-content .experience-manager__card {
+    will-change:auto;
+    transition:none!important;
+    transform:none!important;
+  }
+}
+
+
+/* PR58 mobile UX-01 / iPhone SE 375x667 — bring operational content above the fold.
+   Does not modify data, desktop sizing or the content of Profile/Experiences/Statistics. */
+@media(max-width:600px){
+ .operator-premium-area{padding:12px 12px 38px}
+ .operator-premium-header{
+  padding:16px 18px;gap:10px;
+  align-items:stretch;border-radius:20px;
+ }
+ .operator-premium-kicker{font-size:10px;letter-spacing:.14em}
+ .operator-premium-header h1{font-size:36px;line-height:1.03;margin:4px 0 4px}
+ .operator-premium-header p{font-size:13px;line-height:1.35}
+ .operator-premium-header__actions{
+  justify-content:flex-start;align-items:center;
+  flex-wrap:wrap;gap:7px 12px;
+ }
+ .operator-premium-status{font-size:11px}
+ .operator-premium-public{font-size:12px}
+ .operator-premium-header__actions .button,
+ .operator-premium-header__actions button{
+  min-height:36px;padding:7px 13px;
+  font-size:13px;
+ }
+ .operator-premium-shell>.operator-workspace-switcher{
+  margin-top:10px;padding:10px!important;min-height:0!important;
+ }
+ .operator-workspace-panel{margin-top:10px}
+ .operator-workspace-tabs{padding:0 0 8px;gap:3px}
+ .operator-workspace-tabs__button{
+  min-height:40px;padding:8px 12px;font-size:13px;
+ }
+ .operator-workspace-content{padding-top:12px}
+}
+@media(max-width:345px){
+ .operator-premium-header{padding:14px 15px}
+ .operator-premium-header h1{font-size:32px}
+ .operator-workspace-tabs__button{padding:8px 9px;font-size:12px}
+}
+
+/* PR58 iPhone SE QA — coherent expandable experiences control, both states.
+   Override legacy ivory background + gold-on-ivory contrast. */
+@media(max-width:600px){
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all{
+  background:#0d3236!important;
+  color:#f0c779!important;
+  border:1px solid #d8a94f!important;
+  box-shadow:none!important;
+  min-height:46px;
+  transition:background-color .2s ease,border-color .2s ease;
+ }
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all:hover{
+  background:#194348!important;
+ }
+ .operator-premium-area .operator-workspace-content .experience-manager__show-all:focus-visible{
+  outline:3px solid #d8a94f;
+  outline-offset:3px;
+ }
+}

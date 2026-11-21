@@ -1,6 +1,7 @@
 import { NextRequest,NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { recordOperatorNotice } from "@/lib/operator-notifications";
 
 const MONTHS:Record<string,number>={gennaio:1,febbraio:2,marzo:3,aprile:4,maggio:5,giugno:6,luglio:7,agosto:8,settembre:9,ottobre:10,novembre:11,dicembre:12};
 function lastSunday(year:number,month:number){const d=new Date(Date.UTC(year,month,0));return d.getUTCDate()-d.getUTCDay();}
@@ -65,5 +66,6 @@ export async function POST(request:NextRequest){
  if(rows.length===0){await service.from("event_import_batches").update({status:"parsed",parsed_count:0}).eq("id",batch.id);return NextResponse.json({ok:true,parsed_count:0,skipped_count:skippedCount,batch_id:batch.id});}
  const {error:insertError}=await service.from("events").insert(rows);if(insertError){await service.from("event_import_batches").update({status:"rejected"}).eq("id",batch.id);return NextResponse.json({error:"Il calendario è stato letto, ma non è stato possibile creare gli eventi"},{status:500});}
  await service.from("event_import_batches").update({status:"parsed",parsed_count:rows.length}).eq("id",batch.id);
+ await recordOperatorNotice({operatorId,category:"calendar",eventKey:`calendar-import:${batch.id}`,title:"Calendario importato",description:`${rows.length} ${rows.length===1?"appuntamento salvato":"appuntamenti salvati"} come bozza, in attesa di verifica.`,targetPath:"/area-operatore/calendario"});
  return NextResponse.json({ok:true,parsed_count:rows.length,skipped_count:skippedCount,batch_id:batch.id});
 }

@@ -5,8 +5,12 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 const immersiveRoutes = new Set([
+  "/privacy-questionario",
+  "/questionario-cittadini",
+  "/questionario-cittadini/collaudo",
   "/accedi/utente",
   "/profilo/onboarding",
+  "/admin/reset-password",
 ]);
 
 export function SiteHeader() {

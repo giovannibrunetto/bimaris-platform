@@ -1,0 +1,121 @@
+/* DT — admin experience dossier: dedicated responsive hierarchy, no workflow changes. */
+.admin-experience-review{font-size:16px;line-height:1.55;color:#153238}
+.admin-experience-review__container{max-width:1180px!important;gap:22px!important}
+.admin-experience-review__breadcrumbs{font-size:14px!important;gap:16px!important;align-items:center}
+.admin-experience-review__breadcrumbs a{min-height:40px;display:inline-flex;align-items:center;font-weight:700;text-underline-offset:4px}
+.admin-experience-review__header{padding:25px 30px!important;border-radius:17px!important;border-left-width:5px!important;box-shadow:0 8px 24px rgba(12,44,45,.045)}
+.admin-experience-review__header h1{font-size:clamp(29px,3.7vw,44px)!important;line-height:1.14!important;margin:11px 0!important}
+.admin-experience-review__header p{font-size:15px!important;line-height:1.5!important}
+.admin-experience-review__summary{padding:28px 30px!important;gap:24px!important;border-radius:18px!important}
+.admin-experience-review__summary .kicker{font-size:12px!important;letter-spacing:.13em}
+.admin-experience-review__summary h2{font-size:clamp(23px,2.4vw,30px)!important;line-height:1.2;color:#12363b}
+.admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr) minmax(300px,.85fr)!important;gap:32px!important;align-items:start!important}
+.admin-experience-review__facts{font-size:16px!important;gap:15px!important;line-height:1.5}
+.admin-experience-review__facts>div:first-child{font-size:15px;gap:12px!important}
+.admin-experience-review__facts p{font-size:16px;line-height:1.65!important;color:#263f40}
+.admin-experience-review__cover{max-width:none!important}
+.admin-experience-review__cover img{aspect-ratio:4/3!important;object-fit:cover;border-radius:15px!important;box-shadow:0 10px 25px rgba(12,44,45,.1)}
+.admin-experience-review__cover>div{font-size:13px!important}
+.admin-experience-review__decision{padding:28px 30px!important;border-radius:18px!important}
+.admin-experience-review__decision h2{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.2}
+.admin-experience-review__decision p{font-size:15px!important;line-height:1.6}
+.admin-experience-review__decision form textarea{font-size:16px;line-height:1.5;padding:12px;border:1px solid #b5aba0;border-radius:10px;box-sizing:border-box}
+.admin-experience-review__decision form button{min-height:48px!important;font-size:15px!important;font-weight:750}
+.admin-experience-review__decision details>summary{font-size:15px!important;min-height:46px;display:list-item;align-content:center}
+.admin-experience-review__details{border-radius:18px!important}
+.admin-experience-review__details>summary{font-size:17px!important;line-height:1.4!important;min-height:60px;box-sizing:border-box}
+.admin-experience-review__details>div{padding:16px 24px 26px!important}
+.admin-experience-review__details article{font-size:15px}
+.admin-experience-review a:focus-visible,.admin-experience-review summary:focus-visible,.admin-experience-review button:focus-visible{outline:3px solid #b58d46;outline-offset:3px}
+@media(max-width:800px){
+ .admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+ .admin-experience-review__cover{max-width:580px!important}
+ .admin-experience-review__cover img{aspect-ratio:16/9!important}
+}
+@media(max-width:600px){
+ .admin-experience-review{padding:16px 12px 38px!important}
+ .admin-experience-review__container{gap:13px!important}
+ .admin-experience-review__header,.admin-experience-review__summary,.admin-experience-review__decision{padding:19px 16px!important}
+ .admin-experience-review__header h1{font-size:29px!important}
+ .admin-experience-review__summary-grid{gap:16px!important}
+ .admin-experience-review__facts{font-size:15px!important;gap:12px!important}
+ .admin-experience-review__facts p{font-size:15px!important}
+ .admin-experience-review__cover img{aspect-ratio:4/3!important}
+ .admin-experience-review__details>summary{padding:16px!important;font-size:15px!important}
+ .admin-experience-review__details>div{padding:12px!important}
+ .admin-experience-review__decision form{padding:14px!important}
+}
+
+/* DT structural review workspace: dossier plus distinct decision panel. */
+.admin-experience-review__workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,360px);gap:20px;align-items:start}
+.admin-experience-review__workspace>*{min-width:0}
+.admin-experience-review__summary{padding:24px!important;background:#fff!important}
+.admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+.admin-experience-review__cover{order:-1;width:100%!important}
+.admin-experience-review__cover img{aspect-ratio:16/9!important;max-height:390px;object-fit:cover}
+.admin-experience-review__facts{gap:12px!important}
+.admin-experience-review__facts>div:first-child{display:flex!important;flex-wrap:wrap;gap:8px!important}
+.admin-experience-review__facts>div:first-child>span{background:#eef4f1;border:1px solid #d5e2dc;border-radius:999px;padding:6px 10px;font-size:14px;color:#12363b}
+.admin-experience-review__review-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 16px;background:#0b4246;color:#fff!important;border-radius:10px;text-decoration:none;font-size:15px;font-weight:750}
+.admin-experience-review__review-link:hover{background:#15575b}
+.admin-experience-review__decision{position:sticky;top:125px;padding:22px!important;border:1px solid #d6c19a!important;border-top:4px solid #caa86a!important;background:#fffaf1!important;box-shadow:0 10px 30px rgba(22,35,33,.07)}
+.admin-experience-review__decision h2{font-size:clamp(21px,2vw,27px)!important;line-height:1.22!important}
+.admin-experience-review__decision form{padding:14px!important}
+.admin-experience-review__decision form button{font-size:15px!important}
+.admin-experience-review__decision .kicker{font-size:11px;letter-spacing:.13em}
+@media(max-width:1020px){
+ .admin-experience-review__workspace{grid-template-columns:minmax(0,1fr)}
+ .admin-experience-review__decision{position:static}
+ .admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr) minmax(220px,.8fr)!important}
+ .admin-experience-review__cover{order:0}
+}
+@media(max-width:720px){
+ .admin-experience-review__workspace{gap:14px}
+ .admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr)!important}
+ .admin-experience-review__cover{order:-1}
+ .admin-experience-review__decision{padding:18px!important}
+ .admin-experience-review__summary{padding:18px!important}
+ .admin-experience-review__review-link{width:100%;box-sizing:border-box;text-align:center}
+}
+
+/* DT compact detail review after removal of duplicate actions. */
+.admin-experience-review__container{gap:14px!important}
+.admin-experience-review__breadcrumbs{gap:8px!important}
+.admin-experience-review__breadcrumbs a{min-height:34px!important}
+.admin-experience-review__header{padding:16px 21px!important}
+.admin-experience-review__header h1{font-size:clamp(25px,2.7vw,36px)!important;margin:5px 0!important}
+.admin-experience-review__summary{gap:13px!important;padding:20px!important}
+.admin-experience-review__cover img{max-height:235px!important;aspect-ratio:16/9!important;object-fit:contain!important;background:#f0eee7}
+.admin-experience-review__summary-grid{gap:14px!important}
+.admin-experience-review__facts{gap:9px!important}
+.admin-experience-review__decision{position:static!important;top:auto!important;padding:18px!important}
+.admin-experience-review__details{scroll-margin-top:20px!important}
+@media(max-width:720px){
+ .admin-experience-review__header{padding:16px!important}
+ .admin-experience-review__summary{padding:16px!important}
+ .admin-experience-review__cover img{max-height:220px!important}
+}
+
+/* DT approved experience: integrated publication action and natural portrait media. */
+.admin-experience-review__workspace--publish{grid-template-columns:minmax(0,1fr) minmax(290px,340px);gap:18px}
+.admin-experience-review__workspace--publish .admin-experience-review__summary{min-width:0}
+.admin-experience-review__summary-grid--approved{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(190px,260px)!important;gap:22px!important;align-items:start!important}
+.admin-experience-review__summary-grid--approved .admin-experience-review__cover{order:0!important;max-width:260px!important;justify-self:end}
+.admin-experience-review__summary-grid--approved .admin-experience-review__cover img{width:100%!important;height:auto!important;max-height:320px!important;aspect-ratio:auto!important;object-fit:contain!important;background:transparent!important;border-radius:12px!important;box-shadow:none!important}
+.admin-experience-review__summary-grid--approved .admin-experience-review__facts{min-width:0}
+.admin-experience-review__publish{align-self:start;display:grid;gap:14px;background:#fffaf1;border:1px solid #d4b983;border-top:4px solid #c9a362;border-radius:16px;padding:22px;min-width:0;box-shadow:0 8px 22px rgba(18,43,45,.055);scroll-margin-top:24px}
+.admin-experience-review__publish-kicker{font-size:11px;font-weight:800;color:#916326;letter-spacing:.12em}
+.admin-experience-review__publish h2{font-size:clamp(22px,2vw,27px);line-height:1.22;margin:0;color:#13373a;font-family:Georgia,serif}
+.admin-experience-review__publish p{margin:0;color:#344e4e;font-size:15px;line-height:1.55}
+.admin-experience-review__publish button{width:100%;min-height:48px;font-size:15px;font-weight:800}
+.admin-experience-review__publish small{font-size:12px;line-height:1.5;color:#697471}
+@media(max-width:1120px){
+ .admin-experience-review__workspace--publish{grid-template-columns:minmax(0,1fr)}
+ .admin-experience-review__publish{max-width:none}
+}
+@media(max-width:640px){
+ .admin-experience-review__summary-grid--approved{grid-template-columns:minmax(0,1fr)!important}
+ .admin-experience-review__summary-grid--approved .admin-experience-review__cover{justify-self:start;order:-1!important;width:min(100%,300px)!important}
+ .admin-experience-review__summary-grid--approved .admin-experience-review__cover img{max-height:290px!important}
+ .admin-experience-review__publish{padding:18px}
+}

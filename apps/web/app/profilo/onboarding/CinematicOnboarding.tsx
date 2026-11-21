@@ -11,9 +11,9 @@ const interests:Interest[]=[
  {value:"miti-leggende",title:"Miti e leggende",description:"Storie, personaggi e immaginario dello Stretto",index:"02"},
  {value:"borghi",title:"Borghi",description:"Paesi, centri storici e territori da scoprire",index:"03"},
  {value:"sapori",title:"Sapori e vino",description:"Prodotti tipici, cantine, produttori e degustazioni",index:"04"},
- {value:"mare",title:"Mare",description:"Stretto, costa, barca e attività sul mare",index:"05"},
- {value:"natura-trekking",title:"Natura e trekking",description:"Sentieri, panorami e attività all'aperto",index:"06"},
- {value:"avventura",title:"Avventura",description:"Attività dinamiche, outdoor e esperienze adrenaliniche",index:"07"},
+ {value:"mare",title:"Mare e costa",description:"Spiagge, passeggiate sul litorale e uscite in barca",index:"05"},
+ {value:"natura-trekking",title:"Montagna e trekking",description:"Sentieri, boschi e panorami, anche con passeggiate facili",index:"06"},
+ {value:"avventura",title:"Adrenalina",description:"Rafting, zipline e percorsi nei parchi avventura",index:"07"},
  {value:"esperienze",title:"Esperienze",description:"Attività selezionate da vivere sul territorio",index:"08"},
 ];
 const companion=[
@@ -59,7 +59,7 @@ export default function CinematicOnboarding({profile,selectedKeys,newsletter,err
    <section className="scene choice-scene s4"><span className="progress">04 / 06</span><div className="choice-head"><div className="kicker">Scena 03 · Il tuo tempo</div><h2>Quanto tempo vuoi dedicare?</h2><p className="intro">BIMARIS userà questa preferenza per proporti attività compatibili con il tempo che normalmente vuoi avere a disposizione.</p></div>{choiceRail(timeChoices,"typical_time_available",profile?.typical_time_available)}<div className="controls"><label className="back" htmlFor="wiz3">← Indietro</label><label className="next" htmlFor="wiz5">Continua →</label></div></section>
    <section className="scene choice-scene s5"><span className="progress">05 / 06</span><div className="choice-head"><div className="kicker">Scena 04 · Il ritmo</div><h2>Che ritmo preferisci?</h2><p className="intro">Aiutaci a capire se preferisci prenderti il tuo tempo oppure riempire la giornata di cose da fare.</p></div>{choiceRail(paceChoices,"preferred_pace",profile?.preferred_pace)}<div className="controls"><label className="back" htmlFor="wiz4">← Indietro</label><label className="next" htmlFor="wiz6">Continua →</label></div></section>
    <section className="scene s6"><span className="progress">06 / 06</span><div className="kicker">Ultimo passo · Sempre facoltativo</div><h2>Vuoi restare aggiornato?</h2><p className="intro">Le comunicazioni sono facoltative. Il tuo profilo BIMARIS funziona anche senza newsletter.</p><div className="checks"><label className="check"><input type="checkbox" name="newsletter" value="yes" defaultChecked={newsletter?.subscribed??false}/>Ricevi novità, esperienze ed eventi selezionati da BIMARIS.</label><label className="check"><input type="checkbox" name="personalized" value="yes" defaultChecked={newsletter?.personalized??false}/>Usa i miei interessi per rendere i suggerimenti più pertinenti.</label></div><div className="controls"><label className="back" htmlFor="wiz5">← Indietro</label><label className="next" htmlFor="wiz7">Continua →</label></div></section>
-   <section className="scene finale s7"><div className="kicker">Il tuo BIMARIS è pronto</div><h2>Da qui in poi, Messina si adatta a te.</h2><p className="intro">Useremo le tue preferenze per rendere Discovery più utile. Potrai modificarle in qualsiasi momento dal profilo.</p><div className="controls"><label className="back" htmlFor="wiz6">← Indietro</label><button className="submit" type="submit">Entra in BIMARIS</button></div></section>
+   <section className="scene finale s7"><div className="kicker">Il tuo BIMARIS è pronto</div><h2>Da qui in poi, Messina si adatta a te.</h2><p className="intro">Useremo le tue preferenze per rendere Discovery più utile. Potrai modificarle in qualsiasi momento dal profilo.</p><div className="controls"><label className="back" htmlFor="wiz6">← Indietro</label><button className="submit" type="submit">{editMode ? "Salva preferenze" : "Entra in BIMARIS"}</button></div></section>
   </form>
  </main>;
 }

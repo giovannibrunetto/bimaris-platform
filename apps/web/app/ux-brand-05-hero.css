@@ -84,9 +84,23 @@
     font-size: 12px !important;
   }
 }
-/* Keep the existing map controls visible below the compact introduction. */
-@media (min-width: 761px) {
-  .map-page-section.ux-brand-05-map-content { padding-top: 24px; }
+/* Leave room for the site header, map introduction and legend above the fold. */
+@media (min-width: 1024px) {
+  .map-page-intro.ux-brand-05-hero.ux-brand-05-hero--compact {
+    padding-block: 16px !important;
+  }
+
+  .map-page-section.ux-brand-05-map-content {
+    padding-block: 8px 16px !important;
+  }
+
+  .ux-brand-05-map-content .bimaris-map-canvas-wrap {
+    height: clamp(320px, calc(100dvh - 260px), 760px);
+  }
+
+  .ux-brand-05-map-content .bimaris-map-period-desktop {
+    max-height: min(280px, max(150px, calc(100dvh - 400px)));
+  }
 }
 @media (max-width: 760px) {
   .map-page-section.ux-brand-05-map-content { padding-top: 20px; }
@@ -162,4 +176,80 @@
     transition: none;
     transform: none !important;
   }
+}
+
+/* Shared interaction for clickable cards and cards containing links. */
+.public-discovery-card.public-discovery-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .public-discovery-card.public-discovery-card:hover {
+    position: relative;
+    z-index: 1;
+    transform: scale(1.012);
+    border-color: #a77b3a;
+    box-shadow: 0 18px 42px rgba(3, 33, 38, .18);
+  }
+}
+
+.public-discovery-card.public-discovery-card:focus-within {
+  outline: 3px solid #87612e;
+  outline-offset: 3px;
+  border-color: #a77b3a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-discovery-card.public-discovery-card {
+    transition: none;
+  }
+
+  .public-discovery-card.public-discovery-card:hover {
+    transform: none;
+  }
+}
+
+/* Same editorial hierarchy for the two discovery choosers. */
+h2.public-discovery-section-title.public-discovery-section-title {
+  color: #132f32 !important;
+  font-family: Georgia, serif !important;
+  font-size: clamp(28px, 3vw, 42px) !important;
+  font-weight: 400 !important;
+  line-height: 1.12 !important;
+  letter-spacing: normal !important;
+}
+
+:root {
+  --bimaris-story-card-background: radial-gradient(circle at 85% 12%, rgba(202, 168, 106, .16), transparent 28%), linear-gradient(145deg, #0b4249, #032126);
+  --bimaris-story-card-border: rgba(202, 168, 106, .38);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stories-cards > .story-card.public-discovery-card:hover,
+  .village-cards > .village-card.public-discovery-card:hover {
+    outline: 1px solid rgba(167, 123, 58, .35);
+    outline-offset: 0;
+  }
+}
+
+
+/* PR58: Village discovery cards are entirely actionable, not only their CTA text.
+   The image-credit source link remains independently clickable. */
+.village-cards > .village-card.public-discovery-card{
+ position:relative;
+ cursor:pointer;
+}
+.village-cards > .village-card .village-card-primary-link::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:1;
+}
+.village-cards > .village-card .village-card-media a{
+ position:relative;
+ z-index:2;
+}
+.village-cards > .village-card:focus-within{
+ outline:3px solid #87612e;
+ outline-offset:3px;
 }

@@ -1,10 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested } from "@/lib/prelaunch-mode";
 
 export function proxy(request: NextRequest) {
-  if (!isPrelaunchEnabled()) return NextResponse.next();
-
+  // Fail closed: a dedicated second Vercel project exposes only these exact
+  // survey paths. The main BIMARIS deployment retains its original behavior.
+  if (isIsolatedSurveyRequested()) {
+    if (!isIsolatedSurveyDeployment()) return new NextResponse("Service Unavailable", { status: 503, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+    } });
+    const path = request.nextUrl.pathname.replace(/[/]$/, "") || "/";
+    const pages = new Set(["/questionario-cittadini", "/privacy-questionario"]);
+    const submission = path === "/questionario-cittadini/invio";
+    const publicAsset = path === "/brand/bimaris-main.jpeg" || path.startsWith("/_next/static/");
+    if (pages.has(path) || submission || publicAsset) {
+      const response = NextResponse.next();
+      response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+    return new NextResponse("Not Found", { status: 404, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+      "Content-Type": "text/plain; charset=utf-8",
+    } });
+  }
+  if ((request.nextUrl.pathname.replace(/\/$/, "") === "/questionario-cittadini"
+    || request.nextUrl.pathname.startsWith("/questionario-cittadini/"))
+    && process.env.VERCEL_ENV !== "preview" && process.env.NODE_ENV !== "development") {
+    return new NextResponse("Not Found", { status: 404, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive", "Cache-Control": "no-store",
+    } });
+  }
   const { pathname } = request.nextUrl;
+  if (!isPrelaunchEnabled()) {
+    if (pathname === "/itinerari" || pathname.startsWith("/itinerari/")) {
+      return NextResponse.redirect(new URL("/ti-racconto-la-storia-di-messina", request.url));
+    }
+    if (pathname === "/mappa/epoche" || pathname.startsWith("/mappa/epoche/")) {
+      const storyPath = pathname.slice("/mappa/epoche".length);
+      return NextResponse.redirect(new URL("/ti-racconto-la-storia-di-messina" + storyPath, request.url));
+    }
+    return NextResponse.next();
+  }
 
   // The minimal public mode intentionally exposes only the root document and
   // Next.js build assets required to render it. Application-owned public files

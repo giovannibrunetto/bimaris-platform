@@ -1,0 +1,4 @@
+{
+  "$schema":"https://openapi.vercel.sh/vercel.json",
+  "crons":[{"path":"/api/cron/b2b-match-notifications","schedule":"0 8 * * *"}]
+}

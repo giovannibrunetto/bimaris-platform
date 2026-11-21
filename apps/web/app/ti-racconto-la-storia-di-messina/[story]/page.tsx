@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ story: st
   const { story } = await params;
   const definition = CULTURE_STORIES_BY_KEY.get(story);
   if (!definition) return {};
-  return { title: `${definition.title} | Ti racconto Messina | BIMARIS`, description: definition.subtitle };
+  return { title: `${definition.title} | Ti racconto la storia di Messina | BIMARIS`, description: definition.subtitle };
 }
 
 export default async function StoryPage({ params }: { params: Promise<{ story: string }> }) {
@@ -28,7 +28,7 @@ export default async function StoryPage({ params }: { params: Promise<{ story: s
 
   return <div className="story-detail-page">
     <section className="page-hero bimaris-ambient-hero story-detail-hero">
-      <Link className="story-back" href="/mappa/epoche">← Ti racconto Messina</Link>
+      <Link className="story-back" href="/ti-racconto-la-storia-di-messina">← Ti racconto la storia di Messina</Link>
       <div className="kicker">{definition.theme}</div>
       <h1>{definition.title}</h1>
       <p className="story-detail-subtitle">{definition.subtitle}</p>
@@ -69,7 +69,7 @@ export default async function StoryPage({ params }: { params: Promise<{ story: s
         <h2>{definition.title}</h2>
         <div className="story-public-copy">{definition.conclusion.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>
       </div>
-      <div className="actions"><Link className="button" href="/mappa">Vedi Messina sulla mappa</Link><Link className="button ghost" href="/mappa/epoche">Scegli un altro racconto</Link></div>
+      <div className="actions"><Link className="button" href="/mappa">Vedi Messina sulla mappa</Link><Link className="button ghost" href="/ti-racconto-la-storia-di-messina">Scegli un altro racconto</Link></div>
     </section>
   </div>;
 }

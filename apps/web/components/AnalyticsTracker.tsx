@@ -12,7 +12,7 @@ export function AnalyticsTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.startsWith("/admin")) return;
+    if (pathname.startsWith("/admin") || pathname === "/privacy-questionario" || pathname === "/questionario-cittadini" || pathname.startsWith("/questionario-cittadini/")) return;
 
     track("page_view", { pathname });
 

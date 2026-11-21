@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import B2BNetwork from "./B2BNetwork";
+import OperatorWorkspaceSwitcher from "../OperatorWorkspaceSwitcher";
 import "../operator-area.css";
+import "../operator-subpages.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,6 +27,13 @@ export default async function B2BPage({searchParams}:{searchParams:Promise<{oper
   const operator = row ? one(row.operators) : null;
   if (!row || !operator) redirect(requested ? `/area-operatore?operatore=${encodeURIComponent(requested)}` : "/area-operatore");
 
-  const operatorParam = encodeURIComponent(operator.slug || row.operator_id);
-  return <section style={{background:"var(--sand)",padding:"clamp(34px,6vw,70px) 20px",minHeight:"70vh"}}><div className="container" style={{maxWidth:1120}}><div style={{marginBottom:22}}><a href={`/area-operatore?operatore=${operatorParam}`}>← Torna all'area operatore</a></div><B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/></div></section>;
+  const activities = rows.flatMap(r => {
+    const item = one(r.operators);
+    return item ? [{ id: r.operator_id, slug: item.slug, name: item.name }] : [];
+  });
+  return <main className="operator-subpage operator-subpage--b2b"><div className="operator-subpage__shell">
+      <header className="operator-subpage__heading"><div className="eyebrow">Area Operatore · Network B2B</div><h1>La tua rete professionale</h1><p>Presenta ciò che offri e trova opportunità di collaborazione con altri operatori BIMARIS.</p></header>
+      <OperatorWorkspaceSwitcher activities={activities} selectedSlug={operator.slug}/>
+      <B2BNetwork operatorId={row.operator_id} operatorName={operator.name} canManage={["owner","manager"].includes(row.role)}/>
+    </div></main>;
 }

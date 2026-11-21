@@ -25,3 +25,63 @@
 .revision-decision-card__button:hover{filter:brightness(.96)}
 @media(max-width:900px){.revision-gallery__comparison,.revision-decisions__grid{grid-template-columns:minmax(0,1fr)}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:240px}}
 @media(max-width:560px){.revision-gallery__group,.revision-decision-card{padding:14px}.revision-gallery__photos{gap:9px}.revision-gallery__photo img,.revision-gallery__placeholder{max-height:160px}.revision-decision-card__fields{grid-template-columns:minmax(0,1fr)}}
+
+/* Compact, change-first review. The complete dossier is opt-in. */
+.revision-changes{margin:20px 0 18px}
+.revision-changes__fields{display:grid;gap:12px}
+.revision-changes__field{padding:17px 19px;border:1px solid #d9c9b1;border-radius:13px;background:#fffcf7}
+.revision-changes__field h4{margin:0 0 12px;font-size:17px;color:#173238}
+.revision-changes__values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.revision-changes__values>div{min-width:0}
+.revision-changes__values small{display:block;margin-bottom:7px;color:#78674f;font-size:12px;font-weight:750}
+.revision-changes__values p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.5}
+.revision-changes__empty{padding:15px 17px;background:#fff7e8;border:1px solid #dfc394;border-radius:12px}
+.revision-gallery__changes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),260px));justify-content:start;gap:14px}
+.revision-gallery__changes .revision-gallery__photo{padding:12px;border:1px solid #e1d3c0;border-radius:12px;background:#fff}
+.revision-gallery__changes .revision-gallery__photo strong{display:block;margin-bottom:10px;color:#193338;font-size:13px}
+.revision-full-comparison{margin:18px 0 22px;border:1px solid #d9c9b1;border-radius:13px;background:#fff;overflow:hidden}
+.revision-full-comparison>summary{padding:15px 19px;cursor:pointer;font-weight:750;color:#15343a}
+.revision-full-comparison>summary:focus-visible{outline:3px solid #d1ae67;outline-offset:-3px}
+.revision-full-comparison[open]>summary{border-bottom:1px solid #e6ddd0}
+.revision-full-comparison__hint{margin:16px 18px;font-size:13px;color:#665f53}
+.revision-full-comparison__fields{display:grid;gap:9px;margin:16px 18px}
+.revision-full-comparison__field{padding:11px 13px;border:1px solid #e5ded3;border-radius:10px}
+.revision-full-comparison__field strong{display:block;margin-bottom:10px}
+.revision-full-comparison .revision-gallery{margin:22px 18px}
+@media(max-width:600px){
+  .revision-changes__values{grid-template-columns:1fr;gap:12px}
+  .revision-changes__field{padding:14px}
+  .revision-full-comparison__fields{margin:12px}
+  .revision-full-comparison .revision-gallery{margin:18px 12px}
+}
+
+.revision-review__context{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.revision-review__operator-link{display:inline-flex;align-items:center;min-height:38px;padding:7px 12px;border:1px solid #d4c5ad;border-radius:10px;background:#fff;color:#14363a;font-size:13px;font-weight:750;text-decoration:none}
+.revision-review__operator-link:hover{background:#f6eddd}
+.revision-review__operator-link:focus-visible{outline:3px solid #d1ae67;outline-offset:2px}
+
+@media(max-width:560px){.revision-gallery__changes{grid-template-columns:minmax(0,1fr)}.revision-gallery__changes .revision-gallery__photo{max-width:340px}}
+
+/* DS-UX: single compact heading for the experience review workspace. */
+body:has(.revision-workspace) .admin-shell-nav,
+body:has(.revision-workspace) .admin-status-guide{display:none}
+.revision-workspace{background:#f8f4ee;min-height:65vh;padding:22px clamp(18px,4vw,48px) 46px;box-sizing:border-box}
+.revision-workspace__heading,.revision-workspace__content{width:min(100%,1120px);margin-inline:auto}
+.revision-workspace__heading{display:flex;align-items:center;justify-content:space-between;gap:16px 26px;flex-wrap:wrap;margin-bottom:17px}
+.revision-workspace__heading-copy{min-width:0;flex:1 1 400px}
+.revision-workspace__eyebrow{display:block;color:#926a31;font-size:11px;text-transform:uppercase;letter-spacing:.13em;font-weight:800}
+.revision-workspace__heading h1{margin:5px 0;font:normal clamp(25px,3vw,35px)/1.18 Georgia,serif;color:#15363a;overflow-wrap:anywhere}
+.revision-workspace__heading p{margin:0;color:#65716b;font-size:13px;line-height:1.45}
+.revision-workspace__links{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.revision-workspace__links a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;text-decoration:none;color:#17383b;border:1px solid #d4c5ad;border-radius:9px;background:#fff;font-size:12px;font-weight:750}
+.revision-workspace__links a:first-child{background:#e9dfce;border-color:#cbb89b}
+.revision-workspace__links a:hover{background:#f4e8d5}
+.revision-workspace__panel{padding:clamp(17px,2.5vw,25px)!important;background:#fff}
+.revision-workspace .revision-changes{margin:0 0 20px}
+.revision-workspace .revision-section-heading{margin-bottom:13px}
+.revision-workspace__content{min-width:0}
+@media(max-width:720px){.revision-workspace{padding:17px 15px 34px}.revision-workspace__heading{align-items:flex-start;gap:12px}.revision-workspace__heading-copy{flex-basis:100%}.revision-workspace__links{width:100%;gap:7px}.revision-workspace__links a{flex:1 1 auto;font-size:12px}.revision-workspace__panel{padding:16px!important}}
+
+.revision-workspace #prima-modifica {
+  scroll-margin-top: 112px;
+}

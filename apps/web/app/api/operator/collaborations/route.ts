@@ -1,5 +1,6 @@
 import { NextRequest,NextResponse } from "next/server";
 import { createUserServerClient } from "@/lib/supabase/user-server";
+import { recordOperatorNotice } from "@/lib/operator-notifications";
 
 function field(form:FormData,key:string,max=80){const value=form.get(key);return typeof value==="string"?value.trim().slice(0,max):"";}
 
@@ -32,5 +33,6 @@ export async function POST(request:NextRequest){
     p_operator_id:operatorId,
     p_decision:decision
   });
+  if(!error){const {data:experience}=await db.from("experiences").select("operator_id,name").eq("id",experienceId).maybeSingle();if(experience?.operator_id&&experience.operator_id!==operatorId)await recordOperatorNotice({operatorId:experience.operator_id,category:"collaboration",eventKey:`collaboration-response:${experienceId}:${operatorId}:${decision}`,title:decision==="accepted"?"Collaborazione accettata":"Collaborazione rifiutata",description:`Il partner ha ${decision==="accepted"?"accettato":"rifiutato"} la collaborazione per “${experience.name}”.`,targetPath:"/area-operatore?tab=esperienze"});}
   return NextResponse.redirect(new URL(`/area-operatore?operatore=${encodeURIComponent(operatorId)}&collaboration=${error?"error":decision}#collaboration-inbox`,request.url),303);
 }

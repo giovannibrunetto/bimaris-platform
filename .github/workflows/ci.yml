@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, staging, feature/admin-individual-mfa, integration/ds-mfa-ux-identity-20261111]
   pull_request:
 
 jobs:
@@ -19,4 +19,16 @@ jobs:
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
       - run: pnpm test:auth
+      - run: node --experimental-strip-types --test apps/web/tests/admin-event-transitions.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-events-route-runtime.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-review-queues-regression.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/operator-workspace-consolidation.test.mjs
+      - run: node --test apps/web/tests/operator-notifications-source.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/survey-validation.test.mjs apps/web/tests/survey-security.test.mjs apps/web/tests/survey-live.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/survey-isolated-surface.test.mjs
+      - run: bash scripts/tests/backup-production-synthetic.sh
+      - run: python3 scripts/tests/backup-production-windows-synthetic.py
+      - run: node --test apps/web/tests/survey-production-candidate.test.mjs
+      - run: node --test scripts/tests/business-account-tax-id-static.test.mjs
+      - run: node --test scripts/tests/survey-production-sql-safety.test.mjs
       - run: pnpm --filter @bimaris/web build

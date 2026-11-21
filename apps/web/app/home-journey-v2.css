@@ -1,6 +1,6 @@
 .home-journey-paths-v2{display:grid;gap:20px}
 .home-journey-paths-v2 .home-journey-path{margin:0!important;transform:none!important;background:#12363a!important}
-.home-journey-paths-v2 .home-journey-story{background:radial-gradient(circle at 85% 12%,rgba(202,168,106,.16),transparent 28%),linear-gradient(145deg,#0b4249,#032126)!important;border-color:rgba(202,168,106,.38)}
+.home-journey-paths-v2 .home-journey-story{background:var(--bimaris-story-card-background)!important;border-color:rgba(202,168,106,.85)}
 .home-journey-secondary{display:grid;gap:20px}
 .home-journey-paths-v2 .home-journey-experiences,.home-journey-paths-v2 .home-journey-map{background:#12363a!important}
 .home-journey-paths-v2 .home-journey-path:hover{transform:translateY(-4px)!important}

@@ -31,7 +31,7 @@ export default async function VillagesPage() {
         {villages.length > 0 ? (
           <div className="cards village-cards">
             {villages.map(village => (
-              <article className="card village-card" key={village.id}>
+              <article className="card village-card public-discovery-card" key={village.id}>
                 {village.imageUrl && (
                   <div className="village-card-media">
                     <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
@@ -46,7 +46,7 @@ export default async function VillagesPage() {
                   <div className="kicker">{village.territory?.name ?? "Territorio messinese"}</div>
                   <h3>{village.name}</h3>
                   <p>{village.excerpt}</p>
-                  <Link className="text-link" href={`/borghi/${village.slug}`}>Scopri il borgo →</Link>
+                  <Link className="text-link village-card-primary-link" href={`/borghi/${village.slug}`} aria-label={`Scopri il borgo di ${village.name}`}>Scopri il borgo →</Link>
                 </div>
               </article>
             ))}

@@ -1,0 +1,80 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=path=>readFileSync(new URL(path,import.meta.url),"utf8");
+const api=read("../app/api/operator/notifications/route.ts");
+const bell=read("../app/area-operatore/OperatorNotificationBell.tsx");
+const nav=read("../app/area-operatore/OperatorWorkspaceSwitcher.tsx");
+const css=read("../app/area-operatore/operator-notification-bell.css");
+const schema=read("../../../supabase/migrations/20261120142500_operator_notifications_center.sql");
+const write=read("../lib/operator-notifications.ts");
+
+test("notification GET and POST authorize membership before service-role read or write",()=>{
+ assert.match(api,/client\.auth\.getClaims\(\)/);
+ assert.match(api,/from\("operator_memberships"\).*?\.eq\("operator_id",operatorId\)\.eq\("user_id",userId\)/);
+ assert.match(api,/if\("failure" in ctx\)return ctx\.failure/);
+ assert.match(api,/\.eq\("operator_id",operatorId\)/);
+ assert.match(api,/\.eq\("id",body\.notificationId\)/);
+});
+test("invalid notification mutations fail closed",()=>{
+ assert.match(api,/body\?\.action!=="read"/);
+ assert.match(api,/\["b2b","operator"\]/);
+ assert.match(api,/\^\[\\da-f-\]\{36\}\$/);
+});
+test("notification sources are merged and activity-scoped with relative links",()=>{
+ assert.match(api,/from\("operator_notifications"\)/);
+ assert.match(api,/from\("b2b_match_notifications"\)/);
+ assert.match(api,/url\.searchParams\.set\("operatore",operatorId\)/);
+ assert.match(api,/\/area-operatore\/network-b2b\?operatore=/);
+ assert.match(api,/Cache-Control":"no-store"/);
+});
+test("bell lives in shared operator switcher without duplicated inline banner",()=>{
+ assert.match(nav,/<OperatorNotificationBell operatorId=\{active\.id\}\/>/);
+ const page=read("../app/area-operatore/page.tsx");
+ assert.doesNotMatch(page,/<B2BNewMatchAlerts/);
+});
+test("operator switches cannot display late responses from a different operator",()=>{
+ assert.match(bell,/loadedOperatorId===operatorId\?payload:null/);
+ assert.match(bell,/sequence!==lastLoadRef\.current/);
+ assert.match(bell,/sourceGeneration!==lastLoadRef\.current/);
+});
+test("bell supports unread count, mark read and dismiss actions",()=>{
+ assert.match(bell,/operator-notice__badge/);
+ assert.match(bell,/action:"read-all"/);
+ assert.match(api,/if\(body\?\.action==="read-all"\)/);
+ assert.match(api,/\.from\("operator_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
+ assert.match(api,/\.from\("b2b_match_notifications"\)\.update\(\{read_at:now\}\)\.eq\("operator_id",operatorId\)/);
+ assert.match(bell,/event\.key==="Escape"/);
+ assert.match(bell,/createPortal\(/);
+ assert.match(bell,/aria-modal="true"/);
+ assert.match(bell,/void openNotice\(n\)/);
+ assert.match(bell,/action:"read"/);
+ assert.match(bell,/router\.push\(n.url\)/);
+ assert.match(bell,/aria-expanded=\{opened\}/);
+});
+test("notification body opens its destination without a redundant action link",()=>{
+ assert.match(bell,/<Link className="operator-notice__item-link" href=\{n.url\}/);
+ assert.match(bell,/<strong>\{n.title\}<\/strong><span>\{n.description\}<\/span>/);
+ assert.doesNotMatch(bell,/>Apri sezione<\/Link>/);
+ assert.match(bell,/className="operator-notice__read-all"/);
+ assert.match(bell,/Segna tutte come lette/);
+ assert.doesNotMatch(bell,/operator-notice__item-actions/);
+ assert.match(css,/\.operator-notice__item-link:hover/);
+});
+test("operator bell remains below the sticky site header during scrolling",()=>{
+ assert.match(css,/\.operator-notice\{[^}]*z-index:1\}/);
+ assert.match(css,/body:has\(\.operator-subpage\) \.site-header\{background:#082529;z-index:30\}/);
+});
+test("mobile notification panel remains constrained to viewport",()=>{
+ assert.match(css,/@media\(max-width:650px\)/);
+ assert.match(css,/\.operator-notice__overlay\{position:fixed;inset:0;z-index:1100/);
+ assert.match(css,/display:grid;place-items:center/);
+ assert.match(css,/max-height:calc\(100dvh - 24px\)/);
+});
+test("notification database and service are idempotent and private",()=>{
+ assert.match(schema,/unique\(operator_id,event_key\)/);
+ assert.match(schema,/enable row level security/);
+ assert.match(schema,/revoke all on public\.operator_notifications from anon,authenticated/);
+ assert.match(write,/ignoreDuplicates:true/);
+ assert.match(write,/target_path:path/);
+});

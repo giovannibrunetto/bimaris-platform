@@ -1,0 +1,112 @@
+.admin-section-heading {
+  background: #f5f2ec;
+  border-bottom: 1px solid #e0d7c9;
+  color: #133438;
+}
+
+.admin-section-heading__inner {
+  box-sizing: border-box;
+  width: min(100%, 1230px);
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 46px) clamp(16px, 3vw, 25px);
+}
+
+.admin-section-heading__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.admin-section-heading .admin-section-heading__copy {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.admin-section-heading .admin-section-heading__copy h2 {
+  margin: 0 0 9px;
+  color: #133438;
+  font: 500 clamp(32px, 4vw, 48px)/1.12 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+
+.admin-section-heading .admin-section-heading__copy p {
+  margin: 0;
+  max-width: 72ch;
+  color: #465e61;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.admin-section-heading__actions,
+.admin-section-heading__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.admin-section-heading .admin-section-heading__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #a98850;
+  border-radius: 10px;
+  background: #fffdf9;
+  color: #133438;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.admin-section-heading .admin-section-heading__actions .admin-section-heading__primary {
+  background: #d7b16d;
+  border-color: #9a7034;
+}
+
+.admin-section-heading .admin-section-heading__actions a:focus-visible {
+  outline: 3px solid #83602e;
+  outline-offset: 2px;
+}
+
+.admin-section-heading__summary {
+  margin-top: 14px;
+  font-size: 0.875rem;
+}
+
+.admin-section-heading__summary > span {
+  padding: 5px 9px;
+  border: 1px solid #e0d7c9;
+  border-radius: 8px;
+  background: #fffdf9;
+}
+
+.admin-section-heading--survey {
+  margin-bottom: 20px;
+}
+
+.admin-section-heading--survey .admin-section-heading__inner {
+  width: 100%;
+  padding-inline: 0;
+}
+
+.admin-application-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 650px) {
+  .admin-application-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .admin-section-heading__inner { padding-block: 18px; }
+  .admin-section-heading__actions { width: 100%; }
+  .admin-section-heading .admin-section-heading__actions a { width: 100%; }
+}

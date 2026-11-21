@@ -1,0 +1,51 @@
+.survey-admin{color:#173739;background:#f5f2ec;padding:clamp(20px,4vw,48px);min-height:60vh}
+.survey-admin__heading{max-width:900px;margin-bottom:24px}
+.survey-admin__eyebrow{display:block;color:#89652c;font-size:12px;text-transform:uppercase;letter-spacing:.11em;font-weight:800}
+.survey-admin h2{font:normal clamp(29px,4vw,44px)/1.15 Georgia,serif;color:#143438;margin:10px 0}
+.survey-admin h3{font:normal clamp(21px,2.5vw,26px)/1.2 Georgia,serif;margin:0 0 16px;color:#143438}
+.survey-admin p{line-height:1.55}
+.survey-admin__notice{border:1px solid #b18d4b;border-radius:12px;padding:17px;background:#fff9eb}
+.survey-admin__stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.survey-admin__stats>div,.survey-admin__panel{background:#fff;border:1px solid #ddd8cd;border-radius:15px;padding:22px;min-width:0}
+.survey-admin__stats span{display:block;color:#546c6d;font-size:13px;font-weight:700}
+.survey-admin__stats strong{display:block;color:#124145;font:normal 40px/1.3 Georgia,serif}
+.survey-admin__caption{font-size:12px;color:#607273;margin:12px 0 20px}
+.survey-admin__charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,365px),1fr));gap:17px;margin:22px 0}
+.survey-admin__answer{margin-top:17px}
+.survey-admin__line{display:flex;justify-content:space-between;gap:10px;font-size:13px;line-height:1.45}
+.survey-admin__line span{overflow-wrap:anywhere}
+.survey-admin__line strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+.survey-admin__track{height:9px;background:#e8e9e4;border-radius:100px;overflow:hidden;margin-top:7px}
+.survey-admin__track>div{height:100%;background:#ba965a;border-radius:100px}
+.survey-admin__ideas ul{list-style:none;margin:0;padding:0}
+.survey-admin__ideas li{border-top:1px solid #e4e3dc;padding:14px 0;overflow-wrap:anywhere}
+.survey-admin__ideas li span{font-size:12px;color:#647476}
+.survey-admin__ideas li p{white-space:pre-wrap;margin:5px 0 0}
+
+.survey-admin__search{display:grid;gap:8px;max-width:650px;margin:20px 0}
+.survey-admin__search label{font-size:13px;font-weight:750;color:#25494b}
+.survey-admin__search>div{display:flex;gap:9px;flex-wrap:wrap}
+.survey-admin__search input{flex:1 1 220px;min-width:0;padding:12px 13px;min-height:44px;background:#fff;color:#173739;border:1px solid #9daead;border-radius:9px}
+.survey-admin__search button,.survey-admin__paging button{padding:11px 19px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;background:#cba96c;color:#143438;text-decoration:none;font-weight:800;border:0;cursor:pointer}
+.survey-admin__paging{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:18px}
+.survey-admin__search input:focus-visible,.survey-admin__search button:focus-visible,.survey-admin__paging button:focus-visible{outline:3px solid #ae8548;outline-offset:2px}
+
+.survey-admin__question-number{display:block;margin-bottom:10px;color:#906725;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+
+.survey-admin__title-row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.survey-admin__open-questionnaire{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:11px 20px;border-radius:999px;background:#cba96c;color:#143438;text-decoration:none;font-weight:800;white-space:nowrap;border:1px solid #b68f4d}
+.survey-admin__open-questionnaire:hover{background:#dabb83}
+.survey-admin__open-questionnaire:focus-visible{outline:3px solid #a37939;outline-offset:3px}
+
+/* Five questions, including the free-text fifth, belong to one ordered sequence. */
+.survey-admin__question-index{margin:25px 0 14px;padding:18px;background:#fff;border:1px solid #ded8cd;border-radius:15px}
+.survey-admin__question-index>strong{display:block;color:#143438;margin-bottom:12px}
+.survey-admin__question-index>div{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.survey-admin__question-index a{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:62px;padding:10px;border:1px solid #cab991;border-radius:10px;background:#fffaf0;color:#173739;text-decoration:none;font-size:13px;font-weight:800}
+.survey-admin__question-index a span{font-size:11px;font-weight:500;color:#617174}
+.survey-admin__question-index a:hover{border-color:#967137;background:#f6ecd6}
+.survey-admin__question-index a:focus-visible{outline:3px solid #a37939;outline-offset:2px}
+.survey-admin__panel{scroll-margin-top:150px}
+.survey-admin__ideas{grid-column:1/-1;border-color:#c8ac76;background:#fffefa}
+@media(max-width:780px){.survey-admin__question-index>div{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:470px){.survey-admin__question-index>div{grid-template-columns:repeat(2,minmax(0,1fr))}}

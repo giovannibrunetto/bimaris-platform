@@ -1,7 +1,9 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendReviewNotification } from "@/lib/review-notifications";
+import { recordOperatorNotice } from "@/lib/operator-notifications";
 
 function text(value:FormDataEntryValue|null,max:number){return typeof value==="string"?value.trim().slice(0,max):"";}
 function slugify(value:string){return value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,120);}
@@ -19,7 +21,9 @@ function requestedStep(sections:Record<string,string>,note:string,fallback:numbe
 function correctionSnapshot(experience:Record<string,unknown>,sections:Record<string,string>){const snapshot:Record<string,unknown>={};if(sections.name||sections.basics)snapshot.name=experience.name??null;if(sections.excerpt||sections.basics)snapshot.excerpt=experience.excerpt??null;if(sections.description)snapshot.description=experience.description??null;if(sections.details){snapshot.duration_minutes=experience.duration_minutes??null;snapshot.price_from=experience.price_from??null;snapshot.bookable=experience.bookable??false;}if(sections.location)snapshot.meeting_point=experience.meeting_point??null;return snapshot;}
 
 export async function POST(request:NextRequest){
- if(!(await isAdminAuthenticated()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
+ if(!(await isAuthorizedAdmin()))return NextResponse.redirect(new URL("/admin/login",request.url),303);
  const form=await request.formData(),action=text(form.get("action"),40),experienceId=text(form.get("experience_id"),80),supabase=createServiceClient();
  if(!supabase)return back(request,"action-error");
  try{
@@ -50,21 +54,23 @@ export async function POST(request:NextRequest){
     if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
     const now=new Date().toISOString();
     const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
+    await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-approved:${experienceId}`,title:"Esperienza approvata",description:`“${experience.name}” è stata approvata ed è in attesa di pubblicazione.`,targetPath:"/area-operatore?tab=esperienze"});
     if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
-    return operatorDossier(request,operator.id,"experience-approved-awaiting-publication");
+    return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=experience-approved-awaiting-publication`,request.url),303);
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
    const snapshot=experience.review_status==="rejected"&&Object.keys(existingSnapshot as object).length?existingSnapshot:correctionSnapshot(experience as unknown as Record<string,unknown>,sections);
    const {error}=await supabase.from("experiences").update({review_status:"rejected",review_notes:reviewNotes,review_sections:sections,review_snapshot:snapshot,draft_step:targetStep,reviewed_at:new Date().toISOString(),published:false,updated_at:new Date().toISOString()}).eq("id",experienceId).in("review_status",["pending","rejected"]);if(error)throw error;
+   await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-corrections:${experienceId}:${targetStep}`,title:"Correzioni richieste all’esperienza",description:`“${experience.name}” richiede alcune modifiche.`,targetPath:"/area-operatore?tab=esperienze"});
    if(operator?.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"changes-requested",reviewNotes});
    return operator?operatorDossier(request,operator.id,"changes-requested"):back(request,"changes-requested");
   }
   if(action==="publish"){
    const {data:experience,error:readError}=await supabase.from("experiences").select("operator_id,territory_id,review_status,operator:operators!experiences_operator_id_fkey(published,selection_status)").eq("id",experienceId).maybeSingle();if(readError||!experience)return back(request,"invalid-data");if(!experience.territory_id)return back(request,"missing-classification");const operator=experience.operator as unknown as {published:boolean;selection_status:string}|null;if(!operator?.published||operator.selection_status!=="selected")return back(request,"operator-not-published");if(experience.review_status!=="approved")return back(request,"invalid-review-state");
-   const {error}=await supabase.from("experiences").update({published:true,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;return operatorDossier(request,experience.operator_id,"experience-published");
+   const {error}=await supabase.from("experiences").update({published:true,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-published:${experienceId}`,title:"Esperienza pubblicata",description:"La tua esperienza è ora visibile al pubblico.",targetPath:"/area-operatore?tab=esperienze"});return operatorDossier(request,experience.operator_id,"experience-published");
   }
-  if(action==="unpublish"){const {data:experience}=await supabase.from("experiences").select("operator_id").eq("id",experienceId).maybeSingle();const {error}=await supabase.from("experiences").update({published:false,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;return experience?.operator_id?operatorDossier(request,experience.operator_id,"experience-unpublished"):back(request,"unpublished");}
+  if(action==="unpublish"){const {data:experience}=await supabase.from("experiences").select("operator_id").eq("id",experienceId).maybeSingle();const {error}=await supabase.from("experiences").update({published:false,updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;if(experience?.operator_id)await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-unpublished:${experienceId}`,title:"Esperienza non più online",description:"La tua esperienza è stata ritirata dalla pubblicazione.",targetPath:"/area-operatore?tab=esperienze"});return experience?.operator_id?operatorDossier(request,experience.operator_id,"experience-unpublished"):back(request,"unpublished");}
   if(action==="feature"||action==="unfeature"){const {error}=await supabase.from("experiences").update({featured:action==="feature",updated_at:new Date().toISOString()}).eq("id",experienceId);if(error)throw error;return back(request,action==="feature"?"featured":"unfeatured");}
  }catch(error){console.error("BIMARIS admin experience action failed",error);return back(request,"action-error");}
  return back(request,"invalid-data");

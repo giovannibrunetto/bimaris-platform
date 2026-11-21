@@ -1,0 +1,126 @@
+/* PR58 — Calendar and B2B share the approved Area Operatore visual system. */
+.operator-subpage{--operator-gold:#d8a94f;--operator-paper:#f7f2e9;background:radial-gradient(circle at 8% 0%,rgba(34,91,94,.28),transparent 38%),radial-gradient(circle at 96% 82%,rgba(216,169,79,.055),transparent 34%),linear-gradient(135deg,#071b1f 0%,#0a292d 50%,#081d20 100%);color:var(--operator-paper);min-height:calc(100vh - 75px);padding:28px 20px 65px}
+.operator-subpage__shell{width:100%;max-width:1160px;margin:0 auto;display:grid;gap:20px;min-width:0}
+.operator-subpage__heading{padding:24px 30px;border:1px solid rgba(216,169,79,.24);background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018));border-radius:24px}
+.operator-subpage__heading .eyebrow{color:#d8a94f!important}
+.operator-subpage__heading h1{font:400 clamp(33px,4.2vw,48px)/1.08 Georgia,serif;color:#f7f2e9;margin:8px 0}
+.operator-subpage__heading p{color:rgba(247,242,233,.76);font-size:15px;max-width:740px;line-height:1.5;margin:0}
+.operator-subpage .operator-workspace-switcher{min-height:0;padding:10px 18px;border-radius:16px;background:rgba(255,255,255,.045);border-color:rgba(216,169,79,.22);box-shadow:none}
+.operator-subpage .operator-workspace-switcher__activity select{min-height:42px;background:#071b1f;border-color:rgba(216,169,79,.45);color:#f7f2e9}
+.operator-subpage__surface,.operator-subpage .operator-calendar-panel,.operator-subpage .operator-calendar-help,.operator-subpage .b2b-network__panel,.operator-subpage .b2b-network__matches{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;border:1px solid rgba(216,169,79,.20)!important;border-radius:22px!important;box-shadow:0 14px 46px rgba(0,0,0,.10)!important;color:#f7f2e9!important}
+.operator-subpage .operator-calendar-panel{padding:28px 30px!important}
+.operator-subpage .operator-calendar-panel h2,.operator-subpage .operator-calendar-help h2,.operator-subpage .b2b-network__panel h2,.operator-subpage .b2b-network__matches h2{color:#f7f2e9!important;font-family:Georgia,serif;font-weight:400}
+.operator-subpage .operator-calendar-panel>p,.operator-subpage .operator-calendar-help p,.operator-subpage .b2b-network__group-heading p{color:rgba(247,242,233,.75)!important}
+.operator-subpage .operator-calendar-panel .eyebrow,.operator-subpage .operator-calendar-help .eyebrow,.operator-subpage .b2b-network__group-index{color:#d8a94f!important}
+.operator-subpage .operator-calendar-help{padding:26px!important;position:static!important}
+.operator-subpage .operator-calendar-help strong{color:#f7f2e9}
+.operator-subpage .operator-calendar-help__note{background:rgba(216,169,79,.11)!important;color:#f7f2e9;border:1px solid rgba(216,169,79,.25)}
+.operator-subpage .operator-calendar-panel textarea{background:rgba(247,242,233,.97)!important;color:#082a2d!important}
+.operator-subpage .operator-calendar-panel .button,.operator-subpage .b2b-network__actions .button{background:#d8a94f;color:#071b1f;border-color:#d8a94f}
+.operator-subpage .operator-calendar-panel form>div>span{color:rgba(247,242,233,.7)!important}
+.operator-subpage .b2b-network{width:100%;max-width:1160px;min-width:0;margin:0 auto!important}
+.operator-subpage .b2b-network__panel{width:100%;max-width:none!important;padding:clamp(20px,3vw,36px)!important;margin:0 auto!important}
+.operator-subpage .b2b-network__group{border-bottom:1px solid rgba(216,169,79,.18);padding-bottom:24px;margin-bottom:24px}
+.operator-subpage .b2b-network__group:last-of-type{border-bottom:0}
+.operator-subpage .b2b-network__group-heading h2,.operator-subpage .b2b-options__legend,.operator-subpage .b2b-network__field>strong{color:#f7f2e9!important}
+.operator-subpage .b2b-options__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px}
+.operator-subpage .b2b-option{background:rgba(255,255,255,.055)!important;border:1px solid rgba(216,169,79,.25)!important;border-radius:14px;color:#f7f2e9!important;min-width:0}
+.operator-subpage .b2b-option--selected{background:#123b3c!important;border-color:#d8a94f!important}
+.operator-subpage .b2b-option span{color:inherit}
+.operator-subpage .b2b-network__optin{background:rgba(216,169,79,.08)!important;border:1px solid rgba(216,169,79,.28)!important;color:#f7f2e9!important;border-radius:14px}
+.operator-subpage .b2b-network__input{background:#f7f2e9!important;color:#071b1f!important;border-color:rgba(216,169,79,.5)!important}
+.operator-subpage .b2b-network__matches{padding:26px}
+.operator-subpage :is(a,button,input,textarea,select):focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
+@media(min-width:900px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(270px,.85fr);align-items:start;gap:18px}}
+@media(max-width:899px){.operator-subpage__calendar-grid{display:grid;grid-template-columns:1fr;gap:15px}}
+@media(max-width:650px){.operator-subpage{padding:16px 14px 40px}.operator-subpage__heading{padding:21px 19px;border-radius:19px}.operator-subpage .operator-calendar-panel,.operator-subpage .operator-calendar-help,.operator-subpage .b2b-network__panel{padding:19px!important}.operator-subpage .b2b-options__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.operator-subpage .b2b-option{padding:12px!important}}
+
+
+/* PR58: B2B opt-in contrast — dark surface and readable label in all states. */
+.operator-subpage .b2b-network .b2b-network__optin{
+  background:#12383b!important;
+  color:#f7f2e9!important;
+  border:1px solid rgba(216,169,79,.55)!important;
+}
+.operator-subpage .b2b-network .b2b-network__optin,
+.operator-subpage .b2b-network .b2b-network__optin *:not(input){
+  color:#f7f2e9!important;
+}
+.operator-subpage .b2b-network .b2b-network__optin input[type="checkbox"]{
+  accent-color:#d8a94f;
+  flex-shrink:0;
+}
+
+
+/* PR58 UX-01 — B2B guided flow: one short step at a time. */
+.operator-subpage .b2b-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.operator-subpage .b2b-flow__step{display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;min-height:48px;padding:9px 10px;border:1px solid rgba(216,169,79,.27);border-radius:13px;background:rgba(255,255,255,.035);color:rgba(247,242,233,.82);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.operator-subpage .b2b-flow__step>span{display:grid;place-items:center;flex:none;height:24px;min-width:24px;border:1px solid currentColor;border-radius:50%;font-size:11px}
+.operator-subpage .b2b-flow__step.is-current{background:#d8a94f;color:#071b1f;border-color:#d8a94f}
+.operator-subpage .b2b-flow__step:hover:not(.is-current){border-color:#d8a94f;color:#f7f2e9}
+.operator-subpage .b2b-flow__hint{color:rgba(247,242,233,.72);font-size:13px;margin:-13px 0 -3px}
+.operator-subpage .b2b-flow__actions{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.operator-subpage .b2b-flow__actions button{min-height:44px;padding:10px 19px;border-radius:999px;font-weight:750;cursor:pointer}
+.operator-subpage .b2b-flow__actions .button{background:#d8a94f;color:#071b1f;border:1px solid #d8a94f}
+.operator-subpage .b2b-flow__back{background:transparent;border:1px solid rgba(216,169,79,.58);color:#f7f2e9}
+.operator-subpage .b2b-flow__summary-list{display:grid;gap:0;margin:0}
+.operator-subpage .b2b-flow__summary-list>div{display:grid;grid-template-columns:190px minmax(0,1fr) auto;align-items:start;gap:14px;padding:15px 0;border-top:1px solid rgba(216,169,79,.2)}
+.operator-subpage .b2b-flow__summary-list dt{color:#d8a94f;font-size:12px;font-weight:800}
+.operator-subpage .b2b-flow__summary-list dd{margin:0;color:#f7f2e9;overflow-wrap:anywhere;font-size:14px;line-height:1.5}
+.operator-subpage .b2b-flow__summary-list button{background:transparent;color:#d8a94f;border:0;text-decoration:underline;text-underline-offset:4px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.operator-subpage .b2b-flow__feedback{margin:0;padding:12px 16px;border:1px solid rgba(216,169,79,.4);border-radius:12px;color:#f7f2e9}
+@media(max-width:700px){.operator-subpage .b2b-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.operator-subpage .b2b-flow__step{font-size:12px;padding:8px}.operator-subpage .b2b-flow__summary-list>div{grid-template-columns:minmax(0,1fr) auto;gap:5px 12px}.operator-subpage .b2b-flow__summary-list dt{grid-column:1/-1}.operator-subpage .b2b-flow__actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){.operator-subpage .b2b-flow__step{transition:none!important}}
+
+
+/* PR58 UX-01: compact editable summaries instead of permanently expanded matrices. */
+.operator-subpage .b2b-compact-choice{border:1px solid rgba(216,169,79,.25);border-radius:15px;background:rgba(255,255,255,.035);padding:16px 18px;min-width:0}
+.operator-subpage .b2b-compact-choice__head{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.operator-subpage .b2b-compact-choice__head>div{min-width:0}
+.operator-subpage .b2b-compact-choice__head h3{font-family:inherit;color:#f7f2e9;margin:0 0 5px;font-size:16px;font-weight:750;line-height:1.3}
+.operator-subpage .b2b-compact-choice__head p{margin:0;color:rgba(247,242,233,.78);font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.operator-subpage .b2b-compact-choice__toggle{flex:none;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(216,169,79,.65);border-radius:999px;background:transparent;color:#e8bd6c;padding:9px 14px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;min-height:40px}
+.operator-subpage .b2b-compact-choice__toggle:hover{background:rgba(216,169,79,.12)}
+.operator-subpage .b2b-compact-choice .b2b-options{margin-top:17px;padding-top:17px;border-top:1px solid rgba(216,169,79,.20)}
+.operator-subpage .b2b-compact-choice .b2b-options__legend{font-size:13px;font-weight:650;color:rgba(247,242,233,.8)!important;margin-bottom:9px}
+.operator-subpage .b2b-compact-choice .b2b-options__grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));grid-auto-rows:auto}
+.operator-subpage .b2b-compact-choice .b2b-option{min-height:58px;height:auto;align-items:center}
+.operator-subpage .b2b-network__group{display:grid;gap:18px}
+.operator-subpage .b2b-network__group .b2b-network__field{gap:8px}
+@media(max-width:650px){.operator-subpage .b2b-compact-choice{padding:13px}.operator-subpage .b2b-compact-choice__head{gap:10px}.operator-subpage .b2b-compact-choice__head h3{font-size:14px}.operator-subpage .b2b-compact-choice__head p{font-size:12px}.operator-subpage .b2b-compact-choice__toggle{padding:8px 10px}.operator-subpage .b2b-compact-choice .b2b-options__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* PR58 UX-01 — B2B desktop density: preserve text sizes, remove repeated empty space. */
+@media(min-width:900px){
+ .operator-subpage--b2b{padding-top:16px;padding-bottom:38px}
+ .operator-subpage--b2b .operator-subpage__shell{gap:12px}
+ .operator-subpage--b2b .operator-subpage__heading{padding:15px 26px;border-radius:18px}
+ .operator-subpage--b2b .operator-subpage__heading h1{font-size:clamp(30px,3vw,40px);margin:4px 0}
+ .operator-subpage--b2b .operator-subpage__heading p{font-size:14px}
+ .operator-subpage--b2b .operator-workspace-switcher{min-height:62px;padding:6px 15px;gap:18px;border-radius:15px}
+ .operator-subpage--b2b .operator-workspace-switcher__activity select{min-height:38px}
+ .operator-subpage--b2b .operator-workspace-switcher__link{padding:5px 4px 4px;gap:6px}
+ .operator-subpage--b2b .operator-workspace-switcher__divider{height:32px}
+ .operator-subpage--b2b .b2b-network__panel{padding:24px 30px!important;gap:14px}
+ .operator-subpage--b2b .b2b-flow__step{min-height:43px}
+ .operator-subpage--b2b .b2b-flow__hint{margin:0;font-size:13px}
+ .operator-subpage--b2b .b2b-network__group{gap:13px;padding-bottom:12px;margin-bottom:0}
+ .operator-subpage--b2b .b2b-network__group-heading h2{font-size:clamp(25px,2.4vw,31px);margin:0}
+ .operator-subpage--b2b .b2b-network__group-heading p{margin:3px 0 0;font-size:14px}
+ .operator-subpage--b2b .b2b-compact-choice{padding:12px 16px}
+}
+
+
+/* DS-B2B-NOTIFY-01 — readable internal match alerts and email preference. */
+.b2b-alerts{width:100%;padding:18px 22px;border:1px solid rgba(216,169,79,.45);border-radius:18px;background:linear-gradient(140deg,#153c3e,#0b2b2d);color:#f7f2e9}
+.b2b-alerts__heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.b2b-alerts__heading strong{font-size:17px}
+.b2b-alerts__heading span{font-size:12px;color:#e2ba65;font-weight:800}
+.b2b-alerts__notice{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid rgba(216,169,79,.2)}
+.b2b-alerts__notice p{font-size:13px;color:#e8dfd0;margin:4px 0 0}
+.b2b-alerts__actions{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.b2b-alerts__actions a,.b2b-alerts__actions button{font:inherit;font-size:13px;color:#e7bf6e;text-decoration:underline;text-underline-offset:3px;background:transparent;border:0;cursor:pointer}
+.b2b-alerts__preference{display:flex;align-items:center;gap:11px;margin-top:12px;font-size:14px;color:#f7f2e9;cursor:pointer}
+.b2b-alerts__preference input{width:19px;height:19px;accent-color:#d8a94f}
+.b2b-alerts__error{margin:10px 0 0;font-size:13px;color:#ffd8b5}
+@media(max-width:650px){.b2b-alerts{padding:15px}.b2b-alerts__notice{align-items:flex-start}}

@@ -140,3 +140,19 @@ body.personal-access-active main { min-height:100dvh; }
  .personal-google,.personal-email-button { min-height:44px; }
  .personal-email-form input { min-height:43px; }
 }
+
+/* Cards with one primary destination and optional independent actions. */
+.card-hit-area { position: relative; isolation: isolate; }
+.card-hit-area .card-primary-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  cursor: pointer;
+}
+.card-hit-area:has(.card-primary-link:focus-visible) {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.card-hit-area .card-independent-action { position: relative; z-index: 2; }
