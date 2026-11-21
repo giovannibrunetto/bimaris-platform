@@ -34,7 +34,7 @@ export default async function AdminPage() {
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
   const eventsToPublish = approvedEventsRes.count ?? 0;
-  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>item.experience_origin==="bimaris"||(Array.isArray(item.operator)?item.operator[0]?.published:item.operator?.published)===true).length;
+  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>{const operator=item.operator as {published:boolean}|{published:boolean}[]|null;return item.experience_origin==="bimaris"||(Array.isArray(operator)?operator[0]?.published:operator?.published)===true;}).length;
   const readyToPublish=eventsToPublish+experiencesToPublish;
   const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
