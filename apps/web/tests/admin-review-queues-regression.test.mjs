@@ -187,7 +187,7 @@ test("combined activity registry counts every acquired appointment without doubl
   assert.match(page, /db\.from\("events"\)/);
   assert.match(page, /Appuntamenti acquisiti/);
   assert.match(page, /Da pubblicare/);
-  assert.match(page, /allAppointments\.filter\(v=>v\.verification_status==="verified"&&!v\.published\)/);
+  assert.match(page, /allAppointments\.filter\(isReadyAppointment\)/);
   assert.match(dashboard, /allEventsRes\.count/);
   assert.doesNotMatch(page, /\.insert\(|\.update\(|\.delete\(/);
 });
