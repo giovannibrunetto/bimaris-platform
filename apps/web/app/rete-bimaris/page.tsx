@@ -27,20 +27,20 @@ export default function ReteBimarisPage() {
           <p>Le attività aderenti sono consultabili anche quando non propongono esperienze.</p>
         </div>
         <div className="cards ux-brand-05-rete-cards">
-          <article className="card">
+          <article className="card card-hit-area">
             <div className="card-body">
               <div className="kicker">Realtà aderenti</div>
               <h3>Operatori BIMARIS</h3>
               <p>Esplora le schede delle attività selezionate e pubblicate nella rete BIMARIS, anche senza esperienze disponibili.</p>
-              <Link className="text-link" href="/operatori">Scopri gli operatori →</Link>
+              <Link className="text-link card-primary-link" href="/operatori">Scopri gli operatori →</Link>
             </div>
           </article>
-          <article className="card">
+          <article className="card card-hit-area">
             <div className="card-body">
               <div className="kicker">Proposte da vivere</div>
               <h3>Esperienze</h3>
               <p>Scopri le esperienze pubblicate dagli operatori della rete: mare, sapori, natura, cultura e attività del territorio.</p>
-              <Link className="text-link" href="/esperienze">Scopri le esperienze →</Link>
+              <Link className="text-link card-primary-link" href="/esperienze">Scopri le esperienze →</Link>
             </div>
           </article>
         </div>
