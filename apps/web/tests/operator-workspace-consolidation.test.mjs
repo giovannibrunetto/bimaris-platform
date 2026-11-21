@@ -115,7 +115,7 @@ test("PR58 personal preferences separate topics from visit style without changin
  const css=read("../app/profilo/profile-ottanio.css");
  assert.match(page,/className="profile-preference-interests"/);
  assert.match(page,/>Cosa ti piace<\/h3>/);
- assert.match(page,/ranked\.map\(item => labels\[item.interest_key\]/);
+ assert.match(page,/ranked\.filter\(item => Number\(item\.explicit_score \?\? 0\) > 0\)\.map\(item => labels\[item.interest_key\]/);
  assert.match(summary,/>Come preferisci vivere Messina<\/h3>/);
  assert.match(summary,/<dl className="profile-preference-details">/);
  assert.match(summary,/<dt>\{item.label==="Tempo"\?"Quanto tempo":item.label\}<\/dt>/);
