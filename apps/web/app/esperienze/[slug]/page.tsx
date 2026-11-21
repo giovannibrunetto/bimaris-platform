@@ -24,32 +24,44 @@ export default async function ExperienceDetailPage({params}:{params:Promise<{slu
         <img src={experience.imageUrl} alt={experience.imageAlt ?? experience.name} decoding="async"/>
       </figure>
     )}
+    </div>
+    <div className="experience-summary-content">
+    <aside className="detail-panel experience-info-panel"><ul className="list"><li><strong>Operatore</strong><br/>{experience.operatorSlug?<Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link>:experience.operatorName}</li>{partners.length>0&&<li><strong>In collaborazione con</strong><br/>{partners.map((partner,index)=><span key={partner.slug??partner.name}>{index>0?", ":""}{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</span>)}</li>}{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
+    <div className="experience-summary-description">
       <h2 className="experience-detail-title">Cosa vivrai</h2>
       <p className="experience-detail-copy">{experience.description}</p>
       {experience.whySelected && (
         <p className="experience-selection"><strong>Perché BIMARIS l’ha scelta</strong><br/>{experience.whySelected}</p>
       )}
     </div>
-    <aside className="detail-panel experience-info-panel"><ul className="list"><li><strong>Operatore</strong><br/>{experience.operatorSlug?<Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link>:experience.operatorName}</li>{partners.length>0&&<li><strong>In collaborazione con</strong><br/>{partners.map((partner,index)=><span key={partner.slug??partner.name}>{index>0?", ":""}{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</span>)}</li>}{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
+    </div>
   </div>
   {partners.length>0&&<div className="detail-panel experience-detail-panel"><div className="kicker">Rete BIMARIS</div><h3>Un'esperienza costruita insieme</h3><p>Questa esperienza nasce dalla collaborazione tra operatori della rete BIMARIS.</p><ul className="list">{partners.map(partner=><li key={partner.slug??partner.name}><strong>{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</strong>{partner.activity&&<><br/>{partner.activity}</>}</li>)}</ul></div>}
 </section>
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link" href={`/sapori-territori/${product.slug}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
 <style>{`
-.experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(24px,4vw,44px) clamp(20px,4vw,48px)}
-.experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(32px,4vw,54px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
-.experience-overview-heading p{margin:0 0 24px;max-width:70ch}
-.experience-summary{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start;gap:24px}
+.experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px);background:#f6efe2;border-radius:20px;color:#30271d}
+.experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(30px,3.25vw,44px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
+.experience-overview-heading p{margin:0 0 16px;max-width:90ch}
+.experience-summary{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start;gap:16px 24px}
 .experience-summary-text-only{grid-template-columns:minmax(0,1fr)}
 .experience-summary-photo{margin:0}
-.experience-summary-photo img{display:block;width:100%;aspect-ratio:16/10;max-height:280px;object-fit:cover;border-radius:18px}
-.experience-summary-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+.experience-summary-photo img{display:block;width:100%;aspect-ratio:16/10;max-height:310px;object-fit:cover;border-radius:18px}
+.experience-summary-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:10px}
 .experience-overview .experience-info-panel{padding:20px;min-width:0;overflow-wrap:anywhere}
 .experience-overview .experience-info-panel .list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));gap:12px}
 .experience-overview .experience-info-panel .list li{padding:0;border:0}
-.experience-summary-story{min-width:0;overflow-wrap:anywhere}
-.experience-detail-title{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,32px);line-height:1.15;margin:16px 0 8px}
-.experience-detail-copy,.experience-selection{font-size:clamp(16px,1.5vw,18px);line-height:1.5;color:#4d5962;margin:0}
-.experience-selection{margin-top:12px}
+.experience-summary-story,.experience-summary-content{min-width:0}
+.experience-summary-content{display:grid;gap:16px}
+.experience-summary-description{min-width:0;overflow-wrap:anywhere}
+.experience-summary-text-only .experience-summary-story{display:none}
+.experience-overview .kicker,.experience-overview .text-link{color:#80551e}
+.experience-overview .experience-info-panel{background:#fffaf0;border:1px solid #ddcca9}
+.experience-summary-actions :is(a,button){background:#ecd7a9;color:#382913}
+.experience-summary-actions :is(a,button):hover{background:#e2c48a;color:#382913}
+
+.experience-detail-title{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,32px);line-height:1.15;margin:0 0 6px}
+.experience-detail-copy,.experience-selection{font-size:clamp(16px,1.5vw,18px);line-height:1.45;color:#514438;margin:0}
+.experience-selection{margin-top:8px}
 .experience-detail-panel{margin-top:28px;padding:clamp(24px,3vw,34px);border:1px solid var(--line);border-radius:18px;background:#fff}.experience-detail-panel h3,.experience-info-panel h3{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,30px);line-height:1.15;margin:8px 0 16px}.experience-detail-panel p:last-child{margin-bottom:0}.experience-info-panel{align-self:start;padding:clamp(24px,3vw,34px);border-radius:18px}.experience-info-panel .list{margin:0;padding:0;list-style:none}.experience-info-panel .list li{padding:14px 0;border-bottom:1px solid var(--line)}.experience-info-panel .list li:last-child{border-bottom:0}.experience-booking-note{margin-top:18px}.experience-overview .text-link:focus-visible{outline:3px solid var(--color-accent,#CAA86A);outline-offset:3px}@media(max-width:760px){.experience-summary{grid-template-columns:1fr;gap:16px}.experience-detail-panel{margin-top:20px;padding:22px}.experience-detail-copy{line-height:1.65}}`}</style>
 </>;}
