@@ -350,3 +350,19 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });
+
+test("admin detail shell uses one non-sticky shared navigation and compact header",()=>{
+ const links=read("../app/admin/AdminNavLinks.tsx");
+ const shell=read("../app/admin/admin-a9.css");
+ const page=read("../app/admin/esperienze/[id]/page.tsx");
+ const css=read("../app/admin/esperienze/[id]/admin-experience-review.css");
+ assert.match(links,/const detailContext =/);
+ assert.match(links,/admin-shell-nav--detail/);
+ assert.match(shell,/\.admin-shell-nav\{position:static!important;top:auto!important/);
+ assert.match(shell,/body:has\(\.admin-shell-nav--detail\) \.admin-shell-header/);
+ assert.match(page,/Torna alle esperienze da esaminare/);
+ assert.doesNotMatch(page,/admin-experience-review__review-link/);
+ assert.match(page,/id="admin-experience-review-details"/);
+ assert.match(css,/\.admin-experience-review__decision\{position:static!important/);
+ assert.match(css,/max-height:235px!important/);
+});

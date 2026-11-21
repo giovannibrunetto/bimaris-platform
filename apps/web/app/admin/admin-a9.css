@@ -260,3 +260,22 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
  .admin-shell-nav a.admin-shell-nav__tab{color:#15393b!important;background:#fff!important;border:1px solid #98805b!important;font-size:11px!important;}
  .admin-shell-nav a.admin-shell-nav__tab--questionnaire{background:#e9dac0!important;}
 }
+
+/* DT shared admin detail shell: no sticky navigation offset or duplicated large hero. */
+.admin-shell-nav{position:static!important;top:auto!important;z-index:auto!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header{padding:12px clamp(16px,3vw,32px)!important;border-bottom-width:2px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header__inner{max-width:1180px;gap:12px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header__eyebrow{font-size:10px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header h1{font-size:clamp(23px,2vw,29px)!important;line-height:1.12!important;margin:2px 0!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header p{display:none}
+body:has(.admin-shell-nav--detail) .admin-shell-header__actions{gap:8px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-header__actions a,
+body:has(.admin-shell-nav--detail) .admin-shell-header__actions button{min-height:36px!important;padding:7px 11px!important;font-size:12px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-nav__inner{padding-block:8px!important;gap:8px!important}
+body:has(.admin-shell-nav--detail) .admin-shell-nav a.admin-shell-nav__tab{min-height:38px!important;padding:8px 10px!important;font-size:12px!important}
+@media(max-width:650px){
+ body:has(.admin-shell-nav--detail) .admin-shell-header__inner{align-items:start!important}
+ body:has(.admin-shell-nav--detail) .admin-shell-header__identity{text-align:left!important}
+ body:has(.admin-shell-nav--detail) .admin-shell-header__actions{width:auto!important}
+ body:has(.admin-shell-nav--detail) .admin-shell-nav__inner{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
