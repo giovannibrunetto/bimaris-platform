@@ -12,7 +12,7 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, approvedEventsRes, allEventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, approvedEventsRes, allEventsRes, approvedExperiencesRes] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
@@ -22,9 +22,10 @@ export default async function AdminPage() {
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }),
+    db.from("experiences").select("id,experience_origin,operator:operators!experiences_operator_id_fkey(published)").eq("review_status","approved").eq("published",false),
   ]);
 
-  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes].some(result => result.error)) {
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes,approvedExperiencesRes].some(result => result.error)) {
     throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
   }
 
@@ -33,6 +34,8 @@ export default async function AdminPage() {
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
   const eventsToPublish = approvedEventsRes.count ?? 0;
+  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>item.experience_origin==="bimaris"||(Array.isArray(item.operator)?item.operator[0]?.published:item.operator?.published)===true).length;
+  const readyToPublish=eventsToPublish+experiencesToPublish;
   const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
@@ -47,7 +50,7 @@ export default async function AdminPage() {
   ].filter(item => item.count > 0).map(item => `${item.count} ${item.count === 1 ? item.singular : item.plural}`).join(" · ");
   const workItems = [
     {href:"/admin/contenuti",label:"Contenuti da esaminare",description:reviewBreakdown || "Nessuna pratica in attesa",value:pendingApps+pendingOperatorArea+pendingEvents},
-    {href:"/admin/attivita?view=ready",label:"Appuntamenti pronti da pubblicare",description:eventsToPublish > 0 ? "Appuntamenti MAI già verificati" : "Nessun appuntamento pronto",value:eventsToPublish},
+    {href:"/admin/attivita?view=ready",label:"Attività pronte da pubblicare",description:readyToPublish>0?`${experiencesToPublish} esperienze · ${eventsToPublish} appuntamenti`:"Nessuna attività pronta",value:readyToPublish},
   ];
   const statusItems = [
     { href: "/admin/operatori", label: "Operatori online", value: onlineOperators },
