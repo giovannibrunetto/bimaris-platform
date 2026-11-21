@@ -1,3 +1,4 @@
+import { ContextualReturnLink } from "@/components/ContextualReturnLink";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
@@ -68,7 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteHeader />
             <AnalyticsTracker />
             <AnalyticsClickTracker />
-            <main>{children}</main>
+            <main>{children}<ContextualReturnLink /></main>
             <SiteFooter />
             <ConsentBanner />
           </Suspense>
