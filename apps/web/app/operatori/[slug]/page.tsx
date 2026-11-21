@@ -27,29 +27,29 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
  return <div className="operator-detail-page">
   <style>{`
     html:has(.operator-detail-hero){scroll-padding-top:80px}
-    .operator-detail-page{background:#f3efe6;color:var(--ink)}
-    .operator-detail-page :is(.operator-detail-grid,.section-head) .kicker{color:#80551e}
+    .operator-detail-page{background:var(--bimaris-ivory);color:var(--ink)}
+    .operator-detail-page :is(.operator-detail-grid,.section-head) .kicker{color:var(--color-text)}
     .operator-detail-shell{width:min(1120px,calc(100% - 48px));margin-inline:auto}
     .operator-detail-intro,.operator-detail-contact{padding:clamp(18px,2vw,26px)}
-    .operator-detail-contact{background:#fffaf1;border:1px solid #d9c69e;border-radius:18px}
+    .operator-detail-contact{background:var(--bimaris-tortora);border:1px solid var(--bimaris-gold);border-radius:18px}
     .operator-detail-page .operator-detail-shell .section-head h2{font-size:clamp(28px,3vw,38px)}
     .operator-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;overflow-wrap:anywhere}
-    .operator-detail-back{display:inline-block;margin-bottom:12px;color:#f2d698;font-weight:700}
+    .operator-detail-back{display:inline-block;margin-bottom:12px;color:var(--bimaris-gold);font-weight:700}
     .operator-detail-back:hover{text-decoration:underline}
     @media(max-width:700px){.operator-detail-shell{width:calc(100% - 32px)}.operator-detail-grid{grid-template-columns:1fr}}
   `}</style>
-  <section className="operator-detail-hero" style={{position:"relative",overflow:"hidden",minHeight:heroImage?"clamp(220px,28vh,310px)":"0",display:"flex",alignItems:"flex-end",background:"#0b282e",color:"#fff"}}>
+  <section className="operator-detail-hero" style={{position:"relative",overflow:"hidden",minHeight:heroImage?"clamp(220px,28vh,310px)":"0",display:"flex",alignItems:"flex-end",background:"var(--bimaris-abyssal-teal)",color:"#fff"}}>
    {heroImage&&<img src={heroImage} alt={heroAlt} decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:.72}}/>}
    <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(3,33,38,.12) 5%,rgba(3,33,38,.36) 48%,rgba(3,33,38,.92) 100%)"}}/>
    <div className="operator-detail-shell" style={{position:"relative",zIndex:1,paddingBlock:"32px 24px"}}>
     {fromProfile&&<Link className="operator-detail-back" href="/profilo">← Torna all’Area personale</Link>}
-    <div className="kicker" style={{color:"#e8c57f"}}>{operator.category??"Operatore selezionato"} · BIMARIS</div>
+    <div className="kicker" style={{color:"var(--bimaris-gold)"}}>{operator.category??"Operatore selezionato"} · BIMARIS</div>
     <h1 style={{fontFamily:"Georgia,serif",fontSize:"clamp(38px,5vw,58px)",lineHeight:.98,margin:"8px 0 10px",maxWidth:850,color:"#fff"}}>{operator.name}</h1>
     <p style={{maxWidth:720,fontSize:"clamp(17px,2.2vw,21px)",lineHeight:1.65,color:"rgba(255,255,255,.9)",margin:0}}>{operator.description}</p>
    </div>
   </section>
 
-  {canEdit&&<section style={{background:"#0b282e",borderTop:"1px solid rgba(202,168,106,.3)",borderBottom:"1px solid rgba(202,168,106,.3)"}}><div className="operator-detail-shell" style={{paddingBlock:10,display:"flex",gap:18,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><strong style={{color:"#fff",display:"block",fontSize:15}}>Questa è la tua scheda pubblica</strong><span style={{color:"#f3efe6",fontSize:13}}>Puoi proporre aggiornamenti alle informazioni mostrate su BIMARIS.</span></div><Link className="button" href={`/area-operatore?editProfile=${encodeURIComponent(operator.id)}#profilo-operatore-${encodeURIComponent(operator.id)}`}>Modifica profilo</Link></div></section>}
+  {canEdit&&<section style={{background:"var(--bimaris-abyssal-teal)",borderTop:"1px solid rgba(202,168,106,.3)",borderBottom:"1px solid rgba(202,168,106,.3)"}}><div className="operator-detail-shell" style={{paddingBlock:10,display:"flex",gap:18,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap"}}><div><strong style={{color:"#fff",display:"block",fontSize:15}}>Questa è la tua scheda pubblica</strong><span style={{color:"var(--bimaris-ivory)",fontSize:13}}>Puoi proporre aggiornamenti alle informazioni mostrate su BIMARIS.</span></div><Link className="button" href={`/area-operatore?editProfile=${encodeURIComponent(operator.id)}#profilo-operatore-${encodeURIComponent(operator.id)}`}>Modifica profilo</Link></div></section>}
 
   <section style={{paddingBlock:20}}><div className="operator-detail-shell operator-detail-grid">
    <article className="operator-detail-intro"><div className="kicker">La selezione BIMARIS</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(25px,2.6vw,34px)",lineHeight:1.08,margin:"10px 0 20px"}}>Perché questa realtà</h2><p style={{fontSize:17,lineHeight:1.75,color:"#4d5962",margin:0}}>{operator.whySelected??"Realtà coerente con i criteri BIMARIS di qualità, autenticità e legame con il territorio."}</p>{operator.territoryName&&<div style={{marginTop:16,paddingTop:12,borderTop:"1px solid var(--line)"}}><span style={{display:"block",fontSize:12,fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",color:"var(--gold-dark)"}}>Territorio</span><strong style={{display:"block",marginTop:6,fontSize:17}}>{operator.territoryName}</strong></div>}</article>
