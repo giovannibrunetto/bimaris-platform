@@ -111,3 +111,11 @@
  .experience-manager__show-all{display:block;width:100%;margin:12px 0 18px;padding:12px 15px;border:1px solid #caa86a;border-radius:999px;background:#fffaf1;color:#07343b;font:inherit;font-weight:700;cursor:pointer}
  .experience-manager__show-all:focus-visible{outline:2px solid #caa86a;outline-offset:3px}
 }
+
+/* Public experience cards open their published page with one accessible link. */
+.experience-manager__card-public{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:17px 20px;cursor:pointer;text-align:left;overflow-wrap:anywhere;text-decoration:none;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.experience-manager__card-public:hover{border-color:#caa86a;box-shadow:0 8px 24px rgba(202,168,106,.16);transform:translateY(-2px)}
+.experience-manager__card-public:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+@media(min-width:900px){.experience-manager__card-public{padding:13px 16px}}
+@media(max-width:650px){.experience-manager__card-public{padding:14px}}
+@media(prefers-reduced-motion:reduce){.experience-manager__card-public{transition:none}.experience-manager__card-public:hover{transform:none}}
