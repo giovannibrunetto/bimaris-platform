@@ -84,7 +84,7 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
   ...extraRecommendations.filter(item => !/^(operator|appointment):/.test(item.key)),
  ].slice(0, 6);
  const hasMoreRecommendations = additionalRecommendations.length > 0;
- const hasPreferences = ranked.length > 0;
+ const hasPreferences = ranked.some(item => Number(item.explicit_score ?? 0) > 0);
  return <div className="profile-page"><style>{`
  .profile-page{background:#f3efe6;color:#172a33;min-height:100vh;padding:28px 20px 70px}.profile-shell{max-width:1160px;margin:auto}.profile-hero{background:radial-gradient(circle at 86% 15%,rgba(202,168,106,.18),transparent 30%),linear-gradient(135deg,#0b2638,#061624 72%);color:#f3efe6;border-radius:30px;padding:clamp(36px,5vw,60px);padding-right:140px;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(6,22,36,.17)}.profile-hero:after{content:"";position:absolute;width:390px;height:390px;border:1px solid rgba(202,168,106,.19);border-radius:50%;right:-155px;top:-250px;box-shadow:0 0 0 72px rgba(202,168,106,.028)}.kicker,.profile-hero .kicker{color:#caa86a;letter-spacing:.17em;text-transform:uppercase;font-size:11px;font-weight:800}.profile-hero h1{font-family:Georgia,serif;color:#f3efe6;font-size:clamp(44px,5.5vw,68px);font-weight:400;letter-spacing:-.035em;line-height:.96;margin:10px 0 17px;position:relative;z-index:1}.profile-hero p{color:rgba(243,239,230,.7);max-width:730px;font-size:16px;line-height:1.65;margin:0;position:relative;z-index:1}.profile-success{margin:14px 2px 0;padding:11px 15px;border-radius:13px;color:#5c492a;background:rgba(202,168,106,.13);border:1px solid rgba(202,168,106,.25)}
  .profile-session-actions{position:absolute;right:26px;top:26px;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:7px}.profile-logout{border:1px solid rgba(202,168,106,.35);background:rgba(255,255,255,.055);color:#f3efe6;border-radius:999px;padding:9px 17px;font:inherit;font-weight:750;cursor:pointer;backdrop-filter:blur(8px)}.profile-logout:hover{background:rgba(202,168,106,.12)}.profile-logout:disabled{opacity:.6;cursor:wait}.profile-logout-error{font-size:12px;color:#fff;max-width:220px;text-align:right}
@@ -110,7 +110,7 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
      <div className="profile-preference-interests">
       <h3 className="profile-preference-section-title">Cosa ti piace</h3>
       <div className="interest-tags">
-       {[...new Set(ranked.map(item => labels[item.interest_key] ?? item.interest_key))].slice(0, 6).map(label => (
+       {[...new Set(ranked.filter(item => Number(item.explicit_score ?? 0) > 0).map(item => labels[item.interest_key] ?? item.interest_key))].map(label => (
         <span className="interest-tag" key={label}><span className="interest-tag__check" aria-hidden="true">✓</span><span className="interest-tag__label">{label}</span></span>
        ))}
       </div>
