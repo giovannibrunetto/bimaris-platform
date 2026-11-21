@@ -55,7 +55,7 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
    }
    const interestKey = bestInterest(keys, scoreFor);
    return {
-    key: `operator:${operator.id}`, href: `/operatori/${operator.slug}`,
+    key: `operator:${operator.id}`, href: `/operatori/${operator.slug}?da=profilo`,
     title: operator.name, copy: operator.territoryName ?? "",
     kind: operator.category ? `Operatore · ${operator.category}` : "Operatore",
     score: scoreFor(interestKey), featured: false, interestKey, operatorSlug: operator.slug,
