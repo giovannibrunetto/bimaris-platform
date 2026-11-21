@@ -1,0 +1,47 @@
+/* DT — admin experience dossier: dedicated responsive hierarchy, no workflow changes. */
+.admin-experience-review{font-size:16px;line-height:1.55;color:#153238}
+.admin-experience-review__container{max-width:1180px!important;gap:22px!important}
+.admin-experience-review__breadcrumbs{font-size:14px!important;gap:16px!important;align-items:center}
+.admin-experience-review__breadcrumbs a{min-height:40px;display:inline-flex;align-items:center;font-weight:700;text-underline-offset:4px}
+.admin-experience-review__header{padding:25px 30px!important;border-radius:17px!important;border-left-width:5px!important;box-shadow:0 8px 24px rgba(12,44,45,.045)}
+.admin-experience-review__header h1{font-size:clamp(29px,3.7vw,44px)!important;line-height:1.14!important;margin:11px 0!important}
+.admin-experience-review__header p{font-size:15px!important;line-height:1.5!important}
+.admin-experience-review__summary{padding:28px 30px!important;gap:24px!important;border-radius:18px!important}
+.admin-experience-review__summary .kicker{font-size:12px!important;letter-spacing:.13em}
+.admin-experience-review__summary h2{font-size:clamp(23px,2.4vw,30px)!important;line-height:1.2;color:#12363b}
+.admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr) minmax(300px,.85fr)!important;gap:32px!important;align-items:start!important}
+.admin-experience-review__facts{font-size:16px!important;gap:15px!important;line-height:1.5}
+.admin-experience-review__facts>div:first-child{font-size:15px;gap:12px!important}
+.admin-experience-review__facts p{font-size:16px;line-height:1.65!important;color:#263f40}
+.admin-experience-review__cover{max-width:none!important}
+.admin-experience-review__cover img{aspect-ratio:4/3!important;object-fit:cover;border-radius:15px!important;box-shadow:0 10px 25px rgba(12,44,45,.1)}
+.admin-experience-review__cover>div{font-size:13px!important}
+.admin-experience-review__decision{padding:28px 30px!important;border-radius:18px!important}
+.admin-experience-review__decision h2{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.2}
+.admin-experience-review__decision p{font-size:15px!important;line-height:1.6}
+.admin-experience-review__decision form textarea{font-size:16px;line-height:1.5;padding:12px;border:1px solid #b5aba0;border-radius:10px;box-sizing:border-box}
+.admin-experience-review__decision form button{min-height:48px!important;font-size:15px!important;font-weight:750}
+.admin-experience-review__decision details>summary{font-size:15px!important;min-height:46px;display:list-item;align-content:center}
+.admin-experience-review__details{border-radius:18px!important}
+.admin-experience-review__details>summary{font-size:17px!important;line-height:1.4!important;min-height:60px;box-sizing:border-box}
+.admin-experience-review__details>div{padding:16px 24px 26px!important}
+.admin-experience-review__details article{font-size:15px}
+.admin-experience-review a:focus-visible,.admin-experience-review summary:focus-visible,.admin-experience-review button:focus-visible{outline:3px solid #b58d46;outline-offset:3px}
+@media(max-width:800px){
+ .admin-experience-review__summary-grid{grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+ .admin-experience-review__cover{max-width:580px!important}
+ .admin-experience-review__cover img{aspect-ratio:16/9!important}
+}
+@media(max-width:600px){
+ .admin-experience-review{padding:16px 12px 38px!important}
+ .admin-experience-review__container{gap:13px!important}
+ .admin-experience-review__header,.admin-experience-review__summary,.admin-experience-review__decision{padding:19px 16px!important}
+ .admin-experience-review__header h1{font-size:29px!important}
+ .admin-experience-review__summary-grid{gap:16px!important}
+ .admin-experience-review__facts{font-size:15px!important;gap:12px!important}
+ .admin-experience-review__facts p{font-size:15px!important}
+ .admin-experience-review__cover img{aspect-ratio:4/3!important}
+ .admin-experience-review__details>summary{padding:16px!important;font-size:15px!important}
+ .admin-experience-review__details>div{padding:12px!important}
+ .admin-experience-review__decision form{padding:14px!important}
+}
