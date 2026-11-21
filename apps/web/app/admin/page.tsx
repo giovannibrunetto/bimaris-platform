@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
+import {isReadyExperience} from "./ready-to-publish";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -17,7 +18,7 @@ export default async function AdminPage() {
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experience_revisions").select("id,experiences!inner(experience_origin)", { count: "exact", head: true }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
+    db.from("experience_revisions").select("id,experience_id,experiences!inner(experience_origin)", { count: "exact" }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
@@ -34,7 +35,8 @@ export default async function AdminPage() {
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
   const eventsToPublish = approvedEventsRes.count ?? 0;
-  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>{const operator=item.operator as {published:boolean}|{published:boolean}[]|null;return item.experience_origin==="bimaris"||(Array.isArray(operator)?operator[0]?.published:operator?.published)===true;}).length;
+  const pendingRevisionIds=new Set((revsRes.data??[]).map(revision=>revision.experience_id));
+  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>isReadyExperience({id:item.id,review_status:"approved",published:false,experience_origin:item.experience_origin,operator:item.operator as {published:boolean}|{published:boolean}[]|null},pendingRevisionIds)).length;
   const readyToPublish=eventsToPublish+experiencesToPublish;
   const pendingExperiences = pendingExpsRes.count ?? 0;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;

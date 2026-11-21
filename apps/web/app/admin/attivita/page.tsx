@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "../eventi/admin-events.css";
+import {isReadyExperience,isReadyAppointment} from "../ready-to-publish";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -36,14 +37,14 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   const registryExperiences = allExperiences.filter(item => item.experience_origin === "bimaris"
     || (!pendingRevisionIds.has(item.id) && item.review_status !== "pending" && item.review_status !== "submitted"));
   const registryAppointments = allAppointments.filter(item => item.verification_status !== "pending" || item.published);
-  const readyExperiences=registryExperiences.filter(item=>item.review_status==="approved"&&!item.published&&(item.experience_origin==="bimaris"||(Array.isArray(item.operator)?item.operator[0]?.published:item.operator?.published)===true));
+  const readyExperiences=registryExperiences.filter(item=>isReadyExperience(item,pendingRevisionIds));
   const experiences = readyOnly ? readyExperiences : registryExperiences;
   const appointments = readyOnly
-    ? allAppointments.filter(v=>v.verification_status==="verified"&&!v.published)
+    ? allAppointments.filter(isReadyAppointment)
     : acquiredOnly ? allAppointments : registryAppointments;
   const countOnlineExperiences=registryExperiences.filter(v=>v.published).length;
   const countPublishedAppointments=registryAppointments.filter(v=>v.published).length;
-  const countReadyAppointments=allAppointments.filter(v=>v.verification_status==="verified"&&!v.published).length;
+  const countReadyAppointments=allAppointments.filter(isReadyAppointment).length;
   return <div className="admin-events">
     <AdminSectionHeader
       title="Esperienze e appuntamenti"
@@ -67,7 +68,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
         <div className="admin-events__list">{experiences.map(item=>{
           const operator = Array.isArray(item.operator) ? item.operator[0] : item.operator;
           const approvedUnpublished = item.review_status === "approved" && !item.published;
-          const canPublish = approvedUnpublished && (item.experience_origin === "bimaris" || operator?.published === true);
+          const canPublish = isReadyExperience(item,pendingRevisionIds);
           return <article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.experience_origin==="bimaris"?"Curata da BIMARIS":"Proposta operatore"} · {item.published?"Online":"Non pubblicata"} · {({draft:"Bozza",approved:"Approvata",rejected:"Da correggere",pending:"In attesa",submitted:"In attesa"} as Record<string,string>)[item.review_status] ?? item.review_status}</span><h3>{item.name}</h3>
             {approvedUnpublished && !canPublish && <p className="admin-events__date">Da pubblicare dopo la pubblicazione del profilo operatore.</p>}
