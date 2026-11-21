@@ -39,6 +39,8 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
     <style>{`
+      html:has(.culture-detail){scroll-padding-top:80px}
+
       .culture-detail{background:#f7f9f7;color:#172326;padding-bottom:28px}
       .culture-detail-shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
       .culture-detail-hero{background:linear-gradient(115deg,#07343b 0%,#032126 72%);color:#fff;padding:24px 0 22px}
