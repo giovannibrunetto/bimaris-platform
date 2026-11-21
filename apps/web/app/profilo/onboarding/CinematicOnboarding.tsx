@@ -11,9 +11,9 @@ const interests:Interest[]=[
  {value:"miti-leggende",title:"Miti e leggende",description:"Storie, personaggi e immaginario dello Stretto",index:"02"},
  {value:"borghi",title:"Borghi",description:"Paesi, centri storici e territori da scoprire",index:"03"},
  {value:"sapori",title:"Sapori e vino",description:"Prodotti tipici, cantine, produttori e degustazioni",index:"04"},
- {value:"mare",title:"Mare",description:"Stretto, costa, barca e attività sul mare",index:"05"},
- {value:"natura-trekking",title:"Natura e trekking",description:"Sentieri, panorami e attività all'aperto",index:"06"},
- {value:"avventura",title:"Avventura",description:"Attività dinamiche, outdoor e esperienze adrenaliniche",index:"07"},
+ {value:"mare",title:"Mare e costa",description:"Spiagge, passeggiate sul litorale e uscite in barca",index:"05"},
+ {value:"natura-trekking",title:"Montagna e trekking",description:"Sentieri, boschi e panorami, anche con passeggiate facili",index:"06"},
+ {value:"avventura",title:"Adrenalina",description:"Rafting, zipline e percorsi nei parchi avventura",index:"07"},
  {value:"esperienze",title:"Esperienze",description:"Attività selezionate da vivere sul territorio",index:"08"},
 ];
 const companion=[
