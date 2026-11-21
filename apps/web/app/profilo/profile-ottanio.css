@@ -281,3 +281,23 @@
   min-height:43px;
  }
 }
+
+.profile-page .recommendation-card {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: 48px;
+}
+.profile-page .recommendation-card > .recommendation-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  margin: 0;
+  padding: 16px;
+  border-radius: inherit;
+}
+.profile-page .recommendation-card > .recommendation-card-link::after {
+  content: none;
+}
