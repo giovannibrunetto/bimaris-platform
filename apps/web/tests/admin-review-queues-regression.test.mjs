@@ -38,9 +38,9 @@ test("operator directory query errors remain visible", () => {
   assert.match(page, /if \(error\) throw new Error\("Impossibile caricare gli operatori"\)/);
 });
 
-test("dashboard fails visibly if any of its nine count queries fail", () => {
+test("dashboard fails visibly if any of its ten count queries fail", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes\]\.some\(result => result\.error\)/);
+  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes,approvedExperiencesRes\]\.some\(result => result\.error\)/);
   assert.match(dashboard, /throw new Error\("Impossibile caricare i contatori della dashboard amministrativa"\)/);
 });
 
