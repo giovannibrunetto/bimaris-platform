@@ -150,6 +150,11 @@
   display: flex;
   flex-direction: column;
   overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.profile-page .recommendation-card:hover > .text-link,
+.profile-page .recommendation-card:focus-visible > .text-link {
+  text-decoration: underline;
 }
 .profile-page .recommendation-card > .text-link {
   margin-top: auto;
