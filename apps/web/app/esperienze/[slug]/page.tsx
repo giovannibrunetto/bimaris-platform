@@ -59,7 +59,7 @@ export default async function ExperienceDetailPage({params}:{params:Promise<{slu
 .experience-summary-description{min-width:0;overflow-wrap:anywhere}
 .experience-summary-text-only .experience-summary-story{display:none}
 .experience-overview .kicker,.experience-overview .text-link{color:#80551e}
-.experience-overview .experience-info-panel{background:#fbf8f0;border:1px solid #d9c69e}
+.experience-overview .experience-info-panel{background:inherit;border:1px solid #d9c69e}
 .experience-page-surface .experience-summary-actions .button.ghost,
 .experience-page-surface .experience-summary-actions button[aria-pressed]{
   background:transparent;border:1px solid #9d9383;color:var(--ink,#101820);box-shadow:none
