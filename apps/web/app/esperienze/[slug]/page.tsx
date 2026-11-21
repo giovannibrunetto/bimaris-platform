@@ -9,11 +9,14 @@ import { getPublishedExperienceBySlug, getPublishedExperiencePartners, getPublis
 export const dynamic="force-dynamic";export const revalidate=0;
 function legacyInterest(category?:string){if(category==="degustazioni")return "sapori";if(category==="mare")return "mare";if(category==="avventura")return "avventura";if(category==="trekking-natura")return "natura-trekking";return "esperienze";}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const{slug}=await params;const experience=await getPublishedExperienceBySlug(slug);if(!experience)return{};return{title:`${experience.name} | Esperienze BIMARIS`,description:experience.excerpt,openGraph:experience.imageUrl?{images:[experience.imageUrl]}:undefined};}
-export default async function ExperienceDetailPage({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const experience=await getPublishedExperienceBySlug(slug);if(!experience)notFound();const[products,partners]=await Promise.all([getPublishedFoodProductsByExperienceId(experience.id),getPublishedExperiencePartners(experience.id)]);const interestKey=experience.interestKey??legacyInterest(experience.category);const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??[])];return <>
+export default async function ExperienceDetailPage({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{operatore?:string;da?:string}>}){const{slug}=await params;const experience=await getPublishedExperienceBySlug(slug);if(!experience)notFound();const[products,partners]=await Promise.all([getPublishedFoodProductsByExperienceId(experience.id),getPublishedExperiencePartners(experience.id)]);const interestKey=experience.interestKey??legacyInterest(experience.category);const origin=await searchParams;
+const returnOperator=origin.operatore && (origin.operatore===experience.operatorSlug || partners.some(partner=>partner.slug===origin.operatore)) ? origin.operatore : undefined;
+const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??[])];return <>
 <UserBehaviorSignal contentType="experience" contentId={experience.slug} interestKey={interestKey} weight={0.75}/>
 <div className="experience-page-surface">
 <section className="section experience-overview">
   <header className="experience-overview-heading">
+    {returnOperator && <Link className="text-link experience-operator-back" href={`/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}`}>← Torna alla scheda operatore</Link>}
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
     <h1>{experience.name}</h1>
     <p>{experience.excerpt}</p>
@@ -42,6 +45,8 @@ export default async function ExperienceDetailPage({params}:{params:Promise<{slu
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card card-hit-area" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
 </div>
 <style>{`
+html:has(.experience-page-surface){scroll-padding-top:80px}
+.experience-operator-back{display:inline-block;margin-bottom:10px}
 .experience-page-surface{background:var(--sand,#f3efe6);color:var(--ink,#101820);min-height:inherit}
 .experience-overview{max-width:1200px;margin-inline:auto;padding:clamp(18px,2.4vw,30px) clamp(20px,4vw,48px)}
 .experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(30px,3.25vw,44px);line-height:1.1;margin:8px 0 12px;overflow-wrap:anywhere}
