@@ -9,18 +9,28 @@ export const revalidate = 0;
 
 export default async function AdminLoginPage() {
   if (await isAuthorizedAdmin()) redirect("/admin");
-  // The Google OAuth PKCE flow is intentionally pinned to one stable Staging origin.
-  // Redirect before rendering the button, avoiding a misleading first click that only navigates.
-  const stableOrigin = "https://bimaris-platform-git-integration-cb5b41-giovannibrunetto84-1508.vercel.app";
+  // OAuth PKCE cookies belong to the host that initiated the login. Never
+  // silently switch an approved preview to another deployment's origin.
+  // Use the same stable alias for successive PR deployments; authorize it
+  // once in Supabase instead of registering every ephemeral deployment.
+  const stagingOrigin = "https://bimaris-platform-git-staging-giovannibrunetto84-1508.vercel.app";
+  const stablePreviewOrigin = "https://bimaris-platform-git-integration-cb5b41-giovannibrunetto84-1508.vercel.app";
+  const qaPreviewOrigin = "https://bimaris-platform-git-fix-dt16-is-347443-giovannibrunetto84-1508.vercel.app";
   const requestHeaders = await headers();
   const requestHost = requestHeaders.get("host")?.toLowerCase() ?? "";
   const isStaging = process.env.NEXT_PUBLIC_SUPABASE_URL === "https://nzdeoimwikhoidtladnu.supabase.co";
-  const testOrigin = "https://bimaris-platform-git-fix-dt16-is-347443-giovannibrunetto84-1508.vercel.app";
-  const allowedOrigin = isStaging && process.env.VERCEL_ENV === "preview" && requestHost === new URL(testOrigin).host
-    ? testOrigin
-    : stableOrigin;
-  if (isStaging && requestHost !== new URL(allowedOrigin).host) {
-    redirect(stableOrigin + "/admin/login");
+  const previewOrigins = [stablePreviewOrigin, qaPreviewOrigin];
+  const currentPreviewOrigin = previewOrigins.find(origin => new URL(origin).host === requestHost);
+  // On an unknown ephemeral preview, use the stable preview login explicitly
+  // rather than starting a PKCE flow whose callback is not allowlisted.
+  if (isStaging && process.env.VERCEL_ENV === "preview" && !currentPreviewOrigin) {
+    redirect(stablePreviewOrigin + "/admin/login");
+  }
+  const allowedOrigin = isStaging && process.env.VERCEL_ENV === "preview"
+    ? currentPreviewOrigin ?? stablePreviewOrigin
+    : stagingOrigin;
+  if (isStaging && process.env.VERCEL_ENV !== "preview" && requestHost !== new URL(stagingOrigin).host) {
+    redirect(stagingOrigin + "/admin/login");
   }
   return (
     <section className="admin-login" aria-labelledby="admin-login-title">
