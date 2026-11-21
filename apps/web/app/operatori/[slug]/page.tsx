@@ -23,7 +23,8 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
  const website=externalUrl(operator.website); const instagram=externalUrl(operator.instagram); const whatsapp=whatsappUrl(operator.whatsapp,`Buongiorno, vi contatto tramite BIMARIS. Ho visto la vostra realtà sulla piattaforma e vorrei ricevere maggiori informazioni.`); const directions=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(operator.googleMapsQuery)}`;
  const attribution={operatorId:operator.slug,operatorName:operator.name,sourceType:"operator",sourceId:operator.slug}; const analyticsBase={operator_id:operator.slug,operator_name:operator.name,source_type:"operator",source_id:operator.slug};
  const experienceCover=experiences.find(experience=>experience.imageUrl); const heroImage=operator.imageUrl??experienceCover?.imageUrl; const heroAlt=operator.imageAlt??experienceCover?.imageAlt??operator.name;
- const fromProfile=(await searchParams).da==="profilo";
+ const origin=(await searchParams).da;
+ const fromProfile=origin==="profilo";
  return <div className="operator-detail-page">
   <style>{`
     html:has(.operator-detail-hero){scroll-padding-top:80px}
@@ -67,7 +68,7 @@ export default async function OperatorDetailPage({params,searchParams}:{params:P
 
   {events.length>0&&<section className="operator-detail-shell"><div className="section-head"><div><div className="kicker">Prossimi appuntamenti</div><h2>Calendario di {operator.name}</h2></div><p>Eventi e aggiornamenti verificati collegati direttamente a questa realtà.</p></div><div className="cards">{events.map(event=><article key={event.id} className="card" style={{padding:24}}><div className="eyebrow">{formatEventDate(event.starts_at)}</div><h3 style={{margin:"8px 0 10px"}}>{event.title}</h3>{event.location&&<p style={{margin:"0 0 8px",fontWeight:700}}>{event.location}</p>}{event.description&&<p style={{margin:"0 0 14px",color:"var(--muted)"}}>{event.description}</p>}{event.source_url&&<a className="text-link" href={event.source_url} target="_blank" rel="noreferrer">Fonte ufficiale{event.source_label?` · ${event.source_label}`:""} →</a>}</article>)}</div></section>}
 
-  {experiences.length>0&&<section className="operator-detail-shell operator-experiences" aria-labelledby="operator-experiences-title"><h2 id="operator-experiences-title">Le esperienze di {operator.name}</h2><div className="operator-experiences-grid">{experiences.map(experience=><ExperienceCard key={experience.id} experience={experience} href={`/esperienze/${experience.slug}?operatore=${encodeURIComponent(operator.slug)}${fromProfile?"&da=profilo":""}`}/>)}</div></section>}
-  <section className="operator-detail-shell" style={{paddingTop:30,paddingBottom:50}}>{fromProfile ? <Link className="text-link" href="/profilo">← Torna all’Area personale</Link> : <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>}</section>
+  {experiences.length>0&&<section className="operator-detail-shell operator-experiences" aria-labelledby="operator-experiences-title"><h2 id="operator-experiences-title">Le esperienze di {operator.name}</h2><div className="operator-experiences-grid">{experiences.map(experience=><ExperienceCard key={experience.id} experience={experience} href={`/esperienze/${experience.slug}?operatore=${encodeURIComponent(operator.slug)}${fromProfile?"&da=profilo":origin==="area-operatore"?"&da=area-operatore":""}`}/>)}</div></section>}
+  <section className="operator-detail-shell" style={{paddingTop:30,paddingBottom:50}}>{fromProfile ? <Link className="text-link" href="/profilo">← Torna all’Area personale</Link> : origin!=="area-operatore" && <Link className="text-link" href="/operatori">← Tutti gli operatori</Link>}</section>
  </div>;
 }
