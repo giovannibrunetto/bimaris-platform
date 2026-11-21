@@ -15,7 +15,7 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
 <UserBehaviorSignal contentType="experience" contentId={experience.slug} interestKey={interestKey} weight={0.75}/>
 <div className="experience-page-surface">
 <section className="section experience-overview">
-  <nav className="experience-page-back" aria-label="Navigazione di ritorno"><Link href={returnOperator ? `/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":origin.da==="area-operatore"?"?da=area-operatore":""}` : "/esperienze"}>← {returnOperator ? "Torna alla scheda operatore" : "Torna a esperienze e appuntamenti"}</Link></nav>
+  <nav className="experience-page-back" aria-label="Navigazione di ritorno"><Link href={returnOperator ? origin.da==="area-operatore" ? `/area-operatore?operatore=${encodeURIComponent(returnOperator)}&tab=esperienze` : `/operatori/${encodeURIComponent(returnOperator)}${origin.da==="profilo"?"?da=profilo":""}` : "/esperienze"}>← {returnOperator ? (origin.da==="area-operatore" ? "Torna all’Area Operatore" : "Torna alla scheda operatore") : "Torna a esperienze e appuntamenti"}</Link></nav>
   <header className="experience-overview-heading">
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
     <h1>{experience.name}</h1>
