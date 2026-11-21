@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Experience } from "@/lib/types";
 import { track } from "@/lib/analytics";
 
-export function ExperienceCard({ experience }: { experience: Experience }) {
+export function ExperienceCard({ experience, href }: { experience: Experience; href?: string }) {
   return (
     <article className="card culture-card card-hit-area">
       {experience.imageUrl ? (
@@ -29,7 +29,7 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
         <Link
           className="text-link card-primary-link"
           aria-label={`Scopri ${experience.name}`}
-          href={`/esperienze/${experience.slug}`}
+          href={href ?? `/esperienze/${experience.slug}`}
           onClick={() => track("experience_view", { experience_id: experience.id, source: "card" })}
         >
           Scopri l'esperienza →
