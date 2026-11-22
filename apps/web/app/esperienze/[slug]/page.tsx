@@ -77,6 +77,13 @@ html:has(.experience-page-surface){scroll-padding-top:90px}
 .experience-page-surface .experience-summary-actions .button[href^="https://www.google.com/maps/dir/"]{background:#caa86a;border-color:#ab874b;color:#123139}
 .experience-detail-panel{margin-top:25px;padding:clamp(22px,3vw,34px);border:1px solid #d8c59d;border-radius:18px;background:#fff}
 .experience-detail-panel h3{font-family:Georgia,serif;font-size:clamp(24px,2.5vw,30px);line-height:1.15;margin:8px 0 16px}
+@media(min-width:861px){
+  .experience-summary:not(.experience-summary-text-only){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+  .experience-summary:not(.experience-summary-text-only) .experience-summary-content{grid-template-columns:minmax(0,1fr);gap:16px}
+  .experience-summary-photo img{aspect-ratio:16/10;max-height:340px}
+  .experience-page-back{margin-bottom:16px}
+  .experience-overview-heading{margin-bottom:20px;padding-bottom:16px}
+}
 @media(max-width:860px){.experience-summary-content{grid-template-columns:1fr}.experience-summary-photo img{aspect-ratio:16/10}.experience-overview .experience-info-panel .list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.experience-overview{padding:18px 16px 42px}.experience-overview-heading{margin-bottom:18px;padding-bottom:18px}.experience-overview-heading h1{font-size:clamp(30px,9vw,42px)}.experience-summary{gap:14px}.experience-summary-content{gap:14px}.experience-summary-photo{border-radius:14px}.experience-summary-photo img{aspect-ratio:4/3}.experience-overview .experience-info-panel,.experience-summary-description{padding:20px;border-radius:14px}.experience-overview .experience-info-panel .list{grid-template-columns:1fr 1fr;gap:15px 10px}.experience-detail-copy{line-height:1.65}.experience-page-back{margin-bottom:18px}}
 `}</style>
