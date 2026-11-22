@@ -9,7 +9,8 @@ export function ContextualReturnLink() {
   const origin = params.get("da");
   const detail = /^\/(cultura|borghi|storie-miti-leggende|operatori|esperienze|sapori-territori|appuntamenti)\/[^/]+\/?$/.test(pathname);
   const operatorWorkspace = pathname.startsWith("/area-operatore/");
-  const operatorOrigin = detail && origin === "area-operatore";
+  const operatorOrigin = detail && origin === "area-operatore" &&
+    !(pathname.startsWith("/esperienze/") && params.has("operatore"));
   const profileOrigin = detail && origin === "profilo" &&
     !pathname.startsWith("/cultura/") && !pathname.startsWith("/operatori/") &&
     !(pathname.startsWith("/esperienze/") && params.has("operatore"));
