@@ -100,3 +100,13 @@
   .surveyWelcome .screen>.primary{margin-top:12px}
   .surveyWelcome .footer{margin-top:12px;padding-top:8px}
 }
+
+/* Restore the previously validated mobile welcome logo: never crop the embedded tagline. */
+@media (max-width:760px){
+  .surveyWelcome{height:auto;min-height:100dvh;overflow:visible}
+  .surveyWelcome .layout{flex:0 0 auto;min-height:0;justify-content:flex-start;align-items:stretch;margin-top:20px}
+  .surveyWelcome .brand{max-height:none;overflow:visible}
+  .surveyWelcome .visual{height:auto;overflow:visible}
+  .surveyWelcome .visual img{display:block;width:100%;height:auto;object-fit:contain}
+  .surveyWelcome .panel{align-self:stretch;flex:0 0 auto;overflow:visible;max-height:none;width:100%;min-height:0;padding-right:3px}
+}
