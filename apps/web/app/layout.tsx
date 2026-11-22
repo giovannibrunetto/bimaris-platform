@@ -20,7 +20,7 @@ import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
-import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
 import { SITE_URL, publicRobotsMetadata, serializeJsonLd } from "@/lib/seo";
 
 const organizationJsonLd = {
@@ -51,6 +51,7 @@ export function generateMetadata(): Metadata {
       ? "BIMARIS STA ARRIVANDO"
       : "Scopri esperienze, luoghi, percorsi e operatori del territorio con BIMARIS.",
     robots: publicRobotsMetadata(),
+    verification: isIsolatedSurveyDeployment() ? { google: "cnPWTzTYVr-DTM7fIbBOdvBkQZuSfGKcJvQtFvruB3Q" } : undefined,
   };
 }
 
