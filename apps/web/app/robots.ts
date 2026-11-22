@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { SITE_URL, isPublicIndexingEnabled } from "@/lib/seo";
 import { liveCollectionOpen } from "@/lib/survey/live";
 
+export const dynamic = "force-dynamic";
+
 const surveyHost = "sondaggio.bimarisnet.it";
 const privatePaths = ["/admin/", "/api/", "/auth/", "/accedi", "/profilo", "/area-operatore/"];
 
