@@ -10,7 +10,7 @@ export function proxy(request: NextRequest) {
       "Cache-Control": "no-store",
     } });
     const path = request.nextUrl.pathname.replace(/[/]$/, "") || "/";
-    const pages = new Set(["/questionario-cittadini", "/privacy-questionario", "/robots.txt", "/sitemap.xml"]);
+    const pages = new Set(["/", "/questionario-cittadini", "/privacy-questionario", "/robots.txt", "/sitemap.xml"]);
     const submission = path === "/questionario-cittadini/invio";
     const publicAsset = path === "/brand/bimaris-main.jpeg" || path.startsWith("/_next/static/");
     if (pages.has(path) || submission || publicAsset) {
