@@ -119,3 +119,6 @@
 @media(min-width:900px){.experience-manager__card-public{padding:13px 16px}}
 @media(max-width:650px){.experience-manager__card-public{padding:14px}}
 @media(prefers-reduced-motion:reduce){.experience-manager__card-public{transition:none}.experience-manager__card-public:hover{transform:none}}
+
+.experience-manager__revision-card,
+.experience-manager__revision-card:hover{cursor:default;box-shadow:none;transform:none}

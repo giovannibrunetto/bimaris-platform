@@ -45,8 +45,20 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
  const [showAllExperiences,setShowAllExperiences]=useState(false);
  const [open,setOpen]=useState(false),[step,setStep]=useState(0),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
  const [draft,setDraft]=useState<Draft>(empty),[media,setMedia]=useState<ExperienceMediaItem[]>([]),[removedPaths,setRemovedPaths]=useState<string[]>([]),[editingId,setEditingId]=useState<string|null>(null),[revisionId,setRevisionId]=useState<string|null>(null),[revisionRows,setRevisionRows]=useState<Record<string,{id:string;sourceMediaId:string|null}>>({}),[saved,setSaved]=useState(true),[optimizing,setOptimizing]=useState(false),[coverKey,setCoverKey]=useState<string|null>(null);
+ const [revisionStatuses,setRevisionStatuses]=useState<Record<string,string>>({});
  const [collaboration,setCollaboration]=useState<ExperienceCollaboration|null>(null),[collaborationReady,setCollaborationReady]=useState(false);
  const supabase=useMemo(()=>createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!),[]),localKey=`bimaris:experience-draft:${operatorId}`;
+ useEffect(()=>{
+  if(open)return;
+  let current=true;
+  void (async()=>{
+   const {data,error}=await supabase.from("experience_revisions")
+    .select("experience_id,status").eq("operator_id",operatorId)
+    .in("status",["draft","rejected","pending","approved"]);
+   if(current&&!error)setRevisionStatuses(Object.fromEntries((data??[]).map(row=>[row.experience_id,row.status])));
+  })();
+  return()=>{current=false};
+ },[open,operatorId,supabase]);
  useEffect(()=>{
   if(!open||wizardScrollRequest===0)return;
   // Scroll after React has rendered the new step. A smooth scroll can be
@@ -253,7 +265,9 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
  if(authError||!user)throw new Error("La sessione autenticata non è disponibile nel browser. Ricarica l'Area Operatore; se il problema persiste, sarà necessario ripristinare l'accesso operatore.");const classification=await classifyLocation();if(revisionId){const {error}=await supabase.from("experience_revisions").update({status:"draft",draft_step:step,content:{discovery_profile:discoveryProfile(),name:draft.name,excerpt:draft.excerpt,description:draft.description,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind}}).eq("id",revisionId);if(error)throw error;const me=await syncRevisionGallery(revisionId);if(me)throw new Error(me);setSaved(true);setMessage("Bozza delle modifiche salvata.");return revisionId}if(editingId){const {error}=await supabase.from("experiences").update({name:draft.name,excerpt:draft.excerpt,description:draft.description,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind,draft_step:step}).eq("id",editingId);if(error)throw error;const te=await syncTaxonomy(editingId);if(te)throw new Error(te);const pe=await syncProfile(editingId);if(pe)throw new Error(pe);const me=await syncLiveGallery(editingId);if(me)throw new Error(me);setSaved(true);setMessage("Bozza salvata.");return editingId}const {data,error}=await supabase.from("experiences").insert({operator_id:operatorId,name:draft.name||"Nuova esperienza",slug:`${slugify(draft.name||"esperienza")}-${Date.now().toString(36)}`,excerpt:draft.excerpt||null,description:draft.description||null,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind,review_status:"draft",draft_step:step,published:false}).select("id").single();if(error||!data)throw error??new Error("Creazione esperienza non riuscita");setEditingId(data.id);const te=await syncTaxonomy(data.id);if(te)throw new Error(te);const pe=await syncProfile(data.id);if(pe)throw new Error(pe);const me=await syncLiveGallery(data.id);if(me)throw new Error(me);setSaved(true);clearLocal();setMessage("Bozza salvata.");return data.id}catch(err){setMessage(isAuthWriteError(err)?"Autorizzazione al salvataggio non disponibile. Ricarica l'Area Operatore e verifica la sessione.":errorMessage(err,"Salvataggio non riuscito"));return null}finally{setBusy(false)}}
  async function submit(){if(media.length===0){setMessage("Prima dell’invio aggiungi almeno una fotografia e seleziona la copertina nel passaggio 4.");setStep(3);return}if(!complete(draft)){setMessage("Prima dell’invio completa interessi, attività e conferma il luogo di svolgimento o partenza sulla mappa. La macroarea sarà classificata da BIMARIS.");return}setBusy(true);setMessage("");try{const id=await saveDraft();if(!id)return;setBusy(true);if(revisionId){const {error}=await supabase.from("experience_revisions").update({status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",revisionId).select("id").single();if(error)throw error;setOpen(false);router.refresh();return}const {error}=await supabase.from("experiences").update({review_status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",id);if(error)throw error;setSaved(true);clearLocal();setOpen(false);router.refresh()}catch(err){setMessage(errorMessage(err,"Invio non riuscito"))}finally{setBusy(false)}}
 
- const canProposeRevision=experiences.some(e=>e.review_status==="approved");
+ const canProposeRevision=experiences.some(e=>e.review_status==="approved"&&!revisionStatuses[e.id]);
+ const resumeFirst=[...experiences].sort((a,b)=>Number(isResumable(b.id))-Number(isResumable(a.id)));
+ function isResumable(id:string){return ["draft","rejected"].includes(revisionStatuses[id])}
  const priceFormat=new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"});
  return <section id="operator-experiences" className="experience-manager" style={{scrollMarginTop:120}}>
   <div className="experience-manager__head"><div><h2>Le tue esperienze</h2><p>Consulta le schede e lo stato di pubblicazione.</p></div></div>
@@ -267,7 +281,9 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
   </div>}
   {!open&&message&&<p className="experience-wizard__message" role="status">{message}</p>}
   {experiences.length>0&&<div className={`experience-manager__list${showAllExperiences||selectingRevision?" experience-manager__list--expanded":""}`}>
-   {experiences.map(e=>{
+   {resumeFirst.map(e=>{
+    const revisionStatus=revisionStatuses[e.id];
+    const resumeLabel=revisionStatus==="rejected"?"Correggi le modifiche":"Riprendi bozza";
     const approved=e.review_status==="approved";
     const pending=e.review_status==="pending";
     const rejected=e.review_status==="rejected";
@@ -291,9 +307,18 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
      {facts.some(([,value])=>value)&&<dl className="experience-manager__facts">{facts.map(([label,value])=>value?<div key={label}><dt>{label}</dt><dd>{value}</dd></div>:null)}</dl>}
     </>;
     return selectingRevision
-     ?<button key={e.id} type="button" className="experience-manager__card experience-manager__card-choice" disabled={!approved||busy||open} onClick={()=>proposeRevision(e)}>
+     ?<button key={e.id} type="button" className="experience-manager__card experience-manager__card-choice" disabled={!approved||Boolean(revisionStatus)||busy||open} onClick={()=>proposeRevision(e)}>
        {overview}
       </button>
+     :approved&&revisionStatus
+      ?<article key={e.id} className="experience-manager__card">
+        <div className="experience-manager__card-public experience-manager__revision-card">
+         {overview}
+         <span>{isResumable(e.id)?revisionStatus==="rejected"?"Correzioni richieste":"Modifica in bozza":"Modifica in revisione"}</span>
+         {isResumable(e.id)&&<button type="button" className="experience-manager__secondary" onClick={()=>proposeRevision(e)} disabled={busy||open}>{resumeLabel}</button>}
+         {e.published&&e.slug&&<Link className="experience-manager__detail-label" href={`/esperienze/${encodeURIComponent(e.slug)}?operatore=${encodeURIComponent(operatorSlug)}&da=area-operatore`}>Apri scheda pubblica →</Link>}
+        </div>
+       </article>
      :e.published&&e.slug
       ?<Link key={e.id} className="experience-manager__card experience-manager__card-public" href={`/esperienze/${encodeURIComponent(e.slug)}?operatore=${encodeURIComponent(operatorSlug)}&da=area-operatore`} aria-label={`Apri la scheda pubblica di ${e.name}`}>
         {overview}<small className="experience-manager__detail-label">Apri scheda pubblica →</small>
