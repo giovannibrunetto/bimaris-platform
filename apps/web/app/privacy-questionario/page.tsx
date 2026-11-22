@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { liveCollectionOpen } from "@/lib/survey/live";
 import { isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
+import LivePrivacyQuestionario from "./LivePrivacyQuestionario";
 import "./privacy-questionario.css";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PrivacyQuestionarioPage() {
   const liveMode = isIsolatedSurveyDeployment() && await liveCollectionOpen();
+  if (liveMode) return <LivePrivacyQuestionario />;
   return <article className="survey-privacy">
     <header className="survey-privacy__hero">
       <div className="survey-privacy__container">
