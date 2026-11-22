@@ -20,6 +20,10 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
     <div className="kicker">{experience.location}{taxonomy.length ? ` · ${taxonomy.join(" · ")}` : experience.categoryName ? ` · ${experience.categoryName}` : ""}</div>
     <h1>{experience.name}</h1>
     <p>{experience.excerpt}</p>
+    <div className="experience-credits">
+      <div><strong>Operatore</strong> {experience.operatorSlug ? <Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link> : experience.operatorName}</div>
+      {partners.length > 0 && <div><strong>In collaborazione con</strong> {partners.map((partner, index) => <span key={partner.slug ?? partner.name}>{index > 0 && " · "}{partner.slug ? <Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link> : partner.name}{partner.activity && ` (${partner.activity})`}</span>)}</div>}
+    </div>
   </header>
   <div className={experience.imageUrl ? "experience-summary" : "experience-summary experience-summary-text-only"}>
     <div className="experience-summary-story">
@@ -28,9 +32,20 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
         <img src={experience.imageUrl} alt={experience.imageAlt ?? experience.name} decoding="async"/>
       </figure>
     )}
+      {experience.gallery.some(photo => photo.url !== experience.imageUrl) && (
+        <ul className="experience-gallery" aria-label="Altre foto dell’esperienza">
+          {experience.gallery.filter(photo => photo.url !== experience.imageUrl).map((photo, index) => (
+            <li key={`${photo.url}:${index}`}>
+              <a href={photo.url} target="_blank" rel="noreferrer" aria-label={`Apri foto ${index + 2} in una nuova scheda`}>
+                <img src={photo.url} alt={photo.alt} loading="lazy" decoding="async" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
     <div className="experience-summary-content">
-    <aside className="detail-panel experience-info-panel"><ul className="list"><li><strong>Operatore</strong><br/>{experience.operatorSlug?<Link className="text-link" href={`/operatori/${experience.operatorSlug}`}>{experience.operatorName}</Link>:experience.operatorName}</li>{partners.length>0&&<li><strong>In collaborazione con</strong><br/>{partners.map((partner,index)=><span key={partner.slug??partner.name}>{index>0?", ":""}{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</span>)}</li>}{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
+    <aside className="detail-panel experience-info-panel"><ul className="list">{experience.duration&&<li><strong>Durata</strong><br/>{experience.duration}</li>}{experience.priceFrom!=null&&<li><strong>Prezzo indicativo</strong><br/>Da € {experience.priceFrom}</li>}<li><strong>Territorio</strong><br/>{experience.location}</li>{experience.meetingPoint&&<li><strong>Punto di incontro</strong><br/>{experience.meetingPoint}</li>}</ul>{experience.bookingNote&&<p className="muted experience-booking-note">{experience.bookingNote}</p>}<div className="experience-summary-actions"><ExperienceDetailActions experience={experience}/><SaveToCollectionButton itemType="experience" itemId={experience.slug} interestKey={interestKey}/></div></aside>
     <div className="experience-summary-description">
       <h2 className="experience-detail-title">Cosa vivrai</h2>
       <p className="experience-detail-copy">{experience.description}</p>
@@ -40,7 +55,6 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
     </div>
     </div>
   </div>
-  {partners.length>0&&<div className="detail-panel experience-detail-panel"><div className="kicker">Rete BIMARIS</div><h3>Un'esperienza costruita insieme</h3><p>Questa esperienza nasce dalla collaborazione tra operatori della rete BIMARIS.</p><ul className="list">{partners.map(partner=><li key={partner.slug??partner.name}><strong>{partner.slug?<Link className="text-link" href={`/operatori/${partner.slug}`}>{partner.name}</Link>:partner.name}</strong>{partner.activity&&<><br/>{partner.activity}</>}</li>)}</ul></div>}
 </section>
 {products.length>0&&<section className="section sand"><div className="section-head"><div><div className="kicker">Dall'esperienza al prodotto</div><h2>Scopri ciò che stai assaggiando</h2></div><p>Approfondisci origine, identità e territorio dei prodotti protagonisti di questa esperienza.</p></div><div className="cards">{products.map(product=><article className="card card-hit-area" key={product.slug}><div className="card-body"><div className="kicker">{product.territoryName??"Sapori e territori"}</div><h3>{product.name}</h3>{product.excerpt&&<p>{product.excerpt}</p>}<Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link></div></article>)}</div></section>}
 </div>
@@ -56,6 +70,11 @@ html:has(.experience-page-surface){scroll-padding-top:90px}
 .experience-overview-heading h1{font-family:Georgia,serif;font-size:clamp(34px,4.2vw,54px);line-height:1.12;font-weight:500;margin:12px 0;color:#103c40;overflow-wrap:anywhere}
 .experience-overview-heading p{margin:0;max-width:74ch;color:#4d5b59;font-size:clamp(15px,1.6vw,18px);line-height:1.65}
 .experience-summary{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.experience-credits{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:12px;font-size:14px}
+.experience-credits strong{margin-right:4px}
+.experience-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,100px));gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.experience-gallery a{display:block;border-radius:8px}
+.experience-gallery img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:inherit}
 .experience-summary-story{min-width:0}
 .experience-summary-photo{margin:0;overflow:hidden;border-radius:20px;background:#dae2dc;border:1px solid #e0d1af}
 .experience-summary-photo img{display:block;width:100%;aspect-ratio:2/1;max-height:460px;object-fit:cover}
