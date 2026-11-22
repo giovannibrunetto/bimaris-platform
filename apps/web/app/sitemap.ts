@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { headers } from "next/headers";
 import { liveCollectionOpen } from "@/lib/survey/live";
+import { isIsolatedSurveyRequested, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
 import { getPublishedCultureEntries } from "@/data/live";
 import { getPublishedStories } from "@/data/stories";
 import { getPublishedVillages } from "@/data/villages";
@@ -10,9 +10,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const host = (await headers()).get("host")?.split(":")[0]?.toLowerCase();
-  if (host === "sondaggio.bimarisnet.it") {
-    if (!await liveCollectionOpen()) return [];
+  if (isIsolatedSurveyRequested()) {
+    if (!isIsolatedSurveyDeployment() || process.env.VERCEL_ENV !== "production" || !await liveCollectionOpen()) return [];
     return [
       { url: "https://sondaggio.bimarisnet.it/questionario-cittadini", changeFrequency: "weekly", priority: 1 },
       { url: "https://sondaggio.bimarisnet.it/privacy-questionario", changeFrequency: "monthly", priority: 0.4 },
