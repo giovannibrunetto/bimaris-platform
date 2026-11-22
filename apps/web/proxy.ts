@@ -1,18 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyDeployment, isIsolatedSurveyRequested } from "@/lib/prelaunch-mode";
 
 export function proxy(request: NextRequest) {
-  const surveyHost = request.headers.get("host")?.split(":")[0]?.toLowerCase() === "sondaggio.bimarisnet.it";
-  if (surveyHost && (request.nextUrl.pathname === "/robots.txt" || request.nextUrl.pathname === "/sitemap.xml")) {
-    return NextResponse.next();
-  }
-  // On the isolated survey host the page itself enforces the live collection gate.
-  // Never expose the rest of the prelaunch application through this exception.
-  if (surveyHost && request.nextUrl.pathname === "/questionario-cittadini") {
-    return NextResponse.next();
-  }
-  if (surveyHost && request.nextUrl.pathname === "/privacy-questionario") {
-    return NextResponse.next();
+  // Fail closed: a dedicated second Vercel project exposes only these exact
+  // survey paths. The main BIMARIS deployment retains its original behavior.
+  if (isIsolatedSurveyRequested()) {
+    if (!isIsolatedSurveyDeployment()) return new NextResponse("Service Unavailable", { status: 503, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+    } });
+    const path = request.nextUrl.pathname.replace(/[/]$/, "") || "/";
+    const pages = new Set(["/questionario-cittadini", "/privacy-questionario", "/robots.txt", "/sitemap.xml"]);
+    const submission = path === "/questionario-cittadini/invio";
+    const publicAsset = path === "/brand/bimaris-main.jpeg" || path.startsWith("/_next/static/");
+    if (pages.has(path) || submission || publicAsset) {
+      const response = NextResponse.next();
+      if (!pages.has(path) || (path !== "/robots.txt" && path !== "/sitemap.xml" && path !== "/questionario-cittadini" && path !== "/privacy-questionario")) {
+        response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+      }
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+    return new NextResponse("Not Found", { status: 404, headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
+      "Cache-Control": "no-store",
+      "Content-Type": "text/plain; charset=utf-8",
+    } });
   }
   if ((request.nextUrl.pathname.replace(/\/$/, "") === "/questionario-cittadini"
     || request.nextUrl.pathname.startsWith("/questionario-cittadini/"))
