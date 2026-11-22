@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { PrelaunchHome } from "@/components/PrelaunchHome";
-import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyRequested } from "@/lib/prelaunch-mode";
 import "./home-journey-v2.css";
 
 export const revalidate = 300;
 
 export default function Home() {
+  if (isIsolatedSurveyRequested()) return <div style={{minHeight:"100dvh",display:"grid",placeItems:"center",padding:"24px",textAlign:"center"}}><div><h1>BIMARIS — Messina da vivere</h1><p>Partecipa al questionario cittadini.</p><Link href="/questionario-cittadini">Vai al questionario</Link></div></div>;
   if (isPrelaunchEnabled()) return <PrelaunchHome />;
 
   return (
