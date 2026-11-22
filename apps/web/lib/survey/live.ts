@@ -2,13 +2,16 @@ import "server-only";
 import { createHmac } from "node:crypto";
 import { createServiceClient } from "@/lib/supabase/server";
 import { json, sameOrigin, readLimitedText } from "./security";
-import { validateSurvey, PRIVACY_VERSION, CONSENT_VERSION } from "./validation";
+import { validateSurvey, LIVE_PRIVACY_VERSION, CONSENT_VERSION } from "./validation";
 import { launchConsent } from "../../app/questionario-cittadini/questions";
 
 // No environment variables are set by this change. Preview can NEVER collect live data.
 export function surveyLiveConfigured() {
   const ref = process.env.BIMARIS_SURVEY_LIVE_PROJECT_REF ?? "";
-  return process.env.VERCEL_ENV === "production"
+  return process.env.VERCEL_PROJECT_ID === "prj_NsbtPm214NbbweDhUQvPnSaFM1rH"
+    && process.env.BIMARIS_SURVEY_PUBLIC_PROJECT_ID === "prj_NsbtPm214NbbweDhUQvPnSaFM1rH"
+    && process.env.BIMARIS_SURVEY_PUBLIC_ONLY === "true"
+    && process.env.VERCEL_ENV === "production"
     && process.env.BIMARIS_SURVEY_COLLECTION_MODE === "live"
     && /^[a-z]{20}$/.test(ref) && ref !== "nzdeoimwikhoidtladnu"
     && process.env.NEXT_PUBLIC_SUPABASE_URL === `https://${ref}.supabase.co`
@@ -18,7 +21,7 @@ export async function liveCollectionOpen() {
   if (!surveyLiveConfigured()) return false;
   const db = createServiceClient();
   if (!db) return false;
-  const { data, error } = await db.rpc("citizen_survey_collection_open", { p_privacy_version: PRIVACY_VERSION });
+  const { data, error } = await db.rpc("citizen_survey_collection_open", { p_privacy_version: LIVE_PRIVACY_VERSION });
   return !error && data === true;
 }
 export async function handleLiveSubmission(request: Request) {
@@ -41,7 +44,7 @@ export async function handleLiveSubmission(request: Request) {
   const { data, error } = await db.rpc("submit_citizen_survey", {
     p_request_id: input.requestId, p_q1: input.q1, p_q2: input.q2, p_q3: input.q3, p_q4: input.q4,
     p_idea: input.idea, p_email: input.email, p_consent: input.consent,
-    p_privacy_version: PRIVACY_VERSION, p_consent_version: CONSENT_VERSION, p_consent_text: launchConsent,
+    p_privacy_version: LIVE_PRIVACY_VERSION, p_consent_version: CONSENT_VERSION, p_consent_text: launchConsent,
     p_rehearsal: false,
   });
   if (error || data !== true) return json({ error: "Invio non riuscito. Puoi riprovare senza duplicare le risposte." }, 503);
