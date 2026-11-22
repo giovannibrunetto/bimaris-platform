@@ -11,7 +11,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   if (host === surveyHost) {
     if (!await liveCollectionOpen()) return { rules: { userAgent: "*", disallow: "/" } };
     return {
-      rules: { userAgent: "*", allow: ["/questionario-cittadini", "/privacy-questionario"], disallow: ["/admin/", "/api/", "/auth/", "/area-operatore/", "/profilo/", "/accedi", "/questionario-cittadini/collaudo/"] },
+      rules: { userAgent: "*", allow: ["/questionario-cittadini$", "/privacy-questionario$"], disallow: "/" },
       sitemap: `https://${surveyHost}/sitemap.xml`,
     };
   }
