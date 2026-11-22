@@ -311,12 +311,14 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
        {overview}
       </button>
      :approved&&revisionStatus
-      ?<article key={e.id} className="experience-manager__card">
+      ?<article key={e.id} className="experience-manager__card experience-manager__card--revision">
         <div className="experience-manager__card-public experience-manager__revision-card">
          {overview}
          <span>{isResumable(e.id)?revisionStatus==="rejected"?"Correzioni richieste":"Modifica in bozza":"Modifica in revisione"}</span>
+         <div className="experience-manager__revision-actions">
          {isResumable(e.id)&&<button type="button" className="experience-manager__secondary" onClick={()=>proposeRevision(e)} disabled={busy||open}>{resumeLabel}</button>}
-         {e.published&&e.slug&&<Link className="experience-manager__detail-label" href={`/esperienze/${encodeURIComponent(e.slug)}?operatore=${encodeURIComponent(operatorSlug)}&da=area-operatore`}>Apri scheda pubblica →</Link>}
+         {e.published&&e.slug&&<Link className="experience-manager__secondary" href={`/esperienze/${encodeURIComponent(e.slug)}?operatore=${encodeURIComponent(operatorSlug)}&da=area-operatore`}>Apri scheda pubblica →</Link>}
+         </div>
         </div>
        </article>
      :e.published&&e.slug

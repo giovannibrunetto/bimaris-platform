@@ -103,7 +103,24 @@
 
 /* UX-MOBILE-03 — Mobile experience list progressive disclosure */
 .experience-manager__create-primary{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0 14px}
-.experience-manager__create-primary .button{min-height:46px}
+.experience-manager__create-primary :is(.button,.experience-manager__secondary),
+.experience-manager__revision-actions .experience-manager__secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  min-height:44px;
+  padding:9px 16px;
+  border-width:1px;
+  border-style:solid;
+  border-radius:999px;
+  font-size:.92rem;
+  font-weight:750;
+  line-height:1.25;
+  text-align:center;
+  text-decoration:none;
+}
+.experience-manager__create-primary .button{border-color:transparent}
 .experience-manager__show-all{display:none}
 @media(max-width:600px){
  .experience-manager__create-primary>*{flex:1 1 auto}
@@ -122,3 +139,18 @@
 
 .experience-manager__revision-card,
 .experience-manager__revision-card:hover{cursor:default;box-shadow:none;transform:none}
+
+
+.experience-manager__card--revision{
+  display:flex;
+  align-self:stretch;
+}
+.experience-manager__revision-card{width:100%}
+.experience-manager__revision-actions{
+  display:grid;
+  gap:8px;
+  width:100%;
+  padding-top:4px;
+  margin-top:auto;
+}
+.experience-manager__revision-actions:empty{display:none}
