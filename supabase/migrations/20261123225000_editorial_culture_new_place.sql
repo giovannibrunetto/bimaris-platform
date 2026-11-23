@@ -43,7 +43,7 @@ begin
      new_place := w.draft->'newPlace';
      if nullif(btrim(new_place->>'name'),'') is not null then
        insert into public.places (name, address, slug)
-       values (new_place->>'name', nullif(new_place->>'address',''), 'cultura-' || w.id::text)
+       values (new_place->>'name', nullif(new_place->>'address',''), 'cultura-' || w.id::text || '-' || w.version::text)
        returning id into new_place_id;
        w.draft := (w.draft - 'newPlace') || jsonb_build_object('placeId', new_place_id);
      end if;
