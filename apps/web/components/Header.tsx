@@ -93,7 +93,7 @@ export function Header() {
 
   const adminLink = adminAccess.visible
     ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" }
-    : access !== "guest" ? { href: "/admin/login", label: "Accesso amministratore" } : null;
+    : null;
 
   const closeMobileMenu = () => {
     if (mobileMenuRef.current) {
