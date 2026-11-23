@@ -38,7 +38,7 @@ export default function OperatorWorkspaceSwitcher({ activities, selectedSlug }: 
           {activities.map(a => <option key={a.id} value={a.slug}>{a.name}</option>)}
         </select>
       </div>}
-      {activities.length===1&&<span className="operator-workspace-switcher__single-label">Altre funzioni</span>}
+      {activities.length===1&&<span className="operator-workspace-switcher__single-label">Strumenti BIMARIS</span>}
       <OperatorNotificationBell operatorId={active.id}/>
       <div className="operator-workspace-switcher__divider" aria-hidden="true" />
       <div className="operator-workspace-switcher__sections">
@@ -49,6 +49,12 @@ export default function OperatorWorkspaceSwitcher({ activities, selectedSlug }: 
           </a>;
         })}
       </div>
+      <details className="operator-workspace-switcher__mobile-tools">
+        <summary>Calendario e Network B2B</summary>
+        <div className="operator-workspace-switcher__mobile-links">
+          {sections.filter(s=>s.href!=="/area-operatore").map(s=><a key={s.href} href={`${s.href}?operatore=${encodeURIComponent(active.slug)}`}>{s.label} ↗</a>)}
+        </div>
+      </details>
     </nav>
   );
 }
