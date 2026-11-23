@@ -26,7 +26,7 @@
 .operator-premium-area .operator-experiences .experience-studio__head{border-bottom:1px solid rgba(11,38,56,.15)}
 .operator-premium-area .operator-profile-card,.operator-premium-area .operator-impact,.operator-premium-area .collaboration-inbox{background:rgba(255,255,255,.65);box-shadow:0 10px 32px rgba(6,22,36,.045);border:1px solid rgba(11,38,56,.10);border-radius:20px;padding:26px}
 .operator-premium-area .operator-experiences .experience-card{background:rgba(255,255,255,.78)!important}
-.operator-premium-empty{padding:50px 28px;background:#fff;border-radius:20px}
+.operator-premium-empty{padding:50px 28px;background:#0b3035;border:1px solid rgba(202,168,106,.35);border-radius:20px}
 @media(max-width:760px){
  .operator-premium-area{padding:15px 14px 40px}
  .operator-premium-header{align-items:flex-start;flex-direction:column;padding:24px 22px;gap:16px}
