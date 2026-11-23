@@ -7,7 +7,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 const primaryLinks = [
   { href: "/cultura", label: "Cultura" },
-  { href: "/storie-miti-leggende", label: "Miti e leggende" },
+  { href: "/storie-miti-leggende", label: "Messina, tra mito e leggenda" },
   { href: "/borghi", label: "Borghi" },
   { href: "/rete-bimaris", label: "Rete BIMARIS" },
   { href: "/mappa", label: "Mappa" },
