@@ -25,6 +25,10 @@ export default function OperatorWorkspacePanels({
   {id:"collaborations" as Tab,title:"Collaborazioni",description:"Richieste e opportunità con altri operatori",symbol:"◎"}
  ];
  const options=actions.filter(a=>a.id!=="collaborations"||Boolean(collaborations));
+ const sequence=options.map(a=>a.id);
+ const currentIndex=sequence.indexOf(active);
+ const next=sequence[currentIndex+1];
+ const nextLabel=actions.find(a=>a.id===next)?.title;
  return <div className="operator-workspace-panel operator-workspace-panel--simple">
   {active==="home"?<>
    <div className="operator-workspace-welcome">
@@ -33,32 +37,25 @@ export default function OperatorWorkspacePanels({
     <p>Trovi tutto qui, senza dover cercare tra i menu.</p>
    </div>
    <nav className="operator-quick-actions" aria-label="Cosa vuoi fare nella tua area operatore">
-    {actions.map(a=>a.id==="collaborations"&&!collaborations
-     ?<a key={a.id} className="operator-quick-action" href={`/area-operatore/network-b2b?operatore=${encodeURIComponent(operatorSlug)}`}>
-       <span className="operator-quick-action__icon" aria-hidden="true">{a.symbol}</span>
-       <strong>{a.title}</strong><small>{a.description}</small>
-       <span className="operator-quick-action__arrow" aria-hidden="true">→</span>
-      </a>
-     :<button key={a.id} className="operator-quick-action" type="button" onClick={()=>setActive(a.id)}>
+    {options.map(a=><button key={a.id} className="operator-quick-action" type="button" onClick={()=>setActive(a.id)}>
        <span className="operator-quick-action__icon" aria-hidden="true">{a.symbol}</span>
        <strong>{a.title}</strong><small>{a.description}</small>
        {a.id==="collaborations"&&collaborationCount>0&&<span className="operator-quick-action__count">{collaborationCount} da leggere</span>}
        <span className="operator-quick-action__arrow" aria-hidden="true">→</span>
-      </button>
-    )}
+      </button>)}
    </nav>
   </>:<>
    <nav className="operator-simple-back" aria-label="Navigazione Area Operatore">
     <button type="button" className="operator-simple-back__button" onClick={()=>setActive("home")}>← Tutte le funzioni</button>
-    <span>{actions.find(a=>a.id===active)?.title}</span>
+    <span>{actions.find(a=>a.id===active)?.title}</span><small className="operator-simple-back__progress">{currentIndex+1} di {sequence.length}</small>
    </nav>
    {active==="experiences"&&<div id="operator-tab-experiences" className="operator-workspace-content">{experiences}</div>}
    {active==="profile"&&<div id="operator-tab-profile" className="operator-workspace-content">{profile}</div>}
    {active==="impact"&&<div id="operator-tab-impact" className="operator-workspace-content">{impact}</div>}
    {active==="collaborations"&&collaborations&&<div id="operator-tab-collaborations" className="operator-workspace-content">{collaborations}</div>}
-   <nav className="operator-simple-other" aria-label="Altre sezioni">
-    {options.filter(a=>a.id!==active).map(a=><button key={a.id} type="button" onClick={()=>setActive(a.id)}>{a.title}</button>)}
-   </nav>
+   {next&&<nav className="operator-simple-next" aria-label="Passa alla sezione successiva">
+     <button type="button" className="operator-simple-next__button" onClick={()=>{setActive(next);window.scrollTo({top:0,behavior:"smooth"});}}> {nextLabel} →</button>
+   </nav>}
   </>}
  </div>;
 }
