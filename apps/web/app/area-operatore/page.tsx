@@ -22,7 +22,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   if(typeof value==="string"&&["operatore","experience","step","collaboration","invito","tab"].includes(key))returnQuery.set(key,value);
  }
  const returnPath="/area-operatore"+(returnQuery.size?"?"+returnQuery.toString():"");
- const signInUrl="/accedi?next="+encodeURIComponent(returnPath);
+ const signInUrl="/accedi/operatore?next="+encodeURIComponent(returnPath);
  const userClient=await createUserServerClient();if(!userClient)redirect(signInUrl);const {data:claimsData}=await userClient.auth.getClaims();const userId=typeof claimsData?.claims?.sub==="string"?claimsData.claims.sub:null;if(!userId)redirect(signInUrl);
  const {data:membershipsData}=await userClient.from("operator_memberships").select("role,operator_id,operators(id,slug,name,category,published,selection_status,address,phone,whatsapp,email,website,instagram)").eq("user_id",userId);const memberships=(membershipsData??[]) as Membership[];const rows=memberships.map(r=>({role:r.role,operator_id:r.operator_id,operator:relatedOperator(r.operators)})).filter(r=>r.operator!==null) as {role:string;operator_id:string;operator:Operator}[];
  const params=await searchParams;const requested=params.operatore;

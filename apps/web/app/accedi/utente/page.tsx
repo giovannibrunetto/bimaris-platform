@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect,useState } from "react";
+import { useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import PasswordAccess from "../PasswordAccess";
 
@@ -12,11 +12,6 @@ function getAuthCallback(){
 export default function AccessoUtentePage(){
  const [message,setMessage]=useState("");
  const [googleLoading,setGoogleLoading]=useState(false);
-
- useEffect(()=>{
-  document.body.classList.add("personal-access-active");
-  return()=>document.body.classList.remove("personal-access-active");
- },[]);
 
  async function signInWithGoogle(){
   const supabase=createBrowserSupabaseClient();

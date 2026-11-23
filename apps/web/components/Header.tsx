@@ -87,9 +87,11 @@ export function Header() {
 
   const accessLinks = [
     access === "guest"
-      ? { href: "/accedi", label: "Accesso utente" }
+      ? { href: "/accedi/utente", label: "Accesso utente" }
       : { href: "/profilo", label: "Area personale" },
-    { href: "/area-operatore", label: access === "guest" || access === "user" ? "Accedi come operatore" : "Area Operatore" },
+    access === "guest" || access === "user"
+      ? { href: "/accedi/operatore", label: "Accedi come operatore" }
+      : { href: "/area-operatore", label: "Area Operatore" },
   ];
 
   const adminLink = adminAccess.visible
