@@ -67,6 +67,7 @@ export default async function AdminPage() {
           <section className="admin-dashboard__workpanel" aria-labelledby="admin-work-heading">
             <div className="admin-dashboard__panel-heading">
               <h2 id="admin-work-heading">Azioni richieste</h2>
+              <Link href="/admin/archivio-editoriale">Archivio editoriale</Link>
             </div>
             <div className="admin-dashboard__tasklist">
               {workItems.map(item => <Link key={item.href} href={item.href} className="admin-dashboard__task">
