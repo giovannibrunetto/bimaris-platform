@@ -17,6 +17,7 @@ import "./map-route-polish.css";
 import "./section-hero-uniform.css";
 import "./culture-detail-compact.css";
 import "./ux-brand-05-hero.css";
+import "./action-roles.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
