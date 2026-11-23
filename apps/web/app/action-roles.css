@@ -49,3 +49,15 @@ a.button:not(.ghost):not(.secondary):not(.danger):not(.action-save):not(.action-
 :is(a,button):disabled:is(.action-open,.action-save,.action-cancel,.action-danger) {
   background:#e7e3dc; border-color:#d7dfdc; color:#7b817f; cursor:not-allowed;
 }
+
+/* BIMARIS historical pill shape: one radius for all action controls.
+   Navigation tabs, cards, text inputs and menus retain their own geometry. */
+:root { --bimaris-action-radius:999px; }
+a.button, button.button, input[type="submit"].button,
+:is(a,button,input[type="submit"]):is(.action-open,.action-save,.action-cancel,.action-danger),
+.admin-operator-detail__edit-disclosure > summary.action-open,
+.admin-shell-header__actions :is(a,button),
+.admin-itineraries-new-button,
+.personal-google,.personal-email-button {
+  border-radius:var(--bimaris-action-radius) !important;
+}
