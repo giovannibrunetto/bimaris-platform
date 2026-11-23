@@ -13,22 +13,22 @@ export default function Home() {
     <>
       <section className="home-discovery" aria-labelledby="home-discovery-title">
         <div className="home-discovery-inner">
-          <div className="home-discovery-brand">
-            <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
-          </div>
           <div className="home-discovery-content">
             <div className="home-discovery-heading">
               <h1 id="home-discovery-title">Come vuoi vivere Messina?</h1>
-              <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
             </div>
             <div className="home-discovery-panel">
               <h2>Che ti va di fare?</h2>
+              <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
               <SearchForm />
               <nav className="home-discovery-links" aria-label="Esplora il territorio">
                 <Link href="/mappa">Esplora la mappa</Link>
                 <Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link>
               </nav>
             </div>
+          </div>
+          <div className="home-discovery-brand">
+            <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
           </div>
         </div>
       </section>

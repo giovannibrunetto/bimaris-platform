@@ -5,6 +5,9 @@ export type SearchItem = {
   href: string;
   kind: "Luoghi" | "Appuntamenti" | "Esperienze";
   startsAt?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  location?: string | null;
 };
 
 const stopWords = new Set("a al alla alle ai allo all con che come cosa da dal dei del della di dov e ed gli il in la le lo mi nel nella ne per piu quale qualche qualcuno qualcosa si su sul sulla uno un una vorrei voglio fare vedere trovare posso consigliami adatto adatta".split(" "));

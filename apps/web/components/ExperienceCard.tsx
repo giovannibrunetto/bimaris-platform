@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Experience } from "@/lib/types";
 import { track } from "@/lib/analytics";
 
-export function ExperienceCard({ experience, href }: { experience: Experience; href?: string }) {
+export function ExperienceCard({ experience, href, availabilityNote }: { experience: Experience; href?: string; availabilityNote?: string }) {
   return (
     <article className="card culture-card card-hit-area">
       {experience.imageUrl ? (
@@ -26,6 +26,7 @@ export function ExperienceCard({ experience, href }: { experience: Experience; h
           {experience.priceFrom != null && <span>Da € {experience.priceFrom}</span>}
           {experience.bookable && <span>Prenotabile</span>}
         </div>
+        {availabilityNote && <p>{availabilityNote}</p>}
         <Link
           className="text-link card-primary-link"
           aria-label={`Scopri ${experience.name}`}

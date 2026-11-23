@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExperienceCard } from "@/components/ExperienceCard";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { getPublishedAppointments } from "@/data/public-appointments";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
@@ -17,13 +18,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     ? await Promise.all([getPublishedCultureEntries(), getPublishedVillages(), getPublishedStories(), getPublishedExperiences(), getPublishedAppointments()])
     : [[], [], [], [], []];
   const catalog: SearchItem[] = [
-    ...culture.map((item): SearchItem => ({ title: item.title, description: item.excerpt, keywords: `cultura ${item.category ?? ""} ${item.address ?? ""}`, href: `/cultura/${item.slug}`, kind: "Luoghi" })),
-    ...villages.map((item): SearchItem => ({ title: item.name, description: item.excerpt, keywords: `borgo ${item.territory?.name ?? ""} ${item.address ?? ""}`, href: `/borghi/${item.slug}`, kind: "Luoghi" })),
-    ...stories.map((item): SearchItem => ({ title: item.title, description: item.excerpt, keywords: item.places.map(place => place.name).join(" "), href: `/storie-miti-leggende/${item.slug}`, kind: "Luoghi" })),
+    ...culture.map((item): SearchItem => ({ title: item.title, description: item.excerpt, imageUrl: item.imageUrl, imageAlt: item.imageAlt, keywords: `cultura ${item.category ?? ""} ${item.address ?? ""}`, href: `/cultura/${item.slug}`, kind: "Luoghi" })),
+    ...villages.map((item): SearchItem => ({ title: item.name, description: item.excerpt, imageUrl: item.imageUrl, imageAlt: item.imageAlt, keywords: `borgo ${item.territory?.name ?? ""} ${item.address ?? ""}`, href: `/borghi/${item.slug}`, kind: "Luoghi" })),
+    ...stories.map((item): SearchItem => ({ title: item.title, description: item.excerpt, imageUrl: item.imageUrl, imageAlt: item.imageAlt, keywords: item.places.map(place => place.name).join(" "), href: `/storie-miti-leggende/${item.slug}`, kind: "Luoghi" })),
     ...experiences.map((item): SearchItem => ({ title: item.name, description: item.excerpt, keywords: `${item.categoryName} ${item.meetingPoint ?? ""}`, href: `/esperienze/${item.slug}`, kind: "Esperienze" })),
-    ...appointments.map((item): SearchItem => ({ title: item.title, description: item.location, keywords: "evento appuntamento", href: item.sourceUrl ?? "/esperienze?tipo=appuntamenti", startsAt: item.startsAt, kind: "Appuntamenti" })),
+    ...appointments.map((item): SearchItem => ({ title: item.title, location: item.location, keywords: "evento appuntamento", href: item.sourceUrl ?? "/esperienze?tipo=appuntamenti", startsAt: item.startsAt, kind: "Appuntamenti" })),
   ];
   const matches = rankTerritorySearch(query, catalog);
+  const experienceByHref = new Map(experiences.map(item => [`/esperienze/${item.slug}`, item]));
   const exact = matches.filter(match => !match.partial);
   const related = matches.filter(match => match.partial);
   const userClient = query ? await createUserServerClient() : null;
@@ -39,15 +41,28 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         {[{ title: "Risultati della ricerca", entries: exact }, { title: "Potrebbe interessarti", entries: related }].map(group =>
           group.entries.length > 0 && <section key={group.title}>
             <h2>{group.title}</h2>
-            <ul>{group.entries.map(({ item, dateUnconfirmed }) =>
-              <li key={`${item.href}:${item.title}:${item.startsAt ?? ""}`}>
-                <small>{item.kind}</small>
-                <h3><Link href={item.href}>{item.title}</Link></h3>
-                {item.description && <p>{item.description}</p>}
-                {item.startsAt && <p><time dateTime={item.startsAt}>{dateFormat.format(new Date(item.startsAt))}</time></p>}
-                {dateUnconfirmed && <p>Disponibilità per il giorno richiesto da verificare.</p>}
-              </li>
-            )}</ul>
+            <ul>{group.entries.map(({ item, dateUnconfirmed }) => {
+              const experience = experienceByHref.get(item.href);
+              const availabilityNote = dateUnconfirmed ? "Disponibilità per il giorno richiesto da verificare." : undefined;
+              return <li key={`${item.href}:${item.title}:${item.startsAt ?? ""}`}>
+                {experience ? <ExperienceCard experience={experience} availabilityNote={availabilityNote} /> : (
+                  <article className="card culture-card card-hit-area">
+                    {item.imageUrl ? <div className="culture-card-media">
+                      <img src={item.imageUrl} alt={item.imageAlt ?? ""} loading="lazy" decoding="async" />
+                      <span>{item.kind}</span>
+                    </div> : <div className="card-media territory-search-card-cover"><span>{item.kind}</span></div>}
+                    <div className="card-body">
+                      {item.location && <div className="eyebrow">{item.location}</div>}
+                      <h3>{item.title}</h3>
+                      {item.description && <p>{item.description}</p>}
+                      {item.startsAt && <div className="meta-row"><time dateTime={item.startsAt}>{dateFormat.format(new Date(item.startsAt))}</time></div>}
+                      {availabilityNote && <p>{availabilityNote}</p>}
+                      <Link className="text-link card-primary-link" aria-label={`Scopri ${item.title}`} href={item.href}>Scopri di più →</Link>
+                    </div>
+                  </article>
+                )}
+              </li>;
+            })}</ul>
           </section>
         )}
         {matches.length === 0 && <section>
