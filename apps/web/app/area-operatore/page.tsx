@@ -54,6 +54,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   service&&proposingIds.length?service.from("operators").select("id,name").in("id",proposingIds):Promise.resolve({data:[]}),
   service&&slugs.length?service.rpc("get_operator_action_metrics",{p_operator_slugs:slugs,p_window_days:30}):Promise.resolve({data:[]})
  ]);
+ const metricLoadError=Boolean(service&&slugs.length&&metricResult.error);
  const proposingNames=new Map((proposingResult.data??[]).map(o=>[o.id,o.name]));
  const collaborationsByOperator=new Map<string,{experience_id:string;operator_id:string;activity_label:string|null;approval_status:string;experience_name:string;proposing_operator_name:string}[]>();
  for(const c of collaborationRows){
@@ -81,7 +82,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
     collaborations={canManage&&(pendingCollaborations.length>0||Boolean(params.collaboration))?<CollaborationInbox operatorId={operator_id} items={pendingCollaborations}/>:undefined}
     experiences={canManage?<div className="operator-experiences"><ExperienceManager operatorId={operator_id} operatorSlug={operator.slug} experiences={operatorExperiences} interests={interests} activities={activities} territories={territories} initialExperienceId={params.experience} initialStep={params.step==="collaborazione"?5:undefined}/><WizardReviewGuide experiences={operatorExperiences}/></div>:<section className="operator-experiences" aria-label="Accesso in sola lettura"><h2>Le tue esperienze</h2><p>La gestione delle esperienze è riservata ai titolari e ai manager dell'attività.</p></section>}
     profile={canManage?<OperatorProfileEditor operator={operator} pending={pendingProfileOperators.has(operator_id)}/>:<section className="operator-profile-card"><h2>Profilo dell'attività</h2><p>Puoi consultare questa attività. Le modifiche sono riservate ai titolari e ai manager.</p></section>}
-    impact={<section className="operator-impact"><div className="operator-impact__head"><div><div className="eyebrow">Il tuo impatto</div><h2>Le persone che si avvicinano alla tua realtà</h2></div>{operator.published&&<span>Ultimi 30 giorni</span>}</div>{operator.published?<div className="operator-impact__metrics">{cards.map(([label,value])=><div key={label} style={metricCard}><strong>{value}</strong><span>{label}</span></div>)}</div>:<p className="operator-impact__waiting">Le statistiche saranno disponibili quando la tua realtà sarà online.</p>}</section>}
+    impact={<section className="operator-impact"><div className="operator-impact__head"><div><div className="eyebrow">Il tuo impatto</div><h2>Le persone che si avvicinano alla tua realtà</h2></div>{operator.published&&<span>Ultimi 30 giorni</span>}</div>{!operator.published&&<p className="operator-impact__waiting">Il profilo non è ancora pubblicato. Puoi comunque consultare i dati disponibili; le interazioni pubbliche inizieranno dopo la pubblicazione.</p>}{metricLoadError?<p className="operator-impact__waiting" role="status">Statistiche temporaneamente non disponibili. Riprova aggiornando la pagina.</p>:<div className="operator-impact__metrics">{cards.map(([label,value])=><div key={label} style={metricCard}><strong>{value}</strong><span>{label}</span></div>)}</div>}</section>}
    />
  })}
  </>}
