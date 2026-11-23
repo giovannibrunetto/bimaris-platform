@@ -383,3 +383,11 @@
 .operator-collaboration-intro h2{margin:0 0 8px;font:400 27px/1.2 Georgia,serif;color:#f7f2e9}
 .operator-collaboration-intro p{margin:0 0 16px;color:#d6e0dc;font-size:14px;line-height:1.5}
 @media(max-width:600px){.operator-simple-next{margin-top:14px;padding-top:12px}.operator-simple-next__button{font-size:13px;max-width:100%}.operator-collaboration-intro{padding:16px}.operator-collaboration-intro h2{font-size:22px}}
+
+/* One contextual B2B invitation after the statistics, never inside experiences. */
+.operator-results-layout{display:grid;gap:15px}
+.operator-b2b-invitation{padding:20px 22px;border:1px solid rgba(216,169,79,.30);border-radius:17px;background:rgba(216,169,79,.055);color:#f7f2e9}
+.operator-b2b-invitation h3{font:400 clamp(21px,2.6vw,27px)/1.2 Georgia,serif;color:#f7f2e9;margin:0 0 8px}
+.operator-b2b-invitation p{font-size:14px;line-height:1.5;color:#d7e0db;margin:0 0 14px}
+.operator-b2b-invitation .button{display:inline-flex;align-items:center;justify-content:center;text-align:center;min-height:43px;border-radius:999px}
+@media(max-width:600px){.operator-results-layout{gap:12px}.operator-b2b-invitation{padding:16px}.operator-b2b-invitation h3{font-size:21px}.operator-b2b-invitation p{font-size:13px}}
