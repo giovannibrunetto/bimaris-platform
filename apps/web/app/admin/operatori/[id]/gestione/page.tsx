@@ -34,7 +34,6 @@ export default async function Page({params,searchParams}:{params:Promise<{id:str
       </header>
       {notice&&<div role="status" className="detail-panel" style={{padding:12,marginTop:12}}>{notice}</div>}
       <div className="admin-operator-detail__management-page">
-        <h2 style={{fontSize:23,margin:"24px 0 10px"}}>Descrizione pubblica dell’operatore</h2>
         <form method="post" action="/api/admin/operators"><input type="hidden" name="operator_id" value={o.id}/><article className="detail-panel" style={{...panel,padding:18,marginTop:14}}><details><summary style={{cursor:"pointer",fontWeight:700,fontSize:17}}>Descrizione pubblica dell’operatore · Modifica</summary><div style={{marginTop:14}}><div className="kicker">Profilo pubblico</div><h3 style={{fontSize:22,margin:"6px 0 6px"}}>Descrizione BIMARIS dell'operatore</h3><p style={{margin:"0 0 14px",fontSize:13,opacity:.68}}>Testo editoriale destinato alla scheda pubblica dell'operatore.</p><label>Descrizione pubblica<textarea name="description" defaultValue={o.description??""} style={{...inputStyle,minHeight:110,resize:"vertical"}}/></label><div style={{display:"flex",justifyContent:"flex-end",marginTop:12}}><button className="button" name="action" value="save_editorial">Salva descrizione</button></div></div></details></article></form>
         <h2 style={{fontSize:23,margin:"24px 0 10px"}}>Gestione amministrativa</h2>
         <section className="admin-operator-detail__management" aria-label="Gestione operatore" style={{display:"grid",gap:12,marginTop:18}}>
