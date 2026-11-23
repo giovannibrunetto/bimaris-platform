@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ExperienceCard } from "@/components/ExperienceCard";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { getPublishedAppointments } from "@/data/public-appointments";
@@ -7,7 +8,6 @@ import { getPublishedVillages } from "@/data/villages";
 import { getPublishedStories } from "@/data/stories";
 import { rankTerritorySearch, suggestedDiscoveryIntents, type SearchItem } from "@/lib/territory-search";
 import SearchForm from "./SearchForm";
-import DiscoveryWizard from "../cosa-faccio-oggi/DiscoveryWizard";
 import "./territory-search.css";
 
 const dateFormat = new Intl.DateTimeFormat("it-IT", { dateStyle: "full", timeStyle: "short", timeZone: "Europe/Rome" });
@@ -26,6 +26,12 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     ...appointments.map((item): SearchItem => ({ title: item.title, location: item.location, keywords: "evento appuntamento", href: item.sourceUrl ?? "/esperienze?tipo=appuntamenti", startsAt: item.startsAt, kind: "Appuntamenti" })),
   ];
   const matches = rankTerritorySearch(query, catalog);
+  if (query && matches.length === 0) {
+    const intents = suggestedDiscoveryIntents(query);
+    const params = new URLSearchParams({ da: "ricerca" });
+    if (intents.length) params.set("intent", intents.join(","));
+    redirect(`/cosa-faccio-oggi?${params.toString()}`);
+  }
   const experienceByHref = new Map(experiences.map(item => [`/esperienze/${item.slug}`, item]));
   const exact = matches.filter(match => !match.partial);
   const related = matches.filter(match => match.partial);
@@ -66,11 +72,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             })}</ul>
           </section>
         )}
-        {matches.length === 0 && <section className="territory-search-fallback" aria-labelledby="territory-search-fallback-title">
-          <h2 id="territory-search-fallback-title">Affina la ricerca con i filtri</h2>
-          <p>La ricerca testuale non ha trovato proposte compatibili. Puoi continuare da qui o modificare la frase.</p>
-          <DiscoveryWizard key={query} initialIntents={suggestedDiscoveryIntents(query)} />
-        </section>}
         <nav aria-label="Continua a esplorare"><Link href="/mappa">Esplora la mappa</Link><Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link></nav>
         {!claims?.data?.claims?.sub && <section className="territory-search-registration">
           <h2>E se BIMARIS si ricordasse di ciò che ti piace?</h2>
