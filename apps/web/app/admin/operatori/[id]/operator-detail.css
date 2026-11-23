@@ -200,3 +200,24 @@
   .admin-operator-detail__manage-link { padding:16px; align-items:stretch; }
   .admin-operator-detail__manage-link > a { width:100%; box-sizing:border-box; }
 }
+
+/* Read-only profile by default; deliberate editing only on demand. */
+.admin-operator-detail__read-only { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 22px; }
+.admin-operator-detail__read-row { padding:11px 0; border-bottom:1px solid #e9e6df; min-width:0; }
+.admin-operator-detail__read-row > span { display:block; font-size:12px; color:#667475; margin-bottom:4px; }
+.admin-operator-detail__read-row > strong { display:block; font-size:15px; color:#19373b; font-weight:600; overflow-wrap:anywhere; }
+.admin-operator-detail__edit-disclosure { margin-top:20px; }
+.admin-operator-detail__edit-disclosure > summary { display:flex; cursor:pointer; align-items:center; justify-content:center; min-height:44px; padding:8px 16px; box-sizing:border-box; border:1px solid #ae874c; border-radius:999px; background:#c9a66c; color:#132f32; font-size:14px; font-weight:750; list-style:none; }
+.admin-operator-detail__edit-disclosure > summary::-webkit-details-marker { display:none; }
+.admin-operator-detail__edit-disclosure[open] > summary { background:#f5eee2; }
+.admin-operator-detail__edit-form { padding-top:16px; }
+.admin-operator-detail__edit-note { margin:0 0 16px; color:#5b6664; font-size:13px; line-height:1.5; }
+.admin-operator-detail__premium-check { display:flex; align-items:center; gap:8px; margin-top:18px; font-size:14px; }
+.admin-operator-detail__edit-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-top:20px; }
+.admin-operator-detail__edit-actions > a, .admin-operator-detail__edit-actions > button { min-height:44px; box-sizing:border-box; }
+@media(max-width:600px) {
+ .admin-operator-detail__read-only { grid-template-columns:minmax(0,1fr); }
+ .admin-operator-detail__read-row { padding:10px 0; }
+ .admin-operator-detail__edit-actions { display:grid; grid-template-columns:1fr 1fr; }
+ .admin-operator-detail__edit-actions > a, .admin-operator-detail__edit-actions > button { width:100%; font-size:12px; }
+}
