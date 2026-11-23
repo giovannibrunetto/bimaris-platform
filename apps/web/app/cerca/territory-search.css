@@ -1,0 +1,12 @@
+.territory-search { background: #032126; color: #f7f2e9; min-height: 65vh; padding: clamp(24px, 5vw, 64px) 16px; }
+.territory-search-header, .territory-search-results { max-width: 1050px; margin-inline: auto; }
+.territory-search-header h1 { color: #f7f2e9; font: 400 clamp(34px, 5vw, 55px)/1.04 Georgia, serif; margin: 0 0 18px; }
+.territory-search-results section { margin-top: 28px; }
+.territory-search-results h2, .territory-search-results h3 { color: #f7f2e9; margin: 0 0 8px; }
+.territory-search-results ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr)); gap: 12px; list-style: none; padding: 0; }
+.territory-search-results li { padding: 16px; background: #0b3035; border: 1px solid #92764b; border-radius: 14px; }
+.territory-search-results li small { color: #e1bf80; }
+.territory-search-results li p { margin: 6px 0 0; }
+.territory-search-results a { color: #f2dfbb; text-decoration: underline; text-underline-offset: 3px; }
+.territory-search-results nav { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+.territory-search-registration { padding: 18px; background: #0b3035; border: 1px solid #92764b; border-radius: 14px; }

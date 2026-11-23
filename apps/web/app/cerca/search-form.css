@@ -1,0 +1,6 @@
+.territory-search-form { display: grid; gap: 12px; min-width: 0; }
+.territory-search-form input { width: 100%; min-width: 0; min-height: 54px; padding: 12px 15px; border: 1px solid #ded9cc; border-radius: 14px; background: #fff; color: #08272d; font: inherit; font-size: 16px; }
+.territory-search-form button { justify-self: end; min-height: 46px; padding: 10px 18px; border: 0; border-radius: 999px; background: #e1bf80; color: #08272d; font: inherit; font-weight: 800; cursor: pointer; }
+.territory-search-form button:hover { background: #f0d39a; }
+.territory-search-form :focus-visible { outline: 2px solid #e1bf80; outline-offset: 3px; }
+@media (max-width: 460px) { .territory-search-form button { width: 100%; } }

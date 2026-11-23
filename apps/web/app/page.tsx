@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SearchForm from "./cerca/SearchForm";
 import { PrelaunchHome } from "@/components/PrelaunchHome";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 import "./home-journey-v2.css";
@@ -22,9 +23,7 @@ export default function Home() {
             </div>
             <div className="home-discovery-panel">
               <h2>Che ti va di fare?</h2>
-              <Link className="home-discovery-start" href="/cosa-faccio-oggi">
-                Inizia la ricerca guidata <span aria-hidden="true">→</span>
-              </Link>
+              <SearchForm />
               <nav className="home-discovery-links" aria-label="Esplora il territorio">
                 <Link href="/mappa">Esplora la mappa</Link>
                 <Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link>
