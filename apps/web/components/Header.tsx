@@ -14,7 +14,7 @@ const primaryLinks = [
 ];
 
 const utilityLinks = [
-  { href: "/operatori/candidatura", label: "Sei un operatore?" },
+  { href: "/operatori/candidatura", label: "Candida la tua attività" },
   { href: "/contatti", label: "Contatti" },
 ];
 
@@ -89,7 +89,7 @@ export function Header() {
     access === "guest"
       ? { href: "/accedi", label: "Accesso utente" }
       : { href: "/profilo", label: "Area personale" },
-    { href: "/area-operatore", label: access === "guest" || access === "user" ? "Accesso operatore" : "Area Operatore" },
+    { href: "/area-operatore", label: access === "guest" || access === "user" ? "Accedi come operatore" : "Area Operatore" },
   ];
 
   const adminLink = adminAccess.visible
