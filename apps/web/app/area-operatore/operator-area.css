@@ -576,3 +576,36 @@
  .operator-compact-status strong{font-size:20px}
  .operator-compact-status__link{font-size:12px}
 }
+
+/* Operator profile mobile compact overview, without hiding editable data. */
+.operator-profile-compact { margin-top:14px; }
+.operator-profile-overview--summary {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));
+  gap:0 18px;
+  margin:0;
+}
+.operator-profile-more {
+  margin-top:10px;
+  border-top:1px solid rgba(202,168,106,.27);
+}
+.operator-profile-more > summary {
+  cursor:pointer;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  font-size:13px;
+  font-weight:750;
+  color:#e7c68d;
+}
+.operator-profile-more > summary:focus-visible { outline:3px solid #caa86a; outline-offset:2px; }
+.operator-profile-more > .operator-profile-overview { margin-top:0; }
+@media(max-width:650px) {
+  .operator-profile-card--overview { padding:16px !important; }
+  .operator-profile-card--overview .operator-profile-card__head { gap:12px; }
+  .operator-profile-card--overview .operator-profile-card__head h2 { font-size:clamp(22px,6.2vw,27px); line-height:1.12; margin:4px 0; }
+  .operator-profile-card--overview .operator-profile-card__head p { font-size:12px; line-height:1.4; }
+  .operator-profile-overview--summary { grid-template-columns:minmax(0,1fr); gap:0; }
+  .operator-profile-overview--summary .operator-profile-overview__item { padding:10px 0; }
+  .operator-profile-more .operator-profile-overview__item { padding:10px 0; }
+}
