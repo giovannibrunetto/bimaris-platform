@@ -34,8 +34,8 @@ export default function OperatorProfileEditor({operator,pending}:{operator:Opera
 
  return <section ref={sectionRef} id={`profilo-operatore-${operator.id}`} className="operator-profile-card operator-profile-card--overview" style={{scrollMarginTop:"clamp(84px, 12vh, 132px)"}}>
    <div className="operator-profile-card__head">
-     <div><div className="eyebrow">Profilo attività</div><h2>{operator.name}</h2><p>{pending?"Proposta di modifica in valutazione. I dati visualizzati sono quelli approvati.":"Riepilogo dei dati pubblici della tua attività."}</p></div>
-     <button className={open?"button ghost":"button"} type="button" disabled={pending} aria-expanded={open&&!pending} aria-controls={formId} onClick={()=>setOpen(v=>!v)}>{pending?"Modifiche in valutazione":open?"Annulla modifiche":"Proponi modifiche"}</button>
+     <div><div className="eyebrow">Scheda attività</div><h2>Il tuo profilo</h2>{pending&&<p>Proposta di modifica in valutazione. Sono mostrati i dati approvati.</p>}</div>
+     <button className={open?"button action-cancel":"button action-open"} type="button" disabled={pending} aria-expanded={open&&!pending} aria-controls={formId} onClick={()=>setOpen(v=>!v)}>{pending?"Modifiche in valutazione":open?"Annulla modifiche":"Proponi modifiche"}</button>
    </div>
    {!open&&<div className="operator-profile-compact">
     <dl className="operator-profile-overview operator-profile-overview--summary">{summaryRows.map(([label,value])=><div key={label} className="operator-profile-overview__item"><dt>{label}</dt><dd>{value||"Non indicato"}</dd></div>)}</dl>
