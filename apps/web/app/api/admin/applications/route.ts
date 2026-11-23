@@ -56,12 +56,12 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
   if (!email) return "account-required" as const;
 
   let user = await findUserByEmail(supabase, email);
-  const smtpPassword = process.env.BIMARIS_CANDIDATURE_SMTP_PASSWORD;
   if (
     process.env.VERCEL_ENV === "preview" &&
-    process.env.VERCEL_GIT_COMMIT_REF === "fix/dt16-isolated-survey-surface-20261117" &&
-    smtpPassword
+    process.env.VERCEL_GIT_COMMIT_REF === "fix/dt16-isolated-survey-surface-20261117"
   ) {
+    const smtpPassword = process.env.BIMARIS_CANDIDATURE_SMTP_PASSWORD;
+    if (!smtpPassword) throw new Error("SMTP candidature non configurato sulla preview");
     const type = user ? "magiclink" : "invite";
     const { data, error } = await supabase.auth.admin.generateLink({ type, email });
     if (error || !data.user || !data.properties.hashed_token) {
