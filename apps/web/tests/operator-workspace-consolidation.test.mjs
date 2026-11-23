@@ -124,27 +124,28 @@ test("PR58 B2B email choice appears only in final recap before save",()=>{
 });
 
 
-test("PR58 personal preferences separate topics from visit style without changing source data",()=>{
+test("PR58 personal area exposes compact actions and retains personalized recommendations",()=>{
  const page=read("../app/profilo/page.tsx");
- const summary=read("../app/profilo/ProfilePreferenceSummary.tsx");
  const css=read("../app/profilo/profile-ottanio.css");
- assert.match(page,/className="profile-preference-interests"/);
- assert.match(page,/>Cosa ti piace<\/h3>/);
- assert.match(page,/ranked\.filter\(item => Number\(item\.explicit_score \?\? 0\) > 0\)\.map\(item => labels\[item.interest_key\]/);
- assert.match(summary,/>Come preferisci vivere Messina<\/h3>/);
- assert.match(summary,/<dl className="profile-preference-details">/);
- assert.match(summary,/<dt>\{item.label==="Tempo"\?"Quanto tempo":item.label\}<\/dt>/);
- assert.match(summary,/travelCompanion\?companionLabels/);
- assert.match(summary,/typicalTime\?timeLabels/);
- assert.match(summary,/preferredPace\?paceLabels/);
- assert.match(css,/\.profile-page \.profile-preference-section-title/);
- assert.match(css,/\.profile-page \.profile-preference-detail/);
- assert.match(page,/className="interest-tag__check" aria-hidden="true"/);
- assert.match(page,/className="interest-tag__label"/);
- assert.match(css,/@media\(max-width:650px\)\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
- assert.match(css,/@media\(max-width:345px\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)/);
+ assert.match(page,/href="\\/profilo\\/raccolta"/);
+ assert.match(page,/href="\\/profilo\\/onboarding"/);
+ assert.match(page,/href="\\/profilo\\/preferenze"/);
+ assert.match(page,/href="#scelti-per-te"/);
+ assert.match(page,/id="scelti-per-te"/);
+ assert.match(page,/>I miei salvati<\\/h2>/);
+ assert.match(page,/>Le mie preferenze<\\/h2>/);
+ assert.match(page,/>Scopri per me<\\/h2>/);
+ assert.match(page,/>Newsletter<\\/h2>/);
+ assert.match(page,/getPublishedCultureEntries\\(\\)/);
+ assert.match(page,/getPublishedExperiences\\(\\)/);
+ assert.match(page,/supabase\\.from\\("user_interests"\\)/);
+ assert.match(page,/supabase\\.from\\("user_saved_items"\\)/);
+ assert.match(page,/supabase\\.from\\("newsletter_preferences"\\)/);
+ assert.doesNotMatch(page,/<ProfilePreferenceSummary/);
+ assert.match(css,/\\.profile-page \\.personal-action-grid/);
+ assert.match(css,/\\.profile-page \\.recommendation-grid-primary/);
+ assert.match(css,/@media\\(max-width:650px\\)/);
 });
-
 
 test("PR58 tablet at 768px keeps activity and bell in first row",()=>{
  const css=read("../app/area-operatore/workspace-switcher.css");
