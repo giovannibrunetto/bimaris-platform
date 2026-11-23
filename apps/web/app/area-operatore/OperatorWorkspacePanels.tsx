@@ -32,9 +32,9 @@ export default function OperatorWorkspacePanels({
  return <div className="operator-workspace-panel operator-workspace-panel--simple">
   {active==="home"?<>
    <div className="operator-workspace-welcome">
-    <div className="eyebrow">Cosa vuoi fare oggi?</div>
-    <h2>Scegli da dove iniziare</h2>
-    <p>Trovi tutto qui, senza dover cercare tra i menu.</p>
+    <div className="eyebrow">LA TUA AREA OPERATORE</div>
+    <h2>Cosa vuoi gestire?</h2>
+    <p>Seleziona la funzione che ti serve.</p>
    </div>
    <nav className="operator-quick-actions" aria-label="Cosa vuoi fare nella tua area operatore">
     {options.map(a=><button key={a.id} className="operator-quick-action" type="button" onClick={()=>setActive(a.id)}>
