@@ -47,7 +47,7 @@ export default function OperatorWorkspacePanels({
   </>:<>
    <nav className="operator-simple-back" aria-label="Navigazione Area Operatore">
     <button type="button" className="operator-simple-back__button" onClick={()=>setActive("home")}>← Tutte le funzioni</button>
-    <span>{actions.find(a=>a.id===active)?.title}</span><small className="operator-simple-back__progress">{currentIndex+1} di {sequence.length}</small>
+    <small className="operator-simple-back__progress">{currentIndex+1} di {sequence.length}</small>
    </nav>
    {active==="experiences"&&<div id="operator-tab-experiences" className="operator-workspace-content">{experiences}</div>}
    {active==="profile"&&<div id="operator-tab-profile" className="operator-workspace-content">{profile}</div>}
