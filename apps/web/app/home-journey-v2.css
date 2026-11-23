@@ -87,3 +87,42 @@
   .home-journey-paths-v2 .home-journey-number{flex-basis:32px;font-size:28px}
   .home-operators{padding:14px 14px 15px!important}
 }
+
+.home-discovery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  background: #032126;
+  color: #f7f2e9;
+}
+.home-discovery-content {
+  padding: clamp(22px, 4vw, 60px);
+  min-width: 0;
+}
+.home-discovery-content h1 {
+  margin: 0 0 18px;
+  color: #f7f2e9;
+  font: 400 clamp(34px, 4vw, 64px)/1.04 Georgia, serif;
+}
+.home-discovery-content h2 {
+  margin: 0 0 6px;
+  color: #e6c785;
+  font-size: clamp(21px, 2.4vw, 32px);
+}
+.home-discovery-content p { margin: 0 0 16px; color: #f7f2e9; }
+.home-discovery-start { min-height: 44px; }
+.home-discovery-links { display: flex; flex-wrap: wrap; column-gap: 18px; margin-top: 6px; }
+.home-discovery-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #f7f2e9;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .home-discovery { grid-template-columns: minmax(0, 1fr); }
+  .home-discovery-content { padding: 20px 18px 10px; }
+  .home-discovery-content h1 { margin-bottom: 12px; }
+  .home-discovery-start { width: 100%; }
+}

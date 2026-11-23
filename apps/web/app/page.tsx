@@ -10,10 +10,19 @@ export default function Home() {
 
   return (
     <>
-      <section className="brand-hero brand-hero-compact">
-        <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
+      <section className="brand-hero brand-hero-compact home-discovery" aria-labelledby="home-discovery-title">
         <div className="brand-hero-visual">
           <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
+        </div>
+        <div className="home-discovery-content">
+          <h1 id="home-discovery-title">Come vuoi vivere Messina?</h1>
+          <h2>Che ti va di fare?</h2>
+          <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
+          <Link className="button home-discovery-start" href="/cosa-faccio-oggi">Inizia la ricerca guidata</Link>
+          <nav className="home-discovery-links" aria-label="Esplora il territorio">
+            <Link href="/mappa">Esplora la mappa</Link>
+            <Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link>
+          </nav>
         </div>
       </section>
 

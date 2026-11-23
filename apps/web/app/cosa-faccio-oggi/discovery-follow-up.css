@@ -1,0 +1,36 @@
+.discovery-follow-up {
+  width: min(calc(100% - 36px), 1120px);
+  margin: 0 auto 36px;
+}
+.discovery-follow-up nav {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  margin-bottom: 10px;
+}
+.discovery-follow-up nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #f7f2e9;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.discovery-registration {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid #8b754f;
+  border-radius: 18px;
+  background: #0b3035;
+}
+.discovery-registration h2 {
+  margin: 0 0 8px;
+  color: #f7f2e9;
+  font: 400 clamp(24px, 3vw, 34px)/1.1 Georgia, serif;
+}
+.discovery-registration p { margin: 0; color: #f7f2e9; }
+.discovery-registration .button { min-height: 44px; }
