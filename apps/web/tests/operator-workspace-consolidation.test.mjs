@@ -225,3 +225,23 @@ test("PR58 location lookup guides typing with debounced Google suggestions and a
  assert.match(picker,/if\(!name\)/);
  assert.doesNotMatch(picker,/Verifica su Google Maps/);
 });
+
+test("DS-MAI-VISIBILITY-01: external MAI events do not enter the operator network",()=>{
+ const network=read("../app/rete-bimaris/page.tsx");
+ const operators=read("../data/operators.ts");
+ const experiences=read("../data/live.ts");
+ const publicEvents=read("../data/public-appointments.ts");
+ const contract=read("../../../docs/qa/DS-MAI-VISIBILITY-01-2026-11-23.md");
+ assert.ok(network.includes('getPublishedOperators()'));
+ assert.ok(network.includes('getPublishedExperiences()'));
+ assert.ok(!network.includes('getPublishedAppointments'));
+ assert.ok(!network.includes('from("events")'));
+ assert.ok(!network.includes('public-appointments'));
+ assert.ok(operators.includes('.eq("selection_status", "selected")'));
+ assert.ok(operators.includes('.eq("published", true)'));
+ assert.ok(experiences.includes('operatorPublic'));
+ assert.ok(publicEvents.includes('.eq("verification_status", "verified")'));
+ assert.ok(publicEvents.includes('.eq("published", true)'));
+ assert.ok(contract.includes('Ricerca centrale'));
+ assert.ok(contract.includes('**No**'));
+});
