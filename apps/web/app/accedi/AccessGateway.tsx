@@ -10,26 +10,9 @@ export default function AccessGateway({operatorDestination}:{operatorDestination
  const [operatorMessageError,setOperatorMessageError]=useState(false);
  const [operatorLoading,setOperatorLoading]=useState(false);
  const operatorDeepLink=Boolean(operatorDestination);
- const [showOperatorLogin,setShowOperatorLogin]=useState(operatorDeepLink);
  const [showOperatorMagicLink,setShowOperatorMagicLink]=useState(false);
  function feedback(message:string,isError=false){setOperatorMessage(message);setOperatorMessageError(isError)}
  function operatorReturnPath(){return operatorDestination ?? "/area-operatore";}
-
- async function openOperatorAccess(){
-  const supabase=createBrowserSupabaseClient();
-  if(!supabase){setShowOperatorLogin(true);feedback("Accesso non disponibile in questo momento.",true);return;}
-  setOperatorLoading(true);feedback("");
-  const {data:{user}}=await supabase.auth.getUser();
-  if(user){
-   const {data:membership,error}=await supabase.from("operator_memberships").select("operator_id").eq("user_id",user.id).limit(1).maybeSingle();
-   setOperatorLoading(false);
-   if(!error&&membership){window.location.assign(operatorReturnPath());return;}
-   setShowOperatorLogin(true);
-   feedback("Questo account non è ancora associato a un'attività BIMARIS. Puoi usare un'altra email abilitata oppure proporre una nuova attività.",true);
-   return;
-  }
-  setOperatorLoading(false);setShowOperatorLogin(true);
- }
 
  async function signInOperatorWithGoogle(){
   const supabase=createBrowserSupabaseClient();
@@ -73,9 +56,9 @@ export default function AccessGateway({operatorDestination}:{operatorDestination
    <section className="card access-gateway-card">
     <div><div className="kicker">Per gli operatori</div><h2>Operatore</h2><p>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
     {!operatorDeepLink&&<div className="access-gateway-actions operator-entry-actions">
-     <button className="button operator-entry-toggle" type="button" disabled={operatorLoading} aria-expanded={showOperatorLogin} aria-controls="operator-access-form" onClick={()=>showOperatorLogin?setShowOperatorLogin(false):void openOperatorAccess()}>{operatorLoading?"Verifica accesso…":showOperatorLogin?"Nascondi accesso":"Accedi come operatore"}</button>
+     <Link className="button operator-entry-toggle" href="/accedi/operatore">Accedi come operatore</Link>
     </div>}
-    {showOperatorLogin&&<div id="operator-access-form" className="operator-login-panel" style={{scrollMarginTop:105}}>
+    {operatorDeepLink&&<div id="operator-access-form" className="operator-login-panel">
       <div className="operator-login-head"><div className="kicker">ACCESSO RISERVATO</div><h3>Entra nel tuo spazio</h3><p>Accedi con un account già abilitato alla gestione di un'attività BIMARIS.</p></div>
       {operatorMessage&&!showOperatorMagicLink&&<p className="access-status" role={operatorMessageError?"alert":"status"} aria-live="polite">{operatorMessage}</p>}
       <button type="button" className="operator-google-button" disabled={operatorLoading} onClick={()=>void signInOperatorWithGoogle()}><span className="operator-google-mark" aria-hidden="true">G</span><span>Continua con Google</span></button>
@@ -94,7 +77,7 @@ export default function AccessGateway({operatorDestination}:{operatorDestination
     <p className="operator-registration"><Link href="/operatori/candidatura">Non fai ancora parte della rete? Proponi la tua attività →</Link></p>
     <p className="access-gateway-note">Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
-  </div><p className="access-gateway-back"><Link href="/">← Torna a BIMARIS</Link></p>
+  </div><p className="access-gateway-back"><Link href={operatorDeepLink?"/accedi":"/"}>{operatorDeepLink?"← Scegli un altro tipo di accesso":"← Torna a BIMARIS"}</Link></p>
  </div>
   <style jsx global>{`
    .access-gateway-card .operator-entry-actions{margin:18px 0 0}
