@@ -67,7 +67,6 @@ export default async function AdminPage() {
           <section className="admin-dashboard__workpanel" aria-labelledby="admin-work-heading">
             <div className="admin-dashboard__panel-heading">
               <h2 id="admin-work-heading">Azioni richieste</h2>
-              <Link href="/admin/archivio-editoriale">Archivio editoriale</Link>
             </div>
             <div className="admin-dashboard__tasklist">
               {workItems.map(item => <Link key={item.href} href={item.href} className="admin-dashboard__task">
@@ -92,6 +91,18 @@ export default async function AdminPage() {
                 </Link>
               </li>)}
             </ul>
+          </section>
+          <section className="admin-dashboard__workpanel" aria-labelledby="admin-editorial-heading" style={{ gridColumn: "1 / -1" }}>
+            <div className="admin-dashboard__panel-heading">
+              <h2 id="admin-editorial-heading">Archivio editoriale</h2>
+            </div>
+            <Link href="/admin/archivio-editoriale" className="admin-dashboard__task" style={{ gridTemplateColumns: "minmax(0, 1fr) auto" }}>
+              <span className="admin-dashboard__task-copy">
+                <strong>Gestisci le schede Cultura</strong>
+                <small>Bozze, anteprime e pubblicazione</small>
+              </span>
+              <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
+            </Link>
           </section>
         </div>
       </div>
