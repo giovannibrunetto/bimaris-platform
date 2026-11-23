@@ -73,7 +73,11 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     <section className="revision-workspace__content">
     {state && <div id="revision-outcome" role="status" style={{ padding: 16, marginBottom: 14, scrollMarginTop: "6rem", background: "#fff", border: "1px solid #d7c7b6" }}>
       <p>{stateMessage[state] ?? "Esito della revisione non disponibile."}</p>
-      {state === "operator-not-selected" || state === "operator-not-published"
+      {state === "approved-applied"
+        ? experience.published
+          ? <Link className="text-link" href={`/esperienze/${experience.slug}`}>Visualizza l’esperienza pubblicata →</Link>
+          : <Link className="text-link" href={`/admin/esperienze/${id}?state=revision-approved-awaiting-publication#admin-decision`}>Vai alla pubblicazione →</Link>
+        : state === "operator-not-selected" || state === "operator-not-published"
         ? <Link className="text-link" href={`/admin/operatori/${experience.operator_id}`}>Apri il dossier operatore →</Link>
         : state === "experience-not-approved"
           ? <Link className="text-link" href={`/admin/esperienze/${id}`}>Apri la scheda esperienza →</Link>

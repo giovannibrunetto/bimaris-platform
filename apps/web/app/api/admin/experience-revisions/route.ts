@@ -59,6 +59,10 @@ export async function POST(request:NextRequest){
    const {data:revisionMedia,error:mediaError}=await supabase.from("experience_revision_media").select("id,source_media_id,storage_path").eq("revision_id",revisionId);
    if(mediaError)return back("action-error");
    const promoted:PromotedMedia[]=[];
+   const outcome=()=>experience.published
+    ? back("approved-applied")
+    : NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(revision.experience_id)}?state=revision-approved-awaiting-publication#admin-decision`,request.url),303);
+   let revisionApplied=false;
    try{
     for(const item of revisionMedia??[]){
      if(item.source_media_id)continue;
@@ -77,15 +81,20 @@ export async function POST(request:NextRequest){
      if(promoted.length)await supabase.storage.from(LIVE_MEDIA_BUCKET).remove(promoted.map(item=>item.livePath));
      return back(rpcState(applyError));
     }
+    revisionApplied=true;
     if(promoted.length){
      const cleanup=await supabase.storage.from(REVISION_MEDIA_BUCKET).remove(promoted.map(item=>item.privatePath));
      if(cleanup.error)console.error("BIMARIS revision private media cleanup failed",cleanup.error);
     }
     const result=Array.isArray(applied)?applied[0]:applied; const name=typeof result?.experience_name==="string"?result.experience_name:experience.name;
     await recordOperatorNotice({operatorId:revision.operator_id,category:"experience",eventKey:`experience-revision-applied:${revisionId}`,title:"Modifica esperienza approvata",description:`La revisione di “${name}” è stata approvata e applicata.`,targetPath:"/area-operatore?tab=esperienze"});
-    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:general||null});
-    return back("approved-applied");
+    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",alreadyPublished:experience.published,reviewNotes:general||null});
+    return outcome();
    }catch(error){
+    if(revisionApplied){
+     console.error("BIMARIS post-approval revision follow-up failed",error);
+     return outcome();
+    }
     for(const item of [...promoted].reverse())await supabase.from("experience_revision_media").update({storage_path:item.privatePath}).eq("id",item.id).eq("revision_id",revisionId).eq("storage_path",item.livePath);
     if(promoted.length)await supabase.storage.from(LIVE_MEDIA_BUCKET).remove(promoted.map(item=>item.livePath));
     throw error;

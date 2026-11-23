@@ -17,11 +17,12 @@ export default async function Page({params,searchParams}:{params:Promise<{id:str
  const {data:territoryOptions}=await db.from("territories").select("id,name").eq("active",true).order("name");
  const {data:discoveryProfile}=await db.from("experience_discovery_profiles").select("booking_requirement,booking_notice_hours,booking_cutoff_day_offset,booking_cutoff_time,weather_dependency,weather_constraints").eq("experience_id",item.id).maybeSingle();
  const gallery=(photos??[]) as Photo[],revisionRows=(historyRows??[]) as Revision[],participants=(participantRows??[]).map((r:any)=>one(r.operator as NamedRelation|NamedRelation[]|null)?.name).filter((v):v is string=>Boolean(v));const intentMap=new Map((intentDefs??[]).map(x=>[x.key,x.label])),activityMap=new Map((activityDefs??[]).map(x=>[x.key,x.label]));const interests=(intentRows??[]).map(x=>intentMap.get(x.intent_key)??x.intent_key),activities=(activityRows??[]).map(x=>activityMap.get(x.activity_key)??x.activity_key);const partners=(participantRows??[]).filter(row=>row.role==="participant").map(row=>({name:one(row.operator as NamedRelation|NamedRelation[]|null)?.name??"Operatore",activity:row.activity_label??"Attività non specificata",status:row.approval_status==="accepted"?"Confermata":row.approval_status==="rejected"?"Rifiutata":"In attesa"}));const canReview=!isBimaris&&!item.published&&(item.review_status==="pending"||item.review_status==="rejected");const alreadyRequested=item.review_status==="rejected";const requestedSections=Object.values((item.review_sections??{}) as ReviewSections).filter(Boolean);const correctionsReturned=item.review_status==="pending"&&requestedSections.length>0&&Boolean(item.review_notes);const snapshot=(item.review_snapshot??{}) as ReviewSnapshot;const hasSnapshot=Object.keys(snapshot).length>0;const operatorPublished=isBimaris||Boolean(operator?.published);const canPublish=!item.published&&item.review_status==="approved"&&operatorPublished;
- const justApproved=state==="experience-approved-awaiting-publication"&&item.review_status==="approved"&&!item.published;
+ const revisionJustApproved=state==="revision-approved-awaiting-publication";
+ const justApproved=(revisionJustApproved||state==="experience-approved-awaiting-publication")&&item.review_status==="approved"&&!item.published;
  const publicationForm=canPublish?(
 <form id="admin-decision" style={{scrollMarginTop:112}} className="admin-experience-review__publish" method="post" action="/api/admin/experiences">
  <input type="hidden" name="experience_id" value={item.id}/>
- <span className="admin-experience-review__publish-kicker">APPROVAZIONE COMPLETATA</span>
+ <span className="admin-experience-review__publish-kicker">{revisionJustApproved?"MODIFICA APPROVATA E APPLICATA":"APPROVAZIONE COMPLETATA"}</span>
  <h2>Pronta per la pubblicazione</h2>
  <p>Conferma la pubblicazione di «{item.name}».</p>
  <button className="button" name="action" value="publish">Pubblica esperienza</button>
