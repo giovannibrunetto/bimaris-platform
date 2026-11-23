@@ -327,3 +327,47 @@
  .operator-profile-overview--summary dd{font-size:13px!important;line-height:1.4!important}
  .operator-profile-more{margin-top:5px!important}
 }
+
+/* Simple operator entry: four actions in everyday language, without a second tab strip. */
+.operator-workspace-panel--simple{margin-top:16px}
+.operator-workspace-welcome{margin-bottom:15px}
+.operator-workspace-welcome .eyebrow{font-size:11px;letter-spacing:.13em;color:#d8a94f}
+.operator-workspace-welcome h2{font:400 clamp(25px,3vw,34px)/1.15 Georgia,serif;color:#f7f2e9;margin:5px 0}
+.operator-workspace-welcome p{color:#d6e0dc;font-size:14px;line-height:1.45;margin:0}
+.operator-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.operator-quick-action{
+ position:relative;display:grid;align-content:start;justify-items:start;gap:7px;
+ width:100%;min-width:0;min-height:144px;padding:20px 22px;
+ border:1px solid rgba(216,169,79,.24);border-radius:18px;
+ background:linear-gradient(140deg,rgba(255,255,255,.085),rgba(255,255,255,.025));
+ color:#f7f2e9;text-align:left;text-decoration:none;cursor:pointer;box-shadow:none;
+}
+.operator-quick-action:hover{border-color:#d8a94f;background:rgba(255,255,255,.1)}
+.operator-quick-action:focus-visible,.operator-simple-back__button:focus-visible,.operator-simple-other button:focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
+.operator-quick-action__icon{font-size:22px;line-height:1;color:#d8a94f}
+.operator-quick-action strong{font-size:17px;line-height:1.2;color:#fff}
+.operator-quick-action small{font-size:12px;line-height:1.45;color:#d3dfdb;max-width:30ch}
+.operator-quick-action__arrow{position:absolute;right:18px;top:20px;color:#d8a94f;font-size:20px}
+.operator-quick-action__count{font-size:11px;font-weight:750;color:#d8a94f}
+.operator-simple-back{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:2px 0 12px;border-bottom:1px solid rgba(216,169,79,.2)}
+.operator-simple-back__button{border:1px solid rgba(216,169,79,.4);border-radius:999px;min-height:42px;padding:8px 15px;background:transparent;color:#f7f2e9;cursor:pointer;font-size:13px;font-weight:750}
+.operator-simple-back>span{font-size:14px;color:#e8c786;font-weight:800}
+.operator-simple-other{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.operator-simple-other button{min-height:40px;padding:8px 13px;border:1px solid rgba(216,169,79,.3);border-radius:999px;background:rgba(255,255,255,.04);color:#f7f2e9;font-size:12px;font-weight:700;cursor:pointer}
+@media(max-width:600px){
+ .operator-workspace-panel--simple{margin-top:12px!important}
+ .operator-workspace-welcome{margin-bottom:12px}
+ .operator-workspace-welcome h2{font-size:25px}
+ .operator-workspace-welcome p{font-size:12px}
+ .operator-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .operator-quick-action{min-height:148px;padding:14px 12px;border-radius:15px;gap:7px}
+ .operator-quick-action__icon{font-size:19px}
+ .operator-quick-action strong{font-size:14px}
+ .operator-quick-action small{font-size:11px;line-height:1.35}
+ .operator-quick-action__arrow{right:11px;top:11px;font-size:16px}
+ .operator-simple-back{gap:8px}
+ .operator-simple-back>span{font-size:13px}
+ .operator-workspace-panel--simple .operator-workspace-content{padding-top:12px!important}
+ .operator-simple-other{margin-top:14px}
+}
+@media(max-width:350px){.operator-quick-actions{grid-template-columns:1fr}.operator-quick-action{min-height:110px}}
