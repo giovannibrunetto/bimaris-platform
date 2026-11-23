@@ -1,0 +1,31 @@
+/* Mobile-first refinements for the admin operator detail. Scoped to this route. */
+.admin-operator-detail { min-width: 0; }
+.admin-operator-detail input,
+.admin-operator-detail textarea { box-sizing: border-box; max-width: 100%; min-width: 0; }
+.admin-operator-detail__fields > label { min-width: 0; overflow-wrap: anywhere; }
+.admin-operator-detail__header > div:first-child { min-width: 0; }
+.admin-operator-detail__header h1 { overflow-wrap: anywhere; }
+.admin-operator-detail__tabs a { text-decoration: none; }
+@media (max-width: 600px) {
+  .admin-operator-detail { padding: 12px 12px 48px !important; }
+  .admin-operator-detail__header { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 14px !important; padding: 16px !important; }
+  .admin-operator-detail__header h1 { font-size: 27px !important; line-height: 1.12 !important; }
+  .admin-operator-detail__actions { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 8px !important; }
+  .admin-operator-detail__actions > a,
+  .admin-operator-detail__actions > form,
+  .admin-operator-detail__actions > form > button { box-sizing: border-box; width: 100%; min-width: 0; }
+  .admin-operator-detail__actions > a,
+  .admin-operator-detail__actions > form > button { min-height: 42px; display: inline-flex; justify-content: center; align-items: center; font-size: 12px; text-align: center; }
+  .admin-operator-detail__tabs { flex-wrap: nowrap !important; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; margin: 12px 0 16px !important; }
+  .admin-operator-detail__tabs > a { flex: 0 0 auto; white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
+  .admin-operator-detail__profile { padding: 16px !important; }
+  .admin-operator-detail__profile h2 { font-size: 23px !important; margin-bottom: 14px !important; }
+  .admin-operator-detail__fields { grid-template-columns: minmax(0, 1fr) !important; gap: 12px !important; }
+  .admin-operator-detail__fields > label { grid-column: 1 / -1 !important; }
+  .admin-operator-detail .detail-panel { max-width: 100%; overflow-wrap: anywhere; }
+  .admin-operator-detail .detail-panel textarea { width: 100%; }
+}
+@media (max-width: 360px) {
+  .admin-operator-detail__actions { grid-template-columns: minmax(0,1fr); }
+  .admin-operator-detail__header h1 { font-size: 25px !important; }
+}
