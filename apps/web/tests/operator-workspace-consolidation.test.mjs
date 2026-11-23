@@ -127,24 +127,22 @@ test("PR58 B2B email choice appears only in final recap before save",()=>{
 test("PR58 personal area exposes compact actions and retains personalized recommendations",()=>{
  const page=read("../app/profilo/page.tsx");
  const css=read("../app/profilo/profile-ottanio.css");
- assert.match(page,/href="\\/profilo\\/raccolta"/);
- assert.match(page,/href="\\/profilo\\/onboarding"/);
- assert.match(page,/href="\\/profilo\\/preferenze"/);
- assert.match(page,/href="#scelti-per-te"/);
- assert.match(page,/id="scelti-per-te"/);
- assert.match(page,/>I miei salvati<\\/h2>/);
- assert.match(page,/>Le mie preferenze<\\/h2>/);
- assert.match(page,/>Scopri per me<\\/h2>/);
- assert.match(page,/>Newsletter<\\/h2>/);
- assert.match(page,/getPublishedCultureEntries\\(\\)/);
- assert.match(page,/getPublishedExperiences\\(\\)/);
- assert.match(page,/supabase\\.from\\("user_interests"\\)/);
- assert.match(page,/supabase\\.from\\("user_saved_items"\\)/);
- assert.match(page,/supabase\\.from\\("newsletter_preferences"\\)/);
- assert.doesNotMatch(page,/<ProfilePreferenceSummary/);
- assert.match(css,/\\.profile-page \\.personal-action-grid/);
- assert.match(css,/\\.profile-page \\.recommendation-grid-primary/);
- assert.match(css,/@media\\(max-width:650px\\)/);
+ for(const href of ['/profilo/raccolta','/profilo/onboarding','/profilo/preferenze','#scelti-per-te']){
+  assert.ok(page.includes('href="'+href+'"'),"Missing personal action: "+href);
+ }
+ for(const title of ['I miei salvati','Le mie preferenze','Scopri per me','Newsletter']){
+  assert.ok(page.includes('>'+title+'</h2>'),"Missing personal action title: "+title);
+ }
+ assert.ok(page.includes('id="scelti-per-te"'));
+ assert.ok(page.includes('getPublishedCultureEntries()'));
+ assert.ok(page.includes('getPublishedExperiences()'));
+ for(const table of ['user_interests','user_saved_items','newsletter_preferences']){
+  assert.ok(page.includes('supabase.from("'+table+'")'),"Data source removed: "+table);
+ }
+ assert.ok(!page.includes('<ProfilePreferenceSummary'));
+ assert.ok(css.includes('.profile-page .personal-action-grid'));
+ assert.ok(css.includes('.profile-page .recommendation-grid-primary'));
+ assert.ok(css.includes('@media(max-width:650px)')||css.includes('@media (max-width:650px)'));
 });
 
 test("PR58 tablet at 768px keeps activity and bell in first row",()=>{
