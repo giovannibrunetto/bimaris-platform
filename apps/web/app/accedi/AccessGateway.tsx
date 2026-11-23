@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FormEvent,useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import PasswordAccess from "./PasswordAccess";
+import SignInShell from "./SignInShell";
 
 export default function AccessGateway({operatorDestination}:{operatorDestination?:string}){
  const [operatorEmail,setOperatorEmail]=useState("");
@@ -46,62 +47,50 @@ export default function AccessGateway({operatorDestination}:{operatorDestination
   feedback("Controlla la tua email: ti abbiamo inviato il link per entrare nell'Area Operatore.");
  }
 
- return <><section className="ux-brand-05-hero ux-brand-05-hero--compact"><h1>{operatorDeepLink?"Accedi come operatore":"Come vuoi usare BIMARIS?"}</h1><p>{operatorDeepLink?"Accedi per continuare dall'operazione BIMARIS che hai aperto.":"Scegli il percorso dedicato a te. L'accesso personale e quello degli operatori restano separati."}</p></section><div className="container access-gateway">
-  <div className="access-gateway-grid" style={operatorDeepLink?{gridTemplateColumns:"minmax(0,650px)",justifyContent:"center"}:undefined}>
-   {!operatorDeepLink&&<section className="card access-gateway-card">
+ if(operatorDeepLink) return <SignInShell kicker="Area Operatore" title="Accedi come operatore" description="Entra con l’account abilitato per gestire la tua attività e le esperienze su BIMARIS." busy={operatorLoading}>
+      {operatorMessage&&!showOperatorMagicLink&&<p className="personal-access-message" role={operatorMessageError?"alert":"status"} aria-live="polite">{operatorMessage}</p>}
+      <button type="button" className="personal-google" disabled={operatorLoading} onClick={()=>void signInOperatorWithGoogle()}><span className="google-mark" aria-hidden="true">G</span><span>Continua con Google</span></button>
+      <div className="personal-divider"><span>oppure con email e password</span></div>
+      <PasswordAccess context="operator"/>
+      <div className="operator-alternative-login">
+       <button type="button" className="operator-link-toggle" aria-expanded={showOperatorMagicLink} aria-controls={showOperatorMagicLink?"operator-magic-link-form":undefined} onClick={()=>setShowOperatorMagicLink(v=>!v)}>{showOperatorMagicLink?"Nascondi accesso tramite email":"Preferisci ricevere un link di accesso?"}</button>
+       {showOperatorMagicLink&&<form id="operator-magic-link-form" onSubmit={sendOperatorMagicLink} className="personal-email-form" aria-busy={operatorLoading}>
+        <label htmlFor="operator-email"><strong>Email associata all'attività</strong></label>
+        <input id="operator-email" name="email" type="email" autoComplete="email" inputMode="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it"/>
+        <button className="personal-email-button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>
+        {operatorMessage&&<p role={operatorMessageError?"alert":"status"} aria-live="polite" className="personal-access-message">{operatorMessage}</p>}
+       </form>}
+      </div>
+  <p className="operator-registration"><Link href="/operatori/candidatura">Proponi la tua attività</Link></p>
+  <style jsx>{`
+   .operator-alternative-login{margin-top:14px}
+   .operator-link-toggle,.operator-registration :global(a){color:#e6c785;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:14px;font-weight:750}
+   .operator-link-toggle{padding:5px 0;border:0;background:none;cursor:pointer;text-align:left}
+   .operator-alternative-login .personal-email-form{margin-top:12px}
+   .operator-registration{margin:16px 0 0}
+  `}</style>
+ </SignInShell>;
+
+ return <><section className="ux-brand-05-hero ux-brand-05-hero--compact"><h1>Come vuoi usare BIMARIS?</h1><p>Scegli se accedere come utente o come operatore.</p></section><div className="container access-gateway">
+  <div className="access-gateway-grid">
+   <section className="card access-gateway-card">
     <div><div className="kicker">Per te</div><h2>Utente</h2><p>Salva luoghi ed esperienze, costruisci il tuo BIMARIS e ricevi suggerimenti più vicini ai tuoi interessi.</p></div>
     <div className="access-gateway-actions"><Link className="button" href="/accedi/utente">Accedi o registrati come utente</Link></div>
     <p className="access-gateway-note">Se è il tuo primo accesso, potrai creare automaticamente il tuo account personale.</p>
-   </section>}
+   </section>
    <section className="card access-gateway-card">
     <div><div className="kicker">Per gli operatori</div><h2>Operatore</h2><p>Gestisci la tua attività e le esperienze collegate, oppure proponi a BIMARIS una nuova realtà o esperienza del territorio.</p></div>
-    {!operatorDeepLink&&<div className="access-gateway-actions operator-entry-actions">
+    <div className="access-gateway-actions operator-entry-actions">
      <Link className="button operator-entry-toggle" href="/accedi/operatore">Accedi come operatore</Link>
-    </div>}
-    {operatorDeepLink&&<div id="operator-access-form" className="operator-login-panel">
-      <div className="operator-login-head"><div className="kicker">ACCESSO RISERVATO</div><h3>Entra nel tuo spazio</h3><p>Accedi con un account già abilitato alla gestione di un'attività BIMARIS.</p></div>
-      {operatorMessage&&!showOperatorMagicLink&&<p className="access-status" role={operatorMessageError?"alert":"status"} aria-live="polite">{operatorMessage}</p>}
-      <button type="button" className="operator-google-button" disabled={operatorLoading} onClick={()=>void signInOperatorWithGoogle()}><span className="operator-google-mark" aria-hidden="true">G</span><span>Continua con Google</span></button>
-      <div className="operator-login-divider"><span>oppure con email e password</span></div>
-      <PasswordAccess context="operator"/>
-      <div className="operator-alternative-login">
-       <button type="button" className="operator-link-toggle" aria-expanded={showOperatorMagicLink} aria-controls="operator-magic-link-form" onClick={()=>setShowOperatorMagicLink(v=>!v)}>{showOperatorMagicLink?"Nascondi accesso tramite email":"Preferisci ricevere un link di accesso?"}</button>
-       {showOperatorMagicLink&&<form id="operator-magic-link-form" onSubmit={sendOperatorMagicLink} className="operator-access-form" aria-busy={operatorLoading}>
-        <label htmlFor="operator-email"><strong>Email associata all'attività</strong></label>
-        <input id="operator-email" name="email" type="email" autoComplete="email" inputMode="email" required value={operatorEmail} onChange={e=>setOperatorEmail(e.target.value)} placeholder="email@attivita.it"/>
-        <button className="button" type="submit" disabled={operatorLoading}>{operatorLoading?"Verifica…":"Ricevi il link per l'Area Operatore"}</button>
-        {operatorMessage&&<p role={operatorMessageError?"alert":"status"} aria-live="polite" className="access-status">{operatorMessage}</p>}
-       </form>}
-      </div>
-    </div>}
+    </div>
     <p className="operator-registration"><Link href="/operatori/candidatura">Non fai ancora parte della rete? Proponi la tua attività →</Link></p>
     <p className="access-gateway-note">Le nuove proposte vengono valutate da BIMARIS prima dell'attivazione dell'Area Operatore.</p>
    </section>
-  </div><p className="access-gateway-back"><Link href={operatorDeepLink?"/accedi":"/"}>{operatorDeepLink?"← Scegli un altro tipo di accesso":"← Torna a BIMARIS"}</Link></p>
+  </div><p className="access-gateway-back"><Link href="/">← Torna a BIMARIS</Link></p>
  </div>
   <style jsx global>{`
    .access-gateway-card .operator-entry-actions{margin:18px 0 0}
    .access-gateway-card .operator-entry-toggle{width:100%;min-height:48px;border-radius:14px}
-   .operator-login-panel{margin-top:17px;padding:clamp(18px,3vw,28px);border:1px solid #d7cdb8;border-radius:21px;background:#f4f1ea;box-shadow:0 9px 25px rgba(7,35,38,.045)}
-   .operator-login-head{margin-bottom:19px}
-   .operator-login-head .kicker{font-size:11px;letter-spacing:.16em;color:#95662e}
-   .operator-login-head h3{font:normal clamp(24px,3vw,30px) Georgia,serif;color:#0b3035;margin:7px 0}
-   .operator-login-head p{color:#526768;font-size:14px;line-height:1.45;margin:0}
-   .operator-google-button{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:49px;border:1px solid #c8bda5;background:#fff;color:#0b3035;font:inherit;font-weight:750;border-radius:13px;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .2s}
-   .operator-google-mark{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#f4f5f3;font-weight:850;color:#4285f4;font-family:Arial,sans-serif;font-size:19px}
-   .operator-google-button:hover{border-color:#caa86a;box-shadow:0 6px 18px rgba(9,42,46,.11);transform:translateY(-1px)}
-   .operator-google-button:disabled{opacity:.6;cursor:wait}
-   .operator-google-button:focus-visible,.operator-link-toggle:focus-visible,.operator-registration a:focus-visible{outline:2px solid #9b713a;outline-offset:3px}
-   .operator-login-divider{display:flex;align-items:center;gap:13px;margin:20px 0;color:#68777a;font-size:12px;white-space:nowrap}
-   .operator-login-divider:before,.operator-login-divider:after{content:"";height:1px;flex:1;background:#d8d2c7}
-   .operator-alternative-login{border-top:1px solid #ddd7ca;margin-top:19px;padding-top:15px}
-   .operator-link-toggle{background:transparent;border:0;color:#80551f;text-decoration:underline;text-underline-offset:3px;padding:5px 0;text-align:left;cursor:pointer;font:inherit;font-size:13px;font-weight:700}
-   .operator-alternative-login .operator-access-form{margin-top:13px}
-   .operator-alternative-login .operator-access-form input{border-radius:11px}
-   .operator-registration{margin:18px 0 8px!important;font-size:13px}
-   .operator-registration a{color:#80551f;text-decoration:underline;text-underline-offset:3px;font-weight:700}
-   @media(max-width:650px){.operator-login-panel{padding:18px 15px}.operator-login-divider{gap:8px;font-size:11px}}
-   @media(prefers-reduced-motion:reduce){.operator-google-button{transition:none;transform:none!important}}
   `}</style>
 </>;
 }

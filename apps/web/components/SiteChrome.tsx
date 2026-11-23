@@ -9,6 +9,7 @@ const immersiveRoutes = new Set([
   "/questionario-cittadini",
   "/questionario-cittadini/collaudo",
   "/accedi/utente",
+  "/accedi/operatore",
   "/profilo/onboarding",
   "/admin/reset-password",
 ]);
