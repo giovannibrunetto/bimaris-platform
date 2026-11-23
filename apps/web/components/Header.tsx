@@ -28,6 +28,35 @@ export function Header() {
   const [adminAccess,setAdminAccess] = useState<{visible:boolean;verified:boolean}>({visible:false,verified:false});
 
   useEffect(() => {
+    const menu = mobileMenuRef.current;
+    if (!menu) return;
+    menu.open = false;
+  }, [pathname]);
+
+  useEffect(() => {
+    const menu = mobileMenuRef.current;
+    if (!menu) return;
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (menu?.open && !event.composedPath().includes(menu)) menu.open = false;
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (!menu?.open || event.key !== "Escape") return;
+      const focusWasInside = menu.contains(document.activeElement);
+      menu.open = false;
+      if (focusWasInside) menu.querySelector("summary")?.focus();
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
+  useEffect(() => {
     const supabase=createBrowserSupabaseClient();
     if(!supabase)return;
     let active=true;
