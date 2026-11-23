@@ -85,14 +85,14 @@ export function Header() {
     };
   }, [pathname]);
 
-  const accessLinks = [
-    access === "guest"
-      ? { href: "/accedi/utente", label: "Accesso utente" }
-      : { href: "/profilo", label: "Area personale" },
-    access === "guest" || access === "user"
-      ? { href: "/accedi/operatore", label: "Accedi come operatore" }
-      : { href: "/area-operatore", label: "Area Operatore" },
-  ];
+  const accessLinks = access === "guest"
+    ? [{ href: "/accedi", label: "Accedi" }]
+    : [
+        { href: "/profilo", label: "Area personale" },
+        access === "user"
+          ? { href: "/accedi/operatore", label: "Accedi come operatore" }
+          : { href: "/area-operatore", label: "Area Operatore" },
+      ];
 
   const adminLink = adminAccess.visible
     ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" }
