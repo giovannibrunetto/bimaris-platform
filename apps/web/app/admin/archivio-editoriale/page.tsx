@@ -17,7 +17,7 @@ const notices: Record<string, string> = {
 type Photo = { id: string; alt: string; author?: string; license?: string };
 
 export default async function EditorialPage({ searchParams }: {
-  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string }>;
+  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string }>;
 }) {
   if (!(await getVerifiedSuperAdmin())) redirect("/admin/login");
   const db = createServiceClient();
@@ -39,6 +39,18 @@ export default async function EditorialPage({ searchParams }: {
     ...catalog.data.map(item => ({ title: item.title, entry: item.id, draft: workspaces.data.find(row => row.entry_id === item.id), published: item.published })),
     ...workspaces.data.filter(row => !row.entry_id).map(row => ({ title: row.draft.title || "Bozza senza titolo", entry: "", draft: row, published: false })),
   ].filter(row => (!query.q || row.title.toLocaleLowerCase("it").includes(query.q.toLocaleLowerCase("it"))) && (!query.stato || status(row.draft, row.published) === query.stato));
+  const pageSize = 8;
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  const requestedPage = Number(query.pagina);
+  const page = Number.isSafeInteger(requestedPage) ? Math.min(pageCount, Math.max(1, requestedPage)) : 1;
+  const offset = (page - 1) * pageSize;
+  const pageHref = (number: number) => {
+    const params = new URLSearchParams({ pagina: String(number) });
+    if (query.q) params.set("q", query.q);
+    if (query.stato) params.set("stato", query.stato);
+    return `${base}?${params}`;
+  };
+
   const { data: places } = workspace && !workspace.archived && query.anteprima !== "1"
     ? await db.from("places").select("id,name").order("name") : { data: [] };
   const hiddenFields = workspace && <>
@@ -47,23 +59,50 @@ export default async function EditorialPage({ searchParams }: {
   </>;
 
   return <main className="editorial-shell">
-    <Link href="/admin">Torna all’amministrazione</Link>
-    <h1>Archivio editoriale</h1>
-    <p>Cultura</p>
-    {query.esito && notices[query.esito] && <p role="status">{notices[query.esito]}</p>}
+    <header className="editorial-heading">
+      <div>
+        <Link className="editorial-back" href="/admin">← Centro operativo</Link>
+        <h1>Archivio editoriale</h1>
+      </div>
+      {!workspace && <form method="post" action={api}>
+        <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
+      </form>}
+    </header>
+    {query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
     {!workspace ? <>
-      <form method="post" action={api}><button className="button" name="action" value="create">Nuova scheda Cultura</button></form>
-      <form className="editorial-panel" action={base}>
-        <label>Titolo<input name="q" defaultValue={query.q} /></label>
-        <label>Stato<select name="stato" defaultValue={query.stato ?? ""}><option value="">Tutti</option>{["Bozza","Pubblicata","Ritirata","Archiviata"].map(label => <option key={label}>{label}</option>)}</select></label>
-        <button className="button">Filtra</button>
-      </form>
-      <ul className="editorial-list">{rows.map(row => <li key={row.entry || row.draft?.id}>
-        <strong>{row.title}</strong> <span>{status(row.draft, row.published)}</span>
-        {row.draft ? <Link href={`${base}?id=${row.draft.id}`}>Apri scheda</Link> : <form method="post" action={api}>
-          <input type="hidden" name="entry" value={row.entry} /><button className="button" name="action" value="create">Modifica</button>
-        </form>}
-      </li>)}</ul>
+      <section className="editorial-catalog" aria-labelledby="editorial-catalog-title">
+        <div className="editorial-toolbar">
+          <h2 id="editorial-catalog-title">Cultura</h2>
+          <form className="editorial-filters" action={base}>
+            <label>Cerca per titolo<input name="q" type="search" defaultValue={query.q} /></label>
+            <label>Stato<select name="stato" defaultValue={query.stato ?? ""}>
+              <option value="">Tutti</option>
+              {["Bozza", "Pubblicata", "Ritirata", "Archiviata"].map(label => <option key={label}>{label}</option>)}
+            </select></label>
+            <button className="editorial-button">Filtra</button>
+            {(query.q || query.stato) && <Link className="editorial-button" href={base}>Azzera</Link>}
+          </form>
+        </div>
+        {rows.length ? <ul className="editorial-list">{rows.slice(offset, offset + pageSize).map(row => {
+          const label = status(row.draft, row.published);
+          return <li key={row.entry || row.draft?.id}>
+            <strong>{row.title}</strong>
+            <span className="editorial-badge" data-state={label}>{label}</span>
+            {row.draft ? <Link className="editorial-button" href={`${base}?id=${row.draft.id}`}>Apri scheda</Link> : <form method="post" action={api}>
+              <input type="hidden" name="entry" value={row.entry} />
+              <button className="editorial-button" name="action" value="create">Modifica</button>
+            </form>}
+          </li>;
+        })}</ul> : <p className="editorial-empty">Nessuna scheda corrisponde ai filtri.</p>}
+        {rows.length > 0 && <div className="editorial-footer">
+          <span>Schede {offset + 1}–{Math.min(offset + pageSize, rows.length)} di {rows.length}</span>
+          {pageCount > 1 && <nav aria-label="Paginazione schede">
+            {page > 1 && <Link className="editorial-button" href={pageHref(page - 1)}>Precedente</Link>}
+            <span>{page} / {pageCount}</span>
+            {page < pageCount && <Link className="editorial-button" href={pageHref(page + 1)}>Successiva</Link>}
+          </nav>}
+        </div>}
+      </section>
     </> : <>
       <nav className="editorial-actions" aria-label="Navigazione editoriale">
         <Link href={base}>Tutte le schede</Link>
