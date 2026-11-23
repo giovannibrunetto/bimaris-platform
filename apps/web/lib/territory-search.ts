@@ -1,3 +1,5 @@
+import type { DiscoveryIntent } from "./discovery";
+
 export type SearchItem = {
   title: string;
   description?: string | null;
@@ -55,6 +57,20 @@ export function interpretTerritorySearch(query: string, now = new Date()) {
     terms: [...new Set(tokens.filter(word => !stopWords.has(word) && !weekdays.includes(word) && word !== "oggi" && word !== "domani"))].slice(0, 14),
     date: offset === null ? null : today.toISOString().slice(0, 10),
   };
+}
+
+export function suggestedDiscoveryIntents(query: string): DiscoveryIntent[] {
+  const { terms } = interpretTerritorySearch(query);
+  const options: [DiscoveryIntent, RegExp][] = [
+    ["sea", meanings[1]],
+    ["nature", meanings[0]],
+    ["culture", meanings[3]],
+    ["food-wine", meanings[4]],
+    ["stories-places", meanings[6]],
+    ["relax", /^relax$/],
+    ["adventure", /^avventur\w*$/],
+  ];
+  return options.filter(([, pattern]) => terms.some(term => pattern.test(term))).map(([intent]) => intent).slice(0, 3);
 }
 
 function termScore(term: string, title: string[], body: string[]): number {

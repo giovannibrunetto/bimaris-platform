@@ -12,3 +12,10 @@
 .territory-search-results nav { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
 .territory-search-results nav a, .territory-search-registration > a { color: #795324; text-decoration: underline; text-underline-offset: 3px; }
 .territory-search-registration { padding: 18px; background: #fffaf0; border: 1px solid #d4c29e; border-radius: 14px; }
+.territory-search-fallback {
+  padding: clamp(16px, 3vw, 36px);
+  border-radius: 20px;
+  background: #032126;
+  color: #f7f2e9;
+}
+.territory-search-fallback > h2 { color: inherit; }

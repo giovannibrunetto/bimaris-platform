@@ -5,8 +5,9 @@ import { getPublishedAppointments } from "@/data/public-appointments";
 import { getPublishedCultureEntries, getPublishedExperiences } from "@/data/live";
 import { getPublishedVillages } from "@/data/villages";
 import { getPublishedStories } from "@/data/stories";
-import { rankTerritorySearch, type SearchItem } from "@/lib/territory-search";
+import { rankTerritorySearch, suggestedDiscoveryIntents, type SearchItem } from "@/lib/territory-search";
 import SearchForm from "./SearchForm";
+import DiscoveryWizard from "../cosa-faccio-oggi/DiscoveryWizard";
 import "./territory-search.css";
 
 const dateFormat = new Intl.DateTimeFormat("it-IT", { dateStyle: "full", timeStyle: "short", timeZone: "Europe/Rome" });
@@ -65,10 +66,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             })}</ul>
           </section>
         )}
-        {matches.length === 0 && <section>
-          <h2>Nessuna proposta utile per questa ricerca</h2>
-          <p>Prova a indicare il nome di un luogo o a semplificare la frase.</p>
-          <Link href="/cosa-faccio-oggi">Prova con i filtri →</Link>
+        {matches.length === 0 && <section className="territory-search-fallback" aria-labelledby="territory-search-fallback-title">
+          <h2 id="territory-search-fallback-title">Affina la ricerca con i filtri</h2>
+          <p>La ricerca testuale non ha trovato proposte compatibili. Puoi continuare da qui o modificare la frase.</p>
+          <DiscoveryWizard key={query} initialIntents={suggestedDiscoveryIntents(query)} />
         </section>}
         <nav aria-label="Continua a esplorare"><Link href="/mappa">Esplora la mappa</Link><Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link></nav>
         {!claims?.data?.claims?.sub && <section className="territory-search-registration">
