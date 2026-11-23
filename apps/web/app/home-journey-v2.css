@@ -120,17 +120,23 @@
   background: #fff;
   padding-inline: clamp(20px, 3vw, 40px);
 }
-.home-discovery-content .territory-search-form button { margin-inline: 16px; }
+.home-discovery-content .territory-search-form button {
+  width: auto;
+  min-height: 44px;
+  margin-inline: 16px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
 @media (min-width: 761px) {
   .home-journey .home-journey-intro > p { margin-top: 4px !important; }
-  .home-discovery-content .territory-search-form input { padding-inline-end: 220px; }
+  .home-discovery-content .territory-search-form input { padding-inline-end: 176px; }
   .home-discovery-content .territory-search-form button {
     position: absolute;
     inset-inline-end: 8px;
-    top: 8px;
+    top: 10px;
     margin: 0;
   }
 }
 @media (max-width: 460px) {
-  .home-discovery-content .territory-search-form button { width: calc(100% - 32px); }
+  .home-discovery-content .territory-search-form button { justify-self: center; }
 }
