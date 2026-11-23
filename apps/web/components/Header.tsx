@@ -85,11 +85,12 @@ export function Header() {
     };
   }, [pathname]);
 
-  const accessLinks=access==="guest"
-    ?[{href:"/accedi",label:"Accedi"}]
-    :access==="user"
-      ?[{href:"/profilo",label:"Area personale"}]
-      :[{href:"/profilo",label:"Area personale"},{href:"/area-operatore",label:"Area Operatore"}];
+  const accessLinks = [
+    access === "guest"
+      ? { href: "/accedi", label: "Accesso utente" }
+      : { href: "/profilo", label: "Area personale" },
+    { href: "/area-operatore", label: access === "guest" || access === "user" ? "Accesso operatore" : "Area Operatore" },
+  ];
 
   const adminLink = adminAccess.visible
     ? { href: adminAccess.verified ? "/admin" : "/admin/mfa", label: "Area Amministratore" }
