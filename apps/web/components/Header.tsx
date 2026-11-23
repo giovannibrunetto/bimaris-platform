@@ -15,7 +15,6 @@ const primaryLinks = [
 
 const utilityLinks = [
   { href: "/operatori/candidatura", label: "Candida la tua attività" },
-  { href: "/contatti", label: "Contatti" },
 ];
 
 function isCurrentPath(pathname: string, href: string) {
