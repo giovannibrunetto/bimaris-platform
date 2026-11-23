@@ -181,3 +181,22 @@
   .admin-operator-detail__header { padding:15px !important; }
   .admin-operator-detail__tabs > a { font-size:11px !important; }
 }
+
+/* Separate advanced management from the everyday operator profile. */
+.admin-operator-detail__manage-link {
+  margin-top:16px;
+  padding:18px 20px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap;
+  border:1px solid #d5c8b7; border-radius:15px;
+  background:#fff; box-shadow:0 5px 18px rgba(16,45,50,.055);
+}
+.admin-operator-detail__manage-link strong { display:block; font-size:17px; color:#12343a; }
+.admin-operator-detail__manage-link p { margin:5px 0 0; font-size:13px; color:#63716d; line-height:1.45; }
+.admin-operator-detail__manage-link a { text-align:center; white-space:normal; }
+.admin-operator-detail__management-page > form > article { margin-top:18px !important; border-radius:14px; }
+.admin-operator-detail__management-page > form summary { color:#10383d; }
+.admin-operator-detail__management-page textarea { width:100%; min-height:145px !important; }
+@media (max-width:600px) {
+  .admin-operator-detail__manage-link { padding:16px; align-items:stretch; }
+  .admin-operator-detail__manage-link > a { width:100%; box-sizing:border-box; }
+}
