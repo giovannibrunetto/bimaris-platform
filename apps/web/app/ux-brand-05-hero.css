@@ -253,3 +253,85 @@ h2.public-discovery-section-title.public-discovery-section-title {
  outline:3px solid #87612e;
  outline-offset:3px;
 }
+
+
+/* RETE-UX-02: direct public discovery in the premium BIMARIS visual language. */
+.bimaris-network-page{
+ min-height:65vh;
+ background:radial-gradient(circle at 15% 0%,rgba(33,91,94,.33),transparent 40%),linear-gradient(140deg,#071e21,#0a2b2f 56%,#081d20);
+ color:#f7f2e9;
+ padding:26px clamp(14px,4vw,48px) 64px;
+}
+.bimaris-network-shell{max-width:1240px;margin:0 auto}
+.bimaris-network-hero{
+ border:1px solid rgba(216,169,79,.26);
+ border-radius:23px;
+ background:linear-gradient(130deg,rgba(255,255,255,.085),rgba(255,255,255,.018));
+ padding:clamp(20px,3.3vw,38px);
+}
+.bimaris-network-eyebrow{color:#d8a94f;font-size:11px;font-weight:800;letter-spacing:.15em;line-height:1.35}
+.bimaris-network-hero h1{font:400 clamp(34px,4vw,52px)/1.12 Georgia,serif;color:#f7f2e9;margin:7px 0 9px}
+.bimaris-network-hero p{font-size:15px;line-height:1.45;color:#d2dfda;margin:0;max-width:700px}
+.bimaris-network-jump{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}
+.bimaris-network-jump a{
+ display:inline-flex;justify-content:center;align-items:center;gap:14px;text-decoration:none;
+ min-height:42px;padding:9px 16px;border-radius:999px;border:1px solid rgba(216,169,79,.45);
+ background:rgba(216,169,79,.08);color:#f7f2e9;font-weight:750;font-size:13px;
+}
+.bimaris-network-jump a:hover{background:rgba(216,169,79,.16)}
+.bimaris-network-jump a span{color:#d8a94f}
+.bimaris-network-section{margin-top:33px;scroll-margin-top:90px}
+.bimaris-network-section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:16px}
+.bimaris-network-section-head h2{font:400 clamp(28px,3vw,38px)/1.15 Georgia,serif;color:#f7f2e9;margin:5px 0}
+.bimaris-network-section-head p{font-size:13px;color:#c9d5d1;margin:0}
+.bimaris-network-more{
+ display:inline-flex;align-items:center;gap:8px;min-height:42px;white-space:nowrap;
+ color:#e4bb6e;font-size:13px;font-weight:750;text-decoration:none;
+}
+.bimaris-network-more:hover{text-decoration:underline}
+.bimaris-network-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.bimaris-network-card{
+ display:flex;flex-direction:column;min-width:0;overflow:hidden;text-decoration:none;color:#f7f2e9;
+ border:1px solid rgba(216,169,79,.23);border-radius:17px;
+ background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.025));
+ transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.bimaris-network-card:hover{transform:translateY(-3px);border-color:#d8a94f;box-shadow:0 12px 32px rgba(0,0,0,.22)}
+.bimaris-network-card:focus-visible,.bimaris-network-jump a:focus-visible,.bimaris-network-more:focus-visible{outline:3px solid #d8a94f;outline-offset:3px}
+.bimaris-network-card-media{height:146px;overflow:hidden;background:#174044}
+.bimaris-network-card-media img{width:100%;height:100%;object-fit:cover;display:block}
+.bimaris-network-card-media--empty{display:flex;align-items:center;justify-content:center;font-size:44px;color:rgba(216,169,79,.65)}
+.bimaris-network-card-copy{display:flex;flex:1;flex-direction:column;gap:7px;padding:17px}
+.bimaris-network-card-kicker{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#d8a94f;line-height:1.5;overflow-wrap:anywhere}
+.bimaris-network-card h3{font:400 24px/1.18 Georgia,serif;color:#fff;margin:0;overflow-wrap:anywhere}
+.bimaris-network-card p{
+ color:#d3dfdb;margin:0 0 8px;font-size:13px;line-height:1.45;
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+}
+.bimaris-network-card-cta{margin-top:auto;color:#e4bb6e;font-size:13px;font-weight:750}
+.bimaris-network-empty{padding:22px;border:1px solid rgba(216,169,79,.24);border-radius:16px;background:rgba(255,255,255,.04)}
+.bimaris-network-empty p{color:#d3dfdb;margin:0 0 10px}
+.bimaris-network-empty a{color:#e4bb6e;font-weight:750}
+@media(max-width:950px){.bimaris-network-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ .bimaris-network-page{padding:12px 11px 42px}
+ .bimaris-network-hero{padding:19px 16px;border-radius:17px}
+ .bimaris-network-hero h1{font-size:31px}
+ .bimaris-network-hero p{font-size:13px}
+ .bimaris-network-jump{margin-top:16px}
+ .bimaris-network-section{margin-top:25px}
+ .bimaris-network-section-head{align-items:start;flex-direction:column;gap:6px;margin-bottom:12px}
+ .bimaris-network-section-head h2{font-size:28px}
+ .bimaris-network-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+ .bimaris-network-card{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:134px}
+ .bimaris-network-card-media{height:100%;min-height:134px}
+ .bimaris-network-card-copy{padding:13px 12px;gap:5px}
+ .bimaris-network-card h3{font-size:20px}
+ .bimaris-network-card p{font-size:12px}
+ .bimaris-network-card-cta{font-size:12px}
+}
+@media(max-width:360px){
+ .bimaris-network-card{grid-template-columns:90px minmax(0,1fr)}
+ .bimaris-network-card h3{font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){.bimaris-network-card{transition:none}.bimaris-network-card:hover{transform:none}}
