@@ -93,39 +93,43 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
  @media(max-width:850px){.profile-page{padding:12px 11px 45px}.profile-hero{border-radius:22px;padding:27px 19px 28px}.profile-hero h1{font-size:39px;line-height:1;padding-right:72px}.profile-hero p{font-size:14px;line-height:1.55}.profile-session-actions{right:15px;top:15px}.profile-logout{padding:7px 13px;font-size:13px}.profile-overview{margin-top:27px;padding:0 7px}.overview-head{padding-bottom:17px}.overview-head h2{font-size:31px}.profile-preference-summary{padding-bottom:22px}.overview-grid{display:block;padding:0}.overview-item{padding:17px 0}.overview-item+.overview-item{border-top:1px solid rgba(11,38,56,.08)}.profile-recommendations{margin-top:31px;padding:31px 7px 8px}.profile-recommendations:before{left:7px}.recommendation-head{display:block}.recommendation-head p{margin-top:10px}.recommendation-head h2{font-size:38px}.recommendation-grid{grid-template-columns:1fr;gap:13px;margin-top:20px}.recommendation-card{padding:22px 20px}.empty-recommendations{align-items:flex-start;flex-direction:column;gap:10px}}
  `}</style><div className="profile-shell">
  <header className="profile-hero">
-  <h1>{profile?.display_name ? `Ciao, ${profile.display_name}` : "Area personale"}</h1>
+  <div className="personal-hero-copy"><div className="kicker">IL TUO SPAZIO · BIMARIS</div><h1>{profile?.display_name ? `Ciao, ${profile.display_name}` : "Area personale"}</h1><p>La tua Messina, secondo i tuoi interessi.</p></div>
   <LogoutButton />
  </header>
  {onboarding==="completato"&&<div className="profile-success">Preferenze aggiornate.</div>}
- <section className="profile-overview" aria-label="Raccolta e impostazioni">
-  <div className="overview-grid">
-   <Link className="overview-item" href="/profilo/raccolta">
-    <h2 className="overview-label">I tuoi salvati</h2>
+ <section className="profile-overview" aria-label="Le funzioni della tua area personale">
+  <div className="personal-actions-heading">
+   <div className="kicker">LA TUA AREA PERSONALE</div>
+   <h2>Cosa vuoi fare?</h2>
+   <p>Ritrova ciò che ti interessa e scopri nuove idee.</p>
+  </div>
+  <nav className="overview-grid personal-action-grid" aria-label="Scegli cosa fare">
+   <Link className="overview-item personal-action-card" href="/profilo/raccolta">
+    <span className="personal-action-icon" aria-hidden="true">▤</span>
+    <h2 className="overview-label">I miei salvati</h2>
     <p className="overview-copy">{savedCount ?? 0} {savedCount === 1 ? "contenuto salvato" : "contenuti salvati"}</p>
-    <span className="text-link">Vedi i salvati →</span>
+    <span className="personal-action-arrow" aria-hidden="true">→</span>
    </Link>
-   <Link className="overview-item" href="/profilo/onboarding">
-    <h2 className="overview-label">Le tue preferenze</h2>
-    {hasPreferences ? (
-     <div className="profile-preference-interests">
-      <h3 className="profile-preference-section-title">Cosa ti piace</h3>
-      <div className="interest-tags">
-       {[...new Set(ranked.filter(item => Number(item.explicit_score ?? 0) > 0).map(item => labels[item.interest_key] ?? item.interest_key))].map(label => (
-        <span className="interest-tag" key={label}><span className="interest-tag__check" aria-hidden="true">✓</span><span className="interest-tag__label">{label}</span></span>
-       ))}
-      </div>
-     </div>
-    ) : <p className="overview-copy">Scegli i tuoi interessi per ricevere suggerimenti.</p>}
-    <ProfilePreferenceSummary travelCompanion={profile?.travel_companion} typicalTime={profile?.typical_time_available} preferredPace={profile?.preferred_pace} />
-    <span className="text-link">{hasPreferences ? "Modifica preferenze" : "Imposta preferenze"} →</span>
+   <Link className="overview-item personal-action-card" href="/profilo/onboarding">
+    <span className="personal-action-icon" aria-hidden="true">✧</span>
+    <h2 className="overview-label">Le mie preferenze</h2>
+    <p className="overview-copy">{hasPreferences ? "Rivedi ciò che ti piace" : "Scegli ciò che ti piace"}</p>
+    <span className="personal-action-arrow" aria-hidden="true">→</span>
    </Link>
-   <Link className="overview-item" href="/profilo/preferenze">
+   <a className="overview-item personal-action-card" href="#scelti-per-te">
+    <span className="personal-action-icon" aria-hidden="true">⌖</span>
+    <h2 className="overview-label">Scopri per me</h2>
+    <p className="overview-copy">Luoghi e attività scelti per te</p>
+    <span className="personal-action-arrow" aria-hidden="true">↓</span>
+   </a>
+   <Link className="overview-item personal-action-card" href="/profilo/preferenze">
+    <span className="personal-action-icon" aria-hidden="true">✉</span>
     <h2 className="overview-label">Newsletter</h2>
     <p className="overview-copy">{newsletter?.subscribed ? (newsletter.personalized ? "Attiva · Personalizzata" : "Attiva") : "Non attiva"}</p>
-    <span className="text-link">Gestisci newsletter →</span>
+    <span className="personal-action-arrow" aria-hidden="true">→</span>
    </Link>
-  </div>
+  </nav>
  </section>
- <section className="profile-recommendations"><div className="recommendation-head"><h2>Scelti per te</h2></div>{(primaryRecommendations.length || hasMoreRecommendations)?<><div className="recommendation-grid recommendation-grid-primary">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{additionalRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
+ <section id="scelti-per-te" className="profile-recommendations" aria-label="Suggerimenti personalizzati"><div className="recommendation-head"><h2>Scelti per te</h2></div>{(primaryRecommendations.length || hasMoreRecommendations)?<><div className="recommendation-grid recommendation-grid-primary">{primaryRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div>{hasMoreRecommendations&&<details className="recommendation-more"><summary>Mostra altri suggerimenti</summary><div className="recommendation-grid">{additionalRecommendations.map(item=><Link href={item.href} className="recommendation-card" key={item.key}><div className="overview-label">{item.kind}</div><h3>{item.title}</h3>{item.copy && <p>{item.copy}</p>}<span className="text-link">Scopri →</span></Link>)}</div></details>}</>:<div className="empty-recommendations"><p>Completa il profilo per iniziare a ricevere suggerimenti più pertinenti.</p><Link className="button" href="/profilo/onboarding">Personalizza BIMARIS</Link></div>}</section>
  </div></div>;
 }
