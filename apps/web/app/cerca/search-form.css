@@ -4,8 +4,3 @@
 .territory-search-form button:hover { background: #f0d39a; }
 .territory-search-form :focus-visible { outline: 2px solid #e1bf80; outline-offset: 3px; }
 @media (max-width: 460px) { .territory-search-form button { width: 100%; } }
-
-@media (min-width: 761px) {
-  .home-discovery-panel .territory-search-form { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-  .home-discovery-panel .territory-search-form button { min-height: 60px; white-space: nowrap; }
-}
