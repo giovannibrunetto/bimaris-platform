@@ -93,3 +93,41 @@
   .editorial-badge { grid-column: 1; }
   .editorial-toolbar, .editorial-footer { padding-inline: 10px; }
 }
+
+.editorial-current-state { margin: 10px 0 0; }
+.editorial-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  margin-top: 14px;
+}
+.editorial-composer .editorial-panel {
+  margin: 0;
+  padding: clamp(14px, 2vw, 22px);
+  border-color: #dcd2c2;
+  background: #fcfaf6;
+}
+.editorial-composer .editorial-panel h2,
+.editorial-photo-panel > summary { margin: 0; font: 400 23px/1.2 Georgia, serif; }
+.editorial-composer .editorial-panel p { margin: 0; font-size: .875rem; }
+.editorial-composer-side, .editorial-photo-form { display: grid; gap: 12px; }
+.editorial-photo-form { margin-top: 12px; }
+.editorial-photo-panel summary { cursor: pointer; }
+.editorial-photo-panel > summary span { font: 650 .8rem/1 system-ui, sans-serif; color: #31585b; margin-left: 5px; }
+.editorial-photo-credits[open] label { margin-top: 8px; }
+.editorial-composer label { font-weight: 650; font-size: .875rem; }
+.editorial-composer label small { font-weight: 400; line-height: 1.45; color: #385457; }
+.editorial-composer input, .editorial-composer select, .editorial-composer textarea {
+  border: 1px solid #b5aa98;
+  border-radius: 8px;
+  background: #fff;
+  color: #103237;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.editorial-composer textarea { resize: vertical; }
+.editorial-composer .editorial-button { justify-self: start; white-space: normal; }
+@media (max-width: 720px) {
+  .editorial-composer { grid-template-columns: minmax(0, 1fr); }
+}

@@ -62,7 +62,7 @@ export default async function EditorialPage({ searchParams }: {
     <header className="editorial-heading">
       <div>
         <Link className="editorial-back" href="/admin">← Centro operativo</Link>
-        <h1>Archivio editoriale</h1>
+        <h1>{workspace ? draft?.title || "Nuova scheda Cultura" : "Archivio editoriale"}</h1>
       </div>
       {!workspace && <form method="post" action={api}>
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
@@ -109,7 +109,7 @@ export default async function EditorialPage({ searchParams }: {
         {query.anteprima === "1" ? <Link href={`${base}?id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
         {record?.published && <Link href={`/cultura/${record.slug}`}>Versione pubblica</Link>}
       </nav>
-      <p>{status(workspace, record?.published)}</p>
+      <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span></p>
       {query.anteprima === "1" ? <section className="editorial-panel">
         <h2>Anteprima privata</h2>
         <article className="card culture-card">
@@ -117,37 +117,47 @@ export default async function EditorialPage({ searchParams }: {
           <div className="card-body"><h3>{draft.title || "Scheda senza titolo"}</h3><p>{draft.body?.slice(0, 240)}</p></div>
         </article>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
-      </section> : !workspace.archived && <>
+      </section> : !workspace.archived && <div className="editorial-composer">
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
+          <h2>Contenuto della scheda</h2>
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>Testo<textarea name="body" rows={12} maxLength={40000} defaultValue={draft.body} /></label>
+          <label>Testo<textarea name="body" rows={9} maxLength={40000} defaultValue={draft.body} /></label>
           <label>Luogo<select name="place" defaultValue={draft.placeId ?? ""}><option value="">Scegli un luogo per pubblicare</option>{(places ?? []).map(place => <option value={place.id} key={place.id}>{place.name}</option>)}</select></label>
-          <button className="button" name="action" value="save">Salva bozza</button>
+          <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
         </form>
-        <form className="editorial-panel" method="post" action={api} encType="multipart/form-data">
+        <aside className="editorial-composer-side">
+        <details className="editorial-panel editorial-photo-panel" open={["foto", "photo"].includes(query.esito ?? "") || undefined}>
+          <summary>Fotografie <span>{photos.length}</span></summary>
+          <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
           {hiddenFields}
-          <h2>Fotografie in bozza</h2>
           {photos.map(photo => <figure key={photo.id}><img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} /><figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption></figure>)}
           <label>Fotografia<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /></label>
-          <label>Testo alternativo<input name="alt" maxLength={250} required /></label>
+          <label>Descrizione dell’immagine per l’accessibilità
+            <input name="alt" maxLength={250} placeholder="Es. Il castello visto dal cortile" aria-describedby="editorial-alt-help" required />
+            <small id="editorial-alt-help">Descrivi brevemente ciò che si vede. I lettori di schermo leggono questo testo a chi non può vedere la foto.</small>
+          </label>
+          <details className="editorial-photo-credits"><summary>Crediti e licenza</summary>
           <label>Autore<input name="author" maxLength={180} /></label>
           <label>Fonte<input name="source" type="url" maxLength={500} /></label>
           <label>Licenza<input name="license" maxLength={180} /></label>
           <label>Link licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
-          <button className="button" name="action" value="photo">Aggiungi foto alla bozza</button>
-        </form>
+          </details>
+          <button className="editorial-button" name="action" value="photo">Aggiungi foto</button>
+          </form>
+        </details>
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
           <h2>Visibilità</h2>
           <p>La pubblicazione applica l’ultima bozza salvata.</p>
           <div className="editorial-actions">
-            <button className="button" name="action" value="publish">Pubblica bozza salvata</button>
-            {record?.published && <button name="action" value="withdraw">Ritira</button>}
-            <button name="action" value="archive">Archivia e ritira</button>
+            <button className="editorial-button editorial-button--primary" name="action" value="publish">Pubblica bozza salvata</button>
+            {record?.published && <button className="editorial-button" name="action" value="withdraw">Ritira</button>}
+            <button className="editorial-button" name="action" value="archive">Archivia e ritira</button>
           </div>
         </form>
-      </>}
+        </aside>
+      </div>}
     </>}
   </main>;
 }
