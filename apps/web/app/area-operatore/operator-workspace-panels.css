@@ -391,3 +391,10 @@
 .operator-b2b-invitation p{font-size:14px;line-height:1.5;color:#d7e0db;margin:0 0 14px}
 .operator-b2b-invitation .button{display:inline-flex;align-items:center;justify-content:center;text-align:center;min-height:43px;border-radius:999px}
 @media(max-width:600px){.operator-results-layout{gap:12px}.operator-b2b-invitation{padding:16px}.operator-b2b-invitation h3{font-size:21px}.operator-b2b-invitation p{font-size:13px}}
+
+/* Separate the operator's everyday actions from the activity switcher above. */
+.operator-workspace-panel--simple{margin-top:30px}
+@media(max-width:600px){
+ .operator-workspace-panel--simple{margin-top:28px!important}
+ .operator-workspace-welcome{margin-bottom:16px}
+}
