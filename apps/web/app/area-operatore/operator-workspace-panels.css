@@ -371,3 +371,15 @@
  .operator-simple-other{margin-top:14px}
 }
 @media(max-width:350px){.operator-quick-actions{grid-template-columns:1fr}.operator-quick-action{min-height:110px}}
+
+/* Guided operator path: one next step, B2B only when opted-in. */
+.operator-simple-back__progress{margin-left:auto;font-size:12px;font-weight:750;color:#e0bf7d;white-space:nowrap}
+.operator-simple-next{display:flex;justify-content:flex-end;margin-top:20px;padding-top:15px;border-top:1px solid rgba(216,169,79,.2)}
+.operator-simple-next__button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 20px;border-radius:999px;border:1px solid #caa86a;background:#0b4a4e;color:#fff;font-size:14px;font-weight:750;cursor:pointer}
+.operator-simple-next__button:hover{background:#126165}
+.operator-simple-next__button:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+.operator-collaboration-section{display:grid;gap:16px}
+.operator-collaboration-intro{padding:22px;border:1px solid rgba(216,169,79,.24);border-radius:16px;background:rgba(255,255,255,.055)}
+.operator-collaboration-intro h2{margin:0 0 8px;font:400 27px/1.2 Georgia,serif;color:#f7f2e9}
+.operator-collaboration-intro p{margin:0 0 16px;color:#d6e0dc;font-size:14px;line-height:1.5}
+@media(max-width:600px){.operator-simple-next{margin-top:14px;padding-top:12px}.operator-simple-next__button{font-size:13px;max-width:100%}.operator-collaboration-intro{padding:16px}.operator-collaboration-intro h2{font-size:22px}}
