@@ -9,6 +9,9 @@ function text(value:FormDataEntryValue|null,max:number){return typeof value==="s
 function slugify(value:string){return value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,120);}
 function numberValue(value:string){if(!value)return null;const parsed=Number(value.replace(",","."));return Number.isFinite(parsed)?parsed:null;}
 function back(request:NextRequest,state:string){return NextResponse.redirect(new URL(`/admin/esperienze?state=${encodeURIComponent(state)}`,request.url),303);}
+function approvedExperience(request:NextRequest,experienceId:string){
+ return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=experience-approved-awaiting-publication#admin-decision`,request.url),303);
+}
 function operatorDossier(request:NextRequest,operatorId:string,state:string){return NextResponse.redirect(new URL(`/admin/operatori/${encodeURIComponent(operatorId)}?tab=esperienze&state=${encodeURIComponent(state)}`,request.url),303);}
 const reviewSectionFields=["name","excerpt","basics","description","details","media","location"] as const;
 type ReviewSection=(typeof reviewSectionFields)[number];
@@ -47,16 +50,28 @@ export async function POST(request:NextRequest){
    if(action==="request-changes"&&(Object.keys(sections).length===0||!reviewNotes))return back(request,"review-target-required");
    const {data:experience,error:readError}=await supabase.from("experiences").select("name,excerpt,description,duration_minutes,price_from,bookable,meeting_point,territory_id,category_id,review_status,review_snapshot,draft_step,operator_id,operator:operators!experiences_operator_id_fkey(id,name,published,selection_status,email)").eq("id",experienceId).maybeSingle();
    const allowed=action==="request-changes"?["pending","rejected"]:["pending"];
-   if(readError||!experience||!allowed.includes(experience.review_status))return back(request,"invalid-review-state");
+   if(readError||!experience)return back(request,"invalid-review-state");
+   if(action==="approve"&&experience.review_status==="approved")return approvedExperience(request,experienceId);
+   if(!allowed.includes(experience.review_status))return back(request,"invalid-review-state");
    const operator=experience.operator as unknown as {id:string;name:string|null;published:boolean;selection_status:string;email:string|null}|null;
    if(action==="approve"){
     if(!experience.territory_id)return back(request,"missing-classification");
     if(!operator||operator.selection_status!=="selected")return back(request,"operator-not-selected");
     const now=new Date().toISOString();
-    const {error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending");if(error)throw error;
-    await recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-approved:${experienceId}`,title:"Esperienza approvata",description:`“${experience.name}” è stata approvata ed è in attesa di pubblicazione.`,targetPath:"/area-operatore?tab=esperienze"});
-    if(operator.email)await sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null});
-    return NextResponse.redirect(new URL(`/admin/esperienze/${encodeURIComponent(experienceId)}?state=experience-approved-awaiting-publication#admin-decision`,request.url),303);
+    const {data:approved,error}=await supabase.from("experiences").update({review_status:"approved",review_notes:reviewNotes||null,review_sections:{},review_snapshot:{},reviewed_at:now,published:false,updated_at:now}).eq("id",experienceId).eq("review_status","pending").select("id").maybeSingle();
+    if(error)throw error;
+    if(!approved){
+     const {data:current}=await supabase.from("experiences").select("review_status").eq("id",experienceId).maybeSingle();
+     return current?.review_status==="approved"?approvedExperience(request,experienceId):back(request,"invalid-review-state");
+    }
+    const results=await Promise.allSettled([
+     recordOperatorNotice({operatorId:experience.operator_id,category:"experience",eventKey:`experience-approved:${experienceId}`,title:"Esperienza approvata",description:`“${experience.name}” è stata approvata ed è in attesa di pubblicazione.`,targetPath:"/area-operatore?tab=esperienze"}),
+     ...(operator.email?[sendReviewNotification({to:operator.email,experienceName:experience.name,operatorName:operator.name||"operatore BIMARIS",decision:"approved",reviewNotes:reviewNotes||null})]:[]),
+    ]);
+    for(const result of results){
+     if(result.status==="rejected")console.error("BIMARIS experience approval notification failed",result.reason);
+    }
+    return approvedExperience(request,experienceId);
    }
    const targetStep=requestedStep(sections,generalNote,Number.isFinite(experience.draft_step)?experience.draft_step:0);
    const existingSnapshot=experience.review_snapshot&&typeof experience.review_snapshot==="object"&&!Array.isArray(experience.review_snapshot)?experience.review_snapshot:{};
