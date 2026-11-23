@@ -7,7 +7,7 @@ import { track } from "@/lib/analytics";
 declare global { interface Window { google?: any } }
 const fieldStyle={display:"grid",gap:8,fontSize:13,fontWeight:700,color:"#24323b"} as const;
 const inputStyle={width:"100%",minHeight:48,padding:"0 14px",border:"1px solid #d7d9d6",borderRadius:12,background:"#fff",color:"#101820",outline:"none"} as const;
-const operatorCategories=["Ristorazione ed enogastronomia","Produttori e aziende agricole","Guide, escursioni e outdoor","Cultura e visite","Artigianato","Ospitalità e ricettività","Benessere","Servizi turistici e mobilità","Altri servizi ed esperienze"];
+const operatorCategories=["Ristorazione ed enogastronomia","Produttori e aziende agricole","Cantine e produttori di vino","Guide, escursioni e outdoor","Cultura e visite","Artigianato","Ospitalità e ricettività","Benessere","Servizi turistici e mobilità","Altri servizi ed esperienze"];
 const suggestionBox={position:"absolute",zIndex:50,top:"calc(100% + 4px)",left:0,right:0,background:"#fff",border:"1px solid #d7d9d6",borderRadius:12,boxShadow:"0 12px 30px rgba(7,24,35,.14)",overflow:"hidden"} as const;
 const diagnostic=(err:any)=>{const code=err?.code||err?.status||err?.name||"UNKNOWN";const message=err?.message||String(err||"Errore sconosciuto");return `${code}: ${message}`.slice(0,500)};
 const requiredLabel=(label:string)=>`${label} *`;
