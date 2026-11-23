@@ -1,6 +1,7 @@
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
+import { sendCandidatureAccessEmail } from "@/lib/candidature-email";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function text(value: FormDataEntryValue | null, max: number) {
@@ -55,6 +56,27 @@ async function sendOperatorAccess(supabase: ServiceClient, applicationId: string
   if (!email) return "account-required" as const;
 
   let user = await findUserByEmail(supabase, email);
+  const smtpPassword = process.env.BIMARIS_CANDIDATURE_SMTP_PASSWORD;
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    process.env.VERCEL_GIT_COMMIT_REF === "fix/dt16-isolated-survey-surface-20261117" &&
+    smtpPassword
+  ) {
+    const type = user ? "magiclink" : "invite";
+    const { data, error } = await supabase.auth.admin.generateLink({ type, email });
+    if (error || !data.user || !data.properties.hashed_token) {
+      throw new Error("Impossibile generare il link di accesso operatore");
+    }
+    await linkOperatorMembership(supabase, operatorId, data.user.id);
+
+    const accessUrl = new URL("/auth/confirm", operatorAccessRedirect(request));
+    accessUrl.searchParams.set("token_hash", data.properties.hashed_token);
+    accessUrl.searchParams.set("type", type);
+    accessUrl.searchParams.set("operator", "1");
+    await sendCandidatureAccessEmail(email, application.business_name, accessUrl, smtpPassword);
+    return type === "invite" ? "invited" as const : "access-sent" as const;
+  }
+
   if (!user) {
     const { data: inviteData, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
       redirectTo: operatorAccessRedirect(request),
