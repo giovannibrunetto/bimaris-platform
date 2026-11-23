@@ -221,3 +221,16 @@
  .admin-operator-detail__edit-actions { display:grid; grid-template-columns:1fr 1fr; }
  .admin-operator-detail__edit-actions > a, .admin-operator-detail__edit-actions > button { width:100%; font-size:12px; }
 }
+
+/* Semantic actions have consistent colors even within the dossier's scoped rules. */
+.admin-operator-detail__edit-disclosure > summary.action-open,
+.admin-operator-detail__edit-disclosure[open] > summary.action-open {
+  background:var(--action-open-bg) !important;
+  border-color:var(--action-open-bg) !important;
+  color:var(--action-open-text) !important;
+}
+.admin-operator-detail__manage-link a.action-open {
+  background:var(--action-open-bg) !important;
+  border-color:var(--action-open-bg) !important;
+  color:var(--action-open-text) !important;
+}
