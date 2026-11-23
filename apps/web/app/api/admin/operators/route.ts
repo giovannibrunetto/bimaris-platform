@@ -4,7 +4,7 @@ import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 function text(form:FormData,key:string,max=2000){const v=form.get(key);return typeof v==="string"?v.trim().slice(0,max):""}
-function back(request:NextRequest,id:string,state:string){return NextResponse.redirect(new URL(`/admin/operatori/${id}?state=${encodeURIComponent(state)}`,request.url),303)}
+function back(request:NextRequest,id:string,state:string,management=false){const suffix=management?"/gestione":"";return NextResponse.redirect(new URL(`/admin/operatori/${id}${suffix}?state=${encodeURIComponent(state)}`,request.url),303)}
 
 export async function POST(request:NextRequest){
   const crossSiteRejection = rejectCrossSiteAdminMutation(request);
@@ -31,17 +31,17 @@ export async function POST(request:NextRequest){
   }
   if(action==="save_editorial"){
    const payload={description:text(form,"description",5000)||null,updated_at:new Date().toISOString()};
-   const {error}=await db.from("operators").update(payload).eq("id",id); if(error)throw error; return back(request,id,"saved");
+   const {error}=await db.from("operators").update(payload).eq("id",id); if(error)throw error; return back(request,id,"saved",true);
   }
   if(action==="publish"){
    const {data:operator,error:readError}=await db.from("operators").select("selection_status").eq("id",id).maybeSingle();
    if(readError)throw readError;
-   if(!operator||operator.selection_status!=="selected")return back(request,id,"publish-requires-selection");
-   const {error}=await db.from("operators").update({published:true,updated_at:new Date().toISOString()}).eq("id",id).eq("selection_status","selected"); if(error)throw error; return back(request,id,"published");
+   if(!operator||operator.selection_status!=="selected")return back(request,id,"publish-requires-selection",true);
+   const {error}=await db.from("operators").update({published:true,updated_at:new Date().toISOString()}).eq("id",id).eq("selection_status","selected"); if(error)throw error; return back(request,id,"published",true);
   }
   if(action==="unpublish"){
-   const {error}=await db.from("operators").update({published:false,updated_at:new Date().toISOString()}).eq("id",id); if(error)throw error; return back(request,id,"unpublished");
+   const {error}=await db.from("operators").update({published:false,updated_at:new Date().toISOString()}).eq("id",id); if(error)throw error; return back(request,id,"unpublished",true);
   }
   return back(request,id,"invalid");
- }catch(error){console.error("BIMARIS admin operator update failed",error);return back(request,id,"error")}
+ }catch(error){console.error("BIMARIS admin operator update failed",error);return back(request,id,"error",action!=="save_profile")}
 }
