@@ -75,8 +75,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <nav aria-label="Continua a esplorare"><Link href="/mappa">Esplora la mappa</Link><Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link></nav>
         {!claims?.data?.claims?.sub && <section className="territory-search-registration">
           <h2>E se BIMARIS si ricordasse di ciò che ti piace?</h2>
-          <p>Salva ciò che ti interessa, ritrova le tue scoperte e personalizza il tuo modo di vivere Messina.</p>
-          <Link href="/accedi/utente">Crea il tuo spazio BIMARIS →</Link>
+          <p>Scopri esperienze e luoghi più vicini ai tuoi interessi. Salva ciò che ti piace e ritrova le tue scoperte.</p>
+          <Link href="/accedi/utente">Personalizza BIMARIS <span aria-hidden="true">→</span></Link>
         </section>}
       </div>}
     </main>
