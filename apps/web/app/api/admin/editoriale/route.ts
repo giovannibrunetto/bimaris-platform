@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
+import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import { createServiceClient } from "@/lib/supabase/server";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
@@ -37,12 +38,15 @@ export async function POST(request: NextRequest) {
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
-  let payload: Record<string, string | { name: string; address: string } | null> = {};
+  let payload: Record<string, string | { name: string; address: string; mapsUrl: string } | null> = {};
   let uploaded: string | null = null;
   if (action === "save") {
     const placeId = value("place", 36);
+    const mapsInput = String(form.get("newPlaceMapsUrl") ?? "").trim();
+    const mapsUrl = googleMapsPlaceUrl(mapsInput);
+    if (placeId === "new" && mapsInput && !mapsUrl) return redirect(workspace, "mappa");
     const newPlace = placeId === "new"
-      ? { name: value("newPlaceName", 180), address: value("newPlaceAddress", 300) }
+      ? { name: value("newPlaceName", 180), address: value("newPlaceAddress", 300), mapsUrl: mapsUrl ?? "" }
       : null;
     if (newPlace ? !newPlace.name : placeId && !uuid.test(placeId)) return redirect(workspace, "dati");
     payload = { title: value("title", 180), body: value("body", 40000), placeId: newPlace ? "" : placeId, newPlace };

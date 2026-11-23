@@ -13,6 +13,7 @@ const notices: Record<string, string> = {
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
   campi:"Per pubblicare, salva titolo, testo e un luogo esistente o nuovo.", dati:"Controlla i dati inseriti.",
+  mappa:"Incolla un link HTTPS condiviso da Google Maps.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
 type Photo = { id: string; alt: string; author?: string; license?: string };

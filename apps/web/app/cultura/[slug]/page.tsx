@@ -1,3 +1,4 @@
+import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -28,9 +29,11 @@ export default async function CultureDetailPage({ params, searchParams }: { para
   if (!entry) notFound();
   const fromProfile = (await searchParams).da === "profilo";
   const hasCoordinates = Number.isFinite(entry.latitude) && Number.isFinite(entry.longitude);
-  const destination = hasCoordinates ? `${entry.latitude},${entry.longitude}` : entry.googleMapsQuery;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-  const mapUrl = hasCoordinates ? `/mappa?lat=${entry.latitude}&lng=${entry.longitude}` : `/mappa?q=${encodeURIComponent(entry.googleMapsQuery)}`;
+  const savedMapsUrl = googleMapsPlaceUrl(entry.googleMapsQuery);
+  const mapQuery = savedMapsUrl ? entry.placeName : entry.googleMapsQuery;
+  const destination = hasCoordinates ? `${entry.latitude},${entry.longitude}` : mapQuery;
+  const directionsUrl = savedMapsUrl ?? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+  const mapUrl = hasCoordinates ? `/mappa?lat=${entry.latitude}&lng=${entry.longitude}` : `/mappa?q=${encodeURIComponent(mapQuery)}`;
   const periodLabel = historicalPeriodLabel(entry.primaryHistoricalPeriod);
   const gallery = entry.images.length ? entry.images : entry.imageUrl ? [{ imageUrl: entry.imageUrl, altText: entry.imageAlt, author: entry.imageAuthor, license: entry.imageLicense, sourceUrl: entry.imageSourceUrl, licenseUrl: entry.imageLicenseUrl, isPrimary: true }] : [];
   const hero = gallery.find(image => image.isPrimary) ?? gallery[0];
