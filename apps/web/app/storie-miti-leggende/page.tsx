@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { getPublishedStories } from "@/data/stories";
 import "./stories-mobile.css";
@@ -72,7 +73,7 @@ export default async function StoriesPage() {
 
         {stories.length > 0 ? (
           <div className="cards stories-cards">
-            {stories.map(story => {
+            {stories.map((story, index) => {
               const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
               const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
               const cardImagePosition = cardImagePositions[story.slug] ?? "center";
@@ -84,7 +85,11 @@ export default async function StoriesPage() {
                     {cardImage && cardImageFit === "contain" && (
                       <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
                     )}
-                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ position: "relative", width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />}
+                    {cardImage && (editorialIllustrations[story.slug] ? (
+                      <Image src={cardImage} alt={cardAlt} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} style={{ objectFit: cardImageFit, objectPosition: cardImagePosition }} />
+                    ) : (
+                      <img src={cardImage} alt={cardAlt} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />
+                    ))}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body story-card-body" style={{ padding: "18px 20px 20px" }}>

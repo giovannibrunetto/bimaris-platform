@@ -30,11 +30,11 @@ export default async function VillagesPage() {
 
         {villages.length > 0 ? (
           <div className="cards village-cards">
-            {villages.map(village => (
+            {villages.map((village, index) => (
               <article className="card village-card public-discovery-card" key={village.id}>
                 {village.imageUrl && (
                   <div className="village-card-media">
-                    <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
+                    <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" />
                     {village.slug === "san-marco-d-alunzio" && (
                       <div style={{ fontSize: "0.72rem", lineHeight: 1.35, padding: "0.35rem 0.55rem", color: "#5f6368" }}>
                         Fonte immagine: <a href="https://www.comune.sanmarcodalunzio.me.it/" target="_blank" rel="noreferrer">Comune di San Marco d’Alunzio</a>
