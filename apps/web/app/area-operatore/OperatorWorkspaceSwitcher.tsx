@@ -24,11 +24,10 @@ export default function OperatorWorkspaceSwitcher({ activities, selectedSlug }: 
   const active = activities.find(a => a.slug === selectedSlug || a.id === selectedSlug) ?? activities[0];
   if (!active) return null;
   function changeActivity(slug: string) {
-    const query = new URLSearchParams(window.location.search);
-    query.set("operatore", slug);
-    // Switching activity must never carry another operator's experience or invitation.
-    for (const key of ["experience", "step", "collaboration", "invito"]) query.delete(key);
-    router.push(`${pathname}?${query.toString()}`);
+    if (slug === active.slug) return;
+    // Selecting another operator starts at that operator's home.
+    // Never retain the previous operator's section, wizard step or deep link.
+    router.push(`/area-operatore?operatore=${encodeURIComponent(slug)}`);
   }
   return (
     <nav className="operator-workspace-switcher" aria-label="Attività e sezioni operatore">
