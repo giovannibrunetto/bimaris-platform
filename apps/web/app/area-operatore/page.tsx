@@ -54,7 +54,7 @@ export default async function OperatorAreaPage({searchParams}:{searchParams:Prom
   service&&proposingIds.length?service.from("operators").select("id,name").in("id",proposingIds):Promise.resolve({data:[]}),
   service&&slugs.length?service.rpc("get_operator_action_metrics",{p_operator_slugs:slugs,p_window_days:30}):Promise.resolve({data:[]})
  ]);
- const metricLoadError=Boolean(service&&slugs.length&&metricResult.error);
+ const metricLoadError=Boolean(service&&slugs.length&&("error" in metricResult)&&metricResult.error);
  const proposingNames=new Map((proposingResult.data??[]).map(o=>[o.id,o.name]));
  const collaborationsByOperator=new Map<string,{experience_id:string;operator_id:string;activity_label:string|null;approval_status:string;experience_name:string;proposing_operator_name:string}[]>();
  for(const c of collaborationRows){
