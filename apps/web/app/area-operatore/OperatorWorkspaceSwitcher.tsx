@@ -32,12 +32,13 @@ export default function OperatorWorkspaceSwitcher({ activities, selectedSlug }: 
   }
   return (
     <nav className="operator-workspace-switcher" aria-label="Attività e sezioni operatore">
-      <div className="operator-workspace-switcher__activity">
+      {activities.length>1&&<div className="operator-workspace-switcher__activity">
         <span className="operator-workspace-switcher__activity-label"><span aria-hidden="true" className="operator-workspace-switcher__activity-icon">◇</span>Attività</span>
         <select aria-label="Attività che gestisci" value={active.slug} onChange={e => changeActivity(e.target.value)}>
           {activities.map(a => <option key={a.id} value={a.slug}>{a.name}</option>)}
         </select>
-      </div>
+      </div>}
+      {activities.length===1&&<span className="operator-workspace-switcher__single-label">Altre funzioni</span>}
       <OperatorNotificationBell operatorId={active.id}/>
       <div className="operator-workspace-switcher__divider" aria-hidden="true" />
       <div className="operator-workspace-switcher__sections">
