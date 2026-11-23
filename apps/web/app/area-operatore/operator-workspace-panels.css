@@ -398,3 +398,33 @@
  .operator-workspace-panel--simple{margin-top:28px!important}
  .operator-workspace-welcome{margin-bottom:16px}
 }
+
+/* DT2 mobile QA: compact action cards with balanced odd final row.
+   Keep readable typography and full-card touch targets. */
+@media (max-width:600px) {
+ .operator-quick-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  align-items:stretch;
+ }
+ .operator-quick-action{
+  box-sizing:border-box;
+  min-height:103px;
+  padding:11px 13px 12px;
+  gap:4px;
+  border-radius:15px;
+ }
+ .operator-quick-action__icon{font-size:17px;line-height:1}
+ .operator-quick-action strong{font-size:14px;line-height:1.24}
+ .operator-quick-action small{font-size:11px;line-height:1.3}
+ .operator-quick-action__arrow{right:12px;top:10px;font-size:16px}
+ .operator-quick-action:last-child:nth-child(odd){
+  grid-column:1 / -1;
+  min-height:83px;
+ }
+}
+@media (max-width:350px) {
+ .operator-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .operator-quick-action{min-height:116px}
+ .operator-quick-action:last-child:nth-child(odd){grid-column:1 / -1;min-height:83px}
+}
