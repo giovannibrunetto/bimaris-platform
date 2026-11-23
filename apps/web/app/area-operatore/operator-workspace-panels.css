@@ -300,3 +300,30 @@
   outline-offset:3px;
  }
 }
+
+/* DT2 mobile information hierarchy: one compact identity, one primary tab strip. */
+@media(max-width:600px){
+ .operator-premium-area{padding:10px 10px 35px !important}
+ .operator-premium-header{padding:14px 16px!important;gap:8px!important;border-radius:17px!important}
+ .operator-premium-kicker{font-size:9px!important;letter-spacing:.13em!important}
+ .operator-premium-header h1{font-size:clamp(25px,7.2vw,32px)!important;line-height:1.08!important;margin:5px 0!important;overflow-wrap:anywhere}
+ .operator-premium-heading p{display:none}
+ .operator-premium-header__actions{width:100%;gap:10px!important;align-items:center!important}
+ .operator-premium-status{font-size:11px!important}
+ .operator-premium-public{font-size:11px!important}
+ .operator-premium-header .operator-logout{min-height:34px!important;padding:7px 12px!important}
+ .operator-premium-shell>.operator-workspace-switcher{margin-top:8px!important}
+ .operator-workspace-panel{margin-top:8px!important}
+ .operator-workspace-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px!important;padding:0 0 8px!important;overflow:visible!important}
+ .operator-workspace-tabs__button{width:100%;justify-content:center;min-height:42px!important;padding:7px 5px!important;font-size:12px!important}
+ .operator-workspace-content{padding-top:9px!important}
+ .operator-premium-area .operator-profile-card--overview{padding:15px!important;border-radius:16px!important}
+ .operator-profile-card--overview .operator-profile-card__head{gap:10px!important}
+ .operator-profile-card--overview h2{font-size:23px!important;margin:3px 0 4px!important}
+ .operator-profile-card--overview .operator-profile-card__head>.button{min-height:42px!important}
+ .operator-profile-overview--summary{margin-top:10px!important}
+ .operator-profile-overview--summary .operator-profile-overview__item{padding:9px 0!important}
+ .operator-profile-overview--summary dt{font-size:10px!important;margin-bottom:3px!important}
+ .operator-profile-overview--summary dd{font-size:13px!important;line-height:1.4!important}
+ .operator-profile-more{margin-top:5px!important}
+}
