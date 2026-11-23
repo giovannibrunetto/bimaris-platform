@@ -16,8 +16,23 @@ test("validated PR36 operator workspace switcher is shared by home calendar and 
   assert.match(switcher, /"Area operatore"/);
   assert.match(switcher, /"Importa calendario"/);
   assert.match(switcher, /"Network B2B"/);
-  assert.match(switcher, /query\.set\("operatore", slug\)/);
-  assert.match(switcher, /"experience", "step", "collaboration", "invito"/);
+  assert.match(switcher, /router\.push\(\`\/area-operatore\?operatore=/);
+  assert.doesNotMatch(switcher, /query\.set\("operatore", slug\)/);
+});
+
+test("operator guide retains experience workflows and contextual collaboration invitation", () => {
+  const page = read("../app/area-operatore/page.tsx");
+  const panel = read("../app/area-operatore/OperatorWorkspacePanels.tsx");
+  const manager = read("../app/area-operatore/ExperienceManager.tsx");
+  assert.match(page, /<ExperienceManager operatorId=/);
+  assert.match(page, /<OperatorProfileEditor operator=/);
+  assert.match(page, /b2bEnabledOperatorIds\.has\(operator_id\)/);
+  assert.match(page, /collaborationStatusKnown/);
+  assert.match(panel, /const sequence=options\.map/);
+  assert.match(panel, /setActive\(next\)/);
+  assert.match(panel, /setActive\("home"\)/);
+  assert.doesNotMatch(manager, /Vuoi collaborare con un altro operatore/);
+  assert.match(page, /Vuoi collaborare con un altro operatore/);
 });
 
 test("layout does not double-render navigation that now lives in workspace switcher", () => {
