@@ -37,12 +37,15 @@ export async function POST(request: NextRequest) {
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
-  let payload: Record<string, string> = {};
+  let payload: Record<string, string | { name: string; address: string } | null> = {};
   let uploaded: string | null = null;
   if (action === "save") {
     const placeId = value("place", 36);
-    if (placeId && !uuid.test(placeId)) return redirect(workspace, "dati");
-    payload = { title: value("title", 180), body: value("body", 40000), placeId };
+    const newPlace = placeId === "new"
+      ? { name: value("newPlaceName", 180), address: value("newPlaceAddress", 300) }
+      : null;
+    if (newPlace ? !newPlace.name : placeId && !uuid.test(placeId)) return redirect(workspace, "dati");
+    payload = { title: value("title", 180), body: value("body", 40000), placeId: newPlace ? "" : placeId, newPlace };
   }
   if (action === "publish") {
     const { data } = await db.from("editorial_workspaces").select("draft").eq("id", workspace).eq("model", "culture").maybeSingle();

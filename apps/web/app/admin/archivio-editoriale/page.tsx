@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
+import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
-  campi:"Per pubblicare servono titolo, testo e un luogo.", dati:"Controlla i dati inseriti.",
+  campi:"Per pubblicare, salva titolo, testo e un luogo esistente o nuovo.", dati:"Controlla i dati inseriti.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
 type Photo = { id: string; alt: string; author?: string; license?: string };
@@ -120,10 +121,9 @@ export default async function EditorialPage({ searchParams }: {
       </section> : !workspace.archived && <div className="editorial-composer">
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
-          <h2>Contenuto della scheda</h2>
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>Testo<textarea name="body" rows={9} maxLength={40000} defaultValue={draft.body} /></label>
-          <label>Luogo<select name="place" defaultValue={draft.placeId ?? ""}><option value="">Scegli un luogo per pubblicare</option>{(places ?? []).map(place => <option value={place.id} key={place.id}>{place.name}</option>)}</select></label>
+          <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
+          <EditorialPlaceField places={places ?? []} placeId={draft.placeId} newPlace={draft.newPlace} />
           <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
         </form>
         <aside className="editorial-composer-side">
