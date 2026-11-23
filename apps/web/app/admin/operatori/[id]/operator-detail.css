@@ -65,3 +65,29 @@
   .admin-operator-detail__tabs > a { padding: 9px 12px !important; }
   .admin-operator-detail__public-link { margin-top: 4px; }
 }
+
+/* Unified Profile and Management: secondary information stays collapsed. */
+.admin-operator-detail__management .detail-panel { padding: 16px 18px !important; }
+.admin-operator-detail__metadata {
+  padding: 12px 0;
+  border-top: 1px solid #e8ddd0;
+}
+.admin-operator-detail__metadata summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #243d41;
+}
+.admin-operator-detail__metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+.admin-operator-detail__metadata-grid span { display: block; margin-top: 3px; overflow-wrap: anywhere; }
+.admin-operator-detail__management .admin-operator-detail__visibility { margin: 12px 0; }
+@media(max-width:600px) {
+  .admin-operator-detail__management .detail-panel { padding: 14px !important; }
+  .admin-operator-detail__metadata-grid { grid-template-columns: minmax(0,1fr); gap: 10px; }
+}
