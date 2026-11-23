@@ -56,13 +56,13 @@ export default function Home() {
                 </div>
               </Link>
 
-              <Link className="home-journey-path home-journey-map" href="/mappa">
+              <Link className="home-journey-path home-journey-map" href="/storie-miti-leggende">
                 <span className="home-journey-number">03</span>
                 <div className="home-journey-path-copy">
-                  <span className="home-journey-label">Esplora liberamente</span>
-                  <h3>Mappa BIMARIS</h3>
-                  <p>Scegli ciò che ti incuriosisce e scopri luoghi, cultura ed esperienze direttamente sulla mappa.</p>
-                  <span className="home-journey-action">Apri la mappa <b>→</b></span>
+                  <span className="home-journey-label">Tra racconti e tradizioni</span>
+                  <h3>Messina, tra mito e leggenda</h3>
+                  <p>Scopri i miti, le leggende e le storie tramandate nei secoli, tra la città e lo Stretto.</p>
+                  <span className="home-journey-action">Scopri i racconti <b>→</b></span>
                 </div>
               </Link>
             </div>
