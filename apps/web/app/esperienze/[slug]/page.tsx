@@ -49,9 +49,6 @@ const taxonomy=[...(experience.interestNames??[]),...(experience.activityNames??
     <div className="experience-summary-description">
       <h2 className="experience-detail-title">Cosa vivrai</h2>
       <p className="experience-detail-copy">{experience.description}</p>
-      {experience.whySelected && (
-        <p className="experience-selection"><strong>Perché BIMARIS l’ha scelta</strong><br/>{experience.whySelected}</p>
-      )}
     </div>
     </div>
   </div>
