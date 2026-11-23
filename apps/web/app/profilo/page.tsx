@@ -9,10 +9,8 @@ import { getPublishedFoodProducts } from "@/data/food-products";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedAppointments } from "@/data/public-appointments";
 import LogoutButton from "./LogoutButton";
-import ProfilePreferenceSummary from "./ProfilePreferenceSummary";
 
 export const dynamic = "force-dynamic";
-const labels:Record<string,string>={"cultura":"Cultura e monumenti","miti-leggende":"Miti e leggende","borghi":"Borghi","sapori":"Sapori e vino","culture":"Cultura e monumenti","food-wine":"Sapori e vino","mare":"Mare e costa","natura-trekking":"Montagna e trekking","avventura":"Adrenalina","esperienze":"Esperienze"};
 type Recommendation={key:string;href:string;title:string;copy:string;kind:string;score:number;featured:boolean;interestKey:string;operatorSlug?:string};
 function experienceInterest(category:string){if(category==="degustazioni")return"sapori";if(category==="mare")return"mare";if(category==="avventura")return"avventura";if(category==="trekking-natura")return"natura-trekking";return"esperienze";}
 function contextBoost(key:string,companion?:string|null,time?:string|null,pace?:string|null){let boost=0;const add=(keys:string[],value:number)=>{if(keys.includes(key))boost+=value};if(companion==="famiglia")add(["cultura","borghi","mare"],.8);if(companion==="coppia")add(["sapori","mare","borghi"],.8);if(companion==="amici")add(["esperienze","avventura","sapori"],.8);if(companion==="solo")add(["cultura","natura-trekking","miti-leggende"],.65);if(time==="2-3-ore")add(["cultura","sapori","miti-leggende"],.55);if(time==="mezza-giornata")add(["cultura","sapori","mare","esperienze"],.45);if(time==="giornata")add(["natura-trekking","borghi","mare","avventura"],.6);if(time==="piu-giorni")add(["borghi","natura-trekking","esperienze"],.65);if(pace==="rilassato")add(["sapori","mare","borghi"],.5);if(pace==="equilibrato")add(["cultura","esperienze","mare"],.3);if(pace==="intenso")add(["cultura","natura-trekking","avventura","esperienze"],.55);return boost;}
