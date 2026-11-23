@@ -10,19 +10,27 @@ export default function Home() {
 
   return (
     <>
-      <section className="brand-hero brand-hero-compact home-discovery" aria-labelledby="home-discovery-title">
-        <div className="brand-hero-visual">
-          <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
-        </div>
-        <div className="home-discovery-content">
-          <h1 id="home-discovery-title">Come vuoi vivere Messina?</h1>
-          <h2>Che ti va di fare?</h2>
-          <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
-          <Link className="button home-discovery-start" href="/cosa-faccio-oggi">Inizia la ricerca guidata</Link>
-          <nav className="home-discovery-links" aria-label="Esplora il territorio">
-            <Link href="/mappa">Esplora la mappa</Link>
-            <Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link>
-          </nav>
+      <section className="home-discovery" aria-labelledby="home-discovery-title">
+        <div className="home-discovery-inner">
+          <div className="home-discovery-brand">
+            <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
+          </div>
+          <div className="home-discovery-content">
+            <div className="home-discovery-heading">
+              <h1 id="home-discovery-title">Come vuoi vivere Messina?</h1>
+              <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
+            </div>
+            <div className="home-discovery-panel">
+              <h2>Che ti va di fare?</h2>
+              <Link className="home-discovery-start" href="/cosa-faccio-oggi">
+                Inizia la ricerca guidata <span aria-hidden="true">→</span>
+              </Link>
+              <nav className="home-discovery-links" aria-label="Esplora il territorio">
+                <Link href="/mappa">Esplora la mappa</Link>
+                <Link href="/esperienze?tipo=appuntamenti">Vedi gli appuntamenti</Link>
+              </nav>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -30,8 +38,7 @@ export default function Home() {
         <div className="home-journey-inner">
           <div className="home-journey-intro">
             <div className="home-journey-heading">
-              <div className="kicker">Scopri Messina con BIMARIS</div>
-              <h2 id="home-journey-title">Scegli come vivere la città.</h2>
+              <h2 id="home-journey-title">Esplora Messina</h2>
             </div>
             <p>Entra nella sua storia, vivi un’esperienza oppure esplora liberamente luoghi e territorio.</p>
           </div>
