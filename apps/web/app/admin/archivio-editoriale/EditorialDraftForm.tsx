@@ -54,10 +54,6 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
         <h2>Anteprima della card</h2>
         {preview}
       </section>
-      <details className="editorial-panel editorial-card-preview editorial-card-preview--mobile">
-        <summary>Anteprima della card</summary>
-        {preview}
-      </details>
     {sideControls}
   </aside>
   </div>;
