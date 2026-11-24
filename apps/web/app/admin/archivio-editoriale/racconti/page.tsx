@@ -75,10 +75,17 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         <Link className="editorial-back" href={active ? base : archive}>{active ? "← Racconti di Messina" : "← Archivio editoriale"}</Link>
         <h1>{active ? draft?.title || "Nuovo racconto" : "Archivio editoriale"}</h1>
       </div>
-      {active ? <p className="editorial-current-state">
+      {active ? <div className="historical-heading-tools"><p className="editorial-current-state">
         <span className="editorial-badge" data-state={status(record?.published ?? false, active)}>{status(record?.published ?? false, active)}</span>
         {savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}
-      </p> : <form method="post" action={api}>
+      </p>
+        <nav className="editorial-actions historical-heading-actions" aria-label="Navigazione del racconto">
+          {!active.archived && (preview
+            ? <Link className="editorial-button" href={current}>Torna alla modifica</Link>
+            : <Link className="editorial-button" href={`${current}&anteprima=1`}>Anteprima privata</Link>)}
+          {record?.published && <Link className="editorial-button" href={`${publicBase}/${record.slug}`}>Versione pubblica</Link>}
+        </nav>
+      </div> : <form method="post" action={api}>
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuovo racconto</button>
       </form>}
     </header>
@@ -112,12 +119,7 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         })}</ul> : <p className="editorial-empty">Nessun racconto corrisponde ai filtri.</p>}
       </section>
     </> : <>
-      <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione del racconto">
-        {!active.archived && (preview
-          ? <Link className="editorial-button" href={current}>Torna alla modifica</Link>
-          : <Link className="editorial-button" href={`${current}&anteprima=1`}>Anteprima privata</Link>)}
-        {record?.published && <Link className="editorial-button" href={`${publicBase}/${record.slug}`}>Versione pubblica</Link>}
-      </nav>
+
       {preview ? <>
         {notice && <p role="status" className="editorial-notice">{notice}</p>}
         <HistoricalStoryView preview entries={entries} definition={{
@@ -128,7 +130,7 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         <form className="editorial-panel" method="post" action={api}>
           {fields}
           <h2>Contenuto del racconto</h2>
-          <label>Titolo<input name="title" defaultValue={draft?.title} maxLength={180} /></label>
+          <label>Titolo del racconto<input name="title" defaultValue={draft?.title} maxLength={180} /></label>
           <label>Testo breve della card<input name="subtitle" defaultValue={draft?.subtitle} maxLength={400} /></label>
           <label>Epoca o tema<input name="theme" defaultValue={draft?.theme} maxLength={160} /></label>
           <label>Apertura<textarea name="intro" rows={5} maxLength={20000} defaultValue={draft?.intro?.join("\n\n")} /></label>
