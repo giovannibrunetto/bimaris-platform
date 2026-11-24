@@ -24,7 +24,6 @@ export default function HistoricalChapters({ draft, places }: {
   const [panel, setPanel] = useState<Panel>(null);
   const [dirty, setDirty] = useState(false);
   const [notice, setNotice] = useState("");
-  const [dragKey, setDragKey] = useState<number | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const saving = useRef(false);
   const chapter = typeof panel === "number" ? items.find(item => item.key === panel) : undefined;
@@ -126,18 +125,13 @@ export default function HistoricalChapters({ draft, places }: {
       <section className="historical-index-section" aria-label="Struttura del racconto">
         <div className="historical-index-heading"><h2>Struttura del racconto</h2><small>{items.length} {items.length === 1 ? "capitolo" : "capitoli"}</small></div>
         {row("Apertura", general.intro.trim() ? "Introduzione narrativa" : "Da completare", "intro", "≡")}
-        {items.map((item, index) => <div key={item.key} className="historical-index-chapter" onDragOver={event => event.preventDefault()} onDrop={event => {
-          event.preventDefault();
-          if (dragKey !== null) move(dragKey, index);
-          setDragKey(null);
-        }}>
+        {items.map((item, index) => <div key={item.key} className="historical-index-chapter">
           <button type="button" className="historical-index-row" onClick={() => open(item.key)}>
             <span className="historical-index-number">{String(index + 1).padStart(2, "0")}</span>
             <span className="historical-index-copy"><strong>{item.title || "Capitolo senza titolo"}</strong><small>{linkedTitle(item) || "Capitolo"}</small></span>
             <span className="historical-index-edit" aria-hidden="true">✎</span>
           </button>
           <div className="historical-reorder">
-            <span draggable onDragStart={event => { setDragKey(item.key); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", String(item.key)); }} onDragEnd={() => setDragKey(null)} title="Trascina per riordinare" aria-hidden="true" className="historical-drag">⠿</span>
             <button type="button" aria-label={`Sposta capitolo ${index + 1} su`} disabled={index === 0} onClick={() => move(item.key, index - 1)}>↑</button>
             <button type="button" aria-label={`Sposta capitolo ${index + 1} giù`} disabled={index === items.length - 1} onClick={() => move(item.key, index + 1)}>↓</button>
           </div>
