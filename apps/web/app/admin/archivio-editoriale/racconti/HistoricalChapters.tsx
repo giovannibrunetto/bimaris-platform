@@ -36,7 +36,10 @@ export default function HistoricalChapters({ draft, places }: {
       event.preventDefault();
       event.returnValue = "";
     };
-    const save = () => { saving.current = true; };
+    const save = (event: Event) => {
+      if (root.current?.dataset.mode === "focus") { event.preventDefault(); return; }
+      saving.current = true;
+    };
     const reset = () => { saving.current = false; };
     const guard = (event: Event) => {
       if (!dirty) return;
@@ -107,7 +110,7 @@ export default function HistoricalChapters({ draft, places }: {
       <span className="historical-index-copy"><strong>{label}</strong><small>{description}</small></span>
     </button>;
 
-  return <div ref={root} className="historical-index" id="historical-index">
+  return <div ref={root} className="historical-index" id="historical-index" data-mode={panel === null ? "index" : "focus"}>
     {/* Serialize exactly once, in current order, independently of the active editor. */}
     {Object.entries(general).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
     {items.map(item => <div key={item.key} hidden>
