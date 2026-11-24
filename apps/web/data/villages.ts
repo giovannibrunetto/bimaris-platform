@@ -144,3 +144,11 @@ function mapVillagePoint(row: RawVillagePoint): VillagePoint { return { id:row.i
 export async function getPublishedVillages(): Promise<Village[]> { const client=createPublicClient(); if(!client)return[]; const {data,error}=await client.from("villages").select(select).eq("published",true).order("featured",{ascending:false}).order("name"); if(error){console.error("BIMARIS villages read failed",error.message);return[];} return(data as unknown as RawVillage[]).map(mapVillage); }
 export async function getPublishedVillageBySlug(slug:string):Promise<Village|null>{const client=createPublicClient();if(!client)return null;const{data,error}=await client.from("villages").select(select).eq("published",true).eq("slug",slug).maybeSingle();if(error){console.error("BIMARIS village detail read failed",error.message);return null;}return data?mapVillage(data as unknown as RawVillage):null;}
 export async function getPublishedVillagePoints(villageId:string):Promise<VillagePoint[]>{const client=createPublicClient();if(!client)return[];const{data,error}=await client.from("village_points").select("id,slug,name,description,address,google_maps_query,latitude,longitude,position").eq("published",true).eq("village_id",villageId).order("position").order("name");if(error){console.error("BIMARIS village points read failed",error.message);return[];}return(data as unknown as RawVillagePoint[]).map(mapVillagePoint);}
+
+export async function getPublishedVillageSources(villageId: string) {
+  const client = createPublicClient();
+  if (!client) return [];
+  const { data, error } = await client.from("village_sources").select("id,label,url,note").eq("village_id", villageId).order("sort_order");
+  if (error) console.error("BIMARIS village sources read failed", error.message);
+  return data ?? [];
+}

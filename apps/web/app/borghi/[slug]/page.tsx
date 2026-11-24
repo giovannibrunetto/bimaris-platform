@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import VillageRouteBuilder from "@/components/VillageRouteBuilder";
 import { SaveToCollectionButton } from "@/components/SaveToCollectionButton";
 import { UserBehaviorSignal } from "@/components/UserBehaviorSignal";
-import { getPublishedVillageBySlug, getPublishedVillagePoints, getVillageNarrative } from "@/data/villages";
+import { getPublishedVillageBySlug, getPublishedVillagePoints, getPublishedVillageSources, getVillageNarrative } from "@/data/villages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,7 +28,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const village = await getPublishedVillageBySlug(slug);
   if (!village) notFound();
-  const points = await getPublishedVillagePoints(village.id);
+  const [points, sources] = await Promise.all([getPublishedVillagePoints(village.id), getPublishedVillageSources(village.id)]);
   const narrative = getVillageNarrative(village.slug);
   const isMassa = massaSlugs.has(village.slug);
 
@@ -42,6 +42,11 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
       <article>
         {isMassa&&<section style={{marginBottom:36,paddingBottom:30,borderBottom:"1px solid #dfe4e8"}}><div className="kicker">Le Masse di Messina</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{massesContext.title}</h2>{massesContext.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>}
         {narrative?<section><div className="kicker">Il racconto</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{narrative.title}</h2>{narrative.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>:<><div className="kicker">Il borgo</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>Identità e territorio</h2><p style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{village.description}</p>{village.identity&&<><h3>Perché è unico</h3><p>{village.identity}</p></>}{village.history&&<><h3>Storia</h3><p>{village.history}</p></>}</>}
+        {sources.length > 0 && <section><h2>Fonti e riferimenti</h2><ul className="list">
+          {sources.map(source => <li key={source.id}>{source.url
+            ? <a className="text-link" href={source.url} target="_blank" rel="noreferrer">{source.label}</a>
+            : source.label}{source.note && ` · ${source.note}`}</li>)}
+        </ul></section>}
         {points.length>0&&<VillageRouteBuilder villageName={village.name} points={points}/>} 
       </article>
       <aside className="detail-panel village-visit-panel">

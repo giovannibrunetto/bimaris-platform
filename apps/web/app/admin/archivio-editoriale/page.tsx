@@ -7,6 +7,7 @@ import CultureMonumentCard, { type CultureCardData } from "@/components/CultureM
 import { historicalPeriodLabel } from "@/lib/historical-periods";
 import EditorialStatusFilter from "./EditorialStatusFilter";
 import EditorialDraftForm from "./EditorialDraftForm";
+import EditorialSources, { type EditorialSource } from "./EditorialSources";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
@@ -20,6 +21,7 @@ const notices: Record<string, string> = {
   campi:"Controlla i campi richiesti prima di pubblicare. Per un nuovo monumento serve anche la posizione.", dati:"Controlla i dati inseriti.",
   delete:"Scheda cancellata dall’archivio.",
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
+  fonti:"Controlla il titolo e il link delle fonti inserite.",
   fotolimite:"Una foto di copertina è già in attesa di pubblicazione.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
@@ -122,6 +124,12 @@ export default async function EditorialPage({ searchParams }: {
     imageLicense: cardImage ? cover?.license ?? record?.image_license : draftCover?.license,
   };
   const modelField = <input type="hidden" name="sezione" value={model} />;
+  const sourceTable = model === "culture" ? "culture_sources" : model === "legend" ? "story_sources" : "village_sources";
+  const sourceKey = model === "culture" ? "culture_entry_id" : model === "legend" ? "story_id" : "village_id";
+  const storedSources = record && !Array.isArray(draft?.sources)
+    ? await db.from(sourceTable).select("label,url,source_type,note").eq(sourceKey, record.id).order("sort_order")
+    : { data: [], error: null };
+  const sources: EditorialSource[] = draft?.sources ?? storedSources.data ?? [];
   const hiddenFields = workspace && <>
     {modelField}
     <input type="hidden" name="workspace" value={workspace.id} />
@@ -188,6 +196,7 @@ export default async function EditorialPage({ searchParams }: {
         {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
         <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
+        {sources.length > 0 && <section><h3>Fonti e riferimenti</h3><ul>{sources.map((source, index) => <li key={index}>{source.label}{source.note && ` · ${source.note}`}</li>)}</ul></section>}
         {workspace.archived && <details className="editorial-sheet-management">
           <summary>Cancella scheda</summary>
           <p>La scheda sarà rimossa dall’Archivio editoriale. La cancellazione resterà registrata.</p>
@@ -261,6 +270,8 @@ export default async function EditorialPage({ searchParams }: {
             <label>Identità<textarea name="identity" rows={4} defaultValue={draft.identity} /></label>
             <label>Cosa vedere<textarea name="thingsToSee" rows={4} defaultValue={draft.thingsToSee} /></label>
           </details>}
+          {!storedSources.error && <EditorialSources initial={sources} requireUrl={model === "culture"} />}
+          {storedSources.error && <p role="status">Fonti momentaneamente non disponibili.</p>}
           {model !== "legend" && <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />}
         </EditorialDraftForm>
       }

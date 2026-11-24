@@ -49,9 +49,25 @@ export async function POST(request: NextRequest) {
   if (!["create","save","photo","publish","withdraw","archive","delete"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
-  let payload: Record<string, string | { address: string; placeId: string; latitude: number | null; longitude: number | null }> = {};
+  let payload: Record<string, unknown> = {};
   let uploaded: string | null = null;
   if (action === "save") {
+    if (form.get("sourcesEdited") === "1") {
+      const columns = ["sourceLabel", "sourceLink", "sourceType", "sourceNote"].map(field => form.getAll(field).map(item => String(item).trim()));
+      const [labels, urls, types, notes] = columns;
+      if (labels.length > 24 || columns.some(column => column.length !== labels.length)) return redirect(workspace, "fonti");
+      const sources = labels.map((label, index) => ({ label, url: urls[index], source_type: types[index], note: notes[index] }));
+      for (const source of sources) {
+        if (!source.label || source.label.length > 400 || source.url.length > 1000 || source.note.length > 1200) return redirect(workspace, "fonti");
+        if (!source.url && model !== "culture") continue;
+        try {
+          if (!["https:", "http:"].includes(new URL(source.url).protocol)) return redirect(workspace, "fonti");
+        } catch {
+          return redirect(workspace, "fonti");
+        }
+      }
+      payload.sources = sources;
+    }
     const category = value("category", 16);
     if (model === "legend" && category && category !== "Mito" && category !== "Leggenda") return redirect(workspace, "dati");
     const lat = value("latitude", 32).replace(",", ".");
@@ -62,6 +78,7 @@ export async function POST(request: NextRequest) {
     if ((lat || lng) && (!decimal.test(lat) || !decimal.test(lng) || latitude === null || longitude === null
       || Math.abs(latitude) > 90 || Math.abs(longitude) > 180)) return redirect(workspace, "mappa");
     payload = {
+      ...payload,
       title: value("title", 180),
       body: value("body", 40000),
       ...(model !== "culture" ? {
@@ -93,14 +110,16 @@ export async function POST(request: NextRequest) {
     if (error) return redirect(workspace, "errore");
     payload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
   }
-  const { data, error } = await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
+  const { data, error } = action === "publish"
+    ? await db.rpc("publish_editorial_with_sources", { p_model: model, p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload })
+    : await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
     ...(model === "culture" ? {} : { p_model: model }),
     p_action: action, p_actor: admin.userId, p_workspace: workspace || null, p_entry: entry || null, p_version: version, p_data: payload,
   });
   if (error) {
     if (uploaded) await db.storage.from("editorial-media").remove([uploaded]);
     console.error("Editorial operation failed", error.code, error.message);
-    return redirect(workspace, error.message.includes("photo-limit") ? "fotolimite" : error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
+    return redirect(workspace, error.message.includes("invalid-sources") ? "fonti" : error.message.includes("photo-limit") ? "fotolimite" : error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
   }
   return redirect(action === "delete" ? "" : String(data), action);
 }
