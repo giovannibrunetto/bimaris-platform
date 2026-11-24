@@ -36,6 +36,10 @@ export async function POST(request: NextRequest) {
       url.searchParams.set("salvataggio", "1");
       url.hash = "editorial-save";
     }
+    if (action === "photo" && uuid.test(id)) {
+      url.searchParams.set("fotografia", "1");
+      url.hash = "editorial-photos";
+    }
     return NextResponse.redirect(url, 303);
   };
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)

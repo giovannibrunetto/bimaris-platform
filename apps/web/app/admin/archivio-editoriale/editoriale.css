@@ -173,3 +173,10 @@
 }
 .editorial-composer #editorial-save [role="alert"] { color: #8a2f25; }
 .editorial-composer textarea { font-weight: 400; }
+
+#editorial-photos { scroll-margin-top: 100px; }
+.editorial-photo-add > summary { color: #103237; font-weight: 650; }
+.editorial-photo-list { display: grid; gap: 10px; }
+.editorial-photo-list figure { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 10px; }
+.editorial-photo-list img { width: 76px; aspect-ratio: 4 / 3; height: auto; object-fit: cover; border-radius: 6px; }
+.editorial-photo-list figcaption { font-size: .82rem; overflow-wrap: anywhere; }

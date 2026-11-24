@@ -21,7 +21,7 @@ const notices: Record<string, string> = {
 type Photo = { id: string; alt: string; author?: string; license?: string };
 
 export default async function EditorialPage({ searchParams }: {
-  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string }>;
+  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string }>;
 }) {
   if (!(await getVerifiedSuperAdmin())) redirect("/admin/login");
   const db = createServiceClient();
@@ -97,7 +97,7 @@ export default async function EditorialPage({ searchParams }: {
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
       </form>}
     </header>
-    {query.salvataggio !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
+    {query.salvataggio !== "1" && query.fotografia !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
     {!workspace ? <>
       <section className="editorial-catalog" aria-labelledby="editorial-catalog-title">
         <div className="editorial-toolbar">
@@ -154,25 +154,39 @@ export default async function EditorialPage({ searchParams }: {
           <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
         </EditorialDraftForm>
         <aside className="editorial-composer-side">
-        <details className="editorial-panel editorial-photo-panel" open={["foto", "photo"].includes(query.esito ?? "") || undefined}>
-          <summary>Fotografie in bozza <span>{photos.length}</span></summary>
-          <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
-          {hiddenFields}
-          {photos.map(photo => <figure key={photo.id}><img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} /><figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption></figure>)}
-          <label>Fotografia<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /></label>
-          <label>Descrizione della foto per l’accessibilità
-            <input name="alt" maxLength={250} placeholder="Es. Il castello visto dal cortile" aria-describedby="editorial-alt-help" required />
-            <small id="editorial-alt-help">Descrivi brevemente ciò che si vede. I lettori di schermo leggono questo testo a chi non può vedere la foto.</small>
-          </label>
-          <details className="editorial-photo-credits"><summary>Crediti e licenza</summary>
-          <label>Autore<input name="author" maxLength={180} /></label>
-          <label>Fonte<input name="source" type="url" maxLength={500} /></label>
-          <label>Licenza<input name="license" maxLength={180} /></label>
-          <label>Link licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
+        <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
+          <h2 id="editorial-photo-heading">Foto della bozza</h2>
+          {query.fotografia === "1" && query.esito && notices[query.esito] &&
+            <p className="editorial-notice" role={query.esito === "photo" ? "status" : "alert"}>{notices[query.esito]}</p>}
+          {photos.length > 0 ? <div className="editorial-photo-list">
+            {photos.map(photo => <figure key={photo.id}>
+              <img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} />
+              <figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption>
+            </figure>)}
+          </div> : <p>Nessuna foto aggiunta a questa bozza.</p>}
+          <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
+            <summary>Aggiungi una foto</summary>
+            <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
+              {hiddenFields}
+              <label>File della foto
+                <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required />
+                <small id="editorial-photo-format">JPEG, PNG o WebP, fino a 3 MiB.</small>
+              </label>
+              <label>Cosa si vede nella foto?
+                <input name="alt" maxLength={250} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required />
+                <small id="editorial-alt-help">Una breve descrizione per chi usa un lettore di schermo.</small>
+              </label>
+              <details className="editorial-photo-credits">
+                <summary>Autore, fonte e licenza</summary>
+                <label>Autore<input name="author" maxLength={180} /></label>
+                <label>Link alla fonte<input name="source" type="url" maxLength={500} /></label>
+                <label>Licenza<input name="license" maxLength={180} /></label>
+                <label>Link alla licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
+              </details>
+              <button className="editorial-button editorial-button--primary" name="action" value="photo">Allega alla bozza</button>
+            </form>
           </details>
-          <button className="editorial-button" name="action" value="photo">Aggiungi foto</button>
-          </form>
-        </details>
+        </section>
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
           <h2>Pubblicazione</h2>
