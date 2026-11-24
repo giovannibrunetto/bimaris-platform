@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import CultureMonumentCard from "@/components/CultureMonumentCard";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
+import EditorialStatusFilter from "./EditorialStatusFilter";
 import EditorialDraftForm from "./EditorialDraftForm";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
@@ -123,11 +124,8 @@ export default async function EditorialPage({ searchParams }: {
           <h2 id="editorial-catalog-title">Cultura</h2>
           <form className="editorial-filters" action={base}>
             <label>Cerca per titolo<input name="q" type="search" defaultValue={query.q} /></label>
-            <label>Stato<select name="stato" defaultValue={query.stato ?? ""}>
-              <option value="">Tutti</option>
-              {["Bozza", "Pubblicata", "Ritirata", "Archiviata"].map(label => <option key={label}>{label}</option>)}
-            </select></label>
-            <button className="editorial-button">Filtra</button>
+            <EditorialStatusFilter value={query.stato ?? ""} />
+            <button className="editorial-button" type="submit">Cerca</button>
             {(query.q || query.stato) && <Link className="editorial-button" href={base}>Azzera</Link>}
           </form>
         </div>
