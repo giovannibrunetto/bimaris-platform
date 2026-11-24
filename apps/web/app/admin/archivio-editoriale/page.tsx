@@ -61,6 +61,7 @@ export default async function EditorialPage({ searchParams }: {
   if (query.id && !workspace) notFound();
   const record = (catalog.data as CatalogRecord[]).find(row => row.id === workspace?.entry_id);
   const draft = workspace?.draft;
+  const editorialBody = model === "legend" ? draft?.body?.replace(/\\n/g, "\n") : draft?.body;
   const photos: Photo[] = draft?.photos ?? [];
   const status = (row: typeof workspace, published?: boolean) => row?.archived ? "Archiviata" : published ? "Pubblicata" : row?.entry_id ? "Ritirata" : "Bozza";
   const rows = [
@@ -200,7 +201,7 @@ export default async function EditorialPage({ searchParams }: {
             <CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} />
           </aside>
           <article className="editorial-preview-copy">
-            <section><h3>{model === "legend" ? "Racconto" : "Descrizione del luogo"}</h3><p className="editorial-text">{draft.body}</p></section>
+            <section><h3>{model === "legend" ? "Racconto" : "Descrizione del luogo"}</h3><p className={`editorial-text${model === "legend" ? " editorial-narrative" : ""}`}>{editorialBody}</p></section>
             {model === "village" && <>
               {draft.history && <section><h3>Storia</h3><p className="editorial-text">{draft.history}</p></section>}
               {draft.identity && <section><h3>Identità</h3><p className="editorial-text">{draft.identity}</p></section>}
@@ -278,12 +279,12 @@ export default async function EditorialPage({ searchParams }: {
         </form>
         </>} card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={model === "culture" && Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
           {hiddenFields}
-          <label>{model === "village" ? "Nome del borgo" : "Titolo"}<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>{model === "legend" ? "Racconto" : "Descrizione del luogo"}<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
-          {model !== "culture" && <label>Testo breve della card<input name="excerpt" maxLength={400} defaultValue={draft.excerpt} /></label>}
+          <label>{model === "village" ? "Nome del borgo" : "Titolo"}{model === "legend" ? <textarea name="title" rows={2} maxLength={180} defaultValue={draft.title} /> : <input name="title" maxLength={180} defaultValue={draft.title} />}</label>
+          <label>{model === "legend" ? "Racconto" : "Descrizione del luogo"}<textarea name="body" rows={7} maxLength={40000} defaultValue={editorialBody} /></label>
+          {model !== "culture" && <label>Testo breve della card{model === "legend" ? <textarea name="excerpt" rows={3} maxLength={400} defaultValue={draft.excerpt} /> : <input name="excerpt" maxLength={400} defaultValue={draft.excerpt} />}</label>}
           {model === "legend" && <label>Tipo di racconto
             <select name="category" required={!draft.category} defaultValue={draft.category === "Mito" || draft.category === "Leggenda" ? draft.category : ""}>
-              <option value="" disabled>{draft.category ? `Tipo attuale: ${draft.category}` : "Scegli il tipo"}</option>
+              <option value="" disabled={!draft.category}>{draft.category && draft.category !== "Mito" && draft.category !== "Leggenda" ? draft.category : "Scegli il tipo"}</option>
               <option value="Mito">Mito</option>
               <option value="Leggenda">Leggenda</option>
             </select>
