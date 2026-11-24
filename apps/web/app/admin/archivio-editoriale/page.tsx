@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
 import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
+import CultureMonumentCard from "@/components/CultureMonumentCard";
+import { historicalPeriodLabel } from "@/lib/historical-periods";
 import EditorialDraftForm from "./EditorialDraftForm";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
@@ -28,7 +30,7 @@ export default async function EditorialPage({ searchParams }: {
   if (!db) notFound();
   const query = await searchParams;
   const [catalog, workspaces] = await Promise.all([
-    db.from("culture_entries").select("id,title,slug,published,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
+    db.from("culture_entries").select("id,title,slug,published,excerpt,category,primary_historical_period,image_url,image_alt,image_author,image_license,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
     db.from("editorial_workspaces").select("*").eq("model", "culture"),
   ]);
   if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
@@ -81,6 +83,23 @@ export default async function EditorialPage({ searchParams }: {
 
   const canPublish = Boolean(draft?.title?.trim() && draft?.body?.trim()
     && (draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
+  const { data: cover } = record
+    ? await db.from("culture_images").select("image_url,alt_text,author,license")
+        .eq("culture_entry_id", record.id).order("is_primary", { ascending: false })
+        .order("sort_order").limit(1).maybeSingle()
+    : { data: null };
+  const draftCover = photos[0];
+  const cardImage = cover?.image_url ?? record?.image_url;
+  const card = {
+    title: draft?.title ?? "",
+    excerpt: record?.excerpt ?? "",
+    category: record?.category ?? "monumento",
+    period: record?.primary_historical_period === "trasversale" ? "Più epoche" : historicalPeriodLabel(record?.primary_historical_period),
+    imageUrl: cardImage ?? (draftCover ? `/api/editoriale/immagini/${draftCover.id}?anteprima=1` : undefined),
+    imageAlt: cardImage ? cover?.alt_text ?? record?.image_alt : draftCover?.alt,
+    imageAuthor: cardImage ? cover?.author ?? record?.image_author : draftCover?.author,
+    imageLicense: cardImage ? cover?.license ?? record?.image_license : draftCover?.license,
+  };
   const hiddenFields = workspace && <>
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
@@ -140,15 +159,11 @@ export default async function EditorialPage({ searchParams }: {
 
       {query.anteprima === "1" ? <section className="editorial-panel">
         <h2>Anteprima privata</h2>
-        <article className="card culture-card">
-          {photos[0] && <div className="culture-card-media"><img src={`/api/editoriale/immagini/${photos[0].id}?anteprima=1`} alt={photos[0].alt} /></div>}
-          <div className="card-body"><h3>{draft.title || "Scheda senza titolo"}</h3><p>{draft.body?.slice(0, 240)}</p></div>
-        </article>
+        <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
       </section> : !workspace.archived && <div className="editorial-composer">
-        <EditorialDraftForm action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
+        <EditorialDraftForm card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
           {hiddenFields}
-          <h2>Contenuto della scheda</h2>
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>Descrizione del luogo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
           <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
