@@ -40,6 +40,8 @@ async function googleMaps():Promise<any>{
 
 export default function ExperienceLocationPicker({value,onChange,culture=false}:{value:ExperienceLocation;onChange:(next:ExperienceLocation)=>void;culture?:boolean}){
  const [query,setQuery]=useState(value.meetingPoint);
+ const addressInput=useRef<HTMLInputElement>(null);
+ const [suggestionsDismissed,setSuggestionsDismissed]=useState(false);
  const [results,setResults]=useState<Candidate[]>([]);
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
@@ -114,6 +116,7 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
 
  const confirmed=value.latitude!==""&&value.longitude!==""&&Number.isFinite(Number(value.latitude))&&Number.isFinite(Number(value.longitude));
  const changeQuery=(next:string)=>{
+  setSuggestionsDismissed(false);
   setQuery(next);setResults([]);setError("");setSearchState("idle");
   // Re-entering an unchanged saved address must not invalidate its confirmed coordinates.
   if(next.trim()===value.meetingPoint.trim())return;
@@ -126,12 +129,21 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
    <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="venue"} onChange={()=>onChange({...value,locationKind:"venue"})}/><span className="location-choice__copy"><strong>Luogo di svolgimento</strong><small>Il punto in cui si tiene l’esperienza</small></span></label>
    <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="departure"} onChange={()=>onChange({...value,locationKind:"departure"})}/><span className="location-choice__copy"><strong>Punto di ritrovo o partenza</strong><small>Il punto da cui prende avvio l’esperienza</small></span></label>
   </div>}
+  <div className="location-search" onKeyDown={event=>{
+   if(event.key!=="Escape")return;
+   setSuggestionsDismissed(true);
+   addressInput.current?.focus();
+  }}>
   <label>Nome del luogo o indirizzo
-   <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)} autoComplete="off" aria-describedby="location-search-guidance"/>
+   <input ref={addressInput} type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)} autoComplete="off" aria-describedby="location-search-guidance"/>
   </label>
-  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. {culture?"Se il luogo non compare, puoi inserire latitudine e longitudine.":"Se il luogo non compare, indicalo sulla mappa."}</p>
+   {!suggestionsDismissed&&<div className="location-popover">
   {searchState==="searching"&&<p className="location-search-state" role="status">Ricerca del luogo su Google Maps…</p>}
   {(searchState==="no-results"||searchState==="unavailable")&&<div className="location-fallback" role="status"><strong>{searchState==="no-results"?"Luogo non trovato su Google Maps.":"Ricerca Google Maps non disponibile."}</strong><p>Puoi comunque scegliere il punto preciso sulla mappa, senza perdere il nome inserito.</p><button type="button" onClick={()=>{setMapOpen(true);setMapError("");setPending(null)}}>Scegli un punto sulla mappa</button></div>}
+  {results.length>0&&<div className="location-results" aria-label="Suggerimenti Google Maps"><p>Scegli il luogo corretto tra i suggerimenti Google Maps:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{requestId.current++;onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);addressInput.current?.focus();setResults([]);setSearchState("idle");}}>{item.address} — Seleziona</button>)}</div>}
+   </div>}
+  </div>
+  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. {culture?"Se il luogo non compare, puoi inserire latitudine e longitudine.":"Se il luogo non compare, indicalo sulla mappa."}</p>
   <div className="location-actions">
    <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Indica il punto sulla mappa"}</button>
   </div>
@@ -144,7 +156,6 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
    <button type="button" onClick={confirmManual} disabled={!pending||mapLoading}>Conferma questo punto</button>
   </div>}
   {error&&<p role="alert">{error}</p>}
-  {results.length>0&&<div className="location-results" aria-label="Suggerimenti Google Maps"><p>Scegli il luogo corretto tra i suggerimenti Google Maps:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{requestId.current++;onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);setResults([]);setSearchState("idle");}}>{item.address} — Seleziona</button>)}</div>}
   {confirmed&&!mapOpen&&<p className="location-confirmed" role="status">Punto confermato: {value.meetingPoint} ({Number(value.latitude).toFixed(5)}, {Number(value.longitude).toFixed(5)})</p>}
   <style jsx>{`
    .experience-location-picker{display:grid;gap:12px;padding:18px;border:1px solid #bdad8a;border-radius:14px;background:#f8f5ee;color:#153038;margin:16px 0}
@@ -166,9 +177,13 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
    .manual-location-map{height:340px;width:100%;border:1px solid #aa9978;border-radius:12px;overflow:hidden}
    @media(max-width:600px){.manual-location-map{height:290px}.location-choice{grid-template-columns:minmax(0,1fr);gap:10px}.experience-location-picker .location-choice > .location-choice__option{min-height:68px}}
 
-   .experience-location-picker>label{display:grid;gap:7px;font-weight:600;font-size:14px}
    .experience-location-picker input[type=text]{width:100%;padding:12px;border:1px solid #afa38a;border-radius:9px;background:#fff;color:#173136}
    .experience-location-picker button{padding:12px 15px;text-align:left;border:1px solid #84704a;border-radius:10px;background:#fff;color:#153038;cursor:pointer}
+   .location-search{position:relative;min-width:0}
+   .location-search>label{display:grid;gap:7px;font-weight:600;font-size:14px}
+   .location-popover{position:absolute;inset:calc(100% + 4px) 0 auto;z-index:5;max-height:min(240px,35vh);overflow:auto;overscroll-behavior:contain}
+   .location-search:not(:focus-within) .location-popover,.location-popover:empty{display:none}
+   .location-popover .location-search-state{padding:10px 12px;border:1px solid #d5c5a6;border-radius:10px;background:#fff}
    .location-results{display:grid;gap:9px;padding:12px;border:1px solid #d5c5a6;border-radius:12px;background:#fff}
    .location-results button{width:100%;border-color:#d5c5a6;text-align:left}
    .location-results button:hover{background:#f5ecda}
