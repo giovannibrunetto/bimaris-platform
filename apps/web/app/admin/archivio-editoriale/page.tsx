@@ -136,7 +136,7 @@ export default async function EditorialPage({ searchParams }: {
     <input type="hidden" name="version" value={workspace.version} />
   </>;
 
-  return <main className="editorial-shell">
+  return <main className="editorial-shell editorial-standard">
     <header className={`editorial-heading${workspace ? " editorial-heading--sheet" : ""}`}>
       <div>
         <Link className="editorial-back" href={workspace?.archived ? `${base}?${sectionParam}stato=Archiviata` : workspace ? sectionUrl : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
