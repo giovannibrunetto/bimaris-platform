@@ -128,7 +128,7 @@ export default async function EditorialPage({ searchParams }: {
             <label>Cerca per titolo<input name="q" type="search" defaultValue={query.q} /></label>
             <EditorialStatusFilter value={query.stato ?? ""} />
             <button className="editorial-button" type="submit">Cerca</button>
-            {(query.q || query.stato) && <Link className="editorial-button" href={base}>Azzera</Link>}
+
           </form>
         </div>
         {rows.length ? <ul className="editorial-list">{rows.slice(offset, offset + pageSize).map(row => {
