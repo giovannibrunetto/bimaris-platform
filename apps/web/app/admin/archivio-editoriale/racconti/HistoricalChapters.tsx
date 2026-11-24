@@ -45,7 +45,13 @@ export default function HistoricalChapters({ draft, places }: {
       if (!dirty) return;
       event.preventDefault();
       setNotice("Salva la bozza prima di pubblicare, ritirare o archiviare.");
-      document.getElementById("historical-save")?.scrollIntoView({ block: "center" });
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const warning = document.getElementById("historical-publication-warning");
+          warning?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+          warning?.focus({ preventScroll: true });
+        });
+      });
     };
     const navigation = (event: MouseEvent) => {
       if (!dirty || saving.current || !(event.target instanceof Element)) return;
@@ -121,7 +127,7 @@ export default function HistoricalChapters({ draft, places }: {
       <input type="hidden" name="chapterTransition" value={item.transition} />
     </div>)}
     {dirty && <p className="historical-dirty" role="status">Modifiche non ancora salvate</p>}
-    {notice && <p className="editorial-notice" role="alert">{notice}</p>}
+    {notice && <p id="historical-publication-warning" tabIndex={-1} className="editorial-notice" role="alert">{notice}</p>}
     {panel === null ? <>
       {row("Informazioni generali", "Titolo, presentazione ed epoca", "general", "▤")}
       <section className="historical-index-section" aria-label="Struttura del racconto">
