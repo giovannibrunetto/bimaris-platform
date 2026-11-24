@@ -136,7 +136,7 @@ export default async function EditorialPage({ searchParams }: {
           return <li key={row.entry || row.draft?.id}>
             <strong>{row.title}</strong>
             <span className="editorial-badge" data-state={label}>{label}</span>
-            {row.draft ? <Link className="editorial-button" href={`${base}?id=${row.draft.id}`}>Apri scheda</Link> : <form method="post" action={api}>
+            {row.draft ? <Link className="editorial-button" href={`${base}?id=${row.draft.id}`}>{row.draft.archived ? "Visualizza" : "Modifica"}</Link> : <form method="post" action={api}>
               <input type="hidden" name="entry" value={row.entry} />
               <button className="editorial-button" name="action" value="create">Modifica</button>
             </form>}
