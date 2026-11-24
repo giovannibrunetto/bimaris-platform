@@ -283,7 +283,7 @@ export default async function EditorialPage({ searchParams }: {
           {hiddenFields}
           <label>{model === "village" ? "Nome del borgo" : "Titolo"}{model === "legend" ? <textarea name="title" rows={2} maxLength={180} defaultValue={draft.title} /> : <input name="title" maxLength={180} defaultValue={draft.title} />}</label>
           <label>{model === "legend" ? "Racconto" : "Descrizione del luogo"}<textarea name="body" rows={7} maxLength={40000} defaultValue={editorialBody} /></label>
-          {model !== "culture" && <label>Testo breve della card{model === "legend" ? <textarea name="excerpt" rows={3} maxLength={400} defaultValue={draft.excerpt} /> : <input name="excerpt" maxLength={400} defaultValue={draft.excerpt} />}</label>}
+          {model !== "culture" && <label>Testo breve della card<textarea name="excerpt" rows={3} maxLength={400} defaultValue={draft.excerpt} /></label>}
           {model === "legend" && <label>Tipo di racconto
             <select name="category" required={!draft.category} defaultValue={draft.category === "Mito" || draft.category === "Leggenda" ? draft.category : ""}>
               <option value="" disabled={!draft.category}>{draft.category && draft.category !== "Mito" && draft.category !== "Leggenda" ? draft.category : "Scegli il tipo"}</option>
