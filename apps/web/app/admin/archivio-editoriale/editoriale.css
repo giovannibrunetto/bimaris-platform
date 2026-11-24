@@ -299,3 +299,9 @@
     min-height: 40px;
   }
 }
+
+/* Consistent private-preview reading rhythm and spacing in expanded editorial groups. */
+.editorial-standard .editorial-preview-copy .editorial-text { line-height: 1.6; }
+.editorial-standard .editorial-writing-fields > details.editorial-sheet-management[open] > label + label { margin-top: 12px; }
+.editorial-standard .editorial-writing-fields > details.editorial-sheet-management[open] > summary { margin-bottom: 12px; }
+.editorial-standard .editorial-writing-fields textarea { font-family: inherit; font-weight: 400; }
