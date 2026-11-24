@@ -24,8 +24,8 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   return <div className="editorial-composer">
   <form className="editorial-panel" method="post" action={action} onInput={event => {
     const field = event.target;
-    if (field instanceof HTMLInputElement && field.name === "title") setTitle(field.value.trim());
-    if (!publicExcerpt && ((field instanceof HTMLTextAreaElement && field.name === "body") || (field instanceof HTMLInputElement && field.name === "excerpt"))) {
+    if ((field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) && field.name === "title") setTitle(field.value.trim());
+    if (!publicExcerpt && ((field instanceof HTMLTextAreaElement && field.name === "body") || ((field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) && field.name === "excerpt"))) {
       const fields = new FormData(event.currentTarget);
       setExcerpt(String(fields.get("excerpt") ?? "").trim() || String(fields.get("body") ?? "").trim().slice(0, 240));
     }
