@@ -155,3 +155,21 @@
 .editorial-sheet-management summary { cursor: pointer; }
 .editorial-sheet-management .editorial-actions { margin-top: 8px; }
 .editorial-button:disabled { opacity: .6; cursor: default; }
+
+.editorial-composer #editorial-save {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  padding: 10px 12px;
+  border: 1px solid #dcd2c2;
+  border-radius: 10px;
+  background: #fcfaf6;
+  box-shadow: 0 -4px 14px rgb(16 50 55 / .08);
+}
+.editorial-composer #editorial-save span {
+  flex: 1 1 180px;
+  color: #31585b;
+  font-size: .85rem;
+}
+.editorial-composer #editorial-save [role="alert"] { color: #8a2f25; }
+.editorial-composer textarea { font-weight: 400; }
