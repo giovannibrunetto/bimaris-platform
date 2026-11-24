@@ -11,36 +11,53 @@ import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
 export const dynamic = "force-dynamic";
-const base = "/admin/archivio-editoriale";
+const archive = "/admin/archivio-editoriale";
 const api = "/api/admin/editoriale";
 const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
-  campi:"Per pubblicare, salva titolo e testo. Per una scheda nuova, seleziona un suggerimento Google oppure inserisci le coordinate.", dati:"Controlla i dati inseriti.",
+  campi:"Controlla i campi richiesti prima di pubblicare. Per un nuovo monumento serve anche la posizione.", dati:"Controlla i dati inseriti.",
   delete:"Scheda cancellata dall’archivio.",
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
+  fotolimite:"Una foto di copertina è già in attesa di pubblicazione.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
+};
+type CatalogRecord = { id: string; title: string; slug: string; published: boolean; excerpt: string | null;
+  category?: string | null; primary_historical_period?: Parameters<typeof historicalPeriodLabel>[0];
+  image_url?: string | null; image_alt?: string | null; image_author?: string | null; image_license?: string | null;
+  google_maps_url?: string | null; editorial_address?: string | null; editorial_latitude?: number | null; editorial_longitude?: number | null;
 };
 type Photo = { id: string; alt: string; author?: string; license?: string };
 
 export default async function EditorialPage({ searchParams }: {
-  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string }>;
+  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string; sezione?: string }>;
 }) {
   if (!(await getVerifiedSuperAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) notFound();
   const query = await searchParams;
+  const model = query.sezione === "legend" || query.sezione === "village" ? query.sezione : "culture";
+  const base = archive;
+  const sectionParam = model === "culture" ? "" : `sezione=${model}&`;
+  const sectionUrl = model === "culture" ? archive : `${archive}?sezione=${model}`;
+  const name = model === "legend" ? "Miti e leggende" : model === "village" ? "Borghi" : "Monumenti";
+  const newLabel = model === "legend" ? "Nuova leggenda" : model === "village" ? "Nuovo borgo" : "Nuovo monumento";
+  const publicPath = model === "legend" ? "/storie-miti-leggende" : model === "village" ? "/borghi" : "/cultura";
   const [catalog, workspaces] = await Promise.all([
-    db.from("culture_entries").select("id,title,slug,published,excerpt,category,primary_historical_period,image_url,image_alt,image_author,image_license,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
-    db.from("editorial_workspaces").select("*").eq("model", "culture"),
+    model === "legend"
+      ? db.from("stories").select("id,title,slug,published,excerpt,category:story_type,image_url,image_alt,image_author,image_license").order("title")
+      : model === "village"
+      ? db.from("villages").select("id,title:name,slug,published,excerpt,image_url,image_alt,image_author,image_license,editorial_address:address,editorial_latitude:latitude,editorial_longitude:longitude").order("name")
+      : db.from("culture_entries").select("id,title,slug,published,excerpt,category,primary_historical_period,image_url,image_alt,image_author,image_license,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
+    db.from("editorial_workspaces").select("*").eq("model", model),
   ]);
   if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
 
   const deletedEntries = new Set(workspaces.data.filter(row => row.draft.deletedAt).map(row => row.entry_id));
   const workspace = workspaces.data.find(row => row.id === query.id && !row.draft.deletedAt);
   if (query.id && !workspace) notFound();
-  const record = catalog.data.find(row => row.id === workspace?.entry_id);
+  const record = (catalog.data as CatalogRecord[]).find(row => row.id === workspace?.entry_id);
   const draft = workspace?.draft;
   const photos: Photo[] = draft?.photos ?? [];
   const status = (row: typeof workspace, published?: boolean) => row?.archived ? "Archiviata" : published ? "Pubblicata" : row?.entry_id ? "Ritirata" : "Bozza";
@@ -57,7 +74,7 @@ export default async function EditorialPage({ searchParams }: {
     const params = new URLSearchParams({ pagina: String(number) });
     if (query.q) params.set("q", query.q);
     if (query.stato) params.set("stato", query.stato);
-    return `${base}?${params}`;
+    return `${base}?${sectionParam}${params}`;
   };
 
   const { data: linkedPlace } = draft?.placeId
@@ -85,25 +102,28 @@ export default async function EditorialPage({ searchParams }: {
     : savedLabel ? `Ultimo salvataggio della bozza · ${savedLabel}` : undefined;
 
   const canPublish = Boolean(draft?.title?.trim() && draft?.body?.trim()
-    && (draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
-  const { data: cover } = record
+    && (model !== "culture" || draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
+  const { data: cover } = record && model === "culture"
     ? await db.from("culture_images").select("image_url,alt_text,author,license")
         .eq("culture_entry_id", record.id).order("is_primary", { ascending: false })
         .order("sort_order").limit(1).maybeSingle()
     : { data: null };
   const draftCover = photos[0];
-  const cardImage = cover?.image_url ?? record?.image_url;
+  const cardImage = model !== "culture" && draftCover ? undefined : cover?.image_url ?? record?.image_url;
   const card = {
+    variant: model,
     title: draft?.title ?? "",
-    excerpt: record?.excerpt ?? "",
-    category: record?.category ?? "monumento",
+    excerpt: model === "culture" ? record?.excerpt ?? "" : draft?.excerpt ?? "",
+    category: draft?.category || record?.category || (model === "culture" ? "monumento" : model === "legend" ? "Leggenda" : "Borgo"),
     period: record?.primary_historical_period === "trasversale" ? "Più epoche" : historicalPeriodLabel(record?.primary_historical_period),
     imageUrl: cardImage ?? (draftCover ? `/api/editoriale/immagini/${draftCover.id}?anteprima=1` : undefined),
     imageAlt: cardImage ? cover?.alt_text ?? record?.image_alt : draftCover?.alt,
     imageAuthor: cardImage ? cover?.author ?? record?.image_author : draftCover?.author,
     imageLicense: cardImage ? cover?.license ?? record?.image_license : draftCover?.license,
   };
+  const modelField = <input type="hidden" name="sezione" value={model} />;
   const hiddenFields = workspace && <>
+    {modelField}
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
   </>;
@@ -111,20 +131,26 @@ export default async function EditorialPage({ searchParams }: {
   return <main className="editorial-shell">
     <header className={`editorial-heading${workspace ? " editorial-heading--sheet" : ""}`}>
       <div>
-        <Link className="editorial-back" href={workspace?.archived ? `${base}?stato=Archiviata` : workspace ? base : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
-        <h1>{workspace ? draft?.title || "Nuova scheda Cultura" : "Archivio editoriale"}</h1>
+        <Link className="editorial-back" href={workspace?.archived ? `${base}?${sectionParam}stato=Archiviata` : workspace ? sectionUrl : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
+        <h1>{workspace ? draft?.title || newLabel : "Archivio editoriale"}</h1>
       </div>
       {workspace && <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span>{savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}</p>}
       {!workspace && <form method="post" action={api}>
-        <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
+        {modelField}<button className="editorial-button editorial-button--primary" name="action" value="create">{newLabel}</button>
       </form>}
     </header>
     {query.salvataggio !== "1" && query.fotografia !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
     {!workspace ? <>
+      <nav className="editorial-actions editorial-sheet-nav" aria-label="Sezioni editoriali">
+        <Link className="editorial-button" aria-current={model === "culture" ? "page" : undefined} href={archive}>Monumenti</Link>
+        <Link className="editorial-button" aria-current={model === "legend" ? "page" : undefined} href={`${archive}?sezione=legend`}>Miti e leggende</Link>
+        <Link className="editorial-button" aria-current={model === "village" ? "page" : undefined} href={`${archive}?sezione=village`}>Borghi</Link>
+      </nav>
       <section className="editorial-catalog" aria-labelledby="editorial-catalog-title">
         <div className="editorial-toolbar">
-          <h2 id="editorial-catalog-title">Cultura</h2>
+          <h2 id="editorial-catalog-title">{name}</h2>
           <form className="editorial-filters" action={base}>
+            {modelField}
             <label>Cerca per titolo<input name="q" type="search" defaultValue={query.q} /></label>
             <EditorialStatusFilter value={query.stato ?? ""} />
             <button className="editorial-button" type="submit">Cerca</button>
@@ -136,8 +162,8 @@ export default async function EditorialPage({ searchParams }: {
           return <li key={row.entry || row.draft?.id}>
             <strong>{row.title}</strong>
             <span className="editorial-badge" data-state={label}>{label}</span>
-            {row.draft ? <Link className="editorial-button" href={`${base}?id=${row.draft.id}`}>{row.draft.archived ? "Visualizza" : "Modifica"}</Link> : <form method="post" action={api}>
-              <input type="hidden" name="entry" value={row.entry} />
+            {row.draft ? <Link className="editorial-button" href={`${base}?${sectionParam}id=${row.draft.id}`}>{row.draft.archived ? "Visualizza" : "Modifica"}</Link> : <form method="post" action={api}>
+              {modelField}<input type="hidden" name="entry" value={row.entry} />
               <button className="editorial-button" name="action" value="create">Modifica</button>
             </form>}
           </li>;
@@ -153,8 +179,8 @@ export default async function EditorialPage({ searchParams }: {
       </section>
     </> : <>
       {!workspace.archived && <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
-        {query.anteprima === "1" ? <Link href={`${base}?id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
-        {record?.published && <Link href={`/cultura/${record.slug}`}>Versione pubblica</Link>}
+        {query.anteprima === "1" ? <Link href={`${base}?${sectionParam}id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?${sectionParam}id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
+        {record?.published && <Link href={`${publicPath}/${record.slug}`}>Versione pubblica</Link>}
       </nav>}
 
       {workspace.archived || query.anteprima === "1" ? <section className="editorial-panel">
@@ -208,7 +234,7 @@ export default async function EditorialPage({ searchParams }: {
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
           <h2>Pubblicazione</h2>
-          <p>{canPublish ? "Controlla l’anteprima prima di pubblicare. Verrà usata l’ultima bozza salvata." : "Salva titolo, descrizione e posizione per abilitare la pubblicazione."}</p>
+          <p>{canPublish ? "Controlla l’anteprima prima di pubblicare. Verrà usata l’ultima bozza salvata." : "Salva titolo e testo prima di pubblicare. Per un nuovo monumento serve anche la posizione."}</p>
           <button className="editorial-button editorial-button--primary" name="action" value="publish" disabled={!canPublish}>Pubblica scheda</button>
           <details className="editorial-sheet-management">
             <summary>Ritiro e archiviazione</summary>
@@ -218,11 +244,18 @@ export default async function EditorialPage({ searchParams }: {
             </div>
           </details>
         </form>
-        </>} card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
+        </>} card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={model === "culture" && Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
           {hiddenFields}
-          <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>Descrizione del luogo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
-          <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
+          <label>{model === "village" ? "Nome del borgo" : "Titolo"}<input name="title" maxLength={180} defaultValue={draft.title} /></label>
+          <label>{model === "legend" ? "Racconto" : "Descrizione del luogo"}<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
+          {model !== "culture" && <label>Testo breve della card<input name="excerpt" maxLength={400} defaultValue={draft.excerpt} /></label>}
+          {model === "legend" && <label>Tipo di racconto<input name="category" maxLength={120} placeholder="Es. Leggenda popolare" defaultValue={draft.category} /></label>}
+          {model === "village" && <details className="editorial-sheet-management"><summary>Storia, identità e luoghi da vedere</summary>
+            <label>Storia<textarea name="history" rows={4} defaultValue={draft.history} /></label>
+            <label>Identità<textarea name="identity" rows={4} defaultValue={draft.identity} /></label>
+            <label>Cosa vedere<textarea name="thingsToSee" rows={4} defaultValue={draft.thingsToSee} /></label>
+          </details>}
+          {model !== "legend" && <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />}
         </EditorialDraftForm>
       }
     </>}

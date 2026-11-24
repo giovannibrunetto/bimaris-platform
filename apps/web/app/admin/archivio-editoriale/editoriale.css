@@ -187,3 +187,6 @@
 .editorial-card-preview .culture-card h3, .editorial-card-preview .culture-card p { overflow-wrap: anywhere; }
 
 .editorial-composer-side > .editorial-card-preview { max-width: none; }
+
+.editorial-sheet-nav[aria-label="Sezioni editoriali"] { margin-bottom: 12px; }
+.editorial-sheet-nav .editorial-button[aria-current="page"] { background: #103237; border-color: #103237; color: #fffaf0; }

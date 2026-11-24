@@ -35,7 +35,8 @@ export default async function VillagesPage() {
                 {village.imageUrl && (
                   <div className="village-card-media">
                     <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" />
-                    {village.slug === "san-marco-d-alunzio" && (
+                    {village.imageAuthor && <div className="photo-credit">Foto: {village.imageAuthor}{village.imageLicense && ` · ${village.imageLicense}`}</div>}
+                    {village.slug === "san-marco-d-alunzio" && !village.imageAuthor && (
                       <div style={{ fontSize: "0.72rem", lineHeight: 1.35, padding: "0.35rem 0.55rem", color: "#5f6368" }}>
                         Fonte immagine: <a href="https://www.comune.sanmarcodalunzio.me.it/" target="_blank" rel="noreferrer">Comune di San Marco d’Alunzio</a>
                       </div>

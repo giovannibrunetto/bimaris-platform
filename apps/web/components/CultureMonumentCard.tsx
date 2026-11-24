@@ -2,6 +2,7 @@ import Link from "next/link";
 
 export type CultureCardData = {
   title: string;
+  variant?: "culture" | "legend" | "village";
   excerpt: string;
   category: string;
   period?: string;
@@ -12,6 +13,21 @@ export type CultureCardData = {
 };
 
 export default function CultureMonumentCard({ card, href }: { card: CultureCardData; href?: string }) {
+  if (card.variant === "legend" || card.variant === "village") {
+    const legend = card.variant === "legend";
+    return <article className={`card ${legend ? "story-card" : "village-card"} public-discovery-card`}>
+      {card.imageUrl && <div className={legend ? "card-media story-card-media" : "village-card-media"}>
+        <img src={card.imageUrl} alt={card.imageAlt ?? card.title} />
+      </div>}
+      <div className={legend ? "card-body story-card-body" : "card-body"}>
+        <div className="kicker">{card.category}</div>
+        <h3>{card.title}</h3>
+        <p>{card.excerpt}</p>
+        <span className="text-link">{legend ? "Leggi il racconto" : "Scopri il borgo"} →</span>
+      </div>
+      {card.imageAuthor && <div className="photo-credit">Foto: {card.imageAuthor}{card.imageLicense && ` · ${card.imageLicense}`}</div>}
+    </article>;
+  }
   const body = <>
     <div className="culture-card-media">
       {card.imageUrl ? <img src={card.imageUrl} alt={card.imageAlt ?? card.title} loading="lazy" decoding="async" />

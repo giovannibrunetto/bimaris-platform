@@ -24,12 +24,15 @@ export async function POST(request: NextRequest) {
   if (!db) return new NextResponse(null, { status: 503 });
   const form = await request.formData();
   const value = (field: string, limit: number) => String(form.get(field) ?? "").trim().slice(0, limit);
+  const section = value("sezione", 12);
+  const model = section === "legend" || section === "village" ? section : "culture";
   const action = value("action", 16);
   const workspace = value("workspace", 36);
   const entry = value("entry", 36);
   const version = Number(form.get("version"));
   const redirect = (id: string, state: string) => {
     const url = new URL(base, request.url);
+    if (model !== "culture") url.searchParams.set("sezione", model);
     if (uuid.test(id)) url.searchParams.set("id", id);
     url.searchParams.set("esito", state);
     if (state === "delete") url.searchParams.set("stato", "Archiviata");
@@ -59,11 +62,15 @@ export async function POST(request: NextRequest) {
     payload = {
       title: value("title", 180),
       body: value("body", 40000),
+      ...(model !== "culture" ? {
+        excerpt: value("excerpt", 400), category: value("category", 120), history: value("history", 40000),
+        identity: value("identity", 40000), thingsToSee: value("thingsToSee", 40000),
+      } : {}),
       location: { address: value("locationAddress", 250), placeId: value("locationPlaceId", 250), latitude, longitude },
     };
   }
   if (action === "publish") {
-    const { data } = await db.from("editorial_workspaces").select("draft").eq("id", workspace).eq("model", "culture").maybeSingle();
+    const { data } = await db.from("editorial_workspaces").select("draft").eq("id", workspace).eq("model", model).maybeSingle();
     if (!data) return redirect(workspace, "errore");
     const slug = String(data.draft.title ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     payload = { slug: `${slug || "cultura"}-${workspace.slice(0,8)}` };
@@ -83,12 +90,14 @@ export async function POST(request: NextRequest) {
     if (error) return redirect(workspace, "errore");
     payload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
   }
-  const { data, error } = await db.rpc("manage_culture_editorial", {
+  const { data, error } = await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
+    ...(model === "culture" ? {} : { p_model: model }),
     p_action: action, p_actor: admin.userId, p_workspace: workspace || null, p_entry: entry || null, p_version: version, p_data: payload,
   });
   if (error) {
+    if (uploaded) await db.storage.from("editorial-media").remove([uploaded]);
     console.error("Editorial operation failed", error.code, error.message);
-    return redirect(workspace, error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
+    return redirect(workspace, error.message.includes("photo-limit") ? "fotolimite" : error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
   }
   return redirect(action === "delete" ? "" : String(data), action);
 }
