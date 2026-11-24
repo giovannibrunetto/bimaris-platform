@@ -109,7 +109,7 @@ export default async function EditorialPage({ searchParams }: {
   return <main className="editorial-shell">
     <header className={`editorial-heading${workspace ? " editorial-heading--sheet" : ""}`}>
       <div>
-        <Link className="editorial-back" href={workspace ? base : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
+        <Link className="editorial-back" href={workspace?.archived ? `${base}?stato=Archiviata` : workspace ? base : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
         <h1>{workspace ? draft?.title || "Nuova scheda Cultura" : "Archivio editoriale"}</h1>
       </div>
       {workspace && <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span>{savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}</p>}
@@ -150,16 +150,17 @@ export default async function EditorialPage({ searchParams }: {
         </div>}
       </section>
     </> : <>
-      <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
+      {!workspace.archived && <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
         {query.anteprima === "1" ? <Link href={`${base}?id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
         {record?.published && <Link href={`/cultura/${record.slug}`}>Versione pubblica</Link>}
-      </nav>
+      </nav>}
 
-      {query.anteprima === "1" ? <section className="editorial-panel">
-        <h2>Anteprima privata</h2>
+      {workspace.archived || query.anteprima === "1" ? <section className="editorial-panel">
+        <h2>{workspace.archived ? "Scheda archiviata" : "Anteprima privata"}</h2>
+        {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
         <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
-      </section> : !workspace.archived &&
+      </section> :
         <EditorialDraftForm sideControls={        <>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">Foto della bozza</h2>
