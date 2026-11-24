@@ -128,15 +128,9 @@ export default async function HistoricalEditorialPage({ searchParams }: {
           theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],
         }} />
       </> : <div className="editorial-composer">
-        <form id="historical-text-form" className="editorial-panel" method="post" action={api}>
+        <form id="historical-text-form" className="historical-outline-form" method="post" action={api}>
           {fields}
-          <h2>Contenuto del racconto</h2>
-          <label>Titolo del racconto<textarea name="title" rows={2} defaultValue={draft?.title} maxLength={180} /></label>
-          <label>Testo breve della card<textarea name="subtitle" rows={3} defaultValue={draft?.subtitle} maxLength={400} /></label>
-          <label>Epoca o tema<input name="theme" defaultValue={draft?.theme} maxLength={160} /></label>
-          <label>Apertura<textarea name="intro" rows={5} maxLength={20000} defaultValue={draft?.intro?.join("\n\n")} /></label>
-          <HistoricalChapters chapters={draft?.chapters ?? []} places={entries.map(({ slug, title }) => ({slug,title}))} />
-          <label>Conclusione<textarea name="conclusion" rows={5} maxLength={20000} defaultValue={draft?.conclusion?.join("\n\n")} /></label>
+          <HistoricalChapters draft={draft ?? {}} places={entries.map(({ slug, title }) => ({slug,title}))} />
         </form>
         <aside className="editorial-composer-side">
           <div id="historical-save" className="editorial-actions">
