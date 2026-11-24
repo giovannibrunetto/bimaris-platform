@@ -278,3 +278,24 @@
     padding: 8px 10px;
   }
 }
+
+/* Save follows photo controls and precedes publication in the authoring flow. */
+.editorial-standard .editorial-composer-side > #editorial-save {
+  position: static;
+  margin: 0;
+  padding: 10px 12px;
+  box-shadow: none;
+}
+.editorial-standard .editorial-composer-side > #editorial-save [role="alert"] {
+  flex-basis: 100%;
+}
+.editorial-standard .editorial-authoring-controls,
+.editorial-standard .editorial-publication-controls { min-width: 0; }
+@media (max-width: 720px) {
+  .editorial-standard .editorial-composer-side > #editorial-save {
+    padding: 8px;
+  }
+  .editorial-standard .editorial-composer-side > #editorial-save .editorial-button {
+    min-height: 40px;
+  }
+}
