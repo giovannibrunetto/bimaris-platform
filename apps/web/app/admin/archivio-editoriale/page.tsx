@@ -198,7 +198,7 @@ export default async function EditorialPage({ searchParams }: {
         {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
         <div className="editorial-read-preview">
           <aside className="editorial-card-preview" aria-label="Card nell’elenco">
-            <CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} />
+            <CultureMonumentCard hideAction card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} />
           </aside>
           <article className="editorial-preview-copy">
             <section><h3>{model === "legend" ? "Racconto" : "Descrizione del luogo"}</h3><p className={`editorial-text${model === "legend" ? " editorial-narrative" : ""}`}>{editorialBody}</p></section>
