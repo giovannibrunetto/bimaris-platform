@@ -36,3 +36,18 @@
   .historical-editorial .historical-chapter-editor .editorial-button { min-height: 40px; }
   .historical-editorial #historical-save { bottom: env(safe-area-inset-bottom, 0px); }
 }
+
+/* Match the common editorial authoring layout without changing protected stories. */
+.historical-editorial .editorial-composer #historical-save {
+  position: static; margin: 0; box-shadow: none; padding: 10px 12px;
+}
+.historical-editorial .historical-chapter-editor label + label { margin-top: 12px; }
+.historical-editorial .historical-selected-place { overflow-wrap: anywhere; }
+.historical-editorial .historical-selected-place:empty { display: none; }
+.historical-editorial .historical-chapter-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.historical-editorial .historical-chapter-actions > button { width: 100%; }
+.historical-editorial .historical-chapter-actions > button:last-child { grid-column: 1 / -1; width: auto; }
+@media (max-width: 720px) {
+  .historical-editorial .editorial-composer #historical-save { padding: 8px; }
+  .historical-editorial #historical-save .editorial-button { min-height: 40px; }
+}
