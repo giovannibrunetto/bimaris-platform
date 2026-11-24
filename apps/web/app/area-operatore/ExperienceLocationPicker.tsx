@@ -107,7 +107,7 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
  const confirmManual=()=>{
   if(!pending)return setMapError("Tocca la mappa per indicare il punto.");
   const name=query.trim();
-  if(!name&&!culture)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
+  if(!name)return setMapError(culture ? "Inserisci il nome del luogo prima di confermare il punto sulla mappa." : "Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
   onChange({...value,meetingPoint:name,googleMapsPlaceId:"",latitude:String(pending.latitude),longitude:String(pending.longitude)});
   setResults([]);setMapOpen(false);setMapError("");setSearchState("idle");
  };
