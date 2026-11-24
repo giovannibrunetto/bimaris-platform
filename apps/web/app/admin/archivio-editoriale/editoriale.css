@@ -260,3 +260,21 @@
   .editorial-standard .editorial-composer > form.editorial-panel { align-content: start; }
   .editorial-standard .editorial-card-preview .culture-card-media > span { top: 8px; left: 8px; right: auto; max-width: calc(100% - 16px); font-size: 10px; padding: 5px 8px; white-space: normal; }
 }
+
+/* Legend narrative readability; do not alter public cards or stored copy. */
+.editorial-standard .editorial-preview-copy .editorial-narrative {
+  line-height: 1.6;
+}
+.editorial-standard .editorial-writing-fields textarea[name="title"],
+.editorial-standard .editorial-writing-fields textarea[name="excerpt"] {
+  min-width: 0;
+  resize: vertical;
+}
+@media (max-width: 720px) {
+  .editorial-standard .editorial-writing-fields textarea[name="title"],
+  .editorial-standard .editorial-writing-fields textarea[name="excerpt"] {
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 8px 10px;
+  }
+}
