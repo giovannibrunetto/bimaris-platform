@@ -99,7 +99,16 @@ export default function HistoricalChapters({ draft, places }: {
   function open(next: Panel) {
     setPanel(next);
     setNotice("");
-    requestAnimationFrame(() => root.current?.scrollIntoView({ block: "start" }));
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const target = root.current;
+        if (!target) return;
+        // Measure after React commits the focused layout and its hidden side panel.
+        const offset = 120;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, top), left: 0, behavior: "instant" });
+      });
+    });
   }
   function add() {
     if (items.length >= 30) return;
