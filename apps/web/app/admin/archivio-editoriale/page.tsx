@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
+import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
@@ -12,7 +13,7 @@ const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
-  campi:"Per pubblicare, salva titolo, testo e un luogo esistente o nuovo.", dati:"Controlla i dati inseriti.",
+  campi:"Per pubblicare, salva titolo e testo. Per una scheda nuova serve anche il link Google Maps.", dati:"Controlla i dati inseriti.",
   mappa:"Incolla un link HTTPS condiviso da Google Maps.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
@@ -26,7 +27,7 @@ export default async function EditorialPage({ searchParams }: {
   if (!db) notFound();
   const query = await searchParams;
   const [catalog, workspaces] = await Promise.all([
-    db.from("culture_entries").select("id,title,slug,published").order("title"),
+    db.from("culture_entries").select("id,title,slug,published,google_maps_url").order("title"),
     db.from("editorial_workspaces").select("*").eq("model", "culture"),
   ]);
   if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
@@ -53,8 +54,11 @@ export default async function EditorialPage({ searchParams }: {
     return `${base}?${params}`;
   };
 
-  const { data: places } = workspace && !workspace.archived && query.anteprima !== "1"
-    ? await db.from("places").select("id,name").order("name") : { data: [] };
+  const { data: linkedPlace } = draft?.mapsUrl == null && draft?.placeId && !record?.google_maps_url
+    ? await db.from("places").select("google_maps_query").eq("id", draft.placeId).maybeSingle()
+    : { data: null };
+  const mapsUrl = draft?.mapsUrl ?? draft?.newPlace?.mapsUrl ?? record?.google_maps_url
+    ?? googleMapsPlaceUrl(linkedPlace?.google_maps_query ?? "") ?? undefined;
   const hiddenFields = workspace && <>
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
@@ -124,7 +128,7 @@ export default async function EditorialPage({ searchParams }: {
           {hiddenFields}
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
-          <EditorialPlaceField places={places ?? []} placeId={draft.placeId} newPlace={draft.newPlace} />
+          <EditorialPlaceField mapsUrl={mapsUrl} />
           <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
         </form>
         <aside className="editorial-composer-side">

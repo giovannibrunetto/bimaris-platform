@@ -38,18 +38,13 @@ export async function POST(request: NextRequest) {
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
-  let payload: Record<string, string | { name: string; address: string; mapsUrl: string } | null> = {};
+  let payload: Record<string, string> = {};
   let uploaded: string | null = null;
   if (action === "save") {
-    const placeId = value("place", 36);
-    const mapsInput = String(form.get("newPlaceMapsUrl") ?? "").trim();
+    const mapsInput = String(form.get("mapsUrl") ?? "").trim();
     const mapsUrl = googleMapsPlaceUrl(mapsInput);
-    if (placeId === "new" && mapsInput && !mapsUrl) return redirect(workspace, "mappa");
-    const newPlace = placeId === "new"
-      ? { name: value("newPlaceName", 180), address: value("newPlaceAddress", 300), mapsUrl: mapsUrl ?? "" }
-      : null;
-    if (newPlace ? !newPlace.name : placeId && !uuid.test(placeId)) return redirect(workspace, "dati");
-    payload = { title: value("title", 180), body: value("body", 40000), placeId: newPlace ? "" : placeId, newPlace };
+    if (mapsInput && !mapsUrl) return redirect(workspace, "mappa");
+    payload = { title: value("title", 180), body: value("body", 40000), mapsUrl: mapsUrl ?? "" };
   }
   if (action === "publish") {
     const { data } = await db.from("editorial_workspaces").select("draft").eq("id", workspace).eq("model", "culture").maybeSingle();
