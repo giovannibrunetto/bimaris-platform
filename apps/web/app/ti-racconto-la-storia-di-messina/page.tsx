@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedCultureEntries } from "@/data/live";
-import { CULTURE_STORIES } from "@/data/ti-racconto-messina";
+import { getPublishedHistoricalStories } from "@/data/historical-editorial";
 import "./storytelling.css";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Ti racconto la storia di Messina | BIMARIS",
-  description: "Tre racconti per conoscere Messina attraverso i luoghi del catalogo Cultura BIMARIS.",
+  description: "Racconti per conoscere Messina attraverso i luoghi del catalogo Cultura BIMARIS.",
 };
 
 const STORY_CHOICE_PERIODS: Record<string, string> = {
@@ -19,9 +19,9 @@ const STORY_CHOICE_PERIODS: Record<string, string> = {
 };
 
 export default async function HistoricalMapPage() {
-  const entries = await getPublishedCultureEntries();
+  const [entries, definitions] = await Promise.all([getPublishedCultureEntries(), getPublishedHistoricalStories()]);
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
-  const stories = CULTURE_STORIES.map(story => {
+  const stories = definitions.map(story => {
     const resolvedChapters = story.chapters.map(chapter => ({ chapter, place: chapter.slug ? bySlug.get(chapter.slug) : undefined }));
     const hasInvalidSlug = resolvedChapters.some(({ chapter, place }) => chapter.slug && !place);
     return {
@@ -41,12 +41,12 @@ export default async function HistoricalMapPage() {
       <section className="section bimaris-ambient-section storytelling-intro">
         <div className="storytelling-intro-copy">
           <div><div className="kicker">Da dove vuoi cominciare?</div><h2 className="public-discovery-section-title">Scegli un racconto</h2></div>
-          <p>Tre storie, tre epoche diverse. Scegli quella che vuoi conoscere: i luoghi e i capitoli ti accompagneranno dentro il racconto.</p>
+          <p>Scegli l’epoca che vuoi conoscere. I luoghi e i capitoli ti accompagneranno dentro il racconto.</p>
         </div>
 
         <div className="storytelling-grid">
           {stories.map((story,index)=><Link className="storytelling-card public-discovery-card" href={`/ti-racconto-la-storia-di-messina/${story.key}`} key={story.key} aria-label={`Entra nel racconto: ${story.title}`}>
-            <div className="storytelling-number">0{index+1}</div>
+            <div className="storytelling-number">{String(index + 1).padStart(2, "0")}</div>
             <div className="kicker">{STORY_CHOICE_PERIODS[story.key] ?? story.theme}</div>
             <h3>{story.title}</h3>
             <p className="storytelling-card-summary">{story.subtitle}</p>

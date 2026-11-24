@@ -153,6 +153,7 @@ export default async function EditorialPage({ searchParams }: {
         <Link className="editorial-button" aria-current={model === "culture" ? "page" : undefined} href={archive}>Monumenti</Link>
         <Link className="editorial-button" aria-current={model === "legend" ? "page" : undefined} href={`${archive}?sezione=legend`}>Miti e leggende</Link>
         <Link className="editorial-button" aria-current={model === "village" ? "page" : undefined} href={`${archive}?sezione=village`}>Borghi</Link>
+        <Link className="editorial-button" href={`${archive}/racconti`}>Racconti di Messina</Link>
       </nav>
       <section className="editorial-catalog" aria-labelledby="editorial-catalog-title">
         <div className="editorial-toolbar">

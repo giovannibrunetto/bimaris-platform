@@ -1,0 +1,8 @@
+.historical-chapters-editor { display: grid; gap: 8px; }
+.historical-chapters-editor .historical-chapter-editor { padding: 12px; }
+.historical-chapter-editor > summary { cursor: pointer; font-weight: 650; }
+.historical-chapter-editor[open] > summary { margin-bottom: 8px; }
+.historical-chapter-editor label + label { margin-top: 8px; }
+#historical-save, #historical-publication { scroll-margin-top: 110px; }
+.historical-editorial .story-detail-page { margin-top: 16px; }
+.historical-editorial #historical-publication form { display: grid; gap: 12px; }
