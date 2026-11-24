@@ -224,7 +224,7 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm sideControls={        <>
+        <EditorialDraftForm photoControls={<>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">Foto della bozza</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
@@ -254,10 +254,12 @@ export default async function EditorialPage({ searchParams }: {
                 <label>Licenza<input name="license" maxLength={180} /></label>
                 <label>Link alla licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
               </details>
+              <small>Se hai modificato il testo, salva la bozza prima di scegliere e allegare una foto.</small>
               <button className="editorial-button editorial-button--primary" name="action" value="photo">Allega alla bozza</button>
             </form>
           </details>
         </section>
+        </>} publicationControls={<>
         <form id="editorial-publication" className="editorial-panel" method="post" action={api}>
           {hiddenFields}
           <h2>Pubblicazione</h2>
