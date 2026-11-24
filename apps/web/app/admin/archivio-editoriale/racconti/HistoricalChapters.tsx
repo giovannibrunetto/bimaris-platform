@@ -105,7 +105,6 @@ export default function HistoricalChapters({ draft, places }: {
     <button type="button" className="historical-index-row" onClick={() => open(target)}>
       <span className="historical-index-symbol" aria-hidden="true">{symbol}</span>
       <span className="historical-index-copy"><strong>{label}</strong><small>{description}</small></span>
-      <span className="historical-index-edit" aria-hidden="true">✎</span>
     </button>;
 
   return <div ref={root} className="historical-index" id="historical-index">
@@ -129,7 +128,6 @@ export default function HistoricalChapters({ draft, places }: {
           <button type="button" className="historical-index-row" onClick={() => open(item.key)}>
             <span className="historical-index-number">{String(index + 1).padStart(2, "0")}</span>
             <span className="historical-index-copy"><strong>{item.title || "Capitolo senza titolo"}</strong><small>{linkedTitle(item) || "Capitolo"}</small></span>
-            <span className="historical-index-edit" aria-hidden="true">✎</span>
           </button>
           <div className="historical-reorder">
             <button type="button" aria-label={`Sposta capitolo ${index + 1} su`} disabled={index === 0} onClick={() => move(item.key, index - 1)}>↑</button>
