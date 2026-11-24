@@ -119,7 +119,7 @@ export default async function EditorialPage({ searchParams }: {
     excerpt: model === "culture" ? record?.excerpt ?? "" : draft?.excerpt ?? "",
     category: draft?.category || record?.category || (model === "culture" ? "monumento" : model === "legend" ? "Leggenda" : "Borgo"),
     period: record?.primary_historical_period === "trasversale" ? "Più epoche" : historicalPeriodLabel(record?.primary_historical_period),
-    imageUrl: cardImage ?? (draftCover ? `/api/editoriale/immagini/${draftCover.id}?anteprima=1` : undefined),
+    imageUrl: cardImage ? (/^\/api\/editoriale\/immagini\/[0-9a-f-]{36}$/i.test(cardImage) ? `${cardImage}?anteprima=1` : cardImage) : (draftCover ? `/api/editoriale/immagini/${draftCover.id}?anteprima=1` : undefined),
     imageAlt: cardImage ? cover?.alt_text ?? record?.image_alt : draftCover?.alt,
     imageAuthor: cardImage ? cover?.author ?? record?.image_author : draftCover?.author,
     imageLicense: cardImage ? cover?.license ?? record?.image_license : draftCover?.license,
