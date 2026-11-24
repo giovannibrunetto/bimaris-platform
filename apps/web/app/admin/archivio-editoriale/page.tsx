@@ -33,7 +33,7 @@ type CatalogRecord = { id: string; title: string; slug: string; published: boole
 type Photo = { id: string; alt: string; author?: string; license?: string };
 
 export default async function EditorialPage({ searchParams }: {
-  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string; sezione?: string }>;
+  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string; pubblicazione?: string; sezione?: string }>;
 }) {
   if (!(await getVerifiedSuperAdmin())) redirect("/admin/login");
   const db = createServiceClient();
@@ -147,7 +147,7 @@ export default async function EditorialPage({ searchParams }: {
         {modelField}<button className="editorial-button editorial-button--primary" name="action" value="create">{newLabel}</button>
       </form>}
     </header>
-    {query.salvataggio !== "1" && query.fotografia !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
+    {query.salvataggio !== "1" && query.fotografia !== "1" && query.pubblicazione !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
     {!workspace ? <>
       <nav className="editorial-actions editorial-sheet-nav" aria-label="Sezioni editoriali">
         <Link className="editorial-button" aria-current={model === "culture" ? "page" : undefined} href={archive}>Monumenti</Link>
@@ -256,11 +256,17 @@ export default async function EditorialPage({ searchParams }: {
             </form>
           </details>
         </section>
-        <form className="editorial-panel" method="post" action={api}>
+        <form id="editorial-publication" className="editorial-panel" method="post" action={api}>
           {hiddenFields}
           <h2>Pubblicazione</h2>
           <p>{canPublish ? "Controlla l’anteprima prima di pubblicare. Verrà usata l’ultima bozza salvata." : "Salva titolo e testo prima di pubblicare. Per un nuovo monumento serve anche la posizione."}</p>
           <button className="editorial-button editorial-button--primary" name="action" value="publish" disabled={!canPublish}>Pubblica scheda</button>
+          {query.pubblicazione === "1" && query.esito && notices[query.esito] && (
+            <div className="editorial-notice" role={query.esito === "publish" || query.esito === "withdraw" ? "status" : "alert"}>
+              <p>{notices[query.esito]}</p>
+              {query.esito === "publish" && record?.published && <Link className="text-link" href={`${publicPath}/${record.slug}`}>Apri la scheda pubblicata →</Link>}
+            </div>
+          )}
           <details className="editorial-sheet-management">
             <summary>Ritiro e archiviazione</summary>
             <div className="editorial-actions">

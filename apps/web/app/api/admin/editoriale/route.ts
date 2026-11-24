@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
       url.searchParams.set("fotografia", "1");
       url.hash = "editorial-photos";
     }
+    if ((action === "publish" || action === "withdraw") && uuid.test(id)) {
+      url.searchParams.set("pubblicazione", "1");
+      url.hash = "editorial-publication";
+    }
     return NextResponse.redirect(url, 303);
   };
   if (!["create","save","photo","publish","withdraw","archive","delete"].includes(action)

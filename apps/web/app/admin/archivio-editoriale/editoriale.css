@@ -198,3 +198,7 @@
 @media (min-width: 820px) {
   .editorial-read-preview { grid-template-columns: minmax(220px, 320px) minmax(0, 1fr); }
 }
+
+#editorial-publication { scroll-margin-top: 110px; }
+#editorial-publication .editorial-notice[role="alert"] { background: #f7eee8; color: #8a2f25; }
+#editorial-publication .editorial-notice a { display: inline-block; margin-top: 4px; }
