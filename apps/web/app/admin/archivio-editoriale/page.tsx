@@ -18,6 +18,7 @@ const notices: Record<string, string> = {
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
   campi:"Per pubblicare, salva titolo e testo. Per una scheda nuova, seleziona un suggerimento Google oppure inserisci le coordinate.", dati:"Controlla i dati inseriti.",
+  delete:"Scheda cancellata dall’archivio.",
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
@@ -36,15 +37,16 @@ export default async function EditorialPage({ searchParams }: {
   ]);
   if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
 
-  const workspace = workspaces.data.find(row => row.id === query.id);
+  const deletedEntries = new Set(workspaces.data.filter(row => row.draft.deletedAt).map(row => row.entry_id));
+  const workspace = workspaces.data.find(row => row.id === query.id && !row.draft.deletedAt);
   if (query.id && !workspace) notFound();
   const record = catalog.data.find(row => row.id === workspace?.entry_id);
   const draft = workspace?.draft;
   const photos: Photo[] = draft?.photos ?? [];
   const status = (row: typeof workspace, published?: boolean) => row?.archived ? "Archiviata" : published ? "Pubblicata" : row?.entry_id ? "Ritirata" : "Bozza";
   const rows = [
-    ...catalog.data.map(item => ({ title: item.title, entry: item.id, draft: workspaces.data.find(row => row.entry_id === item.id), published: item.published })),
-    ...workspaces.data.filter(row => !row.entry_id).map(row => ({ title: row.draft.title || "Bozza senza titolo", entry: "", draft: row, published: false })),
+    ...catalog.data.filter(item => !deletedEntries.has(item.id)).map(item => ({ title: item.title, entry: item.id, draft: workspaces.data.find(row => row.entry_id === item.id), published: item.published })),
+    ...workspaces.data.filter(row => !row.entry_id && !row.draft.deletedAt).map(row => ({ title: row.draft.title || "Bozza senza titolo", entry: "", draft: row, published: false })),
   ].filter(row => (!query.q || row.title.toLocaleLowerCase("it").includes(query.q.toLocaleLowerCase("it"))) && (!query.stato || status(row.draft, row.published) === query.stato));
   const pageSize = 8;
   const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
@@ -160,6 +162,14 @@ export default async function EditorialPage({ searchParams }: {
         {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
         <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
+        {workspace.archived && <details className="editorial-sheet-management">
+          <summary>Cancella scheda</summary>
+          <p>La scheda sarà rimossa dall’Archivio editoriale. La cancellazione resterà registrata.</p>
+          <form method="post" action={api}>
+            {hiddenFields}
+            <button className="editorial-button" name="action" value="delete">Conferma cancellazione</button>
+          </form>
+        </details>}
       </section> :
         <EditorialDraftForm sideControls={        <>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">

@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     const url = new URL(base, request.url);
     if (uuid.test(id)) url.searchParams.set("id", id);
     url.searchParams.set("esito", state);
+    if (state === "delete") url.searchParams.set("stato", "Archiviata");
     if (action === "save" && uuid.test(id)) {
       url.searchParams.set("salvataggio", "1");
       url.hash = "editorial-save";
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.redirect(url, 303);
   };
-  if (!["create","save","photo","publish","withdraw","archive"].includes(action)
+  if (!["create","save","photo","publish","withdraw","archive","delete"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
   let payload: Record<string, string | { address: string; placeId: string; latitude: number | null; longitude: number | null }> = {};
@@ -89,5 +90,5 @@ export async function POST(request: NextRequest) {
     console.error("Editorial operation failed", error.code, error.message);
     return redirect(workspace, error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
   }
-  return redirect(String(data), action);
+  return redirect(action === "delete" ? "" : String(data), action);
 }
