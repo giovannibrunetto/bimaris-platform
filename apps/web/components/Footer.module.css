@@ -83,101 +83,43 @@
 }
 
 @media (max-width:760px) {
-  .footer {
-    padding:11px 14px 10px;
-    grid-template-columns:92px minmax(0,1fr);
-    grid-template-areas:
-      "brand links"
-      "copyright copyright";
-    column-gap:14px;
-    row-gap:7px;
-    align-items:center;
-  }
-
-  .brand {
-    width:92px;
-    height:33px;
-  }
-
-  .links {
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    justify-content:stretch;
-    align-items:center;
-    gap:4px 10px;
-    font-size:11px;
-    line-height:1.15;
-  }
-
-  .links a {
-    display:flex;
-    align-items:center;
-    min-height:22px;
-    padding:1px 0;
-  }
-
-  .copyright {
-    text-align:right;
-    font-size:9px;
-    line-height:1.2;
-  }
-
-  .storiesFooter {
-    grid-template-columns:1fr;
-    grid-template-areas:
-      "brand"
-      "links"
-      "copyright";
+  .footer, .storiesFooter {
+    padding:18px 16px 16px;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"brand" "links" "copyright";
     justify-items:center;
     row-gap:10px;
-    padding:18px 18px 15px;
   }
-
-  .storiesFooter .brand {
+  .brand, .storiesFooter .brand {
     width:132px;
     height:42px;
   }
-
-  .storiesFooter .links {
+  .links, .storiesFooter .links {
     width:100%;
     display:flex;
     flex-wrap:wrap;
     justify-content:center;
-    gap:8px 16px;
-    font-size:11px;
+    align-items:center;
+    gap:4px 14px;
+    font-size:13px;
+    line-height:1.35;
   }
-
-  .storiesFooter .copyright {
+  .links a {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:4px 2px;
+    text-align:center;
+  }
+  .links a:focus-visible {
+    outline:2px solid #f1ca8a;
+    outline-offset:2px;
+  }
+  .copyright, .storiesFooter .copyright {
     text-align:center;
     white-space:normal;
-  }
-}
-
-@media (max-width:390px) {
-  .footer {
-    padding:10px 12px 9px;
-    grid-template-columns:86px minmax(0,1fr);
-    column-gap:11px;
-    row-gap:6px;
-  }
-
-  .brand {
-    width:86px;
-    height:31px;
-  }
-
-  .links {
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    column-gap:7px;
-    row-gap:3px;
-    font-size:10px;
-  }
-
-  .links a {
-    min-height:21px;
-  }
-
-  .copyright {
-    font-size:8.5px;
+    font-size:11px;
+    line-height:1.4;
   }
 }
