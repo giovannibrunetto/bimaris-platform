@@ -194,9 +194,25 @@ export default async function EditorialPage({ searchParams }: {
       {workspace.archived || query.anteprima === "1" ? <section className="editorial-panel">
         <h2>{workspace.archived ? "Scheda archiviata" : "Anteprima privata"}</h2>
         {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
-        <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
-        <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
-        {sources.length > 0 && <section><h3>Fonti e riferimenti</h3><ul>{sources.map((source, index) => <li key={index}>{source.label}{source.note && ` · ${source.note}`}</li>)}</ul></section>}
+        <div className="editorial-read-preview">
+          <aside className="editorial-card-preview" aria-label="Card nell’elenco">
+            <CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} />
+          </aside>
+          <article className="editorial-preview-copy">
+            <section><h3>{model === "legend" ? "Racconto" : "Descrizione del luogo"}</h3><p className="editorial-text">{draft.body}</p></section>
+            {model === "village" && <>
+              {draft.history && <section><h3>Storia</h3><p className="editorial-text">{draft.history}</p></section>}
+              {draft.identity && <section><h3>Identità</h3><p className="editorial-text">{draft.identity}</p></section>}
+              {draft.thingsToSee && <section><h3>Cosa vedere</h3><p className="editorial-text">{draft.thingsToSee}</p></section>}
+            </>}
+            {model !== "legend" && initialLocation.meetingPoint && <section><h3>Posizione</h3><p>{initialLocation.meetingPoint}</p></section>}
+            {sources.length > 0 && <section><h3>Fonti e riferimenti</h3><ul>
+              {sources.map((source, index) => <li key={index}>{source.url && /^https?:\/\//i.test(source.url)
+                ? <a className="text-link" href={source.url} target="_blank" rel="noreferrer">{source.label}</a>
+                : source.label}{source.note && ` · ${source.note}`}</li>)}
+            </ul></section>}
+          </article>
+        </div>
         {workspace.archived && <details className="editorial-sheet-management">
           <summary>Cancella scheda</summary>
           <p>La scheda sarà rimossa dall’Archivio editoriale. La cancellazione resterà registrata.</p>

@@ -190,3 +190,11 @@
 
 .editorial-sheet-nav[aria-label="Sezioni editoriali"] { margin-bottom: 12px; }
 .editorial-sheet-nav .editorial-button[aria-current="page"] { background: #103237; border-color: #103237; color: #fffaf0; }
+
+.editorial-read-preview { display: grid; align-items: start; gap: clamp(16px, 3vw, 32px); }
+.editorial-preview-copy { min-width: 0; display: grid; gap: 16px; overflow-wrap: anywhere; }
+.editorial-preview-copy h3 { margin: 0 0 6px; }
+.editorial-preview-copy p { margin: 0; }
+@media (min-width: 820px) {
+  .editorial-read-preview { grid-template-columns: minmax(220px, 320px) minmax(0, 1fr); }
+}
