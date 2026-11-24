@@ -69,7 +69,7 @@ export default async function HistoricalEditorialPage({ searchParams }: {
     <input type="hidden" name="version" value={active.version} />
   </>;
 
-  return <div className="editorial-shell historical-editorial">
+  return <div className="editorial-shell editorial-standard historical-editorial">
     <header className={`editorial-heading${active ? " editorial-heading--sheet" : ""}`}>
       <div>
         <Link className="editorial-back" href={active ? base : archive}>{active ? "← Racconti di Messina" : "← Archivio editoriale"}</Link>
@@ -79,17 +79,18 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         <span className="editorial-badge" data-state={status(record?.published ?? false, active)}>{status(record?.published ?? false, active)}</span>
         {savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}
       </p>
-        <nav className="editorial-actions historical-heading-actions" aria-label="Navigazione del racconto">
-          {!active.archived && (preview
-            ? <Link className="editorial-button" href={current}>Torna alla modifica</Link>
-            : <Link className="editorial-button" href={`${current}&anteprima=1`}>Anteprima privata</Link>)}
-          {record?.published && <Link className="editorial-button" href={`${publicBase}/${record.slug}`}>Versione pubblica</Link>}
-        </nav>
+
       </div> : <form method="post" action={api}>
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuovo racconto</button>
       </form>}
     </header>
 
+    {active && !active.archived && <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
+          {!active.archived && (preview
+            ? <Link className="editorial-button" href={current}>Torna alla modifica</Link>
+            : <Link className="editorial-button" href={`${current}&anteprima=1`}>Anteprima privata</Link>)}
+          {record?.published && <Link className="editorial-button" href={`${publicBase}/${record.slug}`}>Versione pubblica</Link>}
+        </nav>}
     {!active ? <>
       <nav className="editorial-actions editorial-sheet-nav" aria-label="Sezioni editoriali">
         <Link className="editorial-button" href={archive}>Monumenti</Link>
@@ -127,22 +128,23 @@ export default async function HistoricalEditorialPage({ searchParams }: {
           theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],
         }} />
       </> : <div className="editorial-composer">
-        <form className="editorial-panel" method="post" action={api}>
+        <form id="historical-text-form" className="editorial-panel" method="post" action={api}>
           {fields}
           <h2>Contenuto del racconto</h2>
-          <label>Titolo del racconto<input name="title" defaultValue={draft?.title} maxLength={180} /></label>
-          <label>Testo breve della card<input name="subtitle" defaultValue={draft?.subtitle} maxLength={400} /></label>
+          <label>Titolo del racconto<textarea name="title" rows={2} defaultValue={draft?.title} maxLength={180} /></label>
+          <label>Testo breve della card<textarea name="subtitle" rows={3} defaultValue={draft?.subtitle} maxLength={400} /></label>
           <label>Epoca o tema<input name="theme" defaultValue={draft?.theme} maxLength={160} /></label>
           <label>Apertura<textarea name="intro" rows={5} maxLength={20000} defaultValue={draft?.intro?.join("\n\n")} /></label>
           <HistoricalChapters chapters={draft?.chapters ?? []} places={entries.map(({ slug, title }) => ({slug,title}))} />
           <label>Conclusione<textarea name="conclusion" rows={5} maxLength={20000} defaultValue={draft?.conclusion?.join("\n\n")} /></label>
+        </form>
+        <aside className="editorial-composer-side">
           <div id="historical-save" className="editorial-actions">
-            <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
+            <button className="editorial-button editorial-button--primary" type="submit" form="historical-text-form" name="action" value="save">Salva bozza</button>
             {savedOrError ? <span role={success ? "status" : "alert"}>{query.esito === "save" && savedLabel ? `Bozza salvata · ${savedLabel}` : notice}</span>
               : savedLabel && <span>Ultimo salvataggio · {savedLabel}</span>}
           </div>
-        </form>
-        <aside className="editorial-composer-side">
+
           <section className="editorial-panel" id="historical-publication">
             <h2>Pubblicazione</h2>
             {record?.protected ? <p>Versione pubblica protetta. Puoi lavorare in bozza e controllare l’anteprima.</p> : <form method="post" action={api}>
