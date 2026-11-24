@@ -54,7 +54,7 @@ export default async function EditorialPage({ searchParams }: {
       : db.from("culture_entries").select("id,title,slug,published,excerpt,category,primary_historical_period,image_url,image_alt,image_author,image_license,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
     db.from("editorial_workspaces").select("*").eq("model", model),
   ]);
-  if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
+  if (catalog.error || workspaces.error) return <main className="editorial-shell editorial-standard"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
 
   const deletedEntries = new Set(workspaces.data.filter(row => row.draft.deletedAt).map(row => row.entry_id));
   const workspace = workspaces.data.find(row => row.id === query.id && !row.draft.deletedAt);
@@ -101,7 +101,7 @@ export default async function EditorialPage({ searchParams }: {
   }).format(new Date(savedAt)) : undefined;
   const saveMessage = query.salvataggio === "1" && query.esito !== "save" && query.esito
     ? notices[query.esito]
-    : savedLabel ? `Ultimo salvataggio della bozza · ${savedLabel}` : undefined;
+    : savedLabel ? `Salvata · ${savedLabel}` : undefined;
 
   const canPublish = Boolean(draft?.title?.trim() && draft?.body?.trim()
     && (model !== "culture" || draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
@@ -188,11 +188,11 @@ export default async function EditorialPage({ searchParams }: {
       </section>
     </> : <>
       {!workspace.archived && <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
-        {query.anteprima === "1" ? <Link href={`${base}?${sectionParam}id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?${sectionParam}id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
-        {record?.published && <Link href={`${publicPath}/${record.slug}`}>Versione pubblica</Link>}
+        {query.anteprima === "1" ? <Link className="editorial-button" href={`${base}?${sectionParam}id=${workspace.id}`}>Torna alla modifica</Link> : <Link className="editorial-button" href={`${base}?${sectionParam}id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
+        {record?.published && <Link className="editorial-button" href={`${publicPath}/${record.slug}`}>Versione pubblica</Link>}
       </nav>}
 
-      {workspace.archived || query.anteprima === "1" ? <section className="editorial-panel">
+      {workspace.archived || query.anteprima === "1" ? <section className="editorial-panel editorial-private-preview">
         <h2>{workspace.archived ? "Scheda archiviata" : "Anteprima privata"}</h2>
         {workspace.archived && <p>Questa scheda è consultabile in sola lettura.</p>}
         <div className="editorial-read-preview">
@@ -233,7 +233,7 @@ export default async function EditorialPage({ searchParams }: {
               <img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} />
               <figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption>
             </figure>)}
-          </div> : <p>Nessuna foto aggiunta a questa bozza.</p>}
+          </div> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
           <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
             <summary>Aggiungi una foto</summary>
             <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
@@ -242,7 +242,7 @@ export default async function EditorialPage({ searchParams }: {
                 <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required />
                 <small id="editorial-photo-format">JPEG, PNG o WebP, fino a 3 MiB.</small>
               </label>
-              <label>Cosa si vede nella foto?
+              <label>Descrizione della foto
                 <input name="alt" maxLength={250} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required />
                 <small id="editorial-alt-help">Una breve descrizione per chi usa un lettore di schermo.</small>
               </label>
