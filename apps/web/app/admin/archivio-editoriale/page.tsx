@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
 import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
-import CultureMonumentCard from "@/components/CultureMonumentCard";
+import CultureMonumentCard, { type CultureCardData } from "@/components/CultureMonumentCard";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
 import EditorialStatusFilter from "./EditorialStatusFilter";
 import EditorialDraftForm from "./EditorialDraftForm";
@@ -110,7 +110,7 @@ export default async function EditorialPage({ searchParams }: {
     : { data: null };
   const draftCover = photos[0];
   const cardImage = model !== "culture" && draftCover ? undefined : cover?.image_url ?? record?.image_url;
-  const card = {
+  const card: CultureCardData = {
     variant: model,
     title: draft?.title ?? "",
     excerpt: model === "culture" ? record?.excerpt ?? "" : draft?.excerpt ?? "",
