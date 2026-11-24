@@ -137,3 +137,21 @@
 .editorial-location small { display: block; margin-top: 5px; color: #385457; line-height: 1.45; }
 
 .editorial-location .editorial-button { margin: 0 0 10px; }
+
+.editorial-heading--sheet {
+  align-items: center;
+  padding: clamp(16px, 3vw, 28px);
+  margin-bottom: 10px;
+  background: #103237;
+  color: #fffaf0;
+  border: 1px solid #31585b;
+  border-radius: 16px;
+}
+.editorial-heading--sheet .editorial-back { color: #f3dbad; }
+.editorial-heading--sheet .editorial-current-state { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+.editorial-sheet-nav { margin: 8px 0 0; font-size: .875rem; }
+.editorial-sheet-nav a { color: #31585b; text-underline-offset: 3px; }
+.editorial-sheet-management { padding-top: 8px; border-top: 1px solid #e1d8c9; font-size: .875rem; }
+.editorial-sheet-management summary { cursor: pointer; }
+.editorial-sheet-management .editorial-actions { margin-top: 8px; }
+.editorial-button:disabled { opacity: .6; cursor: default; }

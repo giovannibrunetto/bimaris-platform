@@ -79,17 +79,20 @@ export default async function EditorialPage({ searchParams }: {
     ? notices[query.esito]
     : savedLabel ? `Ultimo salvataggio della bozza · ${savedLabel}` : undefined;
 
+  const canPublish = Boolean(draft?.title?.trim() && draft?.body?.trim()
+    && (draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
   const hiddenFields = workspace && <>
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
   </>;
 
   return <main className="editorial-shell">
-    <header className="editorial-heading">
+    <header className={`editorial-heading${workspace ? " editorial-heading--sheet" : ""}`}>
       <div>
-        <Link className="editorial-back" href="/admin">← Centro operativo</Link>
+        <Link className="editorial-back" href={workspace ? base : "/admin"}>{workspace ? "← Archivio editoriale" : "← Centro operativo"}</Link>
         <h1>{workspace ? draft?.title || "Nuova scheda Cultura" : "Archivio editoriale"}</h1>
       </div>
+      {workspace && <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span>{savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}</p>}
       {!workspace && <form method="post" action={api}>
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
       </form>}
@@ -130,12 +133,11 @@ export default async function EditorialPage({ searchParams }: {
         </div>}
       </section>
     </> : <>
-      <nav className="editorial-actions" aria-label="Navigazione editoriale">
-        <Link href={base}>Tutte le schede</Link>
+      <nav className="editorial-actions editorial-sheet-nav" aria-label="Navigazione editoriale">
         {query.anteprima === "1" ? <Link href={`${base}?id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
         {record?.published && <Link href={`/cultura/${record.slug}`}>Versione pubblica</Link>}
       </nav>
-      <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span>{savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}</p>
+
       {query.anteprima === "1" ? <section className="editorial-panel">
         <h2>Anteprima privata</h2>
         <article className="card culture-card">
@@ -146,18 +148,19 @@ export default async function EditorialPage({ searchParams }: {
       </section> : !workspace.archived && <div className="editorial-composer">
         <EditorialDraftForm action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
           {hiddenFields}
+          <h2>Contenuto della scheda</h2>
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
+          <label>Descrizione del luogo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
           <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
         </EditorialDraftForm>
         <aside className="editorial-composer-side">
         <details className="editorial-panel editorial-photo-panel" open={["foto", "photo"].includes(query.esito ?? "") || undefined}>
-          <summary>Fotografie <span>{photos.length}</span></summary>
+          <summary>Fotografie in bozza <span>{photos.length}</span></summary>
           <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
           {hiddenFields}
           {photos.map(photo => <figure key={photo.id}><img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} /><figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption></figure>)}
           <label>Fotografia<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /></label>
-          <label>Descrizione dell’immagine per l’accessibilità
+          <label>Descrizione della foto per l’accessibilità
             <input name="alt" maxLength={250} placeholder="Es. Il castello visto dal cortile" aria-describedby="editorial-alt-help" required />
             <small id="editorial-alt-help">Descrivi brevemente ciò che si vede. I lettori di schermo leggono questo testo a chi non può vedere la foto.</small>
           </label>
@@ -172,13 +175,16 @@ export default async function EditorialPage({ searchParams }: {
         </details>
         <form className="editorial-panel" method="post" action={api}>
           {hiddenFields}
-          <h2>Visibilità</h2>
-          <p>La pubblicazione applica l’ultima bozza salvata.</p>
-          <div className="editorial-actions">
-            <button className="editorial-button editorial-button--primary" name="action" value="publish">Pubblica bozza salvata</button>
-            {record?.published && <button className="editorial-button" name="action" value="withdraw">Ritira</button>}
-            <button className="editorial-button" name="action" value="archive">Archivia e ritira</button>
-          </div>
+          <h2>Pubblicazione</h2>
+          <p>{canPublish ? "Controlla l’anteprima prima di pubblicare. Verrà usata l’ultima bozza salvata." : "Salva titolo, descrizione e posizione per abilitare la pubblicazione."}</p>
+          <button className="editorial-button editorial-button--primary" name="action" value="publish" disabled={!canPublish}>Pubblica scheda</button>
+          <details className="editorial-sheet-management">
+            <summary>Ritiro e archiviazione</summary>
+            <div className="editorial-actions">
+              {record?.published && <button className="editorial-button" name="action" value="withdraw">Ritira dal sito</button>}
+              <button className="editorial-button" name="action" value="archive">{record?.published ? "Archivia e ritira" : "Archivia scheda"}</button>
+            </div>
+          </details>
         </form>
         </aside>
       </div>}
