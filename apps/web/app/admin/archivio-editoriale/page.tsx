@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
 import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
+import EditorialDraftForm from "./EditorialDraftForm";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
@@ -20,7 +21,7 @@ const notices: Record<string, string> = {
 type Photo = { id: string; alt: string; author?: string; license?: string };
 
 export default async function EditorialPage({ searchParams }: {
-  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string }>;
+  searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string }>;
 }) {
   if (!(await getVerifiedSuperAdmin())) redirect("/admin/login");
   const db = createServiceClient();
@@ -81,7 +82,7 @@ export default async function EditorialPage({ searchParams }: {
         <button className="editorial-button editorial-button--primary" name="action" value="create">Nuova scheda Cultura</button>
       </form>}
     </header>
-    {query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
+    {query.salvataggio !== "1" && query.esito && notices[query.esito] && <p className="editorial-notice" role="status">{notices[query.esito]}</p>}
     {!workspace ? <>
       <section className="editorial-catalog" aria-labelledby="editorial-catalog-title">
         <div className="editorial-toolbar">
@@ -131,13 +132,12 @@ export default async function EditorialPage({ searchParams }: {
         </article>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
       </section> : !workspace.archived && <div className="editorial-composer">
-        <form className="editorial-panel" method="post" action={api}>
+        <EditorialDraftForm action={api} message={query.salvataggio === "1" && query.esito ? notices[query.esito] : undefined} saved={query.esito === "save"}>
           {hiddenFields}
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
           <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
-          <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
-        </form>
+        </EditorialDraftForm>
         <aside className="editorial-composer-side">
         <details className="editorial-panel editorial-photo-panel" open={["foto", "photo"].includes(query.esito ?? "") || undefined}>
           <summary>Fotografie <span>{photos.length}</span></summary>

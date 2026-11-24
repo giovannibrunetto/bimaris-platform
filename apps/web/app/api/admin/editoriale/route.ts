@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
     const url = new URL(base, request.url);
     if (uuid.test(id)) url.searchParams.set("id", id);
     url.searchParams.set("esito", state);
+    if (action === "save" && uuid.test(id)) {
+      url.searchParams.set("salvataggio", "1");
+      url.hash = "editorial-save";
+    }
     return NextResponse.redirect(url, 303);
   };
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)
