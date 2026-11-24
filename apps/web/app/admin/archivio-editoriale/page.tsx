@@ -270,7 +270,7 @@ export default async function EditorialPage({ searchParams }: {
             <label>Identità<textarea name="identity" rows={4} defaultValue={draft.identity} /></label>
             <label>Cosa vedere<textarea name="thingsToSee" rows={4} defaultValue={draft.thingsToSee} /></label>
           </details>}
-          {!storedSources.error && <EditorialSources initial={sources} requireUrl={model === "culture"} />}
+          {!storedSources.error && <EditorialSources initial={sources} />}
           {storedSources.error && <p role="status">Fonti momentaneamente non disponibili.</p>}
           {model !== "legend" && <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />}
         </EditorialDraftForm>

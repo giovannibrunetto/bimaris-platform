@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       const sources = labels.map((label, index) => ({ label, url: urls[index], source_type: types[index], note: notes[index] }));
       for (const source of sources) {
         if (!source.label || source.label.length > 400 || source.url.length > 1000 || source.note.length > 1200) return redirect(workspace, "fonti");
-        if (!source.url && model !== "culture") continue;
+        if (!source.url) continue;
         try {
           if (!["https:", "http:"].includes(new URL(source.url).protocol)) return redirect(workspace, "fonti");
         } catch {
