@@ -38,7 +38,7 @@ async function googleMaps():Promise<any>{
  return window.google.maps;
 }
 
-export default function ExperienceLocationPicker({value,onChange}:{value:ExperienceLocation;onChange:(next:ExperienceLocation)=>void}){
+export default function ExperienceLocationPicker({value,onChange,culture=false}:{value:ExperienceLocation;onChange:(next:ExperienceLocation)=>void;culture?:boolean}){
  const [query,setQuery]=useState(value.meetingPoint);
  const [results,setResults]=useState<Candidate[]>([]);
  const [busy,setBusy]=useState(false);
@@ -107,7 +107,7 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
  const confirmManual=()=>{
   if(!pending)return setMapError("Tocca la mappa per indicare il punto.");
   const name=query.trim();
-  if(!name)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
+  if(!name&&!culture)return setMapError("Inserisci un nome descrittivo del punto di partenza o svolgimento, anche se Google non lo conosce.");
   onChange({...value,meetingPoint:name,googleMapsPlaceId:"",latitude:String(pending.latitude),longitude:String(pending.longitude)});
   setResults([]);setMapOpen(false);setMapError("");setSearchState("idle");
  };
@@ -120,23 +120,23 @@ export default function ExperienceLocationPicker({value,onChange}:{value:Experie
   onChange({...value,meetingPoint:next,googleMapsPlaceId:"",latitude:"",longitude:""});
  };
  return <div className="experience-location-picker">
-  <strong>Punto geografico di riferimento</strong>
-  <p>Seleziona il luogo effettivo oppure, per trekking e itinerari, il punto di ritrovo o partenza. È questo il punto usato per valutare gli spostamenti.</p>
-  <div className="location-choice" role="radiogroup" aria-label="Tipo di punto geografico">
+  {!culture&&<strong>Punto geografico di riferimento</strong>}
+  {!culture&&<p>Seleziona il luogo effettivo oppure, per trekking e itinerari, il punto di ritrovo o partenza. È questo il punto usato per valutare gli spostamenti.</p>}
+  {!culture&&<div className="location-choice" role="radiogroup" aria-label="Tipo di punto geografico">
    <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="venue"} onChange={()=>onChange({...value,locationKind:"venue"})}/><span className="location-choice__copy"><strong>Luogo di svolgimento</strong><small>Il punto in cui si tiene l’esperienza</small></span></label>
    <label className="location-choice__option"><input type="radio" name="experience-location-kind" checked={value.locationKind==="departure"} onChange={()=>onChange({...value,locationKind:"departure"})}/><span className="location-choice__copy"><strong>Punto di ritrovo o partenza</strong><small>Il punto da cui prende avvio l’esperienza</small></span></label>
-  </div>
+  </div>}
   <label>Nome del luogo o indirizzo
    <input type="text" maxLength={250} value={query} placeholder="Es. Piazza Duomo, Messina oppure Rifugio..." onChange={e=>changeQuery(e.target.value)} autoComplete="off" aria-describedby="location-search-guidance"/>
   </label>
-  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. Se il luogo non compare, indicalo sulla mappa.</p>
+  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. {culture?"Se il luogo non compare, puoi inserire latitudine e longitudine.":"Se il luogo non compare, indicalo sulla mappa."}</p>
   {searchState==="searching"&&<p className="location-search-state" role="status">Ricerca del luogo su Google Maps…</p>}
   {(searchState==="no-results"||searchState==="unavailable")&&<div className="location-fallback" role="status"><strong>{searchState==="no-results"?"Luogo non trovato su Google Maps.":"Ricerca Google Maps non disponibile."}</strong><p>Puoi comunque scegliere il punto preciso sulla mappa, senza perdere il nome inserito.</p><button type="button" onClick={()=>{setMapOpen(true);setMapError("");setPending(null)}}>Scegli un punto sulla mappa</button></div>}
   <div className="location-actions">
    <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Indica il punto sulla mappa"}</button>
   </div>
   {mapOpen&&<div className="manual-location">
-   <p>Individua il luogo reale, tocca la mappa e, se necessario, trascina il segnaposto. Per un trekking scegli il punto di partenza o ritrovo, non il centro della località.</p>
+   <p>Individua il luogo reale, tocca la mappa e, se necessario, trascina il segnaposto.{!culture&&" Per un trekking scegli il punto di partenza o ritrovo, non il centro della località."}</p>
    <div ref={mapElement} className="manual-location-map" role="region" aria-label="Mappa per selezionare il punto geografico"/>
    {mapLoading&&<p role="status">Caricamento mappa…</p>}
    {pending&&<p role="status">Punto da confermare: {pending.latitude.toFixed(6)}, {pending.longitude.toFixed(6)}</p>}

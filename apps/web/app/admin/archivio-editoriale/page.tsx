@@ -13,8 +13,8 @@ const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
   conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
-  campi:"Per pubblicare, salva titolo e testo. Per una scheda nuova serve anche il link Google Maps.", dati:"Controlla i dati inseriti.",
-  mappa:"Incolla un link HTTPS condiviso da Google Maps.",
+  campi:"Per pubblicare, salva titolo e testo. Per una scheda nuova, seleziona un suggerimento Google oppure inserisci le coordinate.", dati:"Controlla i dati inseriti.",
+  mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
 };
 type Photo = { id: string; alt: string; author?: string; license?: string };
@@ -27,7 +27,7 @@ export default async function EditorialPage({ searchParams }: {
   if (!db) notFound();
   const query = await searchParams;
   const [catalog, workspaces] = await Promise.all([
-    db.from("culture_entries").select("id,title,slug,published,google_maps_url").order("title"),
+    db.from("culture_entries").select("id,title,slug,published,google_maps_url,editorial_latitude,editorial_longitude,editorial_address").order("title"),
     db.from("editorial_workspaces").select("*").eq("model", "culture"),
   ]);
   if (catalog.error || workspaces.error) return <main className="editorial-shell"><h1>Archivio editoriale</h1><p>Archivio temporaneamente non disponibile.</p></main>;
@@ -54,11 +54,18 @@ export default async function EditorialPage({ searchParams }: {
     return `${base}?${params}`;
   };
 
-  const { data: linkedPlace } = draft?.mapsUrl == null && draft?.placeId && !record?.google_maps_url
-    ? await db.from("places").select("google_maps_query").eq("id", draft.placeId).maybeSingle()
+  const { data: linkedPlace } = draft?.placeId
+    ? await db.from("places").select("address,latitude,longitude,google_maps_query").eq("id", draft.placeId).maybeSingle()
     : { data: null };
   const mapsUrl = draft?.mapsUrl ?? draft?.newPlace?.mapsUrl ?? record?.google_maps_url
     ?? googleMapsPlaceUrl(linkedPlace?.google_maps_query ?? "") ?? undefined;
+  const initialLocation = {
+    locationKind: "venue" as const,
+    meetingPoint: draft?.location?.address ?? record?.editorial_address ?? linkedPlace?.address ?? "",
+    googleMapsPlaceId: draft?.location?.placeId ?? "",
+    latitude: String(draft?.location ? draft.location.latitude ?? "" : record?.editorial_latitude ?? linkedPlace?.latitude ?? ""),
+    longitude: String(draft?.location ? draft.location.longitude ?? "" : record?.editorial_longitude ?? linkedPlace?.longitude ?? ""),
+  };
   const hiddenFields = workspace && <>
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
@@ -128,7 +135,7 @@ export default async function EditorialPage({ searchParams }: {
           {hiddenFields}
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
-          <EditorialPlaceField mapsUrl={mapsUrl} />
+          <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
           <button className="editorial-button editorial-button--primary" name="action" value="save">Salva bozza</button>
         </form>
         <aside className="editorial-composer-side">

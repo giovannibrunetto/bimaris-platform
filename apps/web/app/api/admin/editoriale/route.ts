@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
-import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import { createServiceClient } from "@/lib/supabase/server";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
@@ -38,13 +37,21 @@ export async function POST(request: NextRequest) {
   if (!["create","save","photo","publish","withdraw","archive"].includes(action)
     || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
-  let payload: Record<string, string> = {};
+  let payload: Record<string, string | { address: string; placeId: string; latitude: number | null; longitude: number | null }> = {};
   let uploaded: string | null = null;
   if (action === "save") {
-    const mapsInput = String(form.get("mapsUrl") ?? "").trim();
-    const mapsUrl = googleMapsPlaceUrl(mapsInput);
-    if (mapsInput && !mapsUrl) return redirect(workspace, "mappa");
-    payload = { title: value("title", 180), body: value("body", 40000), mapsUrl: mapsUrl ?? "" };
+    const lat = value("latitude", 32).replace(",", ".");
+    const lng = value("longitude", 32).replace(",", ".");
+    const latitude = lat ? Number(lat) : null;
+    const longitude = lng ? Number(lng) : null;
+    const decimal = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+    if ((lat || lng) && (!decimal.test(lat) || !decimal.test(lng) || latitude === null || longitude === null
+      || Math.abs(latitude) > 90 || Math.abs(longitude) > 180)) return redirect(workspace, "mappa");
+    payload = {
+      title: value("title", 180),
+      body: value("body", 40000),
+      location: { address: value("locationAddress", 250), placeId: value("locationPlaceId", 250), latitude, longitude },
+    };
   }
   if (action === "publish") {
     const { data } = await db.from("editorial_workspaces").select("draft").eq("id", workspace).eq("model", "culture").maybeSingle();
