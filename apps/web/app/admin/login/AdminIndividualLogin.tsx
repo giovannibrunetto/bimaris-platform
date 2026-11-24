@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
-function client() {
+function client(expectedUrl: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || new URL(url).hostname !== "nzdeoimwikhoidtladnu.supabase.co") return null;
+  if (!url || !key || url !== expectedUrl) return null;
   return createBrowserClient(url, key);
 }
 
-export default function AdminIndividualLogin({ allowedOrigin }: { allowedOrigin: string }) {
+export default function AdminIndividualLogin({ allowedOrigin, expectedUrl }: { allowedOrigin: string; expectedUrl: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,9 +20,10 @@ export default function AdminIndividualLogin({ allowedOrigin }: { allowedOrigin:
     setBusy(true);
     setError("");
     try {
+      if (window.location.origin !== allowedOrigin) throw new Error("Origine di accesso non autorizzata.");
       const form = new FormData(event.currentTarget);
-      const supabase = client();
-      if (!supabase) throw new Error("Ambiente Staging non configurato.");
+      const supabase = client(expectedUrl);
+      if (!supabase) throw new Error("Ambiente amministrativo non configurato.");
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: String(form.get("email") ?? ""),
         password: String(form.get("password") ?? ""),
@@ -37,8 +38,8 @@ export default function AdminIndividualLogin({ allowedOrigin }: { allowedOrigin:
   async function googleLogin() {
     if (busy) return;
     setBusy(true); setError("");
-    const supabase = client();
-    if (!supabase) { setError("Ambiente Staging non configurato."); setBusy(false); return; }
+    const supabase = client(expectedUrl);
+    if (!supabase) { setError("Ambiente amministrativo non configurato."); setBusy(false); return; }
     // OAuth PKCE must begin and finish on the same allowlisted origin.
     // Do not silently fall back to Supabase Site URL on ephemeral previews.
     if (window.location.origin !== allowedOrigin) {

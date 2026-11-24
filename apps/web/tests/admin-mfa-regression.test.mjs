@@ -39,5 +39,8 @@ test('source contract: MFA guard requires validated user, aal2 and service RPC',
   assert.match(source,/assurance\?\.currentLevel !== "aal2"/);
   assert.match(source,/rpc\("is_active_super_admin_session"/);
   assert.match(source,/roleError \|\| allowed !== true/);
-  assert.match(source,/nzdeoimwikhoidtladnu\.supabase\.co/);
+  assert.match(source,/resolveAdminEnvironment\(\)/);
+  const environment=readFileSync(new URL("../lib/admin-environment.ts",import.meta.url),"utf8");
+  assert.match(environment,/nzdeoimwikhoidtladnu\.supabase\.co/);
+  assert.match(environment,/BIMARIS_ADMIN_PRODUCTION_ENABLED !== "true"/);
 });

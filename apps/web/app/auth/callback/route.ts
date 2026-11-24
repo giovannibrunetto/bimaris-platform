@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 import { authRedirectOrigin, safeAuthPath } from "@/lib/auth-redirect";
+import { resolveAdminEnvironment } from "@/lib/admin-environment";
 
 function publicUrl(path: string, requestUrl: URL) {
   return new URL(path, authRedirectOrigin(requestUrl));
@@ -16,6 +17,13 @@ export async function GET(request: Request) {
   const adminIntent = url.searchParams.get("admin") === "1";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (adminIntent) {
+    const environment = resolveAdminEnvironment();
+    if (operatorIntent || !environment || !environment.origins.includes(url.origin) || !code) {
+      return NextResponse.redirect(publicUrl("/admin/login", url));
+    }
+  }
 
   if (!supabaseUrl || !supabaseKey) {
     return NextResponse.redirect(publicUrl("/accedi?errore=accesso", url));
@@ -51,9 +59,6 @@ export async function GET(request: Request) {
   // The MFA page independently checks active Super Admin membership, and the
   // protected admin routes still require AAL2 plus a valid individual session.
   if (adminIntent) {
-    if (operatorIntent || supabaseUrl !== "https://nzdeoimwikhoidtladnu.supabase.co") {
-      return NextResponse.redirect(publicUrl("/admin/login", url));
-    }
     return NextResponse.redirect(publicUrl("/admin/mfa", url));
   }
 

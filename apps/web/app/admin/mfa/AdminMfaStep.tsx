@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 type Factor = { id: string; status: string };
-function client() {
+function client(expectedUrl: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || new URL(url).hostname !== "nzdeoimwikhoidtladnu.supabase.co") return null;
+  if (!url || !key || url !== expectedUrl) return null;
   return createBrowserClient(url, key);
 }
 
-export default function AdminMfaStep() {
+export default function AdminMfaStep({ expectedUrl }: { expectedUrl: string }) {
   const [factor, setFactor] = useState<Factor | null>(null);
   const [qr, setQr] = useState("");
   const [secret, setSecret] = useState("");
@@ -23,8 +23,8 @@ export default function AdminMfaStep() {
 
   useEffect(() => {
     let mounted = true;
-    const supabase = client();
-    if (!supabase) { setError("Ambiente Staging non disponibile."); return; }
+    const supabase = client(expectedUrl);
+    if (!supabase) { setError("Ambiente amministrativo non disponibile."); return; }
     supabase.auth.mfa.listFactors().then(({ data, error: e }) => {
       if (!mounted) return;
       if (e) setError("Impossibile verificare i fattori MFA.");
@@ -32,14 +32,14 @@ export default function AdminMfaStep() {
       setReady(true);
     });
     return () => { mounted = false; };
-  }, []);
+  }, [expectedUrl]);
 
   useEffect(() => {
     if (ready && factor) otpInputRef.current?.focus();
   }, [ready, factor]);
 
   async function enroll() {
-    const supabase = client();
+    const supabase = client(expectedUrl);
     if (!supabase || busy) return;
     setBusy(true); setError("");
     const { data, error: e } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "BIMARIS Admin" });
@@ -54,7 +54,7 @@ export default function AdminMfaStep() {
 
   async function verify(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const supabase = client();
+    const supabase = client(expectedUrl);
     if (!supabase || !factor || busy) return;
     setBusy(true); setError("");
     const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: factor.id });

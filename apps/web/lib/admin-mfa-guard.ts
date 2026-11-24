@@ -1,4 +1,5 @@
 import "server-only";
+import { resolveAdminEnvironment } from "@/lib/admin-environment";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 
@@ -8,16 +9,7 @@ import { createServiceClient } from "@/lib/supabase/server";
  * Fail closed if staging isolation, identity, AAL2 or role lookup fails.
  */
 export async function getVerifiedSuperAdmin(): Promise<{ userId: string } | null> {
-  // DS-MFA-01/C: this feature branch must never query the production project
-  // for individual admin authorization. Check both client and service URLs.
-  const expectedHost = "nzdeoimwikhoidtladnu.supabase.co";
-  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!publicUrl) return null;
-  try {
-    if (new URL(publicUrl).hostname !== expectedHost) return null;
-  } catch {
-    return null;
-  }
+  if (!resolveAdminEnvironment()) return null;
   const userClient = await createUserServerClient();
   if (!userClient) return null;
 

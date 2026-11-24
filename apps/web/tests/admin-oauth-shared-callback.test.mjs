@@ -18,14 +18,15 @@ test("unallowlisted preview origin cannot start admin Google OAuth", () => {
 });
 test("admin intent is explicit and never combined with operator context", () => {
   assert.match(callback, /adminIntent = url\.searchParams\.get\("admin"\) === "1"/);
-  assert.match(callback, /if \(operatorIntent \|\| supabaseUrl !==/);
+  assert.match(callback, /if \(operatorIntent \|\| !environment \|\| !environment\.origins\.includes\(url\.origin\)/);
   assert.match(callback, /publicUrl\("\/admin\/mfa", url\)/);
 });
 test("operator and personal callbacks retain their separate checks", () => {
   assert.match(callback, /\.from\("operator_memberships"\)/);
   assert.match(callback, /\.from\("user_interests"\)/);
 });
-test("admin MFA keeps staging, super-admin and AAL2 checks", () => {
+test("admin MFA keeps environment, super-admin and AAL2 checks", () => {
+  assert.match(mfa, /resolveAdminEnvironment\(\)/);
   assert.match(mfa, /is_active_super_admin/);
   assert.match(mfa, /allowed !== true/);
   assert.match(guard, /currentLevel !== "aal2"/);

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { resolveAdminEnvironment } from "@/lib/admin-environment";
 import { createUserServerClient } from "@/lib/supabase/user-server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
@@ -10,7 +11,8 @@ export const revalidate = 0;
 
 export default async function AdminMfaPage() {
   if (await isAuthorizedAdmin()) redirect("/admin");
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://nzdeoimwikhoidtladnu.supabase.co") { console.warn("[DS-MFA-01] mfa_redirect: staging_url_mismatch"); redirect("/admin/login"); }
+  const environment = resolveAdminEnvironment();
+  if (!environment) { console.warn("[DS-MFA-01] mfa_redirect: environment_mismatch"); redirect("/admin/login"); }
   const client = await createUserServerClient();
   const { data, error } = client ? await client.auth.getUser() : { data: { user: null }, error: null };
   if (error || !data.user) { console.warn("[DS-MFA-01] mfa_redirect: session_unavailable"); redirect("/admin/login"); }
@@ -24,7 +26,7 @@ export default async function AdminMfaPage() {
       <div className="admin-login__eyebrow">Sicurezza · BIMARIS</div>
       <h1 id="admin-mfa-title">Verifica a due fattori</h1>
       <p className="admin-login__description">Registra il tuo autenticatore individuale oppure inserisci il codice temporaneo.</p>
-      <AdminMfaStep />
+      <AdminMfaStep expectedUrl={environment.supabaseUrl} />
     </div>
   </section>;
 }
