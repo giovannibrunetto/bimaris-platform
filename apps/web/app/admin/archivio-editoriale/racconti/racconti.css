@@ -6,3 +6,33 @@
 #historical-save, #historical-publication { scroll-margin-top: 110px; }
 .historical-editorial .story-detail-page { margin-top: 16px; }
 .historical-editorial #historical-publication form { display: grid; gap: 12px; }
+
+/* Historical editor only: compact actions and responsive authoring. */
+.historical-editorial .editorial-heading--sheet { padding: 12px 18px; gap: 10px 16px; }
+.historical-editorial .editorial-heading--sheet > div:first-child { flex: 1 1 240px; min-width: 0; }
+.historical-editorial .editorial-heading--sheet h1 { font-size: clamp(24px, 3vw, 34px); overflow-wrap: anywhere; }
+.historical-heading-tools { display: grid; gap: 8px; min-width: 0; }
+.historical-heading-actions { gap: 6px; }
+.historical-heading-actions .editorial-button { color: #fffaf0; border-color: #bda77e; white-space: normal; }
+.historical-heading-actions .editorial-button:hover { background: #31585b; }
+.historical-editorial .editorial-composer { gap: 12px; margin-top: 10px; }
+.historical-editorial .editorial-composer .editorial-panel { gap: 8px; min-width: 0; }
+.historical-editorial .editorial-composer .historical-chapter-editor { padding: 10px; }
+.historical-editorial .historical-chapter-editor > summary { overflow-wrap: anywhere; }
+.historical-editorial .historical-chapter-editor .editorial-actions { gap: 6px; margin-top: 8px; }
+.historical-editorial .editorial-composer #historical-save {
+  position: sticky; bottom: 0; z-index: 4; padding: 8px 10px;
+  border: 1px solid #dcd2c2; border-radius: 10px; background: #fcfaf6;
+  box-shadow: 0 -4px 14px rgb(16 50 55 / .08); gap: 8px;
+}
+.historical-editorial #historical-save span { flex: 1 1 150px; font-size: .85rem; color: #31585b; }
+.historical-editorial #historical-save [role="alert"] { color: #8a2f25; }
+@media (max-width: 720px) {
+  .historical-editorial .editorial-heading--sheet { padding: 10px 12px; }
+  .historical-heading-tools { width: 100%; }
+  .historical-editorial .editorial-composer input,
+  .historical-editorial .editorial-composer textarea,
+  .historical-editorial .editorial-composer select { font-size: 16px; }
+  .historical-editorial .historical-chapter-editor .editorial-button { min-height: 40px; }
+  .historical-editorial #historical-save { bottom: env(safe-area-inset-bottom, 0px); }
+}
