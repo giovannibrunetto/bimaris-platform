@@ -249,7 +249,13 @@ export default async function EditorialPage({ searchParams }: {
           <label>{model === "village" ? "Nome del borgo" : "Titolo"}<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>{model === "legend" ? "Racconto" : "Descrizione del luogo"}<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
           {model !== "culture" && <label>Testo breve della card<input name="excerpt" maxLength={400} defaultValue={draft.excerpt} /></label>}
-          {model === "legend" && <label>Tipo di racconto<input name="category" maxLength={120} placeholder="Es. Leggenda popolare" defaultValue={draft.category} /></label>}
+          {model === "legend" && <label>Tipo di racconto
+            <select name="category" required={!draft.category} defaultValue={draft.category === "Mito" || draft.category === "Leggenda" ? draft.category : ""}>
+              <option value="" disabled>{draft.category ? `Tipo attuale: ${draft.category}` : "Scegli il tipo"}</option>
+              <option value="Mito">Mito</option>
+              <option value="Leggenda">Leggenda</option>
+            </select>
+          </label>
           {model === "village" && <details className="editorial-sheet-management"><summary>Storia, identità e luoghi da vedere</summary>
             <label>Storia<textarea name="history" rows={4} defaultValue={draft.history} /></label>
             <label>Identità<textarea name="identity" rows={4} defaultValue={draft.identity} /></label>

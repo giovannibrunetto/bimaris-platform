@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
   let payload: Record<string, string | { address: string; placeId: string; latitude: number | null; longitude: number | null }> = {};
   let uploaded: string | null = null;
   if (action === "save") {
+    const category = value("category", 16);
+    if (model === "legend" && category && category !== "Mito" && category !== "Leggenda") return redirect(workspace, "dati");
     const lat = value("latitude", 32).replace(",", ".");
     const lng = value("longitude", 32).replace(",", ".");
     const latitude = lat ? Number(lat) : null;
@@ -63,9 +65,10 @@ export async function POST(request: NextRequest) {
       title: value("title", 180),
       body: value("body", 40000),
       ...(model !== "culture" ? {
-        excerpt: value("excerpt", 400), category: value("category", 120), history: value("history", 40000),
+        excerpt: value("excerpt", 400), history: value("history", 40000),
         identity: value("identity", 40000), thingsToSee: value("thingsToSee", 40000),
       } : {}),
+      ...(model === "legend" && category ? { category } : {}),
       location: { address: value("locationAddress", 250), placeId: value("locationPlaceId", 250), latitude, longitude },
     };
   }
