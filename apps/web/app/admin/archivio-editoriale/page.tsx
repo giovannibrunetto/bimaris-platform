@@ -255,7 +255,7 @@ export default async function EditorialPage({ searchParams }: {
               <option value="Mito">Mito</option>
               <option value="Leggenda">Leggenda</option>
             </select>
-          </label>
+          </label>}
           {model === "village" && <details className="editorial-sheet-management"><summary>Storia, identità e luoghi da vedere</summary>
             <label>Storia<textarea name="history" rows={4} defaultValue={draft.history} /></label>
             <label>Identità<textarea name="identity" rows={4} defaultValue={draft.identity} /></label>
