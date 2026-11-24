@@ -67,6 +67,18 @@ export default async function EditorialPage({ searchParams }: {
     latitude: String(draft?.location ? draft.location.latitude ?? "" : record?.editorial_latitude ?? linkedPlace?.latitude ?? ""),
     longitude: String(draft?.location ? draft.location.longitude ?? "" : record?.editorial_longitude ?? linkedPlace?.longitude ?? ""),
   };
+  const { data: lastSave } = workspace
+    ? await db.from("editorial_activity").select("created_at").eq("workspace_id", workspace.id)
+        .eq("action", "save").order("version", { ascending: false }).limit(1).maybeSingle()
+    : { data: null };
+  const savedAt = lastSave?.created_at;
+  const savedLabel = savedAt ? new Intl.DateTimeFormat("it-IT", {
+    dateStyle: "short", timeStyle: "short", timeZone: "Europe/Rome",
+  }).format(new Date(savedAt)) : undefined;
+  const saveMessage = query.salvataggio === "1" && query.esito !== "save" && query.esito
+    ? notices[query.esito]
+    : savedLabel ? `Ultimo salvataggio della bozza · ${savedLabel}` : undefined;
+
   const hiddenFields = workspace && <>
     <input type="hidden" name="workspace" value={workspace.id} />
     <input type="hidden" name="version" value={workspace.version} />
@@ -123,7 +135,7 @@ export default async function EditorialPage({ searchParams }: {
         {query.anteprima === "1" ? <Link href={`${base}?id=${workspace.id}`}>Torna alla modifica</Link> : <Link href={`${base}?id=${workspace.id}&anteprima=1`}>Anteprima privata</Link>}
         {record?.published && <Link href={`/cultura/${record.slug}`}>Versione pubblica</Link>}
       </nav>
-      <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span></p>
+      <p className="editorial-current-state"><span className="editorial-badge" data-state={status(workspace, record?.published)}>{status(workspace, record?.published)}</span>{savedAt && <small> · Bozza salvata il <time dateTime={savedAt}>{savedLabel}</time></small>}</p>
       {query.anteprima === "1" ? <section className="editorial-panel">
         <h2>Anteprima privata</h2>
         <article className="card culture-card">
@@ -132,7 +144,7 @@ export default async function EditorialPage({ searchParams }: {
         </article>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
       </section> : !workspace.archived && <div className="editorial-composer">
-        <EditorialDraftForm action={api} message={query.salvataggio === "1" && query.esito ? notices[query.esito] : undefined} saved={query.esito === "save"}>
+        <EditorialDraftForm action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
           {hiddenFields}
           <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
           <label>Testo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
