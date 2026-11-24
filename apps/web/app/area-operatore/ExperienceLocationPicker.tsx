@@ -143,7 +143,7 @@ export default function ExperienceLocationPicker({value,onChange,culture=false}:
   {results.length>0&&<div className="location-results" aria-label="Suggerimenti Google Maps"><p>Scegli il luogo corretto tra i suggerimenti Google Maps:</p>{results.map((item,i)=><button type="button" key={item.placeId||String(i)} onClick={()=>{requestId.current++;onChange({...value,meetingPoint:item.address,googleMapsPlaceId:item.placeId,latitude:String(item.latitude),longitude:String(item.longitude)});setQuery(item.address);addressInput.current?.focus();setResults([]);setSearchState("idle");}}>{item.address} — Seleziona</button>)}</div>}
    </div>}
   </div>
-  <p id="location-search-guidance" className="location-guidance">Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. {culture?"Se il luogo non compare, puoi inserire latitudine e longitudine.":"Se il luogo non compare, indicalo sulla mappa."}</p>
+  <p id="location-search-guidance" className="location-guidance">{culture ? "Digita almeno 4 caratteri per cercare il luogo oppure inserisci le coordinate manualmente." : "Scrivi almeno 4 caratteri: i suggerimenti Google Maps compariranno automaticamente. Se il luogo non compare, indicalo sulla mappa."}</p>
   <div className="location-actions">
    <button type="button" onClick={()=>{setMapOpen(v=>!v);setMapError("");setPending(null)}}>{mapOpen?"Chiudi la mappa":"Indica il punto sulla mappa"}</button>
   </div>
