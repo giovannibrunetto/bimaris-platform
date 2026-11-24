@@ -20,6 +20,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     window.addEventListener("pageshow", reset);
     return () => window.removeEventListener("pageshow", reset);
   }, []);
+  const preview = <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt }} />;
   return <div className="editorial-composer">
   <form className="editorial-panel" method="post" action={action} onInput={event => {
     const field = event.target;
@@ -49,10 +50,14 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     </div>
   </form>
   <aside className="editorial-composer-side">
-      <section className="editorial-panel editorial-card-preview" aria-label="Anteprima della card">
+      <section className="editorial-panel editorial-card-preview editorial-card-preview--desktop" aria-label="Anteprima della card">
         <h2>Anteprima della card</h2>
-        <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt }} />
+        {preview}
       </section>
+      <details className="editorial-panel editorial-card-preview editorial-card-preview--mobile">
+        <summary>Anteprima della card</summary>
+        {preview}
+      </details>
     {sideControls}
   </aside>
   </div>;
