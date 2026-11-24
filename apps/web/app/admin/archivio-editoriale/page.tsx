@@ -161,14 +161,8 @@ export default async function EditorialPage({ searchParams }: {
         <h2>Anteprima privata</h2>
         <div className="editorial-card-preview"><CultureMonumentCard card={{ ...card, title: card.title || "Scheda senza titolo", excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} /></div>
         <article><h3>{draft.title}</h3><p className="editorial-text">{draft.body}</p></article>
-      </section> : !workspace.archived && <div className="editorial-composer">
-        <EditorialDraftForm card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
-          {hiddenFields}
-          <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
-          <label>Descrizione del luogo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
-          <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
-        </EditorialDraftForm>
-        <aside className="editorial-composer-side">
+      </section> : !workspace.archived &&
+        <EditorialDraftForm sideControls={        <>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">Foto della bozza</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
@@ -215,8 +209,13 @@ export default async function EditorialPage({ searchParams }: {
             </div>
           </details>
         </form>
-        </aside>
-      </div>}
+        </>} card={{ ...card, excerpt: card.excerpt || draft.body?.slice(0, 240) || "" }} publicExcerpt={Boolean(card.excerpt)} action={api} message={saveMessage} saved={query.salvataggio !== "1" || query.esito === "save"}>
+          {hiddenFields}
+          <label>Titolo<input name="title" maxLength={180} defaultValue={draft.title} /></label>
+          <label>Descrizione del luogo<textarea name="body" rows={7} maxLength={40000} defaultValue={draft.body} /></label>
+          <EditorialPlaceField initialLocation={initialLocation} mapsUrl={mapsUrl} />
+        </EditorialDraftForm>
+      }
     </>}
   </main>;
 }
