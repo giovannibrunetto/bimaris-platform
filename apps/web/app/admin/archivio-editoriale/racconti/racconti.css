@@ -93,3 +93,13 @@
   .historical-drag { display: none; }
   .historical-focus-fields { padding: 12px; }
 }
+
+/* Focused editing excludes whole-story actions and restores them on return. */
+.historical-editorial .editorial-composer:has(.historical-index[data-mode="focus"]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.historical-editorial .editorial-composer:has(.historical-index[data-mode="focus"]) > .editorial-composer-side,
+.historical-editorial:has(.historical-index[data-mode="focus"]) > .editorial-sheet-nav,
+.historical-editorial:has(.historical-index[data-mode="focus"]) > .editorial-heading {
+  display: none;
+}
