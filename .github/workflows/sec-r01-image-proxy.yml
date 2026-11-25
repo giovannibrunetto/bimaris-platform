@@ -1,0 +1,207 @@
+name: SEC-R01 isolated image proxy
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/sec-r01-image-proxy.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sec-r01-image-proxy
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - name: Replay canonical schema and test actual image proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, uuid, secrets
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:", "http://localhost:"))
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          def request(path, key, token=None, method="GET", data=None):
+              headers={"apikey":key,"Content-Type":"application/json","Prefer":"return=representation"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+path, headers=headers, method=method, data=None if data is None else json.dumps(data).encode())
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      raw=r.read()
+                      return r.status,json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  return e.code,None
+          def expect(label,condition):
+              if not condition: raise SystemExit("FAIL "+label)
+              print("PASS "+label)
+          actors=[]
+          for label in ("a","b"):
+              email="sec-r01-"+label+"@example.invalid"
+              password=secrets.token_urlsafe(32)
+              code,u=request("/auth/v1/admin/users",service,service,"POST",{"email":email,"password":password,"email_confirm":True})
+              expect(label+" create Auth identity",code in (200,201) and bool(u and u.get("id")))
+              code,s=request("/auth/v1/token?grant_type=password",anon,None,"POST",{"email":email,"password":password})
+              expect(label+" real Auth login",code==200 and s["user"]["id"]==u["id"] and bool(s["access_token"]))
+              op=str(uuid.uuid4())
+              exp=str(uuid.uuid4())
+              actors.append((u["id"],s["access_token"],op,exp,s["refresh_token"]))
+              for table,data in [
+                  ("operators",{"id":op,"slug":"sec-r01-"+label,"name":"Synthetic "+label,"published":False,"operator_code":None}),
+                  ("operator_memberships",{"operator_id":op,"user_id":u["id"],"role":"owner"}),
+                  ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect(label+" fixture "+table,code in (200,201,204))
+          Path("actors.json").write_text(json.dumps(actors))
+          PY
+          chmod 600 "$work/actors.json" "$work/local-status.json"
+          export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("ANON_KEY") or d["PUBLISHABLE_KEY"])')"
+          export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          # The survey proxy fails closed on presence of either setting, even false.
+          export NEXT_TELEMETRY_DISABLED=1
+          export SEC_R01_ACTORS="$work/actors.json"
+          cd "$GITHUB_WORKSPACE/apps/web"
+          pnpm exec next dev --hostname 127.0.0.1 --port 3100 > "$work/next.log" 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; cd "$work"; supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          for attempt in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:3100/accedi; then break; fi
+            sleep 2
+          done
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          import {createServerClient} from '@supabase/ssr';
+          const actors=JSON.parse(readFileSync(process.env.SEC_R01_ACTORS,'utf8'));
+          const base='http://127.0.0.1:3100';
+          const cookies=[];
+          for(const [uid,token,op,exp,refresh] of actors){
+            // Recover a genuine session with a new password login; no fabricated JWT.
+            const jar=new Map();
+            const client=createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,{cookies:{getAll:()=>[...jar].map(([name,value])=>({name,value})),setAll:items=>items.forEach(({name,value})=>jar.set(name,value))}});
+            // Session token from the prior real login needs its actual refresh token.
+            
+            const {error}=await client.auth.setSession({access_token:token,refresh_token:refresh});
+            assert.ifError(error);
+            assert.ok(jar.size);
+            cookies.push([...jar].map(([k,v])=>k+'='+v).join('; '));
+          }
+          const {createClient}=await import('@supabase/supabase-js');
+          const {randomUUID,createHash}=await import('node:crypto');
+          const db=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+          const webp=Buffer.from('UklGRhwAAABXRUJQVlA4TA8AAAAvAUAAAAcQ/Y/+ByKi/wEA','base64');
+          const digest=b=>createHash('sha256').update(b).digest('hex');
+          let count=0;
+          function check(label,condition){assert.ok(condition,label);count++;console.log('PASS '+label);}
+          async function insert(table,data){const {error}=await db.from(table).insert(data);assert.ifError(error);}
+          async function update(table,id,values){const {data,error}=await db.from(table).update(values).eq('id',id).select('id').single();assert.ifError(error);assert.equal(data.id,id);}
+          async function seed(bucket,path){const {error}=await db.storage.from(bucket).upload(path,webp,{contentType:'image/webp'});assert.ifError(error);}
+          async function call(path,revision,cookie){
+            const q=new URLSearchParams({path,...(revision?{revision:'1'}:{})});
+            return fetch(base+'/api/experience-photo?'+q,{headers:cookie?{cookie}:{},redirect:'manual'});
+          }
+          async function image(label,response){
+            check(label,response.status===200&&response.headers.get('content-type')==='image/webp'&&digest(Buffer.from(await response.arrayBuffer()))===digest(webp));
+            check(label+' private cache',/private/.test(response.headers.get('cache-control')||'')&&/no-store/.test(response.headers.get('cache-control')||'')&&response.headers.get('x-content-type-options')==='nosniff'&&response.headers.get('cross-origin-resource-policy')==='same-origin');
+          }
+          async function denied(label,response){check(label,response.status===404&&(await response.arrayBuffer()).byteLength===0);}
+          const fixtures=[];
+          for(let i=0;i<2;i++){
+            const [uid,token,op,exp]=actors[i];
+            const rev=randomUUID(),original=op+'/'+exp+'/fixture.webp',revision=op+'/revisions/'+rev+'/fixture.webp',orphan=op+'/'+exp+'/orphan.webp';
+            await insert('experience_revisions',{id:rev,experience_id:exp,operator_id:op,status:'draft'});
+            await insert('experience_media',{experience_id:exp,storage_path:original});
+            await insert('experience_revision_media',{revision_id:rev,operator_id:op,storage_path:revision});
+            await seed('experience-media',original);
+            await seed('experience-media',orphan);
+            await seed('experience-revision-media',revision);
+            fixtures.push({op,exp,rev,original,revision,orphan});
+          }
+          for(let i=0;i<2;i++){
+            const f=fixtures[i],own=cookies[i],other=cookies[1-i];
+            await image('own draft image '+i,await call(f.original,false,own));
+            await denied('foreign draft image '+i,await call(f.original,false,other));
+            await denied('anonymous draft image '+i,await call(f.original,false));
+            await image('own revision image '+i,await call(f.revision,true,own));
+            await denied('foreign revision image '+i,await call(f.revision,true,other));
+            await denied('anonymous revision image '+i,await call(f.revision,true));
+            await denied('unlinked object '+i,await call(f.orphan,false,own));
+            await denied('wrong bucket selector '+i,await call(f.original,true,own));
+            await denied('traversal '+i,await call(f.op+'/../fixture.webp',false,own));
+            await update('operators',f.op,{published:true,selection_status:'selected'});
+            await update('experiences',f.exp,{published:true,review_status:'approved'});
+            await image('anonymous published image '+i,await call(f.original,false));
+            await image('other published image '+i,await call(f.original,false,other));
+            await denied('revision remains private after publication '+i,await call(f.revision,true));
+            await update('operators',f.op,{published:false});
+            await denied('withdrawn operator image '+i,await call(f.original,false));
+            await update('operators',f.op,{published:true});
+            await update('experiences',f.exp,{published:false});
+            await denied('withdrawn experience image '+i,await call(f.original,false));
+            await image('owner withdrawn image '+i,await call(f.original,false,own));
+          }
+          console.log('SEC-R01 IMAGE PROXY PASS '+count+' checks; revision rows seeded locally, lifecycle not covered');
+          JS
