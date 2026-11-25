@@ -11,7 +11,7 @@ export const revalidate = 0;
 
 type Content = { name?: string | null; excerpt?: string | null; description?: string | null; duration_minutes?: number | null; price_from?: number | null; meeting_point?: string | null; latitude?: number | null; longitude?: number | null; location_kind?: "venue" | "departure" | null; territory_id?: string | null; territory_municipality_code?: string | null };
 type Photo = { id?: string; storage_path: string; alt_text: string | null; sort_order: number; is_cover: boolean; source_media_id?: string | null; url?: string };
-const publicMediaUrl = (path: string) => `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}/storage/v1/object/public/experience-media/${path.split("/").map(encodeURIComponent).join("/")}`;
+const mediaUrl = (path: string, revision = false) => `/api/experience-photo?path=${encodeURIComponent(path)}${revision ? "&revision=1" : ""}`;
 const show = (v: unknown) => v === null || v === undefined || v === "" ? "—" : String(v);
 
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ state?: string }> }) {
@@ -30,15 +30,11 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     db.from("experience_media").select("id,storage_path,alt_text,sort_order,is_cover").eq("experience_id", id).order("sort_order"),
     revision ? db.from("experience_revision_media").select("storage_path,alt_text,sort_order,is_cover,source_media_id").eq("revision_id", revision.id).order("sort_order") : Promise.resolve({ data: [] }),
   ]);
-  const proposedPhotos: Photo[] = await Promise.all(((proposedRows ?? []) as Photo[]).map(async photo => {
-    if (photo.source_media_id) return { ...photo, url: publicMediaUrl(photo.storage_path) };
-    const { data, error } = await db.storage.from("experience-revision-media").createSignedUrl(photo.storage_path, 300);
-    return { ...photo, url: error ? "" : (data?.signedUrl ?? "") };
-  }));
+  const proposedPhotos: Photo[] = ((proposedRows ?? []) as Photo[]).map(photo => ({ ...photo, url: mediaUrl(photo.storage_path, !photo.source_media_id) }));
   const next = (revision?.content ?? {}) as Content;
   const allFields = experienceFieldComparison(experience, next);
   const changedFields = allFields.filter(([, , , changed]) => changed);
-  const originalPhotos: Photo[] = ((livePhotos ?? []) as Photo[]).map(p => ({ ...p, url: publicMediaUrl(p.storage_path) }));
+  const originalPhotos: Photo[] = ((livePhotos ?? []) as Photo[]).map(p => ({ ...p, url: mediaUrl(p.storage_path) }));
   // A retained image refers to its existing experience_media.id, not its storage path:
   // two different records may point to the same underlying image.
   const photoKey = (photo: Photo) => photo.source_media_id ?? photo.id ?? photo.storage_path;
