@@ -67,6 +67,7 @@ jobs:
           # Only the default local CLI database endpoint, never a remote database.
           db_container="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
           test "$(printf '%s\n' "$db_container" | grep -c '^supabase_db_')" -eq 1
+          docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --single-transaction < "$GITHUB_WORKSPACE/docs/qa/mig-r04/observed-staging-reconciliation.sql"
           docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --csv < "$GITHUB_WORKSPACE/docs/qa/mig-r04/structure-fingerprints.sql" > local-structure.csv
           python3 - <<'PY'
           import csv, json, os, collections
@@ -77,6 +78,15 @@ jobs:
           with open("local-structure.csv", newline="") as f:
               actual = list(csv.DictReader(f))
           assert expected and actual
+          # Exact allowlist of public survey functions intentionally outside replay.
+          survey_names = {"admin_citizen_survey_ideas", "admin_citizen_survey_summary", "admin_citizen_survey_test_summary", "citizen_survey_collection_open", "consume_citizen_survey_limit", "consume_citizen_survey_live_limit", "submit_citizen_survey", "submit_citizen_survey_test"}
+          def excluded(row):
+              return row["kind"] in {"function", "function_grant"} and row["name"].split("(")[0] in {"public." + n for n in survey_names}
+          excluded_expected = [r for r in expected if excluded(r)]
+          assert len(excluded_expected) == 32
+          assert not any(excluded(r) for r in actual)
+          expected = [r for r in expected if not excluded(r)]
+          print("PARITY_EXCLUDED_SURVEY", len(excluded_expected))
           def grouped(rows):
               d = collections.defaultdict(Counter)
               for r in rows:
