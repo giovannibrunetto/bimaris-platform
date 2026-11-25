@@ -1,0 +1,165 @@
+{
+  "ref": "20c4ae92eaa7a9b9a34718a9e413265871bb5d51",
+  "rows": [
+    {
+      "file": "016_harden_public_visibility_and_operator_permissions.sql",
+      "sha": "21a46a656a2be35922dc7169e26e9b15efdd5905",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "017_persistent_api_rate_limits.sql",
+      "sha": "e58dd356561d146c21a1bcc1f60782f2e69efac9",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021170836",
+          "name": "staging_persistent_api_rate_limits"
+        }
+      ]
+    },
+    {
+      "file": "018_operator_b2b_profiles.sql",
+      "sha": "ad645eec41ce2bc551e417b19999e0fba76dd41d",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261023124309",
+          "name": "operator_b2b_profiles"
+        }
+      ]
+    },
+    {
+      "file": "019_fix_experience_activity_links_read_isolation.sql",
+      "sha": "59aee7aa7cd97a6dfbdbe587445dd5c40c25dc19",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024053809",
+          "name": "fix_experience_activity_links_read_isolation"
+        }
+      ]
+    },
+    {
+      "file": "019_post_018_staging_alignment.sql",
+      "sha": "814e7db8ec3fb8c177a6597509f607ff843b6f83",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "020_collaboration_response_and_rls_cleanup.sql",
+      "sha": "27e29fdfde220085976933cb7c3d3f636dfcaed1",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "020_enforce_partner_owned_collaboration_decision.sql",
+      "sha": "436a2789377f2c6f17d53dc8b8b7a4987a9586db",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024070643",
+          "name": "enforce_partner_owned_collaboration_decision"
+        }
+      ]
+    },
+    {
+      "file": "020_index_experience_collaboration_inviter.sql",
+      "sha": "085f52223a4d56ce58cc4b4285fb1f891fa2acde",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024053947",
+          "name": "index_experience_collaboration_inviter"
+        }
+      ]
+    },
+    {
+      "file": "021_harden_partner_collaboration_updates.sql",
+      "sha": "d82bb0a0953df5b28a5edba21d01f0c4ca36d5d3",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261024065948",
+          "name": "harden_partner_collaboration_updates"
+        }
+      ]
+    },
+    {
+      "file": "022_allow_operator_manage_discovery_profiles.sql",
+      "sha": "4746c283c623ccf1396d329c79c1f46eccb30af6",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024091016",
+          "name": "allow_operator_manage_discovery_profiles"
+        }
+      ]
+    },
+    {
+      "file": "022_extend_discovery_temporal_weather_rules.sql",
+      "sha": "179771496e1d0a036d5a0c660341d7955108dd20",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261024081851",
+          "name": "extend_discovery_temporal_weather_rules"
+        }
+      ]
+    },
+    {
+      "file": "023_fix_activity_link_operator_delete_action.sql",
+      "sha": "1aa1ce03ad815a4b0c569a65a8d92aebdba885a5",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024092648",
+          "name": "fix_activity_link_operator_delete_action"
+        }
+      ]
+    },
+    {
+      "file": "024_allow_operator_create_and_read_experience_media.sql",
+      "sha": "0de93cbd9a4623eb826695323de6b1cf15a701a8",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024093320",
+          "name": "allow_operator_create_and_read_experience_media"
+        }
+      ]
+    },
+    {
+      "file": "025_harden_activity_link_editor_roles.sql",
+      "sha": "8a66b766d4a2904a6e137fef35f100a2d4096fb5",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024093458",
+          "name": "harden_activity_link_editor_roles"
+        }
+      ]
+    },
+    {
+      "file": "026_revision_lifecycle_guards.sql",
+      "sha": "a0d47bfe5a4163cd90c8afa6c4f1a2fbed965b37",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    }
+  ]
+}
