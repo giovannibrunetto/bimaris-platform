@@ -208,7 +208,7 @@ jobs:
             const after=await snapshot();
             for(const table of Object.keys(before))check('unchanged '+table,JSON.stringify(before[table])===JSON.stringify(after[table]));
             const context=await browser.newContext();
-            try{const page=await context.newPage();await page.goto(base+'/area-operatore?operatore='+ids[0]);check('anonymous browser redirected',new URL(page.url()).pathname==='/accedi');}finally{await context.close();}
+            try{const page=await context.newPage();await page.goto(base+'/area-operatore?operatore='+ids[0]);const destination=new URL(page.url());console.log('Anonymous destination '+destination.pathname);check('anonymous browser redirected',destination.origin===base&&destination.pathname==='/accedi/operatore'&&destination.searchParams.get('next')==='/area-operatore?operatore='+ids[0]);}finally{await context.close();}
           }finally{await browser.close();}
           console.log('SEC-R01 BROWSER AND INTEGRITY PASS '+count+' checks');
           JS
