@@ -119,7 +119,8 @@ jobs:
           export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
           export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
           export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
-          export BIMARIS_SURVEY_PUBLIC_ONLY=false
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          # The survey proxy fails closed on presence of either setting, even false.
           export NEXT_TELEMETRY_DISABLED=1
           export SEC_R01_ACTORS="$work/actors.json"
           cd "$GITHUB_WORKSPACE/apps/web"
@@ -151,7 +152,9 @@ jobs:
           let count=0;
           function check(label,condition){assert.ok(condition,label);count++;console.log('PASS '+label);}
           async function call(path,cookie,method='GET',body){
-            return fetch(base+path,{method,redirect:'manual',headers:{...(cookie?{cookie}:{}),...(body?{'content-type':body instanceof URLSearchParams?'application/x-www-form-urlencoded':'application/json'}:{}),origin:base},body:body instanceof URLSearchParams?body:body?JSON.stringify(body):undefined});
+            const response=await fetch(base+path,{method,redirect:'manual',headers:{...(cookie?{cookie}:{}),...(body?{'content-type':body instanceof URLSearchParams?'application/x-www-form-urlencoded':'application/json'}:{}),origin:base},body:body instanceof URLSearchParams?body:body?JSON.stringify(body):undefined});
+            console.log('HTTP '+method+' '+path.split('?')[0]+' '+response.status);
+            return response;
           }
           const route='/api/operator/notifications';
           for(let i=0;i<2;i++){
