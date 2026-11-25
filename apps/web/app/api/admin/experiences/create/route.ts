@@ -39,7 +39,7 @@ export async function POST(request:NextRequest){
    const file=photos[i],ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"").toLowerCase()||"jpg",path=`${operatorId}/${created.id}/admin-${Date.now()}-${i}.${ext}`;
    const upload=await db.storage.from("experience-media").upload(path,file,{upsert:false,contentType:file.type});if(upload.error)throw new Error(`photo-upload-failed:${i}`);uploadedPaths.push(path);
    const {error:mediaError}=await db.from("experience_media").insert({experience_id:created.id,storage_path:path,sort_order:i,is_cover:i===0,alt_text:`${name} - foto ${i+1}`});if(mediaError)throw mediaError;
-   if(i===0)coverUrl=db.storage.from("experience-media").getPublicUrl(path).data.publicUrl;
+   if(i===0)coverUrl=`/api/experience-photo?path=${encodeURIComponent(path)}`;
   }
   if(coverUrl){const {error:coverError}=await db.from("experiences").update({image_url:coverUrl,image_alt:`${name} - copertina`}).eq("id",created.id);if(coverError)throw coverError;}
   if(jsonMode(request))return NextResponse.json({ok:true,id:created.id,url:`/admin/operatori?state=experience-created&id=${encodeURIComponent(created.id)}`});
