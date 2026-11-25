@@ -1,0 +1,129 @@
+name: SEC-R01 isolated Auth HTTP
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/sec-r01-auth-http.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sec-r01-auth-http
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Replay canonical schema and test real local Auth HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, uuid, secrets
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:", "http://localhost:"))
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          def request(path, key, token=None, method="GET", data=None):
+              headers={"apikey":key,"Content-Type":"application/json","Prefer":"return=representation"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+path, headers=headers, method=method, data=None if data is None else json.dumps(data).encode())
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      raw=r.read()
+                      return r.status,json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  return e.code,None
+          def expect(label,condition):
+              if not condition: raise SystemExit("FAIL "+label)
+              print("PASS "+label)
+          actors=[]
+          for label in ("a","b"):
+              email="sec-r01-"+label+"@example.invalid"
+              password=secrets.token_urlsafe(32)
+              code,u=request("/auth/v1/admin/users",service,service,"POST",{"email":email,"password":password,"email_confirm":True})
+              expect(label+" create Auth identity",code in (200,201) and bool(u and u.get("id")))
+              code,s=request("/auth/v1/token?grant_type=password",anon,None,"POST",{"email":email,"password":password})
+              expect(label+" real Auth login",code==200 and s["user"]["id"]==u["id"] and bool(s["access_token"]))
+              op=str(uuid.uuid4())
+              exp=str(uuid.uuid4())
+              actors.append((u["id"],s["access_token"],op,exp))
+              for table,data in [
+                  ("operators",{"id":op,"slug":"sec-r01-"+label,"name":"Synthetic "+label,"published":False,"operator_code":None}),
+                  ("operator_memberships",{"operator_id":op,"user_id":u["id"],"role":"owner"}),
+                  ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect(label+" fixture "+table,code in (200,201,204))
+          for i,(uid,token,op,exp) in enumerate(actors):
+              other=actors[1-i]
+              for table,own,foreign in [("operators",op,other[2]),("experiences",exp,other[3])]:
+                  path="/rest/v1/"+table+"?id=eq."
+                  code,rows=request(path+own,anon,token)
+                  expect(str(i)+" own "+table+" visible",code==200 and len(rows)==1)
+                  code,rows=request(path+foreign,anon,token)
+                  expect(str(i)+" cross "+table+" invisible",code==200 and rows==[])
+                  code,rows=request(path+foreign,anon,token,"PATCH",{"name":"Forbidden change"})
+                  expect(str(i)+" cross "+table+" update blocked",code in (401,403) or (code==200 and rows==[]))
+                  code,rows=request(path+foreign,anon,token,"DELETE")
+                  expect(str(i)+" cross "+table+" delete blocked",code in (401,403) or (code==200 and rows==[]))
+                  code,rows=request(path+foreign,service,service)
+                  expect(str(i)+" foreign "+table+" unchanged",code==200 and len(rows)==1 and rows[0]["name"]!="Forbidden change")
+              code,rows=request("/rest/v1/operator_memberships?operator_id=eq."+other[2],anon,token)
+              expect(str(i)+" cross memberships invisible",code==200 and rows==[])
+              for table in ("business_accounts","business_account_memberships"):
+                  code,_=request("/rest/v1/"+table,anon,token)
+                  expect(str(i)+" direct "+table+" denied",code in (401,403))
+          print("SEC-R01 AUTH HTTP PASS; disposable stack only; UI and Storage HTTP not covered")
+          PY
