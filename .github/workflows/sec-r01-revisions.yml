@@ -173,7 +173,20 @@ jobs:
             const id=randomUUID(),content={name:'Proposed synthetic '+i};
             const result=await clients[i].from('experience_revisions').insert({id,experience_id:exp,operator_id:op,status:'draft',content}).select('id').single();
             check('owner creates draft '+i,!result.error&&result.data?.id===id);
-            revisions.push({id,op,exp,content});
+            const initialized=await read('experience_revisions',id);
+            check('draft initialized from live '+i,initialized.content.name===(await read('experiences',exp)).name);
+            const proposed={...initialized.content,name:content.name};
+            const edit=await clients[i].from('experience_revisions').update({content:proposed}).eq('id',id).select('id').single();
+            check('owner edits draft '+i,!edit.error&&edit.data?.id===id);
+            const webp=Buffer.from('UklGRhwAAABXRUJQVlA4TA8AAAAvAUAAAAcQ/Y/+ByKi/wEA','base64');
+            const path=op+'/'+exp+'/fixture.webp';
+            const upload=await db.storage.from('experience-media').upload(path,webp,{contentType:'image/webp'});
+            assert.ifError(upload.error);
+            const media=await db.from('experience_media').insert({experience_id:exp,storage_path:path,is_cover:true}).select('id').single();
+            assert.ifError(media.error);
+            const link=await clients[i].from('experience_revision_media').insert({revision_id:id,operator_id:op,source_media_id:media.data.id,storage_path:path,is_cover:true});
+            check('owner links existing cover '+i,!link.error);
+            revisions.push({id,op,exp,content:(await read('experience_revisions',id)).content});
           }
           for(let i=0;i<2;i++){
             const f=revisions[i],own=clients[i],other=clients[1-i];
