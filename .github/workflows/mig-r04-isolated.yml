@@ -64,4 +64,36 @@ jobs:
           supabase db start
           supabase db reset --local --no-seed
           supabase migration list --local
+          # Only the default local CLI database endpoint, never a remote database.
+          db_container="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test "$(printf '%s\n' "$db_container" | grep -c '^supabase_db_')" -eq 1
+          docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --csv < "$GITHUB_WORKSPACE/docs/qa/mig-r04/structure-fingerprints.sql" > local-structure.csv
+          python3 - <<'PY'
+          import csv, json, os, collections
+          from pathlib import Path
+          from collections import Counter
+          reference = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/staging-structure-fingerprints.json"
+          expected = json.loads(reference.read_text())["objects"]
+          with open("local-structure.csv", newline="") as f:
+              actual = list(csv.DictReader(f))
+          assert expected and actual
+          def grouped(rows):
+              d = collections.defaultdict(Counter)
+              for r in rows:
+                  d[(r["kind"], r["name"])][r["fingerprint"]] += 1
+              return d
+          a, b = grouped(expected), grouped(actual)
+          stats = collections.defaultdict(Counter)
+          for k in sorted(a.keys() | b.keys()):
+              status = "missing" if k not in b else "extra" if k not in a else "match" if a[k] == b[k] else "different"
+              stats[k[0]][status] += 1
+              if status != "match":
+                  print("PARITY_DIFF", status, *k)
+          for kind, counts in sorted(stats.items()):
+              print("PARITY_SUMMARY", kind, json.dumps(dict(counts), sort_keys=True))
+          print("PARITY_TOTAL", len(expected), len(actual))
+          if any(v.get("missing", 0) or v.get("extra", 0) or v.get("different", 0) for v in stats.values()):
+              raise SystemExit("Structural parity not established: diagnostic differences require review")
+          print("PARITY_PASS: normalized structural fingerprints match within selected scope")
+          PY
           echo 'MIG-R04: combined replay completed; structural parity and formal registry reconciliation not yet certified.'
