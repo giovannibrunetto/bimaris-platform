@@ -86,7 +86,7 @@ export default async function StoriesPage() {
                       <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
                     )}
                     {cardImage && (editorialIllustrations[story.slug] ? (
-                      <Image src={cardImage} alt={cardAlt} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} style={{ objectFit: cardImageFit, objectPosition: cardImagePosition }} />
+                      <Image src={cardImage} alt={cardAlt} fill unoptimized={story.slug === "fata-morgana-stretto"} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} style={{ objectFit: cardImageFit, objectPosition: cardImagePosition }} />
                     ) : (
                       <img src={cardImage} alt={cardAlt} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />
                     ))}
