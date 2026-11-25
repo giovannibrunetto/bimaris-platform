@@ -34,7 +34,20 @@ jobs:
           cd "$work"
           supabase init
           mkdir -p supabase/migrations
-          cp "$GITHUB_WORKSPACE"/supabase/migrations/*.sql supabase/migrations/
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          assert len(rows) == 68
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Diagnostic historical baseline: 68 migrations")
+          PY
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -49,4 +62,4 @@ jobs:
           supabase db start
           supabase db reset --local --no-seed
           supabase migration list --local
-          echo 'MIG-R04: clean local replay completed; structural parity not yet certified.'
+          echo 'MIG-R04: historical baseline replay completed; full candidate replay and structural parity not yet certified.'
