@@ -39,14 +39,16 @@ jobs:
           from pathlib import Path
           source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
           rows = json.loads(source.read_text())["migrations"]
-          assert len(rows) == 68
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
           assert len({r["version"] for r in rows}) == len(rows)
           for row in rows:
               assert re.fullmatch(r"\d{14}", row["version"])
               assert re.fullmatch(r"[a-z0-9_]+", row["name"])
               path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
               path.write_text(row["sql"].rstrip() + "\n")
-          print("Diagnostic historical baseline: 68 migrations")
+          print("Diagnostic combined sequence: 159 migrations")
           PY
           python3 - <<'PY'
           from pathlib import Path
@@ -62,4 +64,4 @@ jobs:
           supabase db start
           supabase db reset --local --no-seed
           supabase migration list --local
-          echo 'MIG-R04: historical baseline replay completed; full candidate replay and structural parity not yet certified.'
+          echo 'MIG-R04: combined replay completed; structural parity and formal registry reconciliation not yet certified.'
