@@ -161,8 +161,11 @@ jobs:
           function check(label,condition){assert.ok(condition,label);count++;console.log('PASS '+label);}
           async function read(table,id){const {data,error}=await db.from(table).select('*').eq('id',id).single();assert.ifError(error);return data;}
           async function seedUpdate(table,id,values){const {error}=await db.from(table).update(values).eq('id',id);assert.ifError(error);}
-          async function adminCall(id,cookie,origin=base){
-            return fetch(base+'/api/admin/experience-revisions',{method:'POST',redirect:'manual',headers:{origin,...(cookie?{cookie}:{})},body:new URLSearchParams({revision_id:id,action:'approve-apply'})});
+          async function adminCall(id,cookie,origin){
+            const response=await fetch(base+'/api/admin/experience-revisions',{method:'POST',redirect:'manual',headers:{'sec-fetch-site':origin?'cross-site':'same-origin',...(origin?{origin}:{}),...(cookie?{cookie}:{})},body:new URLSearchParams({revision_id:id,action:'approve-apply'})});
+            console.log('Admin HTTP '+response.status+' location '+(response.headers.get('location')?new URL(response.headers.get('location'),base).pathname:'none'));
+            if(response.status===403){const payload=await response.clone().json().catch(()=>null);console.log('Admin rejection '+String(payload?.error??'unknown'));}
+            return response;
           }
           const rpc=(c,id)=>c.rpc('admin_apply_experience_revision',{p_revision_id:id,p_review_notes:'Synthetic review'});
           const revisions=[];
