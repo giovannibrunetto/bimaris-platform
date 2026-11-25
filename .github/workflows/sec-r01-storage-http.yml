@@ -106,10 +106,14 @@ jobs:
                   ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
                   code,_=request("/rest/v1/"+table,service,service,"POST",data)
                   expect(label+" fixture "+table,code in (200,201,204))
-          import base64, hashlib
-          png=base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR1sAAAAASUVORK5CYII=")
+          import hashlib, struct
+          # Generate a valid synthetic WebP using the runner image tools.
+          import subprocess
+          subprocess.run(["convert","-size","2x2","xc:red","fixture.webp"],check=True)
+          png=Path("fixture.webp").read_bytes()
+          assert png[:4]==b"RIFF" and png[8:12]==b"WEBP"
           def storage(path, key, token=None, method="GET", data=None, upsert=False):
-              headers={"apikey":key,"Content-Type":"image/png"}
+              headers={"apikey":key,"Content-Type":"image/webp"}
               if token: headers["Authorization"]="Bearer "+token
               if upsert: headers["x-upsert"]="true"
               req=urllib.request.Request(base+"/storage/v1/"+path, headers=headers, method=method, data=data)
@@ -120,8 +124,9 @@ jobs:
           for uid,token,op,exp in actors:
               for bucket,folder in [("experience-media",op+"/"+exp),("experience-revision-media",op+"/revisions/"+str(uuid.uuid4()))]:
                   # Seed via local service only; revision fixture deliberately has no database revision.
-                  path=bucket+"/"+folder+"/fixture.png"
-                  code,_=storage("object/"+path,service,service,"POST",png)
+                  path=bucket+"/"+folder+"/fixture.webp"
+                  code,raw=storage("object/"+path,service,service,"POST",png)
+                  if code not in (200,201): print("Seed HTTP status:",code,"response:",raw[:500].decode(errors="replace"))
                   expect("seed "+bucket,code in (200,201))
                   objects.append((uid,token,bucket,folder,path))
           for uid,token,bucket,folder,path in objects:
@@ -133,14 +138,14 @@ jobs:
                   expect(label+" read denied "+bucket,code in (400,401,403,404))
               code,_=storage("object/"+path,anon,other,"PUT",png+b"modified",True)
               expect("cross overwrite denied "+bucket,code in (400,401,403,404))
-              code,_=storage("object/"+bucket+"/"+folder+"/foreign.png",anon,other,"POST",png)
+              code,_=storage("object/"+bucket+"/"+folder+"/foreign.webp",anon,other,"POST",png)
               expect("cross insert denied "+bucket,code in (400,401,403,404))
               code,raw=storage("object/"+path,anon,other,"DELETE")
               # Storage may return success on a filtered zero-row deletion.
               expect("cross delete response "+bucket,code in (200,204,400,401,403,404))
               code,raw=storage("object/authenticated/"+path,service,service)
               expect("original bytes intact "+bucket,code==200 and hashlib.sha256(raw).digest()==hashlib.sha256(png).digest())
-              code,_=storage("object/authenticated/"+bucket+"/"+folder+"/foreign.png",service,service)
+              code,_=storage("object/authenticated/"+bucket+"/"+folder+"/foreign.webp",service,service)
               expect("foreign insert absent "+bucket,code in (400,404))
           print("SEC-R01 STORAGE HTTP PASS; synthetic files; UI not covered")
           PY
