@@ -30,6 +30,9 @@ jobs:
           test -d supabase/migrations
           printf 'Candidate commit: '; git rev-parse HEAD
           find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
           work="$(mktemp -d)"
           cd "$work"
           supabase init
@@ -42,13 +45,16 @@ jobs:
           later = source.with_name("20261022-20261125-replay.json")
           rows += json.loads(later.read_text())["migrations"]
           assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
           assert len({r["version"] for r in rows}) == len(rows)
           for row in rows:
               assert re.fullmatch(r"\d{14}", row["version"])
               assert re.fullmatch(r"[a-z0-9_]+", row["name"])
               path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
               path.write_text(row["sql"].rstrip() + "\n")
-          print("Diagnostic combined sequence: 159 migrations")
+          print("Candidate canonical sequence: 160 local-only migrations")
           PY
           python3 - <<'PY'
           from pathlib import Path
@@ -62,12 +68,10 @@ jobs:
           trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
           supabase db start --help >/dev/null
           supabase db start
-          supabase db reset --local --no-seed
-          supabase migration list --local
+          compare_structure() {
           # Only the default local CLI database endpoint, never a remote database.
           db_container="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
           test "$(printf '%s\n' "$db_container" | grep -c '^supabase_db_')" -eq 1
-          docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --single-transaction < "$GITHUB_WORKSPACE/docs/qa/mig-r04/observed-staging-reconciliation.sql"
           docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --csv < "$GITHUB_WORKSPACE/docs/qa/mig-r04/structure-fingerprints.sql" > local-structure.csv
           python3 - <<'PY'
           import csv, json, os, collections
@@ -106,4 +110,12 @@ jobs:
               raise SystemExit("Structural parity not established: diagnostic differences require review")
           print("PARITY_PASS: normalized structural fingerprints match within selected scope")
           PY
-          echo 'MIG-R04: combined replay completed; structural parity and formal registry reconciliation not yet certified.'
+          }
+          echo "CANONICAL_PHASE clean_boot"
+          supabase migration list --local
+          compare_structure
+          echo "CANONICAL_PHASE clean_reset"
+          supabase db reset --local --no-seed
+          supabase migration list --local
+          compare_structure
+          echo 'MIG-R04: candidate canonical baseline matched after clean boot and reset; remote adoption not authorized.'
