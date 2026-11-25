@@ -1,0 +1,146 @@
+name: SEC-R01 isolated Storage HTTP
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/sec-r01-storage-http.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sec-r01-storage-http
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Replay canonical schema and test private Storage HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, uuid, secrets
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:", "http://localhost:"))
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          def request(path, key, token=None, method="GET", data=None):
+              headers={"apikey":key,"Content-Type":"application/json","Prefer":"return=representation"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+path, headers=headers, method=method, data=None if data is None else json.dumps(data).encode())
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      raw=r.read()
+                      return r.status,json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  return e.code,None
+          def expect(label,condition):
+              if not condition: raise SystemExit("FAIL "+label)
+              print("PASS "+label)
+          actors=[]
+          for label in ("a","b"):
+              email="sec-r01-"+label+"@example.invalid"
+              password=secrets.token_urlsafe(32)
+              code,u=request("/auth/v1/admin/users",service,service,"POST",{"email":email,"password":password,"email_confirm":True})
+              expect(label+" create Auth identity",code in (200,201) and bool(u and u.get("id")))
+              code,s=request("/auth/v1/token?grant_type=password",anon,None,"POST",{"email":email,"password":password})
+              expect(label+" real Auth login",code==200 and s["user"]["id"]==u["id"] and bool(s["access_token"]))
+              op=str(uuid.uuid4())
+              exp=str(uuid.uuid4())
+              actors.append((u["id"],s["access_token"],op,exp))
+              for table,data in [
+                  ("operators",{"id":op,"slug":"sec-r01-"+label,"name":"Synthetic "+label,"published":False,"operator_code":None}),
+                  ("operator_memberships",{"operator_id":op,"user_id":u["id"],"role":"owner"}),
+                  ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect(label+" fixture "+table,code in (200,201,204))
+          import base64, hashlib
+          png=base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR1sAAAAASUVORK5CYII=")
+          def storage(path, key, token=None, method="GET", data=None, upsert=False):
+              headers={"apikey":key,"Content-Type":"image/png"}
+              if token: headers["Authorization"]="Bearer "+token
+              if upsert: headers["x-upsert"]="true"
+              req=urllib.request.Request(base+"/storage/v1/"+path, headers=headers, method=method, data=data)
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r: return r.status,r.read()
+              except urllib.error.HTTPError as e: return e.code,e.read()
+          objects=[]
+          for uid,token,op,exp in actors:
+              for bucket,folder in [("experience-media",op+"/"+exp),("experience-revision-media",op+"/revisions/"+str(uuid.uuid4()))]:
+                  # Seed via local service only; revision fixture deliberately has no database revision.
+                  path=bucket+"/"+folder+"/fixture.png"
+                  code,_=storage("object/"+path,service,service,"POST",png)
+                  expect("seed "+bucket,code in (200,201))
+                  objects.append((uid,token,bucket,folder,path))
+          for uid,token,bucket,folder,path in objects:
+              other=next(a[1] for a in actors if a[0]!=uid)
+              code,raw=storage("object/authenticated/"+path,anon,token)
+              expect("own read "+bucket,code==200 and raw==png)
+              for label,key,tok in [("cross",anon,other),("anonymous",anon,None)]:
+                  code,_=storage("object/authenticated/"+path,key,tok)
+                  expect(label+" read denied "+bucket,code in (400,401,403,404))
+              code,_=storage("object/"+path,anon,other,"PUT",png+b"modified",True)
+              expect("cross overwrite denied "+bucket,code in (400,401,403,404))
+              code,_=storage("object/"+bucket+"/"+folder+"/foreign.png",anon,other,"POST",png)
+              expect("cross insert denied "+bucket,code in (400,401,403,404))
+              code,raw=storage("object/"+path,anon,other,"DELETE")
+              # Storage may return success on a filtered zero-row deletion.
+              expect("cross delete response "+bucket,code in (200,204,400,401,403,404))
+              code,raw=storage("object/authenticated/"+path,service,service)
+              expect("original bytes intact "+bucket,code==200 and hashlib.sha256(raw).digest()==hashlib.sha256(png).digest())
+              code,_=storage("object/authenticated/"+bucket+"/"+folder+"/foreign.png",service,service)
+              expect("foreign insert absent "+bucket,code in (400,404))
+          print("SEC-R01 STORAGE HTTP PASS; synthetic files; UI not covered")
+          PY
