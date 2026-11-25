@@ -48,17 +48,36 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
  const [revisionStatuses,setRevisionStatuses]=useState<Record<string,string>>({});
  const [collaboration,setCollaboration]=useState<ExperienceCollaboration|null>(null),[collaborationReady,setCollaborationReady]=useState(false);
  const supabase=useMemo(()=>createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!),[]),localKey=`bimaris:experience-draft:${operatorId}`;
+ // Refresh review state while the list is visible, without interrupting edits.
+ // The server page is dynamic; router.refresh retrieves current experience content.
  useEffect(()=>{
-  if(open)return;
-  let current=true;
-  void (async()=>{
-   const {data,error}=await supabase.from("experience_revisions")
-    .select("experience_id,status").eq("operator_id",operatorId)
-    .in("status",["draft","rejected","pending","approved"]);
-   if(current&&!error)setRevisionStatuses(Object.fromEntries((data??[]).map(row=>[row.experience_id,row.status])));
-  })();
-  return()=>{current=false};
- },[open,operatorId,supabase]);
+  if(open||busy)return;
+  let current=true, inFlight=false;
+  async function synchronize(){
+   if(!current||inFlight||document.visibilityState!=="visible")return;
+   inFlight=true;
+   try{
+    const {data,error}=await supabase.from("experience_revisions")
+     .select("experience_id,status").eq("operator_id",operatorId)
+     .in("status",["draft","rejected","pending","approved"]);
+    if(current&&!error){
+     setRevisionStatuses(Object.fromEntries((data??[]).map(row=>[row.experience_id,row.status])));
+     router.refresh();
+    }
+   }finally{inFlight=false}
+  }
+  const refresh=()=>{void synchronize().catch(()=>{/* Retry on the next visible interval. */})};
+  refresh();
+  const timer=window.setInterval(refresh,15000);
+  window.addEventListener("focus",refresh);
+  document.addEventListener("visibilitychange",refresh);
+  return()=>{
+   current=false;
+   window.clearInterval(timer);
+   window.removeEventListener("focus",refresh);
+   document.removeEventListener("visibilitychange",refresh);
+  };
+ },[open,busy,operatorId,supabase,router]);
  useEffect(()=>{
   if(!open||wizardScrollRequest===0)return;
   // Scroll after React has rendered the new step. A smooth scroll can be
@@ -263,7 +282,7 @@ export default function ExperienceManager({operatorId,operatorSlug,experiences,i
  async function saveDraft():Promise<string|null>{setBusy(true);setMessage("");try{
  const {data:{user},error:authError}=await supabase.auth.getUser();
  if(authError||!user)throw new Error("La sessione autenticata non è disponibile nel browser. Ricarica l'Area Operatore; se il problema persiste, sarà necessario ripristinare l'accesso operatore.");const classification=await classifyLocation();if(revisionId){const {error}=await supabase.from("experience_revisions").update({status:"draft",draft_step:step,content:{discovery_profile:discoveryProfile(),name:draft.name,excerpt:draft.excerpt,description:draft.description,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind}}).eq("id",revisionId);if(error)throw error;const me=await syncRevisionGallery(revisionId);if(me)throw new Error(me);setSaved(true);setMessage("Bozza delle modifiche salvata.");return revisionId}if(editingId){const {error}=await supabase.from("experiences").update({name:draft.name,excerpt:draft.excerpt,description:draft.description,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind,draft_step:step}).eq("id",editingId);if(error)throw error;const te=await syncTaxonomy(editingId);if(te)throw new Error(te);const pe=await syncProfile(editingId);if(pe)throw new Error(pe);const me=await syncLiveGallery(editingId);if(me)throw new Error(me);setSaved(true);setMessage("Bozza salvata.");return editingId}const {data,error}=await supabase.from("experiences").insert({operator_id:operatorId,name:draft.name||"Nuova esperienza",slug:`${slugify(draft.name||"esperienza")}-${Date.now().toString(36)}`,excerpt:draft.excerpt||null,description:draft.description||null,duration_minutes:draft.duration?Number(draft.duration):null,price_from:draft.price?Number(draft.price):null,territory_id:classification.territoryId,territory_assignment_status:classification.status,territory_municipality_code:classification.code,meeting_point:draft.location.meetingPoint.trim()||null,google_maps_place_id:draft.location.googleMapsPlaceId||null,latitude:draft.location.latitude===""?null:Number(draft.location.latitude),longitude:draft.location.longitude===""?null:Number(draft.location.longitude),location_kind:draft.location.locationKind,review_status:"draft",draft_step:step,published:false}).select("id").single();if(error||!data)throw error??new Error("Creazione esperienza non riuscita");setEditingId(data.id);const te=await syncTaxonomy(data.id);if(te)throw new Error(te);const pe=await syncProfile(data.id);if(pe)throw new Error(pe);const me=await syncLiveGallery(data.id);if(me)throw new Error(me);setSaved(true);clearLocal();setMessage("Bozza salvata.");return data.id}catch(err){setMessage(isAuthWriteError(err)?"Autorizzazione al salvataggio non disponibile. Ricarica l'Area Operatore e verifica la sessione.":errorMessage(err,"Salvataggio non riuscito"));return null}finally{setBusy(false)}}
- async function submit(){if(media.length===0){setMessage("Prima dell’invio aggiungi almeno una fotografia e seleziona la copertina nel passaggio 4.");setStep(3);return}if(!complete(draft)){setMessage("Prima dell’invio completa interessi, attività e conferma il luogo di svolgimento o partenza sulla mappa. La macroarea sarà classificata da BIMARIS.");return}setBusy(true);setMessage("");try{const id=await saveDraft();if(!id)return;setBusy(true);if(revisionId){const {error}=await supabase.from("experience_revisions").update({status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",revisionId).select("id").single();if(error)throw error;setMessage("Modifiche inviate a BIMARIS per la revisione.");setOpen(false);router.refresh();return}const {error}=await supabase.from("experiences").update({review_status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",id).select("id").single();if(error)throw error;setSaved(true);clearLocal();setMessage("Esperienza inviata a BIMARIS per la revisione.");setOpen(false);router.refresh()}catch(err){setMessage(errorMessage(err,"Invio non riuscito"))}finally{setBusy(false)}}
+ async function submit(){if(media.length===0){setMessage("Prima dell’invio aggiungi almeno una fotografia e seleziona la copertina nel passaggio 4.");setStep(3);return}if(!complete(draft)){setMessage("Prima dell’invio completa interessi, attività e conferma il luogo di svolgimento o partenza sulla mappa. La macroarea sarà classificata da BIMARIS.");return}setBusy(true);setMessage("");try{const id=await saveDraft();if(!id)return;setBusy(true);if(revisionId){const {data:submitted,error}=await supabase.from("experience_revisions").update({status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",revisionId).select("experience_id,status").single();if(error)throw error;if(!submitted||submitted.status!=="pending")throw new Error("Stato della proposta non confermato.");setRevisionStatuses(previous=>({...previous,[submitted.experience_id]:submitted.status}));setMessage("Modifiche inviate a BIMARIS per la revisione.");setOpen(false);router.refresh();return}const {error}=await supabase.from("experiences").update({review_status:"pending",draft_step:5,submitted_at:new Date().toISOString()}).eq("id",id).select("id").single();if(error)throw error;setSaved(true);clearLocal();setMessage("Esperienza inviata a BIMARIS per la revisione.");setOpen(false);router.refresh()}catch(err){setMessage(errorMessage(err,"Invio non riuscito"))}finally{setBusy(false)}}
 
  const canProposeRevision=experiences.some(e=>e.review_status==="approved"&&!revisionStatuses[e.id]);
  const resumeFirst=[...experiences].sort((a,b)=>Number(isResumable(b.id))-Number(isResumable(a.id)));
