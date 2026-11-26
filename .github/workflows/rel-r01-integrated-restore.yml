@@ -263,8 +263,27 @@ jobs:
           PY
           docker cp ordered.list "$source_db:/tmp/rel-r01-ordered.list"
           docker exec "$source_db" pg_restore -U postgres -d postgres --data-only --exit-on-error --single-transaction --no-owner --no-acl --use-list=/tmp/rel-r01-ordered.list /tmp/rel-r01-synthetic.dump
+          echo "PASS ordered pg_restore completed"
           psql_local < manifest.sql > after.tsv
-          cmp -s before.tsv after.tsv
+          python3 - <<'PY'
+          from pathlib import Path
+          def load(filename):
+              rows={}
+              for line in Path(filename).read_text().splitlines():
+                  name,count,digest=line.split("|")
+                  assert name not in rows
+                  rows[name]=(int(count),digest)
+              return rows
+          before,after=load("before.tsv"),load("after.tsv")
+          assert len(before)==58 and set(before)==set(after),"Manifest table scope mismatch"
+          differences=[]
+          for name in sorted(before):
+              if before[name]!=after[name]:
+                  differences.append(name)
+                  print("FAIL fingerprint "+name+" source_count="+str(before[name][0])+" restored_count="+str(after[name][0])+" content_equal="+str(before[name][1]==after[name][1]),flush=True)
+          print("Matching table fingerprints: "+str(58-len(differences))+"/58",flush=True)
+          if differences: raise SystemExit("Restored application fingerprint mismatch")
+          PY
           echo "PASS 58 application table fingerprints"
           psql_local -c "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN ('r','p') AND c.relrowsecurity AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))" | grep -Fxq 58
           echo "PASS RLS enabled on all 58 tables"
