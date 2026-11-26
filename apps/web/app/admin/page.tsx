@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
-import {isReadyExperience} from "./ready-to-publish";
-import {loadReadyEditorial} from "./ready-editorial";
+import { loadPendingPublicationRevisions, loadReadyPublicationCounts } from "./ready-publication-counts";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,21 +13,19 @@ export default async function AdminPage() {
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, approvedEventsRes, allEventsRes, approvedExperiencesRes, readyEditorial] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, allEventsRes, publicationCounts] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experiences").select("id").neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]).eq("published",false),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experience_revisions").select("id,experience_id,experiences!inner(experience_origin)", { count: "exact" }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
+    loadPendingPublicationRevisions(),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
     db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
-    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "verified").eq("published", false),
     db.from("events").select("id", { count: "exact", head: true }),
-    db.from("experiences").select("id,experience_origin,operator:operators!experiences_operator_id_fkey(published)").eq("review_status","approved").eq("published",false),
-    loadReadyEditorial(db),
+    loadReadyPublicationCounts(),
   ]);
 
-  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes,approvedExperiencesRes].some(result => result.error)) {
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,allEventsRes].some(result => result.error)) {
     throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
   }
 
@@ -36,10 +33,8 @@ export default async function AdminPage() {
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
-  const eventsToPublish = approvedEventsRes.count ?? 0;
+  const { eventsToPublish, experiencesToPublish, editorialToPublish, readyToPublish } = publicationCounts;
   const pendingRevisionIds=new Set((revsRes.data??[]).map(revision=>revision.experience_id));
-  const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>isReadyExperience({id:item.id,review_status:"approved",published:false,experience_origin:item.experience_origin,operator:item.operator as {published:boolean}|{published:boolean}[]|null},pendingRevisionIds)).length;
-  const readyToPublish=eventsToPublish+experiencesToPublish+readyEditorial.length;
   const pendingExperiences = (pendingExpsRes.data??[]).filter(item=>!pendingRevisionIds.has(item.id)).length;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
@@ -54,7 +49,7 @@ export default async function AdminPage() {
   ].filter(item => item.count > 0).map(item => `${item.count} ${item.count === 1 ? item.singular : item.plural}`).join(" · ");
   const workItems = [
     {href:"/admin/contenuti",label:"Contenuti da esaminare",description:reviewBreakdown || "Nessuna pratica in attesa",value:pendingApps+pendingOperatorArea+pendingEvents},
-    {href:"/admin/attivita?view=ready",label:"Contenuti pronti da pubblicare",description:readyToPublish>0?`${experiencesToPublish} esperienze · ${eventsToPublish} appuntamenti · ${readyEditorial.length} editoriali`:"Nessun contenuto pronto",value:readyToPublish},
+    {href:"/admin/attivita?view=ready",label:"Contenuti pronti da pubblicare",description:readyToPublish>0?`${experiencesToPublish} esperienze · ${eventsToPublish} appuntamenti · ${editorialToPublish} editoriali`:"Nessun contenuto pronto",value:readyToPublish},
   ];
   const statusItems = [
     { href: "/admin/operatori", label: "Operatori online", value: onlineOperators },

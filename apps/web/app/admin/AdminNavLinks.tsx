@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
-export default function AdminNavLinks({ applicationsPending, operatorExperiencePending }: { applicationsPending: number; operatorExperiencePending: number }) {
+export default function AdminNavLinks({ applicationsPending, operatorExperiencePending, readyToPublish }: { applicationsPending: number; operatorExperiencePending: number; readyToPublish: number }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const publicationContext = pathname === "/admin/attivita" && searchParams.get("view") === "ready";
@@ -13,7 +13,7 @@ export default function AdminNavLinks({ applicationsPending, operatorExperienceP
   const items = [
     { href: "/admin", label: "Dashboard", count: 0 },
     { href: "/admin/contenuti", label: "Da esaminare", count: applicationsPending + operatorExperiencePending },
-    { href: "/admin/attivita?view=ready", label: "Da pubblicare", count: 0 },
+    { href: "/admin/attivita?view=ready", label: "Da pubblicare", count: readyToPublish },
     { href: "/admin/operatori", label: "Operatori", count: 0 },
     { href: "/admin/questionari", label: "Questionari e sondaggi", count: 0 },
   ];
