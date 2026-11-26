@@ -25,7 +25,8 @@ const notices: Record<string, string> = {
   fotolimite:"Una foto di copertina è già in attesa di pubblicazione.",
   foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.",
   "foto-file":"Nessuna fotografia ricevuta. Seleziona nuovamente il file.",
-  "foto-size":"Il file è vuoto oppure supera il limite di 3 MiB.",
+  "foto-size":"La fotografia supera il limite di 3 MiB anche dopo la preparazione.",
+  "foto-empty":"Il file selezionato è vuoto.",
   "foto-alt":"Inserisci la descrizione della fotografia prima di salvarla.",
   "foto-type":"Il formato effettivo della fotografia non corrisponde a JPEG, PNG o WebP.",
   "foto-storage":"Caricamento non riuscito nello spazio immagini. La copertina precedente è invariata.",
@@ -234,7 +235,7 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} unifiedVillageSave={unifiedVillageSave} photoControls={<>
+        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} notices={notices} unifiedVillageSave={unifiedVillageSave} photoControls={<>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">{model === "village" ? "Foto di copertina" : "Foto della bozza"}</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
@@ -251,7 +252,7 @@ export default async function EditorialPage({ searchParams }: {
               {!unifiedVillageSave && hiddenFields}
               <label>File della foto
                 <input name="photo" form={photoFormId} type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required={!unifiedVillageSave} />
-                <small id="editorial-photo-format">JPEG, PNG o WebP, fino a 3 MiB.</small>
+                <small id="editorial-photo-format">JPEG, PNG o WebP. Le immagini grandi vengono compresse automaticamente prima del salvataggio.</small>
               </label>
               <label>Descrizione della foto
                 <input name="alt" form={photoFormId} maxLength={250} defaultValue={unifiedVillageSave ? draftCover?.alt : undefined} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required={!unifiedVillageSave} />

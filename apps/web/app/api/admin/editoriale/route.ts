@@ -48,6 +48,10 @@ export async function POST(request: NextRequest) {
       url.searchParams.set("pubblicazione", "1");
       url.hash = "editorial-publication";
     }
+    if (request.headers.get("accept")?.includes("application/json")) {
+      const ok = state === action;
+      return NextResponse.json({ ok, state, ...(ok ? { redirect: url.pathname + url.search + url.hash } : {}) }, { status: ok ? 200 : state === "conflitto" ? 409 : 422, headers: { "Cache-Control": "no-store" } });
+    }
     return NextResponse.redirect(url, 303);
   };
   if (!["create","save","photo","publish","withdraw","archive","delete"].includes(action)
@@ -118,7 +122,8 @@ export async function POST(request: NextRequest) {
     } else {
     const alt = value("alt", 250);
     if (!(file instanceof File)) return redirect(workspace, "foto-file");
-    if (!file.size || file.size > 3 * 1024 * 1024) return redirect(workspace, "foto-size");
+    if (!file.size) return redirect(workspace, "foto-empty");
+    if (file.size > 3 * 1024 * 1024) return redirect(workspace, "foto-size");
     if (!alt) return redirect(workspace, "foto-alt");
     const bytes = new Uint8Array(await file.arrayBuffer());
     const type = imageMime(bytes);
