@@ -23,7 +23,13 @@ const notices: Record<string, string> = {
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
   fonti:"Controlla il titolo e il link delle fonti inserite.",
   fotolimite:"Una foto di copertina è già in attesa di pubblicazione.",
-  foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.", errore:"Operazione non riuscita.",
+  foto:"Carica un JPEG, PNG o WebP fino a 3 MiB con testo alternativo.",
+  "foto-file":"Nessuna fotografia ricevuta. Seleziona nuovamente il file.",
+  "foto-size":"Il file è vuoto oppure supera il limite di 3 MiB.",
+  "foto-alt":"Inserisci la descrizione della fotografia prima di salvarla.",
+  "foto-type":"Il formato effettivo della fotografia non corrisponde a JPEG, PNG o WebP.",
+  "foto-storage":"Caricamento non riuscito nello spazio immagini. La copertina precedente è invariata.",
+  errore:"Operazione non riuscita.",
 };
 type CatalogRecord = { id: string; title: string; slug: string; published: boolean; excerpt: string | null;
   category?: string | null; primary_historical_period?: Parameters<typeof historicalPeriodLabel>[0];
