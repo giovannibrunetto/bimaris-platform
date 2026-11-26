@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type { createServiceClient } from "@/lib/supabase/server";
 import { getEditorialCover, type EditorialCover, type EditorialModel } from "./editorial-media";
 
@@ -28,7 +28,7 @@ function imageMime(bytes: Buffer) {
   return null;
 }
 
-export async function readEditorialCover(db: Database, form: FormData, model: EditorialModel, workspace: string, version: number, standalone = false):
+export async function readEditorialCover(db: Database, form: FormData, model: EditorialModel, workspace: string, standalone = false):
   Promise<{ error: string } | { cover?: EditorialCover; uploaded?: string }> {
   if (!standalone && !form.has("photo")) return {};
   const read = (name: string, limit: number) => String(form.get(name) ?? "").trim().slice(0, limit);
@@ -38,9 +38,8 @@ export async function readEditorialCover(db: Database, form: FormData, model: Ed
   const selected = file instanceof File && Boolean(file.name || file.size);
   if (!selected && !standalone) {
     const { data, error } = await db.from("editorial_workspaces")
-      .select("draft,entry_id,version").eq("model", model).eq("id", workspace).maybeSingle();
+      .select("draft,entry_id").eq("model", model).eq("id", workspace).maybeSingle();
     if (error || !data) return { error: "errore" };
-    if (data.version !== version) return { error: "conflitto" };
     let current: EditorialCover | null = data.draft?.cover;
     try {
       if (!current) {
@@ -75,9 +74,17 @@ export async function readEditorialCover(db: Database, form: FormData, model: Ed
   return { cover: { id: uploaded, ...credits }, uploaded };
 }
 
+export async function editorialSaveDigest(form: FormData) {
+  const entries = await Promise.all([...form].map(async ([field, value]) => [
+    field,
+    typeof value === "string" ? value : { bytes: createHash("sha256").update(Buffer.from(await value.arrayBuffer())).digest("hex") },
+  ]));
+  return createHash("sha256").update(JSON.stringify(entries)).digest("hex");
+}
+
 export async function discardRejectedEditorialUpload(db: Database, uploaded: string | undefined, code: string) {
-  // Remove only uploads rejected by Postgres. A network failure can hide a successful commit.
-  if (uploaded && /^(?:P000[12]|2[2345][0-9A-Z]{3})$/.test(code)) {
+  // A rejected or replayed write cannot reference this upload. A network failure can hide a successful commit.
+  if (uploaded && (code === "replayed" || /^(?:P000[12]|2[2345][0-9A-Z]{3})$/.test(code))) {
     const { error } = await db.storage.from("editorial-media").remove([uploaded]);
     if (error) console.error("Editorial photo cleanup failed", error.name);
   }

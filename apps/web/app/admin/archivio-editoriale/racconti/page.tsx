@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
@@ -137,7 +138,7 @@ export default async function HistoricalEditorialPage({ searchParams }: {
           key: record?.slug ?? active.id, title: draft?.title || "Racconto senza titolo", subtitle: draft?.subtitle ?? "",
           cover: draft?.cover, sources: draft?.sources, theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],
         }} />
-      </> : <EditorialDraftForm key={`${active.id}:${active.version}`} action={api} formId="historical-text-form"
+      </> : <EditorialDraftForm saveRequest={randomUUID()} key={`${active.id}:${active.version}`} action={api} formId="historical-text-form"
         saveId="historical-save" notices={notices} message={savedOrError ? (query.esito === "save" && savedLabel ? `Bozza salvata · ${savedLabel}` : notice) : savedLabel ? `Ultimo salvataggio · ${savedLabel}` : undefined}
         saved={Boolean(success || !savedOrError && savedLabel)}
         photoControls={<EditorialPhotoFields form="historical-text-form" cover={draft?.cover} />}

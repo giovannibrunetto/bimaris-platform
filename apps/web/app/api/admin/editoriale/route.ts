@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
-import { discardRejectedEditorialUpload, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
+import { discardRejectedEditorialUpload, editorialSaveDigest, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
 import { createServiceClient } from "@/lib/supabase/server";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
@@ -22,9 +22,12 @@ export async function POST(request: NextRequest) {
   const workspace = value("workspace", 36);
   const entry = value("entry", 36);
   const version = Number(form.get("version"));
-  const redirect = (id: string, state: string) => {
+  const requestId = form.get("saveRequest");
+  const saveRequest = typeof requestId === "string" && uuid.test(requestId) ? requestId : null;
+  const redirect = (id: string, state: string, savedVersion?: number) => {
     const url = new URL(base, request.url);
     if (model !== "culture") url.searchParams.set("sezione", model);
+    if (savedVersion !== undefined) url.searchParams.set("versione", String(savedVersion));
     if (uuid.test(id)) url.searchParams.set("id", id);
     url.searchParams.set("esito", state);
     if (state === "delete") url.searchParams.set("stato", "Archiviata");
@@ -81,14 +84,20 @@ export async function POST(request: NextRequest) {
     const slug = String(data.draft.title ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     payload = { slug: `${slug || "cultura"}-${workspace.slice(0,8)}` };
   }
+  const saveDigest = action === "save" && saveRequest ? await editorialSaveDigest(form) : null;
   const media = action === "photo" || action === "save"
-    ? await readEditorialCover(db, form, model, workspace, version, action === "photo") : {};
+    ? await readEditorialCover(db, form, model, workspace, action === "photo") : {};
   if ("error" in media) return redirect(workspace, media.error);
   if (media.cover) {
     const gallery = model === "culture" && media.uploaded && form.get("photoPlacement") === "gallery";
     payload = action === "photo" ? media.cover : { ...payload, [gallery ? "galleryPhoto" : "cover"]: media.cover };
   }
-  const { data, error } = action === "publish"
+  const { data, error } = action === "save"
+    ? await db.rpc("save_editorial_draft", {
+      p_model: model, p_actor: admin.userId, p_workspace: workspace, p_version: version,
+      p_request: saveRequest, p_digest: saveDigest, p_data: payload,
+    })
+    : action === "publish"
     ? await db.rpc("publish_editorial_with_sources", { p_model: model, p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload })
     : await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
     ...(model === "culture" ? {} : { p_model: model }),
@@ -98,6 +107,10 @@ export async function POST(request: NextRequest) {
     await discardRejectedEditorialUpload(db, media.uploaded, error.code);
     console.error("Editorial operation failed", error.code, error.message);
     return redirect(workspace, error.message.includes("invalid-sources") ? "fonti" : error.message.includes("photo-limit") ? "fotolimite" : error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
+  }
+  if (action === "save") {
+    if (data.replayed) await discardRejectedEditorialUpload(db, media.uploaded, "replayed");
+    return redirect(workspace, action, data.version);
   }
   return redirect(action === "delete" ? "" : String(data), action);
 }

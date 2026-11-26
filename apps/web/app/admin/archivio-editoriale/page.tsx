@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
@@ -19,7 +20,7 @@ const api = "/api/admin/editoriale";
 const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
-  conflitto:"La scheda è cambiata. È stata ricaricata la versione corrente: controlla l’anteprima prima di riprovare.",
+  conflitto:"La scheda è cambiata. Apri la versione corrente in un’altra scheda e confronta le modifiche prima di riprovare.",
   campi:"Controlla i campi richiesti prima di pubblicare. Per un nuovo monumento serve anche la posizione.", dati:"Controlla i dati inseriti.",
   delete:"Scheda cancellata dall’archivio.",
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
@@ -229,7 +230,7 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} notices={notices} photoControls={<>
+        <EditorialDraftForm saveRequest={randomUUID()} key={`${workspace.id}:${workspace.version}`} notices={notices} photoControls={<>
           <EditorialPhotoFields form="editorial-text-form" cover={cover} gallery={model === "culture"} />
           {model === "culture" && photos.length > 0 && <div className="editorial-photo-list">
             {photos.filter(photo => photo.id !== cover?.id).map(photo => <figure key={photo.id}>

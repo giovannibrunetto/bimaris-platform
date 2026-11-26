@@ -4,8 +4,9 @@ import CultureMonumentCard, { type CultureCardData } from "@/components/CultureM
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
 import { prepareEditorialPhoto } from "./prepareEditorialPhoto";
 
-export default function EditorialDraftForm({ action, message, saved, card, publicExcerpt, photoControls, publicationControls, children, notices, formId = "editorial-text-form", saveId = "editorial-save" }: {
+export default function EditorialDraftForm({ action, saveRequest, message, saved, card, publicExcerpt, photoControls, publicationControls, children, notices, formId = "editorial-text-form", saveId = "editorial-save" }: {
   action: string;
+  saveRequest: string;
   message?: string;
   saved: boolean;
   card?: CultureCardData;
@@ -21,6 +22,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   const [excerpt, setExcerpt] = useState(card?.excerpt ?? "");
   const [saving, setSaving] = useState(false);
   const inFlight = useRef(false);
+  const navigatingAfterSave = useRef(false);
   const [saveError, setSaveError] = useState("");
   const [dirty, setDirty] = useState(false);
   const [blocked, setBlocked] = useState(false);
@@ -60,6 +62,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       }
       const destination = new URL(result.redirect, window.location.origin);
       if (destination.origin !== window.location.origin || destination.pathname !== action.replace(/^\/api/, "")) throw new Error("Salvataggio non confermato. Verifica lo stato della scheda prima di riprovare.");
+      navigatingAfterSave.current = true;
       window.location.assign(destination.href);
       return;
     } catch (error) {
@@ -77,7 +80,9 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   }
   useEffect(() => {
     if (draftForm.current) initialFields.current = fingerprint(draftForm.current);
-    const reset = () => { setSaving(false); inFlight.current = false; };
+    const reset = (event: PageTransitionEvent) => {
+      if (event.persisted && navigatingAfterSave.current) window.location.reload();
+    };
     window.addEventListener("pageshow", reset);
     return () => window.removeEventListener("pageshow", reset);
   }, []);
@@ -94,6 +99,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     }
   }} onSubmit={submitPreservingFields}>
     <input type="hidden" name="action" value="save" />
+    <input type="hidden" name="saveRequest" value={saveRequest} />
       <div className="editorial-writing-fields">
         <h2>Contenuto della scheda</h2>
         {children}

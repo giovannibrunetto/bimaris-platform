@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
-import { discardRejectedEditorialUpload, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
+import { discardRejectedEditorialUpload, editorialSaveDigest, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
 import { createServiceClient } from "@/lib/supabase/server";
 
 const base = "/admin/archivio-editoriale/racconti";
@@ -21,8 +21,11 @@ export async function POST(request: NextRequest) {
   const workspace = field("workspace");
   const entry = field("entry");
   const version = Number(form.get("version"));
-  const redirect = (id: string, notice: string) => {
+  const requestId = form.get("saveRequest");
+  const saveRequest = typeof requestId === "string" && uuid.test(requestId) ? requestId : null;
+  const redirect = (id: string, notice: string, savedVersion?: number) => {
     const url = new URL(base, request.url);
+    if (savedVersion !== undefined) url.searchParams.set("versione", String(savedVersion));
     if (uuid.test(id)) url.searchParams.set("id", id);
     url.searchParams.set("esito", notice);
     if (action !== "create") url.hash = action === "save" ? "historical-save" : "historical-publication";
@@ -64,10 +67,16 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, "-").slice(0, 90).replace(/^-|-$/g, "");
     payload = { slug: `${name || "racconto"}-${workspace.slice(0, 8)}` };
   }
-  const media = action === "save" ? await readEditorialCover(db, form, "historical", workspace, version) : {};
+  const saveDigest = action === "save" && saveRequest ? await editorialSaveDigest(form) : null;
+  const media = action === "save" ? await readEditorialCover(db, form, "historical", workspace) : {};
   if ("error" in media) return redirect(workspace, media.error);
   if (media.cover) payload.cover = media.cover;
-  const { data, error } = await db.rpc("manage_historical_editorial", {
+  const { data, error } = action === "save"
+    ? await db.rpc("save_editorial_draft", {
+      p_model: "historical", p_actor: admin.userId, p_workspace: workspace, p_version: version,
+      p_request: saveRequest, p_digest: saveDigest, p_data: payload,
+    })
+    : await db.rpc("manage_historical_editorial", {
     p_action: action, p_actor: admin.userId, p_workspace: workspace || null,
     p_entry: entry || null, p_version: version, p_data: payload,
   });
@@ -79,6 +88,10 @@ export async function POST(request: NextRequest) {
     };
     console.error("Historical editorial operation failed", error.code, error.message);
     return redirect(workspace, known[error.message] ?? "errore");
+  }
+  if (action === "save") {
+    if (data.replayed) await discardRejectedEditorialUpload(db, media.uploaded, "replayed");
+    return redirect(workspace, action, data.version);
   }
   return redirect(String(data), action);
 }
