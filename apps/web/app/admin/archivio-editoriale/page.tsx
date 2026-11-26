@@ -234,7 +234,7 @@ export default async function EditorialPage({ searchParams }: {
               <img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} />
               <figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption>
             </figure>)}
-          </div> : model === "village" && cardImage ? <figure><img src={card.imageUrl} alt={card.imageAlt ?? card.title} /><figcaption>Foto attualmente pubblicata</figcaption></figure> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
+          </div> : model === "village" && cardImage ? <figure><img src={card.imageUrl ?? undefined} alt={card.imageAlt ?? card.title} /><figcaption>Foto attualmente pubblicata</figcaption></figure> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
           <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
             <summary>{model === "village" ? (draftCover || cardImage ? "Sostituisci foto" : "Inserisci foto copertina") : "Aggiungi una foto"}</summary>
             <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
