@@ -102,16 +102,18 @@ export async function POST(request: NextRequest) {
   if (action === "photo") {
     const file = form.get("photo");
     const alt = value("alt", 250);
-    if (!(file instanceof File) || !file.size || file.size > 3 * 1024 * 1024 || !alt) return redirect(workspace, "foto");
+    if (!(file instanceof File)) return redirect(workspace, "foto-file");
+    if (!file.size || file.size > 3 * 1024 * 1024) return redirect(workspace, "foto-size");
+    if (!alt) return redirect(workspace, "foto-alt");
     const bytes = new Uint8Array(await file.arrayBuffer());
     const type = imageMime(bytes);
-    if (!type || type !== file.type) return redirect(workspace, "foto");
+    if (!type || type !== file.type) return redirect(workspace, "foto-type");
     const source = value("source", 500);
     const licenseUrl = value("licenseUrl", 500);
     if ([source, licenseUrl].some(url => { if (!url) return false; try { return !["http:", "https:"].includes(new URL(url).protocol); } catch { return true; } })) return redirect(workspace, "dati");
     uploaded = randomUUID();
     const { error } = await db.storage.from("editorial-media").upload(uploaded, bytes, { contentType: type });
-    if (error) return redirect(workspace, "errore");
+    if (error) { console.error("Editorial photo storage upload failed", error.name); return redirect(workspace, "foto-storage"); }
     payload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
   }
   const { data, error } = action === "publish"
