@@ -1,10 +1,6 @@
-.story-detail-figure--contain{
-  background:linear-gradient(135deg,#8d7354,#4f3b28);
-}
-
-.story-detail-figure--contain img{
-  box-sizing:border-box;
-  padding:10px;
+.story-detail-figure.story-detail-figure--contain img{
+  height:auto!important;
+  max-height:none;
 }
 
 .story-detail-figure--contain figcaption{
@@ -57,11 +53,6 @@
   .story-detail-figure img{
     height:220px!important;
     max-width:100%;
-  }
-
-  .story-detail-figure.story-detail-figure--contain img{
-    height:auto!important;
-    padding:0;
   }
 
   .story-detail-actions{
