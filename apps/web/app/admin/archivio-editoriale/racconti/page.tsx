@@ -1,3 +1,4 @@
+import { editorialRoutes } from "@/lib/editorial-routes";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -18,9 +19,9 @@ import "./racconti.css";
 
 export const dynamic = "force-dynamic";
 
-const archive = "/admin/archivio-editoriale";
-const base = `${archive}/racconti`;
-const api = "/api/admin/editoriale/racconti";
+const archive = editorialRoutes.catalog.page;
+const base = editorialRoutes.historical.page;
+const api = editorialRoutes.historical.api;
 const publicBase = "/ti-racconto-la-storia-di-messina";
 const notices: Record<string, string> = {
   create: "Bozza aperta.", save: "Bozza salvata.", publish: "Racconto pubblicato.",

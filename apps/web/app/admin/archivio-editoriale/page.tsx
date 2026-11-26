@@ -1,3 +1,4 @@
+import { editorialRoutes } from "@/lib/editorial-routes";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -15,8 +16,8 @@ import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
 export const dynamic = "force-dynamic";
-const archive = "/admin/archivio-editoriale";
-const api = "/api/admin/editoriale";
+const archive = editorialRoutes.catalog.page;
+const api = editorialRoutes.catalog.api;
 const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",

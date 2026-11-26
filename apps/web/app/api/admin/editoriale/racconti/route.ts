@@ -1,10 +1,11 @@
+import { editorialRoutes } from "@/lib/editorial-routes";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import { discardRejectedEditorialUpload, editorialSaveDigest, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
 import { createServiceClient } from "@/lib/supabase/server";
 
-const base = "/admin/archivio-editoriale/racconti";
+const base = editorialRoutes.historical.page;
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const paragraphs = (value: string) => value.split(/\r?\n(?:[ \t]*\r?\n)*/).map(line => line.trim()).filter(Boolean);
 

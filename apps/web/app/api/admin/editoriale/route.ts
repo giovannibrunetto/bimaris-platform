@@ -1,3 +1,4 @@
+import { editorialRoutes } from "@/lib/editorial-routes";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
@@ -5,7 +6,7 @@ import { discardRejectedEditorialUpload, editorialSaveDigest, editorialSources, 
 import { createServiceClient } from "@/lib/supabase/server";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
-const base = "/admin/archivio-editoriale";
+const base = editorialRoutes.catalog.page;
 
 export async function POST(request: NextRequest) {
   const rejected = rejectCrossSiteAdminMutation(request);

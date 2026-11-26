@@ -2,6 +2,7 @@
 
 import CultureMonumentCard, { type CultureCardData } from "@/components/CultureMonumentCard";
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
+import { editorialConfirmationDestination } from "@/lib/editorial-routes";
 import { prepareEditorialPhoto } from "./prepareEditorialPhoto";
 
 export default function EditorialDraftForm({ action, saveRequest, message, saved, card, publicExcerpt, photoControls, publicationControls, children, notices, formId = "editorial-text-form", saveId = "editorial-save" }: {
@@ -60,8 +61,11 @@ export default function EditorialDraftForm({ action, saveRequest, message, saved
         const explanation = response.status === 403 ? "Sessione o autorizzazione non valida. Non chiudere questa pagina." : response.status === 413 ? "La richiesta è troppo grande." : notices[result?.state] || "Il salvataggio non è stato confermato.";
         throw new Error(explanation);
       }
-      const destination = new URL(result.redirect, window.location.origin);
-      if (destination.origin !== window.location.origin || destination.pathname !== action.replace(/^\/api/, "")) throw new Error("Salvataggio non confermato. Verifica lo stato della scheda prima di riprovare.");
+      const destination = editorialConfirmationDestination(action, result.redirect, window.location.origin);
+      if (!destination) {
+        setSaveError("Operazione confermata. Riapri la scheda dall’Archivio editoriale.");
+        return;
+      }
       navigatingAfterSave.current = true;
       window.location.assign(destination.href);
       return;
