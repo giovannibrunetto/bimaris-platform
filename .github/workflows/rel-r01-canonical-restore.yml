@@ -152,13 +152,54 @@ jobs:
           psql_local -c "TRUNCATE TABLE $list CASCADE"
           psql_local < synthetic-ids.sql
           docker cp recovered.dump "$source_db:/tmp/rel-r01-synthetic.dump"
-          docker exec "$source_db" pg_restore -U postgres -d postgres --data-only --disable-triggers --exit-on-error --single-transaction --no-owner --no-acl /tmp/rel-r01-synthetic.dump
+          # Order COPY operations by actual foreign-key dependencies. Keep all triggers active.
+          psql_local -F '|' -c "SELECT ns.nspname||'.'||s.relname,np.nspname||'.'||p.relname FROM pg_constraint k JOIN pg_class s ON s.oid=k.conrelid JOIN pg_namespace ns ON ns.oid=s.relnamespace JOIN pg_class p ON p.oid=k.confrelid JOIN pg_namespace np ON np.oid=p.relnamespace WHERE k.contype='f' AND k.conrelid<>k.confrelid ORDER BY 1,2" > dependencies.tsv
+          docker exec "$source_db" pg_restore -l /tmp/rel-r01-synthetic.dump > archive.list
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          counts={}
+          for line in Path("before.tsv").read_text().splitlines():
+              name,count,_=line.split("|")
+              counts[name]=int(count)
+          assert len(counts)==58
+          entries={}
+          remaining=[]
+          for line in Path("archive.list").read_text().splitlines():
+              m=re.match(r"^\d+;\s+\d+\s+\d+\s+TABLE DATA\s+(\S+)\s+(\S+)\s+",line)
+              if m:
+                  name=m[1]+"."+m[2]
+                  assert name in counts and name not in entries, name
+                  entries[name]=line
+              elif line and not line.startswith(";"):
+                  remaining.append(line)
+          assert set(entries)==set(counts),"Archive scope mismatch"
+          deps={n:set() for n in counts}
+          for line in Path("dependencies.tsv").read_text().splitlines():
+              child,parent=line.split("|")
+              if child in deps and parent in deps and counts[child] and counts[parent]:
+                  deps[child].add(parent)
+          order=[]
+          while deps:
+              ready=sorted(n for n,parents in deps.items() if not parents)
+              if not ready:
+                  raise SystemExit("Nonempty FK cycle requires a dedicated restore strategy: "+", ".join(sorted(deps)))
+              for n in ready:
+                  order.append(n)
+                  del deps[n]
+              for parents in deps.values():
+                  parents.difference_update(ready)
+          Path("ordered.list").write_text("\n".join([entries[n] for n in order]+remaining)+"\n")
+          print("PASS dependency-ordered archive scope (58 tables)")
+          PY
+          docker cp ordered.list "$source_db:/tmp/rel-r01-ordered.list"
+          docker exec "$source_db" pg_restore -U postgres -d postgres --data-only --exit-on-error --single-transaction --no-owner --no-acl --use-list=/tmp/rel-r01-ordered.list /tmp/rel-r01-synthetic.dump
           psql_local < manifest.sql > after.tsv
           cmp -s before.tsv after.tsv
           echo "PASS 58 application table fingerprints"
           psql_local -c "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN ('r','p') AND c.relrowsecurity AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))" | grep -Fxq 58
           echo "PASS RLS enabled on all 58 tables"
-          # pg_restore disables triggers locally; independently verify every FK in scope.
+          # Independently verify every FK in scope after restore with triggers enabled.
           python3 - <<'PY'
           from pathlib import Path
           Path("fk-check.sql").write_text("""DO $check$
