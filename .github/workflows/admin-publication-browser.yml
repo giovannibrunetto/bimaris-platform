@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: |
           npm install --prefix "$RUNNER_TEMP/admin-browser" --no-audit --no-fund playwright@1.58.2 esbuild@0.27.3
           "$RUNNER_TEMP/admin-browser/node_modules/.bin/playwright" install --with-deps chromium

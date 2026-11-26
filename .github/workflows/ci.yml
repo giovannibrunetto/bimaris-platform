@@ -14,7 +14,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --no-frozen-lockfile
+      - name: Audit production dependencies
+        run: pnpm audit --prod
+      - name: Audit development dependencies
+        run: pnpm audit --dev
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @bimaris/web lint
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
