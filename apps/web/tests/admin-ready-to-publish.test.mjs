@@ -21,6 +21,24 @@ test("ready to publish filter includes both experience and appointment sections"
  assert.match(registry,/const experiences = readyOnly \? readyExperiences/);
  assert.match(registry,/\(readyOnly\|\|selected!=="appuntamenti"\)/);
  assert.match(registry,/\(readyOnly\|\|selected!=="esperienze"\)/);
- assert.match(registry,/Da pubblicare \(\{readyExperiences\.length\+countReadyAppointments\}\)/);
+ assert.match(registry,/Da pubblicare \(\{readyTotal\}\)/);
  assert.match(registry,/Vai alla pubblicazione/);
+});
+
+test("editorial queue shares loader, preserves separate publication and title",()=>{
+ const dash=read("../app/admin/page.tsx");
+ const registry=read("../app/admin/attivita/page.tsx");
+ const helper=read("../app/admin/ready-editorial.ts");
+ assert.match(dash,/loadReadyEditorial\(db\)/);
+ assert.match(registry,/loadReadyEditorial\(db\)/);
+ assert.match(dash,/eventsToPublish\+experiencesToPublish\+readyEditorial.length/);
+ assert.match(registry,/readyExperiences.length\+countReadyAppointments\+readyEditorial.length/);
+ assert.match(registry,/title=\{readyOnly\?"Contenuti pronti da pubblicare":"Esperienze e appuntamenti"\}/);
+ assert.match(registry,/readyOnly&&<section[^>]+aria-labelledby="registry-editorial"/);
+ assert.match(helper,/workspace_id.*version.*action/);
+ assert.match(helper,/\["save","photo"\].includes/);
+ assert.match(helper,/w.archived/);
+ assert.match(helper,/deletedAt/);
+ assert.match(helper,/COLLAUDO/);
+ assert.doesNotMatch(helper,/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
 });

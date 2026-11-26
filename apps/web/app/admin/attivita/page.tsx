@@ -5,6 +5,7 @@ import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "../eventi/admin-events.css";
 import {isReadyExperience,isReadyAppointment} from "../ready-to-publish";
+import {loadReadyEditorial} from "../ready-editorial";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -24,10 +25,11 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   const readyOnly=view==="ready";
   const db=createServiceClient();
   if(!db) throw new Error("Supabase non configurato");
-  const [experiencesResult,appointmentsResult,revisionsResult]=await Promise.all([
+  const [experiencesResult,appointmentsResult,revisionsResult,readyEditorial]=await Promise.all([
     db.from("experiences").select("id,name,review_status,published,experience_origin,operator:operators!experiences_operator_id_fkey(published)").order("created_at",{ascending:false}),
     db.from("events").select("id,title,starts_at,published,verification_status,source_type").order("starts_at",{ascending:false}),
     db.from("experience_revisions").select("experience_id,experiences!inner(experience_origin)").eq("status","pending").neq("experiences.experience_origin","bimaris"),
+    loadReadyEditorial(db),
   ]);
   if(experiencesResult.error||appointmentsResult.error||revisionsResult.error) throw new Error("Impossibile caricare il registro delle attività");
   const allExperiences=(experiencesResult.data??[]) as Experience[];
@@ -45,23 +47,24 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
   const countOnlineExperiences=registryExperiences.filter(v=>v.published).length;
   const countPublishedAppointments=registryAppointments.filter(v=>v.published).length;
   const countReadyAppointments=allAppointments.filter(isReadyAppointment).length;
+  const readyTotal=readyExperiences.length+countReadyAppointments+readyEditorial.length;
   return <div className="admin-events">
     <AdminSectionHeader
-      title="Esperienze e appuntamenti"
-      description="Consulta le attività nel registro. Le proposte e le modifiche in attesa si trovano in Da esaminare."
+      title={readyOnly?"Contenuti pronti da pubblicare":"Esperienze e appuntamenti"}
+      description={readyOnly?"Consulta esperienze approvate, appuntamenti verificati e modifiche editoriali salvate. Apri la scheda per confermare la pubblicazione.":"Consulta le attività nel registro. Le proposte e le modifiche in attesa si trovano in Da esaminare."}
       actions={<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href={acquiredOnly ? "/admin/contenuti?categoria=appuntamenti" : "/admin/contenuti"}>Da esaminare →</Link></>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
       <div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{registryExperiences.length}</strong><span>Esperienze nel registro</span><small>{countOnlineExperiences} online</small></div>
         <div><strong>{acquiredOnly ? allAppointments.length : registryAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
-        <div><strong>{readyExperiences.length+countReadyAppointments}</strong><span>Attività pronte da pubblicare</span><small>{readyExperiences.length} esperienze · {countReadyAppointments} appuntamenti</small></div>
+        <div><strong>{readyTotal}</strong><span>Contenuti pronti da pubblicare</span><small>{readyExperiences.length} esperienze · {countReadyAppointments} appuntamenti · {readyEditorial.length} editoriali</small></div>
       </div>
       <nav className="admin-events__filters" aria-label="Filtra il registro">
         <Link href="/admin/attivita" aria-current={!readyOnly&&selected==="tutti"?"page":undefined}>Tutti</Link>
         <Link href="/admin/attivita?tipo=esperienze" aria-current={!readyOnly&&selected==="esperienze"?"page":undefined}>Esperienze</Link>
         <Link href={acquiredOnly ? "/admin/attivita?view=acquisiti" : "/admin/attivita?tipo=appuntamenti"} aria-current={!readyOnly&&selected==="appuntamenti"?"page":undefined}>{acquiredOnly ? "Tutti gli appuntamenti acquisiti" : "Appuntamenti"}</Link>
-        <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({readyExperiences.length+countReadyAppointments})</Link>
+        <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({readyTotal})</Link>
       </nav>
       {(readyOnly||selected!=="appuntamenti")&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
         <h2 id="registry-experiences">Esperienze <small>{experiences.length}</small></h2>
@@ -91,7 +94,14 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
           </Link>}
         </article>)}{appointments.length===0&&<div className="admin-events__empty">Nessun appuntamento per questo filtro.</div>}</div>
       </section>}
-      <p className="admin-events__hint">Registro di consultazione: esperienze e appuntamenti sono presentati insieme, ma restano salvati nei rispettivi archivi fino alla validazione tecnica dell'integrazione MAI.</p>
+      {readyOnly&&<section className="admin-events__queue-group" aria-labelledby="registry-editorial">
+        <h2 id="registry-editorial">Archivio editoriale <small>{readyEditorial.length}</small></h2>
+        <div className="admin-events__list">{readyEditorial.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
+          <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.category} · {item.reason}</span><h3>{item.title}</h3></div>
+          <Link className="admin-events__examine" href={item.href}>Vai alla pubblicazione →</Link>
+        </article>)}{!readyEditorial.length&&<div className="admin-events__empty">Nessuna modifica editoriale in attesa di pubblicazione.</div>}</div>
+      </section>}
+      <p className="admin-events__hint">{readyOnly?"Le pubblicazioni restano distinte nei rispettivi archivi. Nessun contenuto viene pubblicato automaticamente.":"Registro di consultazione: esperienze e appuntamenti restano salvati nei rispettivi archivi."}</p>
     </div></section>
   </div>;
 }
