@@ -1,19 +1,11 @@
-import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
+import { discardRejectedEditorialUpload, editorialSources, readEditorialCover } from "@/lib/editorial-draft-input";
 import { createServiceClient } from "@/lib/supabase/server";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const base = "/admin/archivio-editoriale";
-
-function imageMime(bytes: Uint8Array) {
-  const data = Buffer.from(bytes);
-  if (data.subarray(0, 3).equals(Buffer.from([255,216,255]))) return "image/jpeg";
-  if (data.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) return "image/png";
-  if (data.toString("ascii", 0, 4) === "RIFF" && data.toString("ascii", 8, 12) === "WEBP") return "image/webp";
-  return null;
-}
 
 export async function POST(request: NextRequest) {
   const rejected = rejectCrossSiteAdminMutation(request);
@@ -55,29 +47,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(url, 303);
   };
   if (!["create","save","photo","publish","withdraw","archive","delete"].includes(action)
-    || (action !== "create" && (!uuid.test(workspace) || !Number.isSafeInteger(version) || version < 0))
+    || (action !== "create" && (!uuid.test(workspace) || !/^\d+$/.test(value("version", 16)) || !Number.isSafeInteger(version) || version > 2147483647))
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
   let payload: Record<string, unknown> = {};
-  let uploaded: string | null = null;
-  let unifiedCover: Record<string, unknown> | null = null;
-  const unifiedVillageSave = model === "village" && action === "save" && form.has("photo") && process.env.BIMARIS_VILLAGE_UNIFIED_SAVE === "1" && process.env.VERCEL_ENV !== "production";
   if (action === "save") {
-    if (form.get("sourcesEdited") === "1") {
-      const columns = ["sourceLabel", "sourceLink", "sourceType", "sourceNote"].map(field => form.getAll(field).map(item => String(item).trim()));
-      const [labels, urls, types, notes] = columns;
-      if (labels.length > 24 || columns.some(column => column.length !== labels.length)) return redirect(workspace, "fonti");
-      const sources = labels.map((label, index) => ({ label, url: urls[index], source_type: types[index], note: notes[index] }));
-      for (const source of sources) {
-        if (!source.label || source.label.length > 400 || source.url.length > 1000 || source.note.length > 1200) return redirect(workspace, "fonti");
-        if (!source.url) continue;
-        try {
-          if (!["https:", "http:"].includes(new URL(source.url).protocol)) return redirect(workspace, "fonti");
-        } catch {
-          return redirect(workspace, "fonti");
-        }
-      }
-      payload.sources = sources;
-    }
+    const sources = editorialSources(form);
+    if (!sources) return redirect(workspace, "fonti");
+    payload = sources;
     const category = value("category", 16);
     if (model === "legend" && category && category !== "Mito" && category !== "Leggenda") return redirect(workspace, "dati");
     const lat = value("latitude", 32).replace(",", ".");
@@ -105,51 +81,21 @@ export async function POST(request: NextRequest) {
     const slug = String(data.draft.title ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     payload = { slug: `${slug || "cultura"}-${workspace.slice(0,8)}` };
   }
-  if (action === "photo" || unifiedVillageSave) {
-    const file = form.get("photo");
-    const hasNewFile = file instanceof File && file.size > 0;
-    if (unifiedVillageSave && !hasNewFile) {
-      const { data: current, error: currentError } = await db.from("editorial_workspaces").select("draft,version").eq("id", workspace).eq("model", "village").maybeSingle();
-      if (currentError || !current) return redirect(workspace, "errore");
-      if (current.version !== version) return redirect(workspace, "conflitto");
-      const pending = current.draft?.photos?.[0];
-      const credits = { alt: value("alt", 250), author: value("author", 180), source: value("source", 500), license: value("license", 180), licenseUrl: value("licenseUrl", 500) };
-      if (pending && Object.entries(credits).some(([key, val]) => val !== String(pending[key] ?? ""))) {
-        if (!credits.alt) return redirect(workspace, "foto-alt");
-        if ([credits.source, credits.licenseUrl].some(url => { if (!url) return false; try { return !["http:", "https:"].includes(new URL(url).protocol); } catch { return true; } })) return redirect(workspace, "dati");
-        unifiedCover = { id: pending.id, ...credits };
-      } else if (!pending && Object.values(credits).some(Boolean)) return redirect(workspace, "foto-file");
-    } else {
-    const alt = value("alt", 250);
-    if (!(file instanceof File)) return redirect(workspace, "foto-file");
-    if (!file.size) return redirect(workspace, "foto-empty");
-    if (file.size > 3 * 1024 * 1024) return redirect(workspace, "foto-size");
-    if (!alt) return redirect(workspace, "foto-alt");
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const type = imageMime(bytes);
-    // Trust the supported binary signature, not the browser-supplied MIME label.
-    if (!type) return redirect(workspace, "foto-type");
-    const source = value("source", 500);
-    const licenseUrl = value("licenseUrl", 500);
-    if ([source, licenseUrl].some(url => { if (!url) return false; try { return !["http:", "https:"].includes(new URL(url).protocol); } catch { return true; } })) return redirect(workspace, "dati");
-    uploaded = randomUUID();
-    const { error } = await db.storage.from("editorial-media").upload(uploaded, bytes, { contentType: type });
-    if (error) { console.error("Editorial photo storage upload failed", error.name); return redirect(workspace, "foto-storage"); }
-    const coverPayload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
-    if (unifiedVillageSave) unifiedCover = coverPayload;
-    else payload = coverPayload;
-    }
+  const media = action === "photo" || action === "save"
+    ? await readEditorialCover(db, form, model, workspace, version, action === "photo") : {};
+  if ("error" in media) return redirect(workspace, media.error);
+  if (media.cover) {
+    const gallery = model === "culture" && media.uploaded && form.get("photoPlacement") === "gallery";
+    payload = action === "photo" ? media.cover : { ...payload, [gallery ? "galleryPhoto" : "cover"]: media.cover };
   }
-  const { data, error } = unifiedVillageSave
-    ? await db.rpc("save_village_editorial", { p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload, p_cover: unifiedCover })
-    : action === "publish"
+  const { data, error } = action === "publish"
     ? await db.rpc("publish_editorial_with_sources", { p_model: model, p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload })
     : await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
     ...(model === "culture" ? {} : { p_model: model }),
     p_action: action, p_actor: admin.userId, p_workspace: workspace || null, p_entry: entry || null, p_version: version, p_data: payload,
   });
   if (error) {
-    if (uploaded) await db.storage.from("editorial-media").remove([uploaded]);
+    await discardRejectedEditorialUpload(db, media.uploaded, error.code);
     console.error("Editorial operation failed", error.code, error.message);
     return redirect(workspace, error.message.includes("invalid-sources") ? "fonti" : error.message.includes("photo-limit") ? "fotolimite" : error.message.includes("conflict") ? "conflitto" : error.message.includes("fields-required") ? "campi" : "errore");
   }

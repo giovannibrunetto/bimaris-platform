@@ -4,29 +4,31 @@ import CultureMonumentCard, { type CultureCardData } from "@/components/CultureM
 import { useEffect, useRef, useState, type ReactNode, type FormEvent } from "react";
 import { prepareEditorialPhoto } from "./prepareEditorialPhoto";
 
-export default function EditorialDraftForm({ action, message, saved, card, publicExcerpt, photoControls, publicationControls, children, notices, unifiedVillageSave = false }: {
+export default function EditorialDraftForm({ action, message, saved, card, publicExcerpt, photoControls, publicationControls, children, notices, formId = "editorial-text-form", saveId = "editorial-save" }: {
   action: string;
   message?: string;
   saved: boolean;
-  card: CultureCardData;
-  publicExcerpt: boolean;
+  card?: CultureCardData;
+  publicExcerpt?: boolean;
   notices: Record<string, string>;
-  unifiedVillageSave?: boolean;
+  formId?: string;
+  saveId?: string;
   children: ReactNode;
   photoControls: ReactNode;
   publicationControls: ReactNode;
 }) {
-  const [title, setTitle] = useState(card.title);
-  const [excerpt, setExcerpt] = useState(card.excerpt);
+  const [title, setTitle] = useState(card?.title ?? "");
+  const [excerpt, setExcerpt] = useState(card?.excerpt ?? "");
   const [saving, setSaving] = useState(false);
   const inFlight = useRef(false);
   const [saveError, setSaveError] = useState("");
   const [dirty, setDirty] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [photoPlacement, setPhotoPlacement] = useState("cover");
   const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null);
-  const [photoAlt, setPhotoAlt] = useState("");
-  const [photoAuthor, setPhotoAuthor] = useState("");
-  const [photoLicense, setPhotoLicense] = useState("");
+  const [photoAlt, setPhotoAlt] = useState(card?.imageAlt ?? "");
+  const [photoAuthor, setPhotoAuthor] = useState(card?.imageAuthor ?? "");
+  const [photoLicense, setPhotoLicense] = useState(card?.imageLicense ?? "");
   const photoReader = useRef<FileReader | null>(null);
   const [photoError, setPhotoError] = useState("");
   useEffect(() => () => { if (photoReader.current?.readyState === FileReader.LOADING) photoReader.current.abort(); }, []);
@@ -49,7 +51,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
         fields.set("photo", await prepareEditorialPhoto(file));
       }
       const endpoint = new URL(form.getAttribute("action") || "", window.location.origin);
-      if (endpoint.origin !== window.location.origin || endpoint.pathname !== "/api/admin/editoriale") throw new Error("Indirizzo di salvataggio non valido.");
+      if (endpoint.origin !== window.location.origin || endpoint.pathname !== action) throw new Error("Indirizzo di salvataggio non valido.");
       const response = await fetch(endpoint.href, { method: "POST", body: fields, credentials: "same-origin", headers: { Accept: "application/json" }, redirect: "error" });
       const result = await response.json().catch(() => null);
       if (!response.ok || result?.ok !== true) {
@@ -57,14 +59,14 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
         throw new Error(explanation);
       }
       const destination = new URL(result.redirect, window.location.origin);
-      if (destination.origin !== window.location.origin || destination.pathname !== "/admin/archivio-editoriale") throw new Error("Salvataggio non confermato. Verifica lo stato della scheda prima di riprovare.");
+      if (destination.origin !== window.location.origin || destination.pathname !== action.replace(/^\/api/, "")) throw new Error("Salvataggio non confermato. Verifica lo stato della scheda prima di riprovare.");
       window.location.assign(destination.href);
       return;
     } catch (error) {
       setSaveError(`${error instanceof Error ? error.message : "Errore di connessione."} I campi compilati restano disponibili in questa pagina.`);
       setSaving(false);
       inFlight.current = false;
-      document.getElementById("editorial-save")?.scrollIntoView({ block: "center" });
+      document.getElementById(saveId)?.scrollIntoView({ block: "center" });
     }
   }
   function fingerprint(form: HTMLFormElement) {
@@ -79,9 +81,9 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     window.addEventListener("pageshow", reset);
     return () => window.removeEventListener("pageshow", reset);
   }, []);
-  const preview = <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt, ...(card.variant === "village" && localPhotoUrl ? { imageUrl: localPhotoUrl, imageAlt: photoAlt || title, imageAuthor: photoAuthor || null, imageLicense: photoLicense || null } : {}) }} />;
+  const preview = card && <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt, ...(localPhotoUrl && photoPlacement === "cover" ? { imageUrl: localPhotoUrl, imageAlt: photoAlt || title, imageAuthor: photoAuthor || null, imageLicense: photoLicense || null } : {}) }} />;
   return <div className="editorial-composer">
-  <form id="editorial-text-form" ref={draftForm} inert={saving} className="editorial-panel" method="post" action={action} encType={unifiedVillageSave ? "multipart/form-data" : undefined} onInput={event => {
+  <form id={formId} ref={draftForm} inert={saving} className="editorial-panel" method="post" action={action} encType="multipart/form-data" onInput={event => {
     setDirty(true);
     setBlocked(false);
     const field = event.target;
@@ -98,14 +100,19 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       </div>
   </form>
   <aside className="editorial-composer-side">
-      <section className={`editorial-panel editorial-card-preview ${card.variant === "village" ? "" : "editorial-card-preview--desktop"}`} aria-label="Anteprima della card">
+      {card && <section className={`editorial-panel editorial-card-preview ${card.variant === "village" ? "" : "editorial-card-preview--desktop"}`} aria-label="Anteprima della card">
         <h2>Anteprima della card</h2>
         {preview}
-      </section>
+      </section>}
     <div className="editorial-authoring-controls" inert={saving} onChangeCapture={event => {
-      if (card.variant !== "village" || !(event.target instanceof HTMLInputElement)) return;
+      if (event.target instanceof HTMLSelectElement && event.target.name === "photoPlacement") {
+        setPhotoPlacement(event.target.value);
+        setDirty(true);
+        return;
+      }
+      if (!(event.target instanceof HTMLInputElement)) return;
       const field = event.target;
-      if (unifiedVillageSave && ["photo","alt","author","source","license","licenseUrl"].includes(field.name)) { setDirty(true); setBlocked(false); }
+      if (["photo","alt","author","source","license","licenseUrl"].includes(field.name)) { setDirty(true); setBlocked(false); }
       if (field.name === "photo") {
         const file = field.files?.[0];
         if (photoReader.current?.readyState === FileReader.LOADING) photoReader.current.abort();
@@ -124,28 +131,23 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       } else if (field.name === "alt") setPhotoAlt(field.value);
       else if (field.name === "author") setPhotoAuthor(field.value);
       else if (field.name === "license") setPhotoLicense(field.value);
-    }} onSubmitCapture={event => {
-      if (!hasUnsavedFields()) { void submitPreservingFields(event); return; }
-      event.preventDefault();
-      setBlocked(true);
-      document.getElementById("editorial-save")?.scrollIntoView({ block: "center" });
     }}>
       {photoError && <p role="alert">{photoError}</p>}
       {photoControls}
-      {localPhotoUrl && card.variant === "village" && <p role="status">Anteprima aggiornata. {unifiedVillageSave ? "Salva bozza per confermare tutte le modifiche." : "Salva la foto in bozza per confermarla."}</p>}
+      {localPhotoUrl && <p role="status">Salva la bozza per confermare la fotografia.</p>}
     </div>
-    <div id="editorial-save" className="editorial-actions" style={{ scrollMarginTop: 100 }}>
-      <button className="editorial-button editorial-button--primary" type="submit" form="editorial-text-form" disabled={saving}>
+    <div id={saveId} className="editorial-actions" style={{ scrollMarginTop: 100 }}>
+      <button className="editorial-button editorial-button--primary" type="submit" form={formId} disabled={saving}>
         {saving ? "Salvataggio…" : "Salva bozza"}
       </button>
-      {saveError ? <span role="alert">{saveError}</span> : blocked ? <span role="alert">{unifiedVillageSave ? "Salva la bozza prima di pubblicare." : "Salva le modifiche prima di allegare una foto o pubblicare."}</span> : saving ? <span role="status">Salvataggio in corso</span>
+      {saveError ? <span role="alert">{saveError}</span> : blocked ? <span role="alert">Salva la bozza prima di pubblicare.</span> : saving ? <span role="status">Salvataggio in corso</span>
         : message && <span role={saved ? "status" : "alert"}>{message}</span>}
     </div>
     <div className="editorial-publication-controls" inert={saving} onSubmitCapture={event => {
       if (!hasUnsavedFields()) { void submitPreservingFields(event); return; }
       event.preventDefault();
       setBlocked(true);
-      document.getElementById("editorial-save")?.scrollIntoView({ block: "center" });
+      document.getElementById(saveId)?.scrollIntoView({ block: "center" });
     }}>
       {publicationControls}
     </div>

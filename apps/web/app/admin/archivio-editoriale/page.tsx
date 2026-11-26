@@ -8,6 +8,8 @@ import { historicalPeriodLabel } from "@/lib/historical-periods";
 import EditorialStatusFilter from "./EditorialStatusFilter";
 import EditorialDraftForm from "./EditorialDraftForm";
 import EditorialSources, { type EditorialSource } from "./EditorialSources";
+import { editorialCoverUrl, getEditorialCover, type EditorialCover } from "@/lib/editorial-media";
+import EditorialPhotoFields from "./EditorialPhotoFields";
 import EditorialPlaceField from "./EditorialPlaceField";
 import "./editoriale.css";
 
@@ -113,27 +115,19 @@ export default async function EditorialPage({ searchParams }: {
 
   const canPublish = Boolean(draft?.title?.trim() && draft?.body?.trim()
     && (model !== "culture" || draft?.placeId || mapsUrl || (draft?.location?.latitude != null && draft?.location?.longitude != null)));
-  const { data: cover } = record && model === "culture"
-    ? await db.from("culture_images").select("image_url,alt_text,author,license")
-        .eq("culture_entry_id", record.id).order("is_primary", { ascending: false })
-        .order("sort_order").limit(1).maybeSingle()
-    : { data: null };
-  const draftCover = photos[0];
-  // Enable only after the atomic save RPC has passed isolated verification.
-  const unifiedVillageSave = model === "village" && process.env.BIMARIS_VILLAGE_UNIFIED_SAVE === "1" && process.env.VERCEL_ENV !== "production";
-  const photoFormId = unifiedVillageSave ? "editorial-text-form" : undefined;
-  const PhotoForm = unifiedVillageSave ? "div" : "form";
-  const cardImage = model !== "culture" && draftCover ? undefined : cover?.image_url ?? record?.image_url;
+  const publishedCover = workspace ? await getEditorialCover(db, model, record?.id ?? null) : null;
+  const draftCover: EditorialCover | null = draft?.cover ?? (model !== "culture" || !publishedCover ? photos[0] : null) ?? null;
+  const cover = draftCover ?? publishedCover;
   const card: CultureCardData = {
     variant: model,
     title: draft?.title ?? "",
     excerpt: model === "culture" ? record?.excerpt ?? "" : draft?.excerpt ?? "",
     category: draft?.category || record?.category || (model === "culture" ? "monumento" : model === "legend" ? "Leggenda" : "Borgo"),
     period: record?.primary_historical_period === "trasversale" ? "Più epoche" : historicalPeriodLabel(record?.primary_historical_period),
-    imageUrl: cardImage ? (/^\/api\/editoriale\/immagini\/[0-9a-f-]{36}$/i.test(cardImage) ? `${cardImage}?anteprima=1` : cardImage) : (draftCover ? `/api/editoriale/immagini/${draftCover.id}?anteprima=1` : undefined),
-    imageAlt: cardImage ? cover?.alt_text ?? record?.image_alt : draftCover?.alt,
-    imageAuthor: cardImage ? cover?.author ?? record?.image_author : draftCover?.author,
-    imageLicense: cardImage ? cover?.license ?? record?.image_license : draftCover?.license,
+    imageUrl: cover ? editorialCoverUrl(cover, true) : undefined,
+    imageAlt: cover?.alt,
+    imageAuthor: cover?.author,
+    imageLicense: cover?.license,
   };
   const modelField = <input type="hidden" name="sezione" value={model} />;
   const sourceTable = model === "culture" ? "culture_sources" : model === "legend" ? "story_sources" : "village_sources";
@@ -235,41 +229,15 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} notices={notices} unifiedVillageSave={unifiedVillageSave} photoControls={<>
-        <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
-          <h2 id="editorial-photo-heading">{model === "village" ? "Foto di copertina" : "Foto della bozza"}</h2>
-          {query.fotografia === "1" && query.esito && notices[query.esito] &&
-            <p className="editorial-notice" role={query.esito === "photo" ? "status" : "alert"}>{notices[query.esito]}</p>}
-          {photos.length > 0 ? <div className="editorial-photo-list">
-            {photos.map(photo => <figure key={photo.id}>
-              <img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} />
+        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} notices={notices} photoControls={<>
+          <EditorialPhotoFields form="editorial-text-form" cover={cover} gallery={model === "culture"} />
+          {model === "culture" && photos.length > 0 && <div className="editorial-photo-list">
+            {photos.filter(photo => photo.id !== cover?.id).map(photo => <figure key={photo.id}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={editorialCoverUrl(photo, true)} alt={photo.alt} />
               <figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption>
             </figure>)}
-          </div> : model === "village" && cardImage ? <figure><img src={card.imageUrl ?? undefined} alt={card.imageAlt ?? card.title} /><figcaption>Foto attualmente pubblicata</figcaption></figure> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
-          <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
-            <summary>{model === "village" ? (draftCover || cardImage ? "Sostituisci foto" : "Inserisci foto copertina") : "Aggiungi una foto"}</summary>
-            <PhotoForm className="editorial-photo-form" {...(unifiedVillageSave ? {} : { method: "post", action: api, encType: "multipart/form-data" })}>
-              {!unifiedVillageSave && hiddenFields}
-              <label>File della foto
-                <input name="photo" form={photoFormId} type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required={!unifiedVillageSave} />
-                <small id="editorial-photo-format">JPEG, PNG o WebP. Le immagini grandi vengono compresse automaticamente prima del salvataggio.</small>
-              </label>
-              <label>Descrizione della foto
-                <input name="alt" form={photoFormId} maxLength={250} defaultValue={unifiedVillageSave ? draftCover?.alt : undefined} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required={!unifiedVillageSave} />
-                <small id="editorial-alt-help">Una breve descrizione per chi usa un lettore di schermo.</small>
-              </label>
-              <details className="editorial-photo-credits">
-                <summary>Autore, fonte e licenza</summary>
-                <label>Autore<input name="author" form={photoFormId} maxLength={180} defaultValue={unifiedVillageSave ? draftCover?.author : undefined} /></label>
-                <label>Link alla fonte<input name="source" form={photoFormId} type="url" maxLength={500} defaultValue={unifiedVillageSave ? draftCover?.source : undefined} /></label>
-                <label>Licenza<input name="license" form={photoFormId} maxLength={180} defaultValue={unifiedVillageSave ? draftCover?.license : undefined} /></label>
-                <label>Link alla licenza<input name="licenseUrl" form={photoFormId} type="url" maxLength={500} defaultValue={unifiedVillageSave ? draftCover?.licenseUrl : undefined} /></label>
-              </details>
-              {unifiedVillageSave ? <small>Fotografia e dati saranno salvati insieme al testo con Salva bozza. Se modifichi i crediti di una copertina già pubblicata, seleziona anche il nuovo file.</small> : <><small>Se hai modificato il testo, salva la bozza prima di scegliere e allegare una foto.</small>
-              <button className="editorial-button editorial-button--primary" name="action" value="photo">{model === "village" ? "Salva foto in bozza" : "Allega alla bozza"}</button></>}
-            </PhotoForm>
-          </details>
-        </section>
+          </div>}
         </>} publicationControls={<>
         <form id="editorial-publication" className="editorial-panel" method="post" action={api}>
           {hiddenFields}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { editorialCoverUrl } from "@/lib/editorial-media";
 import type { CultureEntry } from "@/lib/types";
 import type { CultureStory } from "@/data/ti-racconto-messina";
 
@@ -9,6 +10,8 @@ export default function HistoricalStoryView({ definition, entries, preview = fal
 }) {
   const bySlug = new Map(entries.map(entry => [entry.slug, entry]));
   const chapters = definition.chapters.map(chapter => ({ chapter, place: chapter.slug ? bySlug.get(chapter.slug) : undefined }));
+  const cover = definition.cover;
+  const coverUrl = cover && editorialCoverUrl(cover, preview);
   return <div className="story-detail-page">
     <section className="page-hero bimaris-ambient-hero story-detail-hero">
       {!preview && <Link className="story-back" href="/ti-racconto-la-storia-di-messina">← Ti racconto la storia di Messina</Link>}
@@ -19,6 +22,15 @@ export default function HistoricalStoryView({ definition, entries, preview = fal
 
     <section className="section bimaris-ambient-section story-detail-opening">
       <div className="kicker">Il racconto</div>
+      {cover && coverUrl && <figure>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={coverUrl} alt={cover.alt ?? definition.title} loading="lazy" decoding="async" style={{ maxWidth: "100%" }} />
+        {(cover.author || cover.license || cover.source || cover.licenseUrl) && <figcaption>
+          {[cover.author, cover.license].filter(Boolean).join(" · ")}
+          {cover.source && <> · <a href={cover.source}>Fonte</a></>}
+          {cover.licenseUrl && <> · <a href={cover.licenseUrl}>Licenza</a></>}
+        </figcaption>}
+      </figure>}
       <div className="story-public-copy">{definition.intro.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>
     </section>
 
@@ -51,6 +63,13 @@ export default function HistoricalStoryView({ definition, entries, preview = fal
         <div className="kicker">Conclusione</div>
         <h2>{definition.title}</h2>
         <div className="story-public-copy">{definition.conclusion.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>
+        {Boolean(definition.sources?.length) && <section>
+          <h3>Fonti e riferimenti</h3>
+          <ul>{definition.sources?.map((source, index) => <li key={index}>
+            {source.url ? <a href={source.url}>{source.label}</a> : source.label}
+            {source.note && <> · {source.note}</>}
+          </li>)}</ul>
+        </section>}
       </div>
       {!preview && <div className="actions"><Link className="button" href="/mappa">Vedi Messina sulla mappa</Link><Link className="button ghost" href="/ti-racconto-la-storia-di-messina">Scegli un altro racconto</Link></div>}
     </section>

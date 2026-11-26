@@ -1,5 +1,7 @@
+import type { EditorialCover } from "@/lib/editorial-media";
+
 export type CultureStoryChapter={number:number;title:string;placeTitle:string;slug?:string;paragraphs:string[];transition:string[]};
-export type CultureStory={key:string;title:string;subtitle:string;theme:string;intro:string[];chapters:CultureStoryChapter[];conclusion:string[]};
+export type CultureStory={key:string;title:string;subtitle:string;theme:string;intro:string[];chapters:CultureStoryChapter[];conclusion:string[];cover?:EditorialCover;sources?:{label:string;url:string|null;note?:string|null}[]};
 
 export const CULTURE_STORIES:CultureStory[]=[
 {

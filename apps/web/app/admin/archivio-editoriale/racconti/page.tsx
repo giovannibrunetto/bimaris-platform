@@ -5,6 +5,9 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { getPublishedCultureEntries } from "@/data/live";
 import type { CultureStory } from "@/data/ti-racconto-messina";
 import HistoricalStoryView from "@/components/HistoricalStoryView";
+import EditorialDraftForm from "../EditorialDraftForm";
+import EditorialPhotoFields from "../EditorialPhotoFields";
+import EditorialSources from "../EditorialSources";
 import EditorialStatusFilter from "../EditorialStatusFilter";
 import HistoricalChapters from "./HistoricalChapters";
 import "../editoriale.css";
@@ -25,6 +28,13 @@ const notices: Record<string, string> = {
   luogo: "Una scheda Cultura collegata non è più pubblicata. Aggiorna il collegamento prima di riprovare.",
   protetto: "La versione pubblica di questo racconto è protetta.",
   dati: "Controlla i dati inseriti.", conflitto: "La bozza è cambiata. Riaprila prima di riprovare.",
+  fonti: "Controlla il titolo e il link delle fonti inserite.",
+  "foto-file": "Seleziona una fotografia.",
+  "foto-size": "La fotografia supera il limite di 3 MiB anche dopo la preparazione.",
+  "foto-empty": "Il file selezionato è vuoto.",
+  "foto-alt": "Inserisci la descrizione della fotografia.",
+  "foto-type": "Seleziona una fotografia JPEG, PNG o WebP.",
+  "foto-storage": "Caricamento della fotografia non riuscito.",
   errore: "Operazione non riuscita.",
 };
 type Workspace = { id: string; entry_id: string | null; version: number; archived: boolean; draft: Partial<CultureStory> };
@@ -125,20 +135,13 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         {notice && <p role="status" className="editorial-notice">{notice}</p>}
         <HistoricalStoryView preview entries={entries} definition={{
           key: record?.slug ?? active.id, title: draft?.title || "Racconto senza titolo", subtitle: draft?.subtitle ?? "",
-          theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],
+          cover: draft?.cover, sources: draft?.sources, theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],
         }} />
-      </> : <div className="editorial-composer">
-        <form id="historical-text-form" className="historical-outline-form" method="post" action={api}>
-          {fields}
-          <HistoricalChapters draft={draft ?? {}} places={entries.map(({ slug, title }) => ({slug,title}))} />
-        </form>
-        <aside className="editorial-composer-side">
-          <div id="historical-save" className="editorial-actions">
-            <button className="editorial-button editorial-button--primary" type="submit" form="historical-text-form" name="action" value="save">Salva bozza</button>
-            {savedOrError ? <span role={success ? "status" : "alert"}>{query.esito === "save" && savedLabel ? `Bozza salvata · ${savedLabel}` : notice}</span>
-              : savedLabel && <span>Ultimo salvataggio · {savedLabel}</span>}
-          </div>
-
+      </> : <EditorialDraftForm key={`${active.id}:${active.version}`} action={api} formId="historical-text-form"
+        saveId="historical-save" notices={notices} message={savedOrError ? (query.esito === "save" && savedLabel ? `Bozza salvata · ${savedLabel}` : notice) : savedLabel ? `Ultimo salvataggio · ${savedLabel}` : undefined}
+        saved={Boolean(success || !savedOrError && savedLabel)}
+        photoControls={<EditorialPhotoFields form="historical-text-form" cover={draft?.cover} />}
+        publicationControls={<>
           <section className="editorial-panel" id="historical-publication">
             <h2>Pubblicazione</h2>
             {record?.protected ? <p>Versione pubblica protetta. Puoi lavorare in bozza e controllare l’anteprima.</p> : <form method="post" action={api}>
@@ -158,8 +161,11 @@ export default async function HistoricalEditorialPage({ searchParams }: {
                 {query.esito === "publish" && record?.published && <Link className="text-link" href={`${publicBase}/${record.slug}`}>Apri il racconto pubblicato →</Link>}
               </div>}
           </section>
-        </aside>
-      </div>}
+        </>}>
+          {fields}
+          <HistoricalChapters draft={draft ?? {}} places={entries.map(({ slug, title }) => ({slug,title}))} />
+          <EditorialSources initial={draft?.sources ?? []} />
+        </EditorialDraftForm>}
     </>}
   </div>;
 }
