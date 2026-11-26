@@ -217,7 +217,7 @@ test("focused content review presents one grouped list without duplicated naviga
   assert.match(page, /\.from\("operator_applications"\).*\.in\("status", \["new", "reviewing"\]\)/);
   assert.match(page, /\/admin\/candidature\/\$\{item\.id\}/);
   assert.match(nav, /count: applicationsPending \+ operatorExperiencePending/);
-  assert.doesNotMatch(nav, /href: "\/admin\/(candidature|attivita)"/);
+  assert.doesNotMatch(nav, /href: "\/admin\/candidature"/);
   assert.match(page, /Esperienza · Modifica/);
   assert.match(page, /Appuntamento · /);
   assert.match(page, /href="\/admin"/);
@@ -349,7 +349,7 @@ test("admin shell navigation is visible on dashboard, review queue and itinerari
   const surveyPage = read("../app/admin/questionari/page.tsx");
   assert.match(surveyPage, /href="https:\/\/sondaggio\.bimarisnet\.it\/questionario-cittadini"/);
   assert.match(surveyPage, /rel="noopener noreferrer"/);
-  assert.match(shellCss, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(shellCss, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
   assert.match(shellCss, /@media\(max-width:600px\)/);
 });
 

@@ -52,20 +52,25 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
     <AdminSectionHeader
       title={readyOnly?"Contenuti pronti da pubblicare":"Esperienze e appuntamenti"}
       description={readyOnly?"Consulta esperienze approvate, appuntamenti verificati e modifiche editoriali salvate. Apri la scheda per confermare la pubblicazione.":"Consulta le attività nel registro. Le proposte e le modifiche in attesa si trovano in Da esaminare."}
-      actions={<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href={acquiredOnly ? "/admin/contenuti?categoria=appuntamenti" : "/admin/contenuti"}>Da esaminare →</Link></>}
+      actions={readyOnly?undefined:<><Link href="/admin/esperienze/nuova" className="admin-section-heading__primary">+ Crea esperienza</Link><Link href={acquiredOnly ? "/admin/contenuti?categoria=appuntamenti" : "/admin/contenuti"}>Da esaminare →</Link></>}
     />
     <section className="admin-events__body"><div className="admin-events__container">
-      <div className="admin-events__register-stats" aria-label="Riepilogo registro">
+      {readyOnly?<div className="admin-events__register-stats" aria-label="Contenuti in attesa di pubblicazione">
+        <div><strong>{readyExperiences.length}</strong><span>Esperienze</span><small>Approvate · da pubblicare</small></div>
+        <div><strong>{countReadyAppointments}</strong><span>Appuntamenti</span><small>Verificati · da pubblicare</small></div>
+        <div><strong>{readyEditorial.length}</strong><span>Archivio editoriale</span><small>Modifiche salvate · da pubblicare</small></div>
+      </div>:<div className="admin-events__register-stats" aria-label="Riepilogo registro">
         <div><strong>{registryExperiences.length}</strong><span>Esperienze nel registro</span><small>{countOnlineExperiences} online</small></div>
         <div><strong>{acquiredOnly ? allAppointments.length : registryAppointments.length}</strong><span>Appuntamenti acquisiti</span><small>{countPublishedAppointments} pubblicati</small></div>
         <div><strong>{readyTotal}</strong><span>Contenuti pronti da pubblicare</span><small>{readyExperiences.length} esperienze · {countReadyAppointments} appuntamenti · {readyEditorial.length} editoriali</small></div>
-      </div>
-      <nav className="admin-events__filters" aria-label="Filtra il registro">
+      </div>}
+      {!readyOnly&&<nav className="admin-events__filters" aria-label="Filtra il registro">
         <Link href="/admin/attivita" aria-current={!readyOnly&&selected==="tutti"?"page":undefined}>Tutti</Link>
         <Link href="/admin/attivita?tipo=esperienze" aria-current={!readyOnly&&selected==="esperienze"?"page":undefined}>Esperienze</Link>
         <Link href={acquiredOnly ? "/admin/attivita?view=acquisiti" : "/admin/attivita?tipo=appuntamenti"} aria-current={!readyOnly&&selected==="appuntamenti"?"page":undefined}>{acquiredOnly ? "Tutti gli appuntamenti acquisiti" : "Appuntamenti"}</Link>
         <Link href="/admin/attivita?view=ready" aria-current={readyOnly?"page":undefined}>Da pubblicare ({readyTotal})</Link>
-      </nav>
+      </nav>}
+      {readyOnly&&<p className="admin-events__hint">{readyTotal} contenuti in attesa di pubblicazione</p>}
       {(readyOnly||selected!=="appuntamenti")&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
         <h2 id="registry-experiences">Esperienze <small>{experiences.length}</small></h2>
         <div className="admin-events__list">{experiences.map(item=>{
@@ -83,7 +88,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
         })}{experiences.length===0&&<div className="admin-events__empty">Nessuna esperienza nel registro.</div>}</div>
       </section>}
       {(readyOnly||selected!=="esperienze")&&<section className="admin-events__queue-group" aria-labelledby="registry-appointments">
-        <h2 id="registry-appointments">Appuntamenti acquisiti <small>{appointments.length}</small></h2>
+        <h2 id="registry-appointments">{readyOnly?"Appuntamenti":"Appuntamenti acquisiti"} <small>{appointments.length}</small></h2>
         <div className="admin-events__list">{appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.published?"Pubblicato":item.verification_status==="pending"?"Da verificare":item.verification_status==="rejected"?"Scartato":"Verificato · non pubblicato"} · {item.source_type?.trim()||"Origine non indicata"}</span>
             <h3>{item.title}</h3><p className="admin-events__date">{dateLabel(item.starts_at)}</p>

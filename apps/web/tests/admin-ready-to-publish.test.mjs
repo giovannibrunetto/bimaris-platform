@@ -42,3 +42,17 @@ test("editorial queue shares loader, preserves separate publication and title",(
  assert.match(helper,/COLLAUDO/);
  assert.doesNotMatch(helper,/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
 });
+
+test("publication queue has distinct navigation and focused summary",()=>{
+ const nav=read("../app/admin/AdminNavLinks.tsx");
+ const page=read("../app/admin/attivita/page.tsx");
+ const shell=read("../app/admin/admin-a9.css");
+ assert.match(nav,/href: "\/admin\/attivita\?view=ready", label: "Da pubblicare"/);
+ assert.match(nav,/searchParams.get\("view"\) === "ready"/);
+ assert.match(nav,/const active = publicationContext \? item.href === "\/admin\/attivita\?view=ready"/);
+ assert.match(nav,/!publicationContext && item.href === "\/admin\/contenuti"/);
+ assert.match(page,/actions=\{readyOnly\?undefined:/);
+ assert.match(page,/!readyOnly&&<nav className="admin-events__filters"/);
+ assert.match(page,/aria-label="Contenuti in attesa di pubblicazione"/);
+ assert.match(shell,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+});

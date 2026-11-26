@@ -215,7 +215,7 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
 /* Keep the admin destinations visible without horizontal scrolling. */
 .admin-shell-nav__inner{
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(5,minmax(0,1fr));
   align-items:stretch;
   gap:9px;
   padding:12px clamp(16px,4vw,40px);
@@ -249,6 +249,7 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
    overflow:visible;
  }
  .admin-shell-nav a.admin-shell-nav__tab{min-height:48px;font-size:12px;padding:10px 8px;}
+ .admin-shell-nav__inner a:last-child{grid-column:1 / -1;}
 }
 @media print {
  .admin-shell-header{background:#fff!important;color:#15393b!important;border-bottom:2px solid #a7844c!important;box-shadow:none!important;}
@@ -256,7 +257,7 @@ body:has(.admin-itineraries-hero) .admin-page{width:100%!important;max-width:non
  .admin-shell-header__eyebrow{color:#76551e!important;}
  .admin-shell-header__actions a,.admin-shell-header__actions button{color:#15393b!important;background:#fff!important;}
  .admin-shell-nav{position:static!important;top:auto!important;break-inside:avoid;background:#fff!important;box-shadow:none!important;}
- .admin-shell-nav__inner{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;overflow:visible!important;}
+ .admin-shell-nav__inner{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;overflow:visible!important;}
  .admin-shell-nav a.admin-shell-nav__tab{color:#15393b!important;background:#fff!important;border:1px solid #98805b!important;font-size:11px!important;}
  .admin-shell-nav a.admin-shell-nav__tab--questionnaire{background:#e9dac0!important;}
 }
