@@ -17,7 +17,7 @@ const api = "/api/admin/editoriale";
 const notices: Record<string, string> = {
   create:"Bozza aperta.", save:"Bozza salvata.", photo:"Foto aggiunta alla bozza.",
   publish:"Scheda pubblicata.", withdraw:"Scheda ritirata.", archive:"Scheda archiviata.",
-  conflitto:"La scheda è cambiata. Verifica la versione corrente prima di riprovare.",
+  conflitto:"La scheda è cambiata. È stata ricaricata la versione corrente: controlla l’anteprima prima di riprovare.",
   campi:"Controlla i campi richiesti prima di pubblicare. Per un nuovo monumento serve anche la posizione.", dati:"Controlla i dati inseriti.",
   delete:"Scheda cancellata dall’archivio.",
   mappa:"Inserisci latitudine e longitudine valide, oppure seleziona un suggerimento Google Maps.",
@@ -230,7 +230,7 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm photoControls={<>
+        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} photoControls={<>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">{model === "village" ? "Foto di copertina" : "Foto della bozza"}</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
