@@ -18,17 +18,13 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [blocked, setBlocked] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null);
   const [photoAlt, setPhotoAlt] = useState("");
   const [photoAuthor, setPhotoAuthor] = useState("");
   const [photoLicense, setPhotoLicense] = useState("");
-  useEffect(() => {
-    if (!selectedPhoto) { setLocalPhotoUrl(null); return; }
-    const url = URL.createObjectURL(selectedPhoto);
-    setLocalPhotoUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [selectedPhoto]);
+  const photoReader = useRef<FileReader | null>(null);
+  const [photoError, setPhotoError] = useState("");
+  useEffect(() => () => { if (photoReader.current?.readyState === FileReader.LOADING) photoReader.current.abort(); }, []);
   const draftForm = useRef<HTMLFormElement>(null);
   const initialFields = useRef<string | null>(null);
   function fingerprint(form: HTMLFormElement) {
@@ -68,16 +64,28 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       </div>
   </form>
   <aside className="editorial-composer-side">
-      <section className="editorial-panel editorial-card-preview editorial-card-preview--desktop" aria-label="Anteprima della card">
+      <section className={`editorial-panel editorial-card-preview ${card.variant === "village" ? "" : "editorial-card-preview--desktop"}`} aria-label="Anteprima della card">
         <h2>Anteprima della card</h2>
         {preview}
       </section>
-    <div className="editorial-authoring-controls" onChange={event => {
+    <div className="editorial-authoring-controls" onChangeCapture={event => {
       if (card.variant !== "village" || !(event.target instanceof HTMLInputElement)) return;
       const field = event.target;
       if (field.name === "photo") {
         const file = field.files?.[0];
-        setSelectedPhoto(file && file.size > 0 && file.size <= 3 * 1024 * 1024 && ["image/jpeg", "image/png", "image/webp"].includes(file.type) ? file : null);
+        if (photoReader.current?.readyState === FileReader.LOADING) photoReader.current.abort();
+        setLocalPhotoUrl(null);
+        setPhotoError("");
+        if (!file) return;
+        if (!file.size || file.size > 3 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+          setPhotoError("Seleziona un JPEG, PNG o WebP fino a 3 MiB. La foto non è stata caricata.");
+          return;
+        }
+        const reader = new FileReader();
+        photoReader.current = reader;
+        reader.onload = () => { if (photoReader.current === reader && typeof reader.result === "string") setLocalPhotoUrl(reader.result); };
+        reader.onerror = () => { if (photoReader.current === reader) setPhotoError("Impossibile leggere la fotografia selezionata."); };
+        reader.readAsDataURL(file);
       } else if (field.name === "alt") setPhotoAlt(field.value);
       else if (field.name === "author") setPhotoAuthor(field.value);
       else if (field.name === "license") setPhotoLicense(field.value);
@@ -87,8 +95,9 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       setBlocked(true);
       document.getElementById("editorial-save")?.scrollIntoView({ block: "center" });
     }}>
-      {localPhotoUrl && card.variant === "village" && <section className="editorial-panel" aria-label="Anteprima nuova copertina"><h2>Nuova foto selezionata</h2><img src={localPhotoUrl} alt={photoAlt || "Anteprima nuova copertina"} style={{width:"100%", aspectRatio:"16 / 9", objectFit:"cover", borderRadius:12}} /><p role="status">Anteprima locale: salva la foto in bozza per confermarla.</p></section>}
+      {photoError && <p role="alert">{photoError}</p>}
       {photoControls}
+      {localPhotoUrl && card.variant === "village" && <p role="status">Anteprima aggiornata. Salva la foto in bozza per confermarla.</p>}
     </div>
     <div id="editorial-save" className="editorial-actions" style={{ scrollMarginTop: 100 }}>
       <button className="editorial-button editorial-button--primary" type="submit" form="editorial-text-form" disabled={saving}>
