@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import "../eventi/admin-events.css";
 import {isReadyExperience,isReadyAppointment} from "../ready-to-publish";
 import {loadReadyEditorial} from "../ready-editorial";
+import BulkPublishButton from "./BulkPublishButton";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -72,7 +73,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
       </nav>}
       {readyOnly&&<p className="admin-events__hint">{readyTotal} contenuti in attesa di pubblicazione</p>}
       {(readyOnly||selected!=="appuntamenti")&&<section className="admin-events__queue-group" aria-labelledby="registry-experiences">
-        <h2 id="registry-experiences">Esperienze <small>{experiences.length}</small></h2>
+        <div className="admin-events__queue-heading"><h2 id="registry-experiences">Esperienze <small>{experiences.length}</small></h2>{readyOnly&&<BulkPublishButton category="experiences" items={experiences.map(x=>({id:x.id,title:x.name}))}/>}</div>
         <div className="admin-events__list">{experiences.map(item=>{
           const operator = Array.isArray(item.operator) ? item.operator[0] : item.operator;
           const approvedUnpublished = item.review_status === "approved" && !item.published;
@@ -88,7 +89,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
         })}{experiences.length===0&&<div className="admin-events__empty">Nessuna esperienza nel registro.</div>}</div>
       </section>}
       {(readyOnly||selected!=="esperienze")&&<section className="admin-events__queue-group" aria-labelledby="registry-appointments">
-        <h2 id="registry-appointments">{readyOnly?"Appuntamenti":"Appuntamenti acquisiti"} <small>{appointments.length}</small></h2>
+        <div className="admin-events__queue-heading"><h2 id="registry-appointments">{readyOnly?"Appuntamenti":"Appuntamenti acquisiti"} <small>{appointments.length}</small></h2>{readyOnly&&<BulkPublishButton category="appointments" items={appointments.map(x=>({id:x.id,title:x.title}))}/>}</div>
         <div className="admin-events__list">{appointments.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.published?"Pubblicato":item.verification_status==="pending"?"Da verificare":item.verification_status==="rejected"?"Scartato":"Verificato · non pubblicato"} · {item.source_type?.trim()||"Origine non indicata"}</span>
             <h3>{item.title}</h3><p className="admin-events__date">{dateLabel(item.starts_at)}</p>
@@ -100,7 +101,7 @@ export default async function ActivitiesRegister({searchParams}:{searchParams:Pr
         </article>)}{appointments.length===0&&<div className="admin-events__empty">Nessun appuntamento per questo filtro.</div>}</div>
       </section>}
       {readyOnly&&<section className="admin-events__queue-group" aria-labelledby="registry-editorial">
-        <h2 id="registry-editorial">Archivio editoriale <small>{readyEditorial.length}</small></h2>
+        <div className="admin-events__queue-heading"><h2 id="registry-editorial">Archivio editoriale <small>{readyEditorial.length}</small></h2><BulkPublishButton category="editorial" items={readyEditorial.map(x=>({id:x.id,title:x.title,version:x.version}))}/></div>
         <div className="admin-events__list">{readyEditorial.map(item=><article className="admin-events__card admin-events__card--compact" key={item.id}>
           <div className="admin-events__card-main"><span className="admin-events__eyebrow">{item.category} · {item.reason}</span><h3>{item.title}</h3></div>
           <Link className="admin-events__examine" href={item.href}>Vai alla pubblicazione →</Link>

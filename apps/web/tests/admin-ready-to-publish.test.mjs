@@ -56,3 +56,21 @@ test("publication queue has distinct navigation and focused summary",()=>{
  assert.match(page,/aria-label="Contenuti in attesa di pubblicazione"/);
  assert.match(shell,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
 });
+
+test("bulk publishing is explicit, category scoped, and reuses single publication handlers",()=>{
+ const page=read("../app/admin/attivita/page.tsx");
+ const button=read("../app/admin/attivita/BulkPublishButton.tsx");
+ const route=read("../app/api/admin/publications/bulk-item/route.ts");
+ assert.match(page,/readyOnly&&<BulkPublishButton category="experiences"/);
+ assert.match(page,/readyOnly&&<BulkPublishButton category="appointments"/);
+ assert.match(page,/<BulkPublishButton category="editorial"/);
+ assert.match(button,/window.confirm/);
+ assert.match(button,/const snapshot=items.map/);
+ assert.match(button,/router.refresh\(\)/);
+ assert.match(route,/rejectCrossSiteAdminMutation\(request\)/);
+ assert.match(route,/await getVerifiedSuperAdmin\(\)/);
+ assert.match(route,/VERCEL_ENV==="production"/);
+ assert.match(route,/row.id===id&&row.version===version/);
+ for(const handler of ["experiencePost","appointmentPost","editorialPost","historicalPost"])assert.match(route,new RegExp("await "+handler));
+ assert.doesNotMatch(route,/\.(insert|update|delete|rpc)\(/);
+});

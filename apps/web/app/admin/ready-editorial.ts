@@ -36,7 +36,7 @@ export async function loadReadyEditorial(db:Db) {
     for(const row of rows??[]) cultureMaps.set(row.id,row.google_maps_url);
   }
   return workspaces.filter(w=>isReadyEditorial(w,activity.get(w.id+":"+w.version),w.entry_id?cultureMaps.get(w.entry_id):null)).map(w=>({
-    id:w.id, title:w.draft.title!, category:labels[w.model], model:w.model,
+    id:w.id, version:w.version, title:w.draft.title!, category:labels[w.model], model:w.model,
     reason:w.entry_id?(w.draft.photos?.length?"Aggiornamento fotografico":"Modifiche salvate"):"Nuova scheda",
     href:w.model==="historical"?"/admin/archivio-editoriale/racconti?id="+w.id:"/admin/archivio-editoriale?sezione="+w.model+"&id="+w.id+"#editorial-publication"
   })).sort((a,b)=>a.category.localeCompare(b.category,"it")||a.title.localeCompare(b.title,"it"));

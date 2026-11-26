@@ -94,3 +94,13 @@
 .admin-operator-card-public-link{display:inline-block;margin-top:2px;font-size:13px;font-weight:700;color:#225057;text-decoration:underline;text-underline-offset:3px}
 .admin-operator-card-public-link:focus-visible{outline:2px solid #225057;outline-offset:4px}
 @media(max-width:700px){.admin-operator-card-actions{width:100%}.admin-operator-card-actions .admin-events__examine{width:100%}}
+
+/* Publication queue: category-specific action, wraps without horizontal scrolling. */
+.admin-events__queue-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:17px}
+.admin-events__queue-heading h2{margin:0}
+.admin-events__bulk{max-width:100%;min-width:0;display:grid;gap:8px;justify-items:end}
+.admin-events__bulk button{cursor:pointer;font:inherit;font-weight:800;white-space:normal}
+.admin-events__bulk button:disabled{opacity:.55;cursor:not-allowed}
+.admin-events__bulk-result{max-width:520px;overflow-wrap:anywhere;font-size:13px;text-align:right}
+.admin-events__bulk-result ul{margin:6px 0;padding-left:20px;text-align:left}
+@media(max-width:650px){.admin-events__bulk{justify-items:start;width:100%}.admin-events__bulk-result{text-align:left}.admin-events__bulk button{width:100%}}
