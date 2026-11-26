@@ -48,7 +48,9 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
       if (file instanceof File && (file.name || file.size)) {
         fields.set("photo", await prepareEditorialPhoto(file));
       }
-      const response = await fetch(form.action, { method: "POST", body: fields, credentials: "same-origin", headers: { Accept: "application/json" }, redirect: "error" });
+      const endpoint = new URL(form.getAttribute("action") || "", window.location.origin);
+      if (endpoint.origin !== window.location.origin || endpoint.pathname !== "/api/admin/editoriale") throw new Error("Indirizzo di salvataggio non valido.");
+      const response = await fetch(endpoint.href, { method: "POST", body: fields, credentials: "same-origin", headers: { Accept: "application/json" }, redirect: "error" });
       const result = await response.json().catch(() => null);
       if (!response.ok || result?.ok !== true) {
         const explanation = response.status === 403 ? "Sessione o autorizzazione non valida. Non chiudere questa pagina." : response.status === 413 ? "La richiesta è troppo grande." : notices[result?.state] || "Il salvataggio non è stato confermato.";
