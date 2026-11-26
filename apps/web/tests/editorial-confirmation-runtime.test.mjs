@@ -8,12 +8,12 @@ function load(path, imports = {}) {
   const code = ts.transpileModule(readFileSync(new URL(path, import.meta.url), "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  const module = { exports: {} };
+  const loadedModule = { exports: {} };
   new Function("require", "module", "exports", code)(name => {
     assert.ok(Object.hasOwn(imports, name), "Unexpected import " + name);
     return imports[name];
-  }, module, module.exports);
-  return module.exports;
+  }, loadedModule, loadedModule.exports);
+  return loadedModule.exports;
 }
 
 const routes = load("../lib/editorial-routes.ts");
