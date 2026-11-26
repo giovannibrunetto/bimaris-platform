@@ -1,0 +1,39 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "bimaris-supabase-key"
+description = "Supabase API key format"
+regex = '''\bsb_(?:secret|publishable)_[a-zA-Z0-9_-]{16,}\b'''
+
+[[rules]]
+id = "bimaris-credential-literal"
+description = "Quoted credential in source code or configuration"
+regex = '''(?i)\b(?:(?:[a-z0-9]+_)*(?:jwt_secret|client_secret)|(?:[a-z0-9]+_)+(?:password|passwd)|(?:next_public_)?supabase_(?:anon_key|publishable_key|secret_key|service_role_key|access_token)|(?:gh|github|vercel)_(?:token|pat|secret)|smtp_(?:pass|pwd|secret|token)|(?:next_public_)?google_(?:maps_)?api_key)["']?[ \t]*[:=][ \t]*(?:"[^"$\x60\r\n][^"\x60\r\n]{3,}"|'[^'$\x60\r\n][^'\x60\r\n]{3,}')'''
+
+[[rules]]
+id = "bimaris-dotenv-credential"
+description = "Unquoted credential assignment in environment files or shell scripts"
+regex = '''(?im)^\s*(?:export[ \t]+)?(?:(?:[a-z0-9]+_)*(?:password|passwd|jwt_secret|client_secret)|(?:next_public_)?supabase_(?:anon_key|publishable_key|secret_key|service_role_key|access_token)|(?:gh|github|vercel)_(?:token|pat|secret)|smtp_(?:pass|pwd|secret|token)|(?:next_public_)?google_(?:maps_)?api_key)[ \t]*=[ \t]*([a-z0-9][^\s"'\x60#;(){}<>]{3,})[ \t]*(?:#.*)?$'''
+secretGroup = 1
+
+[[rules.allowlists]]
+description = "Documented placeholders in the environment template"
+condition = "AND"
+paths = ['''(?:^|/)\.env\.example$''']
+regexes = ['''^YOUR_SUPABASE_PUBLISHABLE_KEY$''', '''^YOUR_SUPABASE_SECRET_KEY$''', '''^YOUR_SERVICE_ROLE_KEY$''', '''^YOUR_SUPABASE_ANON_KEY$''']
+
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+description = "Editorial image identifier"
+condition = "AND"
+paths = ['''(?:^|/)apps/web/app/mappa/epoche/page\.tsx$''', '''(?:^|/)apps/web/data/ti\-racconto\-messina\.ts$''', '''(?:^|/)supabase/migrations/20261124113000_editorial_historical_stories\.sql$''']
+regexes = ['''^1908\-rinascita$''']
+
+[[rules.allowlists]]
+description = "Analytics cookie name"
+condition = "AND"
+paths = ['''(?:^|/)apps/web/lib/analytics\.ts$''']
+regexes = ['''^bimaris_consent_v1$''']
