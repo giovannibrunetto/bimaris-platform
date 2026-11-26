@@ -11,7 +11,7 @@ import {POST as historicalPost} from "../../editoriale/racconti/route";
 
 const uuid=/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const reply=(ok:boolean,reason?:string,status=ok?200:409)=>NextResponse.json({ok,reason},{status,headers:{"Cache-Control":"no-store"}});
-const explanations:Record<string,string>={"missing-classification":"Classificazione territoriale mancante.","operator-not-published":"Operatore non selezionato o non pubblicato.","invalid-review-state":"Stato di approvazione cambiato.","invalid-data":"Dati non validi.","action-error":"Operazione non confermata.","stale":"Stato cambiato.","error":"Pubblicazione non confermata.","conflitto":"La versione della bozza è cambiata.","campi":"Campi obbligatori mancanti.","fonti":"Fonti non valide.","protetto":"Racconto protetto.","luogo":"Collegamento culturale non valido."};
+const explanations:Record<string,string>={"missing-classification":"Classificazione territoriale mancante.","operator-not-published":"Operatore non selezionato o non pubblicato.","invalid-review-state":"Stato di approvazione cambiato.","invalid-data":"Dati non validi.","action-error":"Operazione non confermata.","stale":"Stato cambiato.","error":"Pubblicazione non confermata.","conflitto":"La versione della bozza è cambiata.","campi":"Campi obbligatori mancanti.","fonti":"Fonti non valide.","protetto":"Racconto protetto.","conferma":"Apri la scheda e conferma la pubblicazione del racconto.","luogo":"Collegamento culturale non valido."};
 
 export async function POST(request:NextRequest){
  const rejected=rejectCrossSiteAdminMutation(request);

@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (!data) return redirect(workspace, "errore");
     const name = String(data.draft.title ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase()
       .replace(/[^a-z0-9]+/g, "-").slice(0, 90).replace(/^-|-$/g, "");
-    payload = { slug: `${name || "racconto"}-${workspace.slice(0, 8)}` };
+    payload = { slug: `${name || "racconto"}-${workspace.slice(0, 8)}`, confirmed: form.get("confirmPublication") === "yes" };
   }
   const saveDigest = action === "save" && saveRequest ? await editorialSaveDigest(form) : null;
   const media = action === "save" ? await readEditorialCover(db, form, "historical", workspace) : {};
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     await discardRejectedEditorialUpload(db, media.uploaded, error.code);
     const known: Record<string, string> = {
       "editorial-conflict": "conflitto", "editorial-fields-required": "campi",
-      "editorial-protected": "protetto", "editorial-invalid-culture-link": "luogo",
+      "editorial-protected": "protetto", "editorial-confirmation-required": "conferma", "editorial-invalid-culture-link": "luogo",
     };
     console.error("Historical editorial operation failed", error.code, error.message);
     return redirect(workspace, known[error.message] ?? "errore");

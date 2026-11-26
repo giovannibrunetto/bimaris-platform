@@ -29,7 +29,8 @@ const notices: Record<string, string> = {
   withdraw: "Racconto ritirato.", archive: "Racconto archiviato.",
   campi: "Per pubblicare completa titolo, testo breve, epoca, apertura, almeno un capitolo e conclusione.",
   luogo: "Una scheda Cultura collegata non è più pubblicata. Aggiorna il collegamento prima di riprovare.",
-  protetto: "La versione pubblica di questo racconto è protetta.",
+  protetto: "I racconti originari non possono essere ritirati o archiviati.",
+  conferma: "Conferma la pubblicazione dell’ultima bozza salvata.",
   dati: "Controlla i dati inseriti.", conflitto: "La bozza è cambiata. Riaprila prima di riprovare.",
   fonti: "Controlla il titolo e il link delle fonti inserite.",
   "foto-file": "Seleziona una fotografia.",
@@ -153,17 +154,26 @@ export default async function HistoricalEditorialPage({ searchParams }: {
         publicationControls={<>
           <section className="editorial-panel" id="historical-publication">
             <h2>Pubblicazione</h2>
-            {record?.protected ? <p>Versione pubblica protetta. Puoi lavorare in bozza e controllare l’anteprima.</p> : <form method="post" action={api}>
+            <form method="post" action={api}>
               {fields}
-              <p>{canPublish ? "Verrà pubblicata l’ultima bozza salvata." : "Salva i campi del racconto prima di pubblicare."}</p>
+              <p>{canPublish ? "Controlla l’anteprima prima di pubblicare. Verrà usata l’ultima bozza salvata." : "Salva i campi del racconto prima di pubblicare."}</p>
+              {canPublish && <label className="historical-publication-confirmation">
+                <input type="checkbox" name="confirmPublication" value="yes" required />
+                Confermo la pubblicazione dell’ultima bozza salvata
+              </label>}
               <div className="editorial-actions">
                 <button className="editorial-button editorial-button--primary" name="action" value="publish" disabled={!canPublish}>Pubblica racconto</button>
-                {record?.published && <button className="editorial-button" name="action" value="withdraw">Ritira dal sito</button>}
               </div>
-              <details className="editorial-sheet-management"><summary>Archiviazione</summary>
-                <button className="editorial-button" name="action" value="archive">{record?.published ? "Archivia e ritira" : "Archivia racconto"}</button>
-              </details>
-            </form>}
+            </form>
+            {record?.protected ? <p>I racconti originari sono protetti dal ritiro e dall’archiviazione.</p> :
+              <details className="editorial-sheet-management">
+                <summary>Ritiro e archiviazione</summary>
+                <form method="post" action={api} className="editorial-actions">
+                  {fields}
+                  {record?.published && <button className="editorial-button" name="action" value="withdraw">Ritira dal sito</button>}
+                  <button className="editorial-button" name="action" value="archive">{record?.published ? "Archivia e ritira" : "Archivia racconto"}</button>
+                </form>
+              </details>}
             {query.esito && !["create", "save"].includes(query.esito) && notice &&
               <div className="editorial-notice" role={success ? "status" : "alert"}>
                 <p>{notice}</p>

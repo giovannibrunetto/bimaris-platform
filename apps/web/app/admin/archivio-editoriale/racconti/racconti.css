@@ -106,3 +106,14 @@
 }
 
 .editorial-card-preview > .storytelling-card { cursor: default; }
+
+.historical-editorial .historical-publication-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.historical-publication-confirmation input[type="checkbox"] {
+  width: auto;
+  flex: none;
+}
