@@ -53,13 +53,23 @@ jobs:
           reconciliation = source.with_name("observed-staging-reconciliation.sql")
           rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
           assert len(rows) == 160
+          # Include only the reviewed, registry-matched application migrations.
+          # Survey migrations and temporary backup grants are deliberately excluded.
+          approved = ["20261126094241_village_unified_save","20261126120048_editorial_unified_save","20261126121339_editorial_save_receipts","20261126124309_historical_protected_publication","20261126131503_restrict_public_table_ddl_privileges"]
+          migration_root = Path(os.environ["GITHUB_WORKSPACE"]) / "supabase/migrations"
+          for stem in approved:
+              version, name = stem.split("_", 1)
+              sql = (migration_root / (stem + ".sql")).read_text()
+              assert sql.strip()
+              rows.append({"version": version, "name": name, "sql": sql})
+          assert len(rows) == 165
           assert len({r["version"] for r in rows}) == len(rows)
           for row in rows:
               assert re.fullmatch(r"\d{14}", row["version"])
               assert re.fullmatch(r"[a-z0-9_]+", row["name"])
               path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
               path.write_text(row["sql"].rstrip() + "\n")
-          print("Candidate canonical sequence: 160 local-only migrations")
+          print("Candidate canonical sequence: 165 local-only migrations")
           PY
           python3 - <<'PY'
           from pathlib import Path
