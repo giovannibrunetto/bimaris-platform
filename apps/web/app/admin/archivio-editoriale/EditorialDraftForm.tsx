@@ -18,6 +18,17 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null);
+  const [photoAlt, setPhotoAlt] = useState("");
+  const [photoAuthor, setPhotoAuthor] = useState("");
+  const [photoLicense, setPhotoLicense] = useState("");
+  useEffect(() => {
+    if (!selectedPhoto) { setLocalPhotoUrl(null); return; }
+    const url = URL.createObjectURL(selectedPhoto);
+    setLocalPhotoUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [selectedPhoto]);
   const draftForm = useRef<HTMLFormElement>(null);
   const initialFields = useRef<string | null>(null);
   function fingerprint(form: HTMLFormElement) {
@@ -32,7 +43,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     window.addEventListener("pageshow", reset);
     return () => window.removeEventListener("pageshow", reset);
   }, []);
-  const preview = <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt }} />;
+  const preview = <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt, ...(card.variant === "village" && localPhotoUrl ? { imageUrl: localPhotoUrl, imageAlt: photoAlt || title, imageAuthor: photoAuthor || null, imageLicense: photoLicense || null } : {}) }} />;
   return <div className="editorial-composer">
   <form id="editorial-text-form" ref={draftForm} className="editorial-panel" method="post" action={action} onInput={event => {
     setDirty(true);
@@ -61,12 +72,22 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
         <h2>Anteprima della card</h2>
         {preview}
       </section>
-    <div className="editorial-authoring-controls" onSubmitCapture={event => {
+    <div className="editorial-authoring-controls" onChange={event => {
+      if (card.variant !== "village" || !(event.target instanceof HTMLInputElement)) return;
+      const field = event.target;
+      if (field.name === "photo") {
+        const file = field.files?.[0];
+        setSelectedPhoto(file && file.size > 0 && file.size <= 3 * 1024 * 1024 && ["image/jpeg", "image/png", "image/webp"].includes(file.type) ? file : null);
+      } else if (field.name === "alt") setPhotoAlt(field.value);
+      else if (field.name === "author") setPhotoAuthor(field.value);
+      else if (field.name === "license") setPhotoLicense(field.value);
+    }} onSubmitCapture={event => {
       if (!hasUnsavedFields()) return;
       event.preventDefault();
       setBlocked(true);
       document.getElementById("editorial-save")?.scrollIntoView({ block: "center" });
     }}>
+      {localPhotoUrl && card.variant === "village" && <section className="editorial-panel" aria-label="Anteprima nuova copertina"><h2>Nuova foto selezionata</h2><img src={localPhotoUrl} alt={photoAlt || "Anteprima nuova copertina"} style={{width:"100%", aspectRatio:"16 / 9", objectFit:"cover", borderRadius:12}} /><p role="status">Anteprima locale: salva la foto in bozza per confermarla.</p></section>}
       {photoControls}
     </div>
     <div id="editorial-save" className="editorial-actions" style={{ scrollMarginTop: 100 }}>
