@@ -107,7 +107,8 @@ export async function POST(request: NextRequest) {
     if (!alt) return redirect(workspace, "foto-alt");
     const bytes = new Uint8Array(await file.arrayBuffer());
     const type = imageMime(bytes);
-    if (!type || type !== file.type) return redirect(workspace, "foto-type");
+    // Trust the supported binary signature, not the browser-supplied MIME label.
+    if (!type) return redirect(workspace, "foto-type");
     const source = value("source", 500);
     const licenseUrl = value("licenseUrl", 500);
     if ([source, licenseUrl].some(url => { if (!url) return false; try { return !["http:", "https:"].includes(new URL(url).protocol); } catch { return true; } })) return redirect(workspace, "dati");
