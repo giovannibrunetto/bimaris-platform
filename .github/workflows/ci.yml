@@ -21,7 +21,7 @@ jobs:
       - run: pnpm test:auth
       - run: node --experimental-strip-types --test apps/web/tests/admin-event-transitions.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/admin-events-route-runtime.test.mjs
-      - run: node --experimental-strip-types --test apps/web/tests/admin-review-queues-regression.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-review-queues-regression.test.mjs apps/web/tests/admin-ready-to-publish.test.mjs apps/web/tests/admin-publication-runtime.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/operator-workspace-consolidation.test.mjs
       - run: node --test apps/web/tests/operator-notifications-source.test.mjs
       - run: node --experimental-strip-types --test apps/web/tests/survey-validation.test.mjs apps/web/tests/survey-security.test.mjs apps/web/tests/survey-live.test.mjs
