@@ -277,7 +277,7 @@ jobs:
           # Generate both SQL sections before opening the restore transaction.
           for section in before-snapshot after-snapshot; do
             docker cp "$section.list" "$source_db:/tmp/$section.list"
-            docker exec "$source_db" pg_restore --data-only --no-owner --no-acl --use-list="/tmp/$section.list" /tmp/rel-r01-synthetic.dump > "$section.sql"
+            docker exec "$source_db" pg_restore --file=- --data-only --no-owner --no-acl --use-list="/tmp/$section.list" /tmp/rel-r01-synthetic.dump > "$section.sql"
           done
           cat > assert-empty.sql <<'SQL'
           DO $check$
