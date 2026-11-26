@@ -3,12 +3,13 @@
 import CultureMonumentCard, { type CultureCardData } from "@/components/CultureMonumentCard";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-export default function EditorialDraftForm({ action, message, saved, card, publicExcerpt, photoControls, publicationControls, children }: {
+export default function EditorialDraftForm({ action, message, saved, card, publicExcerpt, photoControls, publicationControls, children, unifiedVillageSave = false }: {
   action: string;
   message?: string;
   saved: boolean;
   card: CultureCardData;
   publicExcerpt: boolean;
+  unifiedVillageSave?: boolean;
   children: ReactNode;
   photoControls: ReactNode;
   publicationControls: ReactNode;
@@ -41,7 +42,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
   }, []);
   const preview = <CultureMonumentCard card={{ ...card, title: title || "Titolo della scheda", excerpt, ...(card.variant === "village" && localPhotoUrl ? { imageUrl: localPhotoUrl, imageAlt: photoAlt || title, imageAuthor: photoAuthor || null, imageLicense: photoLicense || null } : {}) }} />;
   return <div className="editorial-composer">
-  <form id="editorial-text-form" ref={draftForm} className="editorial-panel" method="post" action={action} onInput={event => {
+  <form id="editorial-text-form" ref={draftForm} className="editorial-panel" method="post" action={action} encType={unifiedVillageSave ? "multipart/form-data" : undefined} onInput={event => {
     setDirty(true);
     setBlocked(false);
     const field = event.target;
@@ -71,6 +72,7 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     <div className="editorial-authoring-controls" onChangeCapture={event => {
       if (card.variant !== "village" || !(event.target instanceof HTMLInputElement)) return;
       const field = event.target;
+      if (unifiedVillageSave && ["photo","alt","author","source","license","licenseUrl"].includes(field.name)) { setDirty(true); setBlocked(false); }
       if (field.name === "photo") {
         const file = field.files?.[0];
         if (photoReader.current?.readyState === FileReader.LOADING) photoReader.current.abort();
@@ -97,13 +99,13 @@ export default function EditorialDraftForm({ action, message, saved, card, publi
     }}>
       {photoError && <p role="alert">{photoError}</p>}
       {photoControls}
-      {localPhotoUrl && card.variant === "village" && <p role="status">Anteprima aggiornata. Salva la foto in bozza per confermarla.</p>}
+      {localPhotoUrl && card.variant === "village" && <p role="status">Anteprima aggiornata. {unifiedVillageSave ? "Salva bozza per confermare tutte le modifiche." : "Salva la foto in bozza per confermarla."}</p>}
     </div>
     <div id="editorial-save" className="editorial-actions" style={{ scrollMarginTop: 100 }}>
       <button className="editorial-button editorial-button--primary" type="submit" form="editorial-text-form" disabled={saving}>
         {saving ? "Salvataggio…" : "Salva bozza"}
       </button>
-      {blocked ? <span role="alert">Salva le modifiche prima di allegare una foto o pubblicare.</span> : saving ? <span role="status">Salvataggio in corso</span>
+      {blocked ? <span role="alert">{unifiedVillageSave ? "Salva la bozza prima di pubblicare." : "Salva le modifiche prima di allegare una foto o pubblicare."}</span> : saving ? <span role="status">Salvataggio in corso</span>
         : message && <span role={saved ? "status" : "alert"}>{message}</span>}
     </div>
     <div className="editorial-publication-controls" onSubmitCapture={event => {

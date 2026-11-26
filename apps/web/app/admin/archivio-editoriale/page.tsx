@@ -118,6 +118,10 @@ export default async function EditorialPage({ searchParams }: {
         .order("sort_order").limit(1).maybeSingle()
     : { data: null };
   const draftCover = photos[0];
+  // Enable only after the atomic save RPC has passed isolated verification.
+  const unifiedVillageSave = model === "village" && process.env.BIMARIS_VILLAGE_UNIFIED_SAVE === "1" && process.env.VERCEL_ENV !== "production";
+  const photoFormId = unifiedVillageSave ? "editorial-text-form" : undefined;
+  const PhotoForm = unifiedVillageSave ? "div" : "form";
   const cardImage = model !== "culture" && draftCover ? undefined : cover?.image_url ?? record?.image_url;
   const card: CultureCardData = {
     variant: model,
@@ -230,7 +234,7 @@ export default async function EditorialPage({ searchParams }: {
           </form>
         </details>}
       </section> :
-        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} photoControls={<>
+        <EditorialDraftForm key={`${workspace.id}:${workspace.version}`} unifiedVillageSave={unifiedVillageSave} photoControls={<>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
           <h2 id="editorial-photo-heading">{model === "village" ? "Foto di copertina" : "Foto della bozza"}</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
@@ -243,26 +247,26 @@ export default async function EditorialPage({ searchParams }: {
           </div> : model === "village" && cardImage ? <figure><img src={card.imageUrl ?? undefined} alt={card.imageAlt ?? card.title} /><figcaption>Foto attualmente pubblicata</figcaption></figure> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
           <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
             <summary>{model === "village" ? (draftCover || cardImage ? "Sostituisci foto" : "Inserisci foto copertina") : "Aggiungi una foto"}</summary>
-            <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
-              {hiddenFields}
+            <PhotoForm className="editorial-photo-form" {...(unifiedVillageSave ? {} : { method: "post", action: api, encType: "multipart/form-data" })}>
+              {!unifiedVillageSave && hiddenFields}
               <label>File della foto
-                <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required />
+                <input name="photo" form={photoFormId} type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="editorial-photo-format" required={!unifiedVillageSave} />
                 <small id="editorial-photo-format">JPEG, PNG o WebP, fino a 3 MiB.</small>
               </label>
               <label>Descrizione della foto
-                <input name="alt" maxLength={250} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required />
+                <input name="alt" form={photoFormId} maxLength={250} defaultValue={unifiedVillageSave ? draftCover?.alt : undefined} placeholder="Es. Il bastione visto dal cortile" aria-describedby="editorial-alt-help" required={!unifiedVillageSave} />
                 <small id="editorial-alt-help">Una breve descrizione per chi usa un lettore di schermo.</small>
               </label>
               <details className="editorial-photo-credits">
                 <summary>Autore, fonte e licenza</summary>
-                <label>Autore<input name="author" maxLength={180} /></label>
-                <label>Link alla fonte<input name="source" type="url" maxLength={500} /></label>
-                <label>Licenza<input name="license" maxLength={180} /></label>
-                <label>Link alla licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
+                <label>Autore<input name="author" form={photoFormId} maxLength={180} defaultValue={unifiedVillageSave ? draftCover?.author : undefined} /></label>
+                <label>Link alla fonte<input name="source" form={photoFormId} type="url" maxLength={500} defaultValue={unifiedVillageSave ? draftCover?.source : undefined} /></label>
+                <label>Licenza<input name="license" form={photoFormId} maxLength={180} defaultValue={unifiedVillageSave ? draftCover?.license : undefined} /></label>
+                <label>Link alla licenza<input name="licenseUrl" form={photoFormId} type="url" maxLength={500} defaultValue={unifiedVillageSave ? draftCover?.licenseUrl : undefined} /></label>
               </details>
-              <small>Se hai modificato il testo, salva la bozza prima di scegliere e allegare una foto.</small>
-              <button className="editorial-button editorial-button--primary" name="action" value="photo">{model === "village" ? "Salva foto in bozza" : "Allega alla bozza"}</button>
-            </form>
+              {unifiedVillageSave ? <small>Fotografia e dati saranno salvati insieme al testo con Salva bozza. Se modifichi i crediti di una copertina già pubblicata, seleziona anche il nuovo file.</small> : <><small>Se hai modificato il testo, salva la bozza prima di scegliere e allegare una foto.</small>
+              <button className="editorial-button editorial-button--primary" name="action" value="photo">{model === "village" ? "Salva foto in bozza" : "Allega alla bozza"}</button></>}
+            </PhotoForm>
           </details>
         </section>
         </>} publicationControls={<>

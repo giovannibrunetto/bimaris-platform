@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
     || (entry && !uuid.test(entry))) return redirect(workspace, "dati");
   let payload: Record<string, unknown> = {};
   let uploaded: string | null = null;
+  let unifiedCover: Record<string, unknown> | null = null;
+  const unifiedVillageSave = model === "village" && action === "save" && form.has("photo") && process.env.BIMARIS_VILLAGE_UNIFIED_SAVE === "1" && process.env.VERCEL_ENV !== "production";
   if (action === "save") {
     if (form.get("sourcesEdited") === "1") {
       const columns = ["sourceLabel", "sourceLink", "sourceType", "sourceNote"].map(field => form.getAll(field).map(item => String(item).trim()));
@@ -99,8 +101,21 @@ export async function POST(request: NextRequest) {
     const slug = String(data.draft.title ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     payload = { slug: `${slug || "cultura"}-${workspace.slice(0,8)}` };
   }
-  if (action === "photo") {
+  if (action === "photo" || unifiedVillageSave) {
     const file = form.get("photo");
+    const hasNewFile = file instanceof File && file.size > 0;
+    if (unifiedVillageSave && !hasNewFile) {
+      const { data: current, error: currentError } = await db.from("editorial_workspaces").select("draft,version").eq("id", workspace).eq("model", "village").maybeSingle();
+      if (currentError || !current) return redirect(workspace, "errore");
+      if (current.version !== version) return redirect(workspace, "conflitto");
+      const pending = current.draft?.photos?.[0];
+      const credits = { alt: value("alt", 250), author: value("author", 180), source: value("source", 500), license: value("license", 180), licenseUrl: value("licenseUrl", 500) };
+      if (pending && Object.entries(credits).some(([key, val]) => val !== String(pending[key] ?? ""))) {
+        if (!credits.alt) return redirect(workspace, "foto-alt");
+        if ([credits.source, credits.licenseUrl].some(url => { if (!url) return false; try { return !["http:", "https:"].includes(new URL(url).protocol); } catch { return true; } })) return redirect(workspace, "dati");
+        unifiedCover = { id: pending.id, ...credits };
+      } else if (!pending && Object.values(credits).some(Boolean)) return redirect(workspace, "foto-file");
+    } else {
     const alt = value("alt", 250);
     if (!(file instanceof File)) return redirect(workspace, "foto-file");
     if (!file.size || file.size > 3 * 1024 * 1024) return redirect(workspace, "foto-size");
@@ -115,9 +130,14 @@ export async function POST(request: NextRequest) {
     uploaded = randomUUID();
     const { error } = await db.storage.from("editorial-media").upload(uploaded, bytes, { contentType: type });
     if (error) { console.error("Editorial photo storage upload failed", error.name); return redirect(workspace, "foto-storage"); }
-    payload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
+    const coverPayload = { id: uploaded, alt, author: value("author", 180), license: value("license", 180), source, licenseUrl };
+    if (unifiedVillageSave) unifiedCover = coverPayload;
+    else payload = coverPayload;
+    }
   }
-  const { data, error } = action === "publish"
+  const { data, error } = unifiedVillageSave
+    ? await db.rpc("save_village_editorial", { p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload, p_cover: unifiedCover })
+    : action === "publish"
     ? await db.rpc("publish_editorial_with_sources", { p_model: model, p_actor: admin.userId, p_workspace: workspace, p_version: version, p_data: payload })
     : await db.rpc(model === "culture" ? "manage_culture_editorial" : "manage_other_editorial", {
     ...(model === "culture" ? {} : { p_model: model }),
