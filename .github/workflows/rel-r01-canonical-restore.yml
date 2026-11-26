@@ -1,0 +1,185 @@
+name: REL-R01 canonical synthetic recovery
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/rel-r01-canonical-restore.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rel-r01-canonical-restore
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Replay schema and recover synthetic data in disposable local target
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, uuid, secrets
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:", "http://localhost:"))
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          def request(path, key, token=None, method="GET", data=None):
+              headers={"apikey":key,"Content-Type":"application/json","Prefer":"return=representation"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+path, headers=headers, method=method, data=None if data is None else json.dumps(data).encode())
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      raw=r.read()
+                      return r.status,json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  return e.code,None
+          def expect(label,condition):
+              if not condition: raise SystemExit("FAIL "+label)
+              print("PASS "+label)
+          actors=[]
+          for label in ("a","b"):
+              email="sec-r01-"+label+"@example.invalid"
+              password=secrets.token_urlsafe(32)
+              code,u=request("/auth/v1/admin/users",service,service,"POST",{"email":email,"password":password,"email_confirm":True})
+              expect(label+" create Auth identity",code in (200,201) and bool(u and u.get("id")))
+              code,s=request("/auth/v1/token?grant_type=password",anon,None,"POST",{"email":email,"password":password})
+              expect(label+" real Auth login",code==200 and s["user"]["id"]==u["id"] and bool(s["access_token"]))
+              op=str(uuid.uuid4())
+              exp=str(uuid.uuid4())
+              actors.append((u["id"],s["access_token"],op,exp,s["refresh_token"]))
+              for table,data in [
+                  ("operators",{"id":op,"slug":"sec-r01-"+label,"name":"Synthetic "+label,"published":False,"operator_code":None}),
+                  ("operator_memberships",{"operator_id":op,"user_id":u["id"],"role":"owner"}),
+                  ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect(label+" fixture "+table,code in (200,201,204))
+          Path("actors.json").write_text(json.dumps(actors))
+          PY
+          chmod 600 "$work/actors.json" "$work/local-status.json"
+          source_db="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test "$(printf '%s\n' "$source_db" | wc -l)" -eq 1
+          test -n "$source_db"
+          psql_local() { docker exec -i "$source_db" psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d postgres "$@"; }
+          tables=(public.analytics_events public.api_rate_limits public.b2b_match_notifications public.b2b_notification_preferences public.business_account_memberships public.business_accounts public.categories public.contact_messages public.culture_entries public.culture_images public.culture_relations public.culture_sources public.discovery_intents public.editorial_activity public.editorial_workspaces public.event_import_batches public.events public.experience_activities public.experience_activity_links public.experience_availability public.experience_discovery_intents public.experience_discovery_profiles public.experience_media public.experience_operators public.experience_revision_media public.experience_revisions public.experiences public.favorites public.food_product_experiences public.food_product_operators public.food_products public.historical_editorial_stories public.itineraries public.itinerary_stops public.newsletter_preferences public.operator_applications public.operator_b2b_profiles public.operator_interest_manifestations public.operator_memberships public.operator_notifications public.operator_revisions public.operators public.places public.profiles public.stories public.story_editorial_context public.story_images public.story_places public.story_sources public.territories public.user_behavior_events public.user_interests public.user_profiles public.user_saved_items public.village_points public.village_sources public.villages security.admin_members)
+          test "${#tables[@]}" -eq 58
+          args=()
+          for t in "${tables[@]}"; do args+=(--table="$t"); done
+          # Synthetic Auth identities only: store UUIDs, no tokens or passwords in dump.
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path("actors.json").read_text())
+          Path("synthetic-ids.sql").write_text("\n".join("INSERT INTO auth.users(id) VALUES ('"+x[0]+"') ON CONFLICT (id) DO NOTHING;" for x in a)+"\n")
+          PY
+          for t in "${tables[@]}"; do
+            printf "SELECT '%s',count(*),md5(coalesce(string_agg(md5(to_jsonb(t)::text),'' ORDER BY md5(to_jsonb(t)::text)),'')) FROM %s t;\n" "$t" "$t"
+          done > manifest.sql
+          psql_local < manifest.sql > before.tsv
+          test "$(wc -l < before.tsv)" -eq 58
+          docker exec "$source_db" pg_dump -U postgres -d postgres -Fc --data-only --no-owner --no-acl --strict-names "${args[@]}" > application.dump
+          test -s application.dump
+          # All contents synthetic; key is ephemeral and never logged or uploaded.
+          python3 -c 'import secrets; print(secrets.token_hex(32))' > archive-key
+          gpg --batch --pinentry-mode loopback --passphrase-file archive-key --symmetric --cipher-algo AES256 --output application.gpg application.dump
+          sha256sum application.dump > before.sha
+          gpg --batch --pinentry-mode loopback --passphrase-file archive-key --decrypt --output recovered.dump application.gpg
+          cmp -s application.dump recovered.dump
+          echo "PASS encrypted archive round trip"
+          # Restore no external environment and do not contact remote Supabase.
+          # Fresh Supabase stack replays the real migration sequence.
+          started=$(date +%s)
+          supabase stop --no-backup
+          supabase start
+          source_db="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test -n "$source_db"
+          test "$(printf '%s\n' "$source_db" | wc -l)" -eq 1
+          # The fresh local stack may contain migration seed rows.
+          # Clear only the verified scope in this disposable target.
+          list=$(IFS=,; echo "${tables[*]}")
+          psql_local -c "TRUNCATE TABLE $list CASCADE"
+          psql_local < synthetic-ids.sql
+          docker cp recovered.dump "$source_db:/tmp/rel-r01-synthetic.dump"
+          docker exec "$source_db" pg_restore -U postgres -d postgres --data-only --disable-triggers --exit-on-error --single-transaction --no-owner --no-acl /tmp/rel-r01-synthetic.dump
+          psql_local < manifest.sql > after.tsv
+          cmp -s before.tsv after.tsv
+          echo "PASS 58 application table fingerprints"
+          psql_local -c "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN ('r','p') AND c.relrowsecurity AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))" | grep -Fxq 58
+          echo "PASS RLS enabled on all 58 tables"
+          # pg_restore disables triggers locally; independently verify every FK in scope.
+          python3 - <<'PY'
+          from pathlib import Path
+          Path("fk-check.sql").write_text("""DO $check$
+          DECLARE f record; predicate text; joiner text; missing bigint;
+          BEGIN
+            FOR f IN SELECT k.oid,k.conrelid,k.confrelid,k.conkey,k.confkey,k.conname
+              FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid
+              JOIN pg_namespace n ON n.oid=c.relnamespace
+              WHERE k.contype='f' AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))
+            LOOP
+              SELECT string_agg(format('s.%I IS NOT NULL',a.attname),' AND '),string_agg(format('s.%I = p.%I',a.attname,b.attname),' AND ')
+              INTO predicate,joiner
+              FROM unnest(f.conkey,f.confkey) AS x(src,dst)
+              JOIN pg_attribute a ON a.attrelid=f.conrelid AND a.attnum=x.src
+              JOIN pg_attribute b ON b.attrelid=f.confrelid AND b.attnum=x.dst;
+              EXECUTE format('SELECT count(*) FROM %s s WHERE %s AND NOT EXISTS (SELECT 1 FROM %s p WHERE %s)',f.conrelid::regclass,predicate,f.confrelid::regclass,joiner) INTO missing;
+              IF missing<>0 THEN RAISE EXCEPTION 'Foreign key violation: %',f.conname; END IF;
+            END LOOP;
+          END $check$;""")
+          PY
+          psql_local < fk-check.sql
+          echo "PASS foreign key integrity (non-null keys)"
+          echo "Local recovery elapsed seconds: $(($(date +%s)-started))"
+          echo "REL-R01 SYNTHETIC DATABASE RECOVERY PASS; actual Staging data, Storage and Auth recovery excluded"
