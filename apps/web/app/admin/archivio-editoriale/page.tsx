@@ -36,7 +36,7 @@ type CatalogRecord = { id: string; title: string; slug: string; published: boole
   image_url?: string | null; image_alt?: string | null; image_author?: string | null; image_license?: string | null;
   google_maps_url?: string | null; editorial_address?: string | null; editorial_latitude?: number | null; editorial_longitude?: number | null;
 };
-type Photo = { id: string; alt: string; author?: string; license?: string };
+type Photo = { id: string; alt: string; author?: string; license?: string; source?: string; licenseUrl?: string };
 
 export default async function EditorialPage({ searchParams }: {
   searchParams: Promise<{ id?: string; anteprima?: string; esito?: string; q?: string; stato?: string; pagina?: string; salvataggio?: string; fotografia?: string; pubblicazione?: string; sezione?: string }>;
