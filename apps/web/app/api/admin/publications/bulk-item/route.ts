@@ -36,7 +36,7 @@ export async function POST(request:NextRequest){
   if(category==="experiences"){
    const [item,revisions]=await Promise.all([
     db.from("experiences").select("id,review_status,published,experience_origin,operator:operators!experiences_operator_id_fkey(published)").eq("id",id).maybeSingle(),
-    db.from("experience_revisions").select("experience_id").eq("experience_id",id).eq("status","pending")
+    db.from("experience_revisions").select("experience_id,experiences!inner(experience_origin)").eq("experience_id",id).eq("status","pending").neq("experiences.experience_origin","bimaris")
    ]);
    if(item.error||revisions.error)return reply(false,"Verifica dello stato non riuscita.",503);
    if(!item.data||!isReadyExperience(item.data,new Set((revisions.data??[]).map(row=>row.experience_id))))return reply(false,"Esperienza non più pronta.");

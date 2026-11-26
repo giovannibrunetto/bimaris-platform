@@ -74,3 +74,19 @@ test("bulk publishing is explicit, category scoped, and reuses single publicatio
  for(const handler of ["experiencePost","appointmentPost","editorialPost","historicalPost"])assert.match(route,new RegExp("await "+handler));
  assert.doesNotMatch(route,/\.(insert|update|delete|rpc)\(/);
 });
+
+test("review and publication are disjoint and initial review is not double counted",()=>{
+ const review=read("../app/admin/contenuti/page.tsx");
+ const dashboard=read("../app/admin/page.tsx");
+ const shell=read("../app/admin/template.tsx");
+ const helper=read("../app/admin/ready-to-publish.ts");
+ const bulk=read("../app/api/admin/publications/bulk-item/route.ts");
+ for(const src of [review,dashboard,shell]){
+  assert.match(src,/\.in\("review_status",\s*\["pending",\s*"submitted"\]\)\.eq\("published",false\)/);
+  assert.match(src,/\.filter\((item|row)\s*=>\s*!(revisionIds|pendingRevisionIds)\.has\((item|row)\.id\)\)/);
+ }
+ assert.match(helper,/item\.review_status==="approved"&&!item\.published/);
+ assert.match(helper,/!pendingRevisionIds\.has\(item\.id\)/);
+ assert.match(bulk,/\.neq\("experiences.experience_origin","bimaris"\)/);
+ assert.match(review,/Dopo l’approvazione, i nuovi contenuti pronti passano in Da pubblicare/);
+});

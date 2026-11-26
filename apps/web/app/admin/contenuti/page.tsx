@@ -37,7 +37,7 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
   const [applicationsRes, profilesRes, expsRes, revisionsRes, eventsRes] = await Promise.all([
     db.from("operator_applications").select("id,business_name,status").in("status", ["new", "reviewing"]).order("created_at", { ascending: false }),
     db.from("operator_revisions").select("id,operator_id,operators(name)").eq("status","pending").order("created_at",{ascending:false}),
-    db.from("experiences").select("id,name,operator_id,review_status,experience_origin").neq("experience_origin","bimaris").in("review_status",["pending","submitted"]).order("created_at",{ascending:false}),
+    db.from("experiences").select("id,name,operator_id,review_status,experience_origin").neq("experience_origin","bimaris").in("review_status",["pending","submitted"]).eq("published",false).order("created_at",{ascending:false}),
     db.from("experience_revisions").select("id,experience_id,content,experiences!inner(experience_origin,name,excerpt,description,duration_minutes,price_from,meeting_point,location_kind,latitude,longitude,territory_municipality_code)").eq("status","pending").neq("experiences.experience_origin","bimaris"),
     db.from("events").select("id,title,starts_at,source_type").eq("verification_status","pending").eq("published",false).order("starts_at",{ascending:true}),
   ]);
@@ -46,7 +46,8 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
   }
   const applications = (applicationsRes.data ?? []) as Application[];
   const profiles = (profilesRes.data ?? []) as ProfileRevision[];
-  const experiences = (expsRes.data ?? []) as Exp[];
+  const revisionIds = new Set((revisionsRes.data ?? []).map(row => row.experience_id));
+  const experiences = ((expsRes.data ?? []) as Exp[]).filter(item => !revisionIds.has(item.id));
   const revisions = (revisionsRes.data ?? []) as ExpRevision[];
   const appointments = (eventsRes.data ?? []) as Event[];
   const experienceCount = experiences.length + revisions.length;
@@ -138,10 +139,10 @@ export default async function ContentReview({ searchParams }: { searchParams: Pr
         </article>)}
           {appointments.length === 0 && <p className="admin-events__empty">Nessun appuntamento in attesa.</p>}
         </div>
-        <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti e pubblicazione →</Link></p>
+        <p><Link className="text-link" href="/admin/attivita?tipo=appuntamenti">Registro appuntamenti →</Link></p>
         </div>
       </section>}
-      <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Puoi approvare, scartare o pubblicare dalla scheda della singola pratica.</p>
+      <p className="admin-events__hint">La verifica non comporta pubblicazione automatica. Dopo l’approvazione, i nuovi contenuti pronti passano in Da pubblicare. Le modifiche ai contenuti già online seguono il proprio flusso di revisione.</p>
     </div></section>
   </div>;
 }

@@ -17,7 +17,7 @@ export default async function AdminPage() {
   const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, approvedEventsRes, allEventsRes, approvedExperiencesRes, readyEditorial] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experiences").select("id", { count: "exact", head: true }).neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]),
+    db.from("experiences").select("id").neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]).eq("published",false),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
     db.from("experience_revisions").select("id,experience_id,experiences!inner(experience_origin)", { count: "exact" }).eq("status", "pending").neq("experiences.experience_origin", "bimaris"),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -40,7 +40,7 @@ export default async function AdminPage() {
   const pendingRevisionIds=new Set((revsRes.data??[]).map(revision=>revision.experience_id));
   const experiencesToPublish=(approvedExperiencesRes.data??[]).filter(item=>isReadyExperience({id:item.id,review_status:"approved",published:false,experience_origin:item.experience_origin,operator:item.operator as {published:boolean}|{published:boolean}[]|null},pendingRevisionIds)).length;
   const readyToPublish=eventsToPublish+experiencesToPublish+readyEditorial.length;
-  const pendingExperiences = pendingExpsRes.count ?? 0;
+  const pendingExperiences = (pendingExpsRes.data??[]).filter(item=>!pendingRevisionIds.has(item.id)).length;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
