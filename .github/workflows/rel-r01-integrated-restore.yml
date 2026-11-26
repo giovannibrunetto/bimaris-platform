@@ -127,12 +127,20 @@ jobs:
               rev=str(uuid.uuid4())
               original=op+"/"+exp+"/fixture.webp"
               revision=op+"/revisions/"+rev+"/fixture.webp"
-              for table,data in [
-                  ("experience_revisions",dict(id=rev,experience_id=exp,operator_id=op,status="draft")),
-                  ("experience_media",dict(experience_id=exp,storage_path=original)),
-                  ("experience_revision_media",dict(revision_id=rev,operator_id=op,storage_path=revision))]:
+              # Exercise both a draft with no initial snapshot and an applied
+              # revision whose insertion requires an existing cover.
+              live=("experience_media",dict(experience_id=exp,storage_path=original,is_cover=True))
+              rev_row=("experience_revisions",dict(id=rev,experience_id=exp,operator_id=op,status="applied" if i else "draft"))
+              for table,data in ((live,rev_row) if i else (rev_row,live)):
                   code,_=request("/rest/v1/"+table,service,service,"POST",data)
                   expect("linked fixture "+table,code in (200,201,204))
+              table="/rest/v1/experience_revision_media"
+              if i:
+                  code,rows=request(table+"?revision_id=eq."+rev,service,service,"PATCH",dict(storage_path=revision))
+                  expect("applied fixture preserves snapshot provenance",code==200 and len(rows)==1 and bool(rows[0]["source_media_id"]))
+              else:
+                  code,_=request(table,service,service,"POST",dict(revision_id=rev,operator_id=op,storage_path=revision))
+                  expect("linked fixture experience_revision_media",code in (200,201,204))
               for bucket,path in [("experience-media",original),("experience-revision-media",revision)]:
                   code,_=storage("object/"+bucket+"/"+path,"POST",webp)
                   expect("source upload "+bucket,code in (200,201))
@@ -171,13 +179,14 @@ jobs:
           python3 -c 'import secrets; print(secrets.token_hex(32))' > archive-key
           tar -cf integrated.tar application.dump storage-manifest.json storage-backup
           gpg --batch --pinentry-mode loopback --passphrase-file archive-key --symmetric --cipher-algo AES256 --output application.gpg integrated.tar
-          sha256sum application.dump > before.sha
+          sha256sum application.dump | cut -d ' ' -f 1 > before.sha
           gpg --batch --pinentry-mode loopback --passphrase-file archive-key --decrypt --output recovered.tar application.gpg
           cmp -s integrated.tar recovered.tar
           mkdir recovered
           tar -xf recovered.tar -C recovered
           cp recovered/application.dump recovered.dump
-          cmp -s application.dump recovered.dump
+          test "$(sha256sum recovered.dump | cut -d ' ' -f 1)" = "$(cat before.sha)"
+          echo "PASS recovered database archive SHA-256"
           echo "PASS encrypted archive round trip"
           # Restore no external environment and do not contact remote Supabase.
           # Fresh Supabase stack replays the real migration sequence.
@@ -258,11 +267,71 @@ jobs:
                   del deps[n]
               for parents in deps.values():
                   parents.difference_update(ready)
-          Path("ordered.list").write_text("\n".join([entries[n] for n in order]+remaining)+"\n")
+          split=order.index("public.experience_revision_media")
+          parents={"public.experience_media","public.experience_revisions"}
+          assert parents.issubset(order[:split]), "Revision snapshot parents must precede archived rows"
+          Path("before-snapshot.list").write_text("\n".join(entries[n] for n in order[:split])+"\n")
+          Path("after-snapshot.list").write_text("\n".join([entries[n] for n in order[split:]]+remaining)+"\n")
           print("PASS dependency-ordered archive scope (58 tables)")
           PY
-          docker cp ordered.list "$source_db:/tmp/rel-r01-ordered.list"
-          docker exec "$source_db" pg_restore -U postgres -d postgres --data-only --exit-on-error --single-transaction --no-owner --no-acl --use-list=/tmp/rel-r01-ordered.list /tmp/rel-r01-synthetic.dump
+          # Generate both SQL sections before opening the restore transaction.
+          for section in before-snapshot after-snapshot; do
+            docker cp "$section.list" "$source_db:/tmp/$section.list"
+            docker exec "$source_db" pg_restore --data-only --no-owner --no-acl --use-list="/tmp/$section.list" /tmp/rel-r01-synthetic.dump > "$section.sql"
+          done
+          cat > assert-empty.sql <<'SQL'
+          DO $check$
+          BEGIN
+            IF EXISTS (SELECT 1 FROM public.experience_revision_media) THEN
+              RAISE EXCEPTION 'Revision media target must be empty before restore';
+            END IF;
+          END $check$;
+          SQL
+          cat > reconcile-snapshots.sql <<'SQL'
+          DO $check$
+          DECLARE removed bigint;
+          BEGIN
+            IF EXISTS (
+              WITH expected AS (
+                SELECT r.id, r.operator_id, m.id AS source_media_id,
+                       m.storage_path, m.alt_text, m.sort_order, m.is_cover
+                FROM public.experience_revisions r
+                CROSS JOIN LATERAL (
+                  SELECT m.id, m.storage_path, m.alt_text, m.sort_order, m.is_cover
+                  FROM public.experience_media m
+                  WHERE m.experience_id = r.experience_id
+                  ORDER BY m.sort_order LIMIT 6
+                ) m
+              ), actual AS (
+                SELECT revision_id, operator_id, source_media_id,
+                       storage_path, alt_text, sort_order, is_cover
+                FROM public.experience_revision_media
+              )
+              (SELECT * FROM actual EXCEPT ALL SELECT * FROM expected)
+              UNION ALL
+              (SELECT * FROM expected EXCEPT ALL SELECT * FROM actual)
+            ) THEN
+              RAISE EXCEPTION 'Unexpected rows before loading archived revision media';
+            END IF;
+
+            DELETE FROM public.experience_revision_media snapshot
+            USING public.experience_revisions revision, public.experience_media media
+            WHERE snapshot.revision_id = revision.id
+              AND snapshot.source_media_id = media.id
+              AND media.experience_id = revision.experience_id;
+            GET DIAGNOSTICS removed = ROW_COUNT;
+            IF removed <> 2 THEN
+              RAISE EXCEPTION 'Expected two synthetic snapshot rows, removed %', removed;
+            END IF;
+            RAISE NOTICE 'PASS reconciled % trigger-generated synthetic snapshot rows', removed;
+          END $check$;
+          SQL
+          # Keep all application triggers and FK checks active in the same transaction.
+          {
+            printf 'BEGIN;\n'
+            cat assert-empty.sql before-snapshot.sql reconcile-snapshots.sql after-snapshot.sql
+            printf 'COMMIT;\n'
+          } | psql_local
           echo "PASS ordered pg_restore completed"
           psql_local < manifest.sql > after.tsv
           python3 - <<'PY'
