@@ -104,3 +104,5 @@
 .historical-editorial:has(.historical-index[data-mode="focus"]) > .editorial-heading {
   display: none;
 }
+
+.editorial-card-preview > .storytelling-card { cursor: default; }

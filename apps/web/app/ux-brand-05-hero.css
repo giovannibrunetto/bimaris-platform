@@ -178,35 +178,30 @@
   }
 }
 
-/* Shared interaction for clickable cards and cards containing links. */
-.public-discovery-card.public-discovery-card {
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-
+/* Shared interaction for public discovery cards and their editorial previews. */
 @media (hover: hover) and (pointer: fine) {
   .public-discovery-card.public-discovery-card:hover {
     position: relative;
     z-index: 1;
-    transform: scale(1.012);
     border-color: #a77b3a;
     box-shadow: 0 18px 42px rgba(3, 33, 38, .18);
   }
 }
 
-.public-discovery-card.public-discovery-card:focus-within {
-  outline: 3px solid #87612e;
-  outline-offset: 3px;
-  border-color: #a77b3a;
-}
-
-@media (prefers-reduced-motion: reduce) {
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .public-discovery-card.public-discovery-card {
-    transition: none;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   }
 
   .public-discovery-card.public-discovery-card:hover {
-    transform: none;
+    transform: scale(1.012);
   }
+}
+
+.public-discovery-card.public-discovery-card:is(:focus-visible, :has(:focus-visible)) {
+  outline: 3px solid #87612e;
+  outline-offset: 3px;
+  border-color: #a77b3a;
 }
 
 /* Same editorial hierarchy for the two discovery choosers. */
@@ -224,15 +219,6 @@ h2.public-discovery-section-title.public-discovery-section-title {
   --bimaris-story-card-border: rgba(202, 168, 106, .38);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .stories-cards > .story-card.public-discovery-card:hover,
-  .village-cards > .village-card.public-discovery-card:hover {
-    outline: 1px solid rgba(167, 123, 58, .35);
-    outline-offset: 0;
-  }
-}
-
-
 /* PR58: Village discovery cards are entirely actionable, not only their CTA text.
    The image-credit source link remains independently clickable. */
 .village-cards > .village-card.public-discovery-card{
@@ -249,12 +235,6 @@ h2.public-discovery-section-title.public-discovery-section-title {
  position:relative;
  z-index:2;
 }
-.village-cards > .village-card:focus-within{
- outline:3px solid #87612e;
- outline-offset:3px;
-}
-
-
 /* RETE-UX-02: direct public discovery in the premium BIMARIS visual language. */
 .bimaris-network-page{
  min-height:65vh;

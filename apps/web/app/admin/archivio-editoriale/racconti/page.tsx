@@ -6,6 +6,7 @@ import { getVerifiedSuperAdmin } from "@/lib/admin-mfa-guard";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getPublishedCultureEntries } from "@/data/live";
 import type { CultureStory } from "@/data/ti-racconto-messina";
+import HistoricalStoryCard from "@/components/HistoricalStoryCard";
 import HistoricalStoryView from "@/components/HistoricalStoryView";
 import EditorialDraftForm from "../EditorialDraftForm";
 import EditorialPhotoFields from "../EditorialPhotoFields";
@@ -135,6 +136,12 @@ export default async function HistoricalEditorialPage({ searchParams }: {
 
       {preview ? <>
         {notice && <p role="status" className="editorial-notice">{notice}</p>}
+        <section className="editorial-card-preview" aria-label="Anteprima della card">
+          <HistoricalStoryCard story={{
+            key: record?.slug ?? active.id, title: draft?.title || "Racconto senza titolo",
+            subtitle: draft?.subtitle ?? "", theme: draft?.theme ?? "",
+          }} />
+        </section>
         <HistoricalStoryView preview entries={entries} definition={{
           key: record?.slug ?? active.id, title: draft?.title || "Racconto senza titolo", subtitle: draft?.subtitle ?? "",
           cover: draft?.cover, sources: draft?.sources, theme: draft?.theme ?? "", intro: draft?.intro ?? [], chapters: draft?.chapters ?? [], conclusion: draft?.conclusion ?? [],

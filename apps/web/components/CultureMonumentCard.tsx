@@ -41,7 +41,7 @@ export default function CultureMonumentCard({ card, href, hideAction = false }: 
       {!hideAction && <span className="text-link">Scopri il luogo →</span>}
     </div>
   </>;
-  return <article className="card culture-card">
+  return <article className="card culture-card public-discovery-card">
     {href ? <Link className="culture-card-link" href={href}>{body}</Link> : <div className="culture-card-link">{body}</div>}
     {card.imageAuthor && card.imageLicense && <div className="photo-credit">Foto: {card.imageAuthor} · {card.imageLicense}</div>}
   </article>;

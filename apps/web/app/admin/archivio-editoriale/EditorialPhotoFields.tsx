@@ -9,8 +9,10 @@ export default function EditorialPhotoFields({ form, cover, gallery }: {
   return <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
     <h2 id="editorial-photo-heading">Foto di copertina</h2>
     {image && <figure>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image} alt={cover.alt ?? ""} />
+      <div className="editorial-cover-image">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image} alt={cover.alt ?? ""} />
+      </div>
       <figcaption>{[cover.alt, cover.author, cover.license].filter(Boolean).join(" · ")}</figcaption>
     </figure>}
     <details className="editorial-photo-add">
