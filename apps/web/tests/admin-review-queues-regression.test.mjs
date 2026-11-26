@@ -38,16 +38,20 @@ test("operator directory query errors remain visible", () => {
   assert.match(page, /if \(error\) throw new Error\("Impossibile caricare gli operatori"\)/);
 });
 
-test("dashboard fails visibly if any of its ten count queries fail", () => {
+test("dashboard fails visibly if a count query fails", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,approvedEventsRes,allEventsRes,approvedExperiencesRes\]\.some\(result => result\.error\)/);
+  assert.match(dashboard, /\[appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,allEventsRes\]\.some\(result => result\.error\)/);
   assert.match(dashboard, /throw new Error\("Impossibile caricare i contatori della dashboard amministrativa"\)/);
+  const counts = read("../app/admin/ready-publication-counts.ts");
+  assert.match(counts, /if \(appointments.error \|\| experiences.error \|\| revisions.error\)/);
 });
 
 test("dashboard excludes curated BIMARIS experience revisions from operator queue", () => {
   const dashboard = read("../app/admin/page.tsx");
-  assert.match(dashboard, /experiences!inner\(experience_origin\)/);
-  assert.match(dashboard, /\.neq\("experiences\.experience_origin", "bimaris"\)/);
+  const counts = read("../app/admin/ready-publication-counts.ts");
+  assert.match(dashboard, /loadPendingPublicationRevisions\(\)/);
+  assert.match(counts, /experiences!inner\(experience_origin\)/);
+  assert.match(counts, /\.neq\("experiences\.experience_origin", "bimaris"\)/);
 });
 
 test("pending operator profile revisions have an action in the consolidated queue", () => {
