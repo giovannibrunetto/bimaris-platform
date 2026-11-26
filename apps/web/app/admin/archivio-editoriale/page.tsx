@@ -226,7 +226,7 @@ export default async function EditorialPage({ searchParams }: {
       </section> :
         <EditorialDraftForm photoControls={<>
         <section className="editorial-panel editorial-photo-panel" id="editorial-photos" aria-labelledby="editorial-photo-heading">
-          <h2 id="editorial-photo-heading">Foto della bozza</h2>
+          <h2 id="editorial-photo-heading">{model === "village" ? "Foto di copertina" : "Foto della bozza"}</h2>
           {query.fotografia === "1" && query.esito && notices[query.esito] &&
             <p className="editorial-notice" role={query.esito === "photo" ? "status" : "alert"}>{notices[query.esito]}</p>}
           {photos.length > 0 ? <div className="editorial-photo-list">
@@ -234,9 +234,9 @@ export default async function EditorialPage({ searchParams }: {
               <img src={`/api/editoriale/immagini/${photo.id}?anteprima=1`} alt={photo.alt} />
               <figcaption>{[photo.alt, photo.author, photo.license].filter(Boolean).join(" · ")}</figcaption>
             </figure>)}
-          </div> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
+          </div> : model === "village" && cardImage ? <figure><img src={card.imageUrl} alt={card.imageAlt ?? card.title} /><figcaption>Foto attualmente pubblicata</figcaption></figure> : <p>{cardImage ? "La foto pubblicata resta associata alla scheda. Nessuna nuova foto in bozza." : "Nessuna foto aggiunta a questa bozza."}</p>}
           <details className="editorial-photo-add" open={query.fotografia === "1" && query.esito !== "photo" || undefined}>
-            <summary>Aggiungi una foto</summary>
+            <summary>{model === "village" ? (draftCover || cardImage ? "Sostituisci foto" : "Inserisci foto copertina") : "Aggiungi una foto"}</summary>
             <form className="editorial-photo-form" method="post" action={api} encType="multipart/form-data">
               {hiddenFields}
               <label>File della foto
@@ -255,7 +255,7 @@ export default async function EditorialPage({ searchParams }: {
                 <label>Link alla licenza<input name="licenseUrl" type="url" maxLength={500} /></label>
               </details>
               <small>Se hai modificato il testo, salva la bozza prima di scegliere e allegare una foto.</small>
-              <button className="editorial-button editorial-button--primary" name="action" value="photo">Allega alla bozza</button>
+              <button className="editorial-button editorial-button--primary" name="action" value="photo">{model === "village" ? "Salva foto in bozza" : "Allega alla bozza"}</button>
             </form>
           </details>
         </section>
