@@ -59,13 +59,19 @@ jobs:
           rows.append({"version":"20261127124648","name":"local_only_sec_r05_acl_fixture","sql":fixture})
           rows.append({"version":"20261127124649","name":"dt_qa_sec_r05_phase1_least_privilege","sql":phase1.read_text()})
           assert len(rows) == 162
+          phase2 = Path(os.environ["GITHUB_WORKSPACE"]) / "supabase/migrations/20261127130604_dt_qa_sec_r05_phase2_least_privilege.sql"
+          # Reconcile the same three extra local-only ACL types, explicitly count and reject other differences.
+          fixture2 = fixture.replace("'analytics_events','contact_messages','operator_applications'","'profiles','event_import_batches'").replace("public.analytics_events,public.contact_messages,public.operator_applications","public.profiles,public.event_import_batches").replace("n<>18","n<>12").replace("n<>30","n<>20").replace("BASELINE=30","BASELINE=20")
+          rows.append({"version":"20261127130603","name":"local_only_sec_r05_phase2_acl_fixture","sql":fixture2})
+          rows.append({"version":"20261127130604","name":"dt_qa_sec_r05_phase2_least_privilege","sql":phase2.read_text()})
+          assert len(rows) == 164
           assert len({r["version"] for r in rows}) == len(rows)
           for row in rows:
               assert re.fullmatch(r"\d{14}", row["version"])
               assert re.fullmatch(r"[a-z0-9_]+", row["name"])
               path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
               path.write_text(row["sql"].rstrip() + "\n")
-          print("Candidate canonical sequence: 161 source migrations plus one explicitly local ACL fixture")
+          print("Candidate canonical sequence: 162 source migrations plus two explicitly local ACL fixtures")
           PY
           python3 - <<'PY'
           from pathlib import Path
@@ -99,6 +105,7 @@ jobs:
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import {createClient} from '@supabase/supabase-js';
+          import {createServerClient} from '@supabase/ssr';
           import {randomUUID} from 'node:crypto';
           const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
           assert.equal(url,'http://127.0.0.1:54321');
@@ -141,5 +148,53 @@ jobs:
             const still=await db.from(table).select('id').eq('id',got.data[0].id);
             check(table+' record unchanged',!still.error&&still.data.length===1);
           }
+          const jar=new Map();
+          const browser=createServerClient(url,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,{cookies:{getAll:()=>[...jar].map(([name,value])=>({name,value})),setAll:items=>items.forEach(({name,value})=>jar.set(name,value))}});
+          const browserLogin=await browser.auth.signInWithPassword({email,password});
+          check('browser session established',!browserLogin.error&&jar.size>0);
+          const cookie=[...jar].map(([k,v])=>k+'='+v).join('; ');
+          const base='http://127.0.0.1:3100';
+          const form=new URLSearchParams({display_name:marker,travel_companion:'solo',typical_time_available:'giornata',preferred_pace:'equilibrato',interests:'cultura'});
+          const saved=await fetch(base+'/profilo/onboarding/salva',{method:'POST',redirect:'manual',headers:{cookie,origin:base,'sec-fetch-site':'same-origin'},body:form});
+          check('onboarding HTTP saved',saved.status===303&&new URL(saved.headers.get('location'),base).pathname==='/profilo'&&new URL(saved.headers.get('location'),base).searchParams.get('onboarding')==='completato');
+          const profile=await tokenClient.from('user_profiles').select('display_name,onboarding_completed').eq('user_id',user.data.user.id).single();
+          check('personal profile persisted',!profile.error&&profile.data.display_name===marker&&profile.data.onboarding_completed===true);
+          const interest=await tokenClient.from('user_interests').select('explicit_score').eq('user_id',user.data.user.id).eq('interest_key','cultura').single();
+          check('personal interest persisted',!interest.error&&interest.data.explicit_score===1);
+          const personal=await fetch(base+'/profilo',{headers:{cookie},redirect:'manual'});
+          check('personal page HTTP renders',personal.status===200&&(await personal.text()).includes(marker));
+          const op=randomUUID();
+          const opResult=await db.from('operators').insert({id:op,slug:'sec-r05-'+op,name:marker,published:false,operator_code:null});
+          assert.ifError(opResult.error);
+          const membership=await db.from('operator_memberships').insert({operator_id:op,user_id:user.data.user.id,role:'owner'});
+          assert.ifError(membership.error);
+          async function calendar(body,auth){
+            const r=await fetch(base+'/api/operator/calendar-import',{method:'POST',headers:{'content-type':'application/json',origin:base,'sec-fetch-site':'same-origin',...(auth?{cookie:auth}:{})},body:JSON.stringify(body)});
+            return {status:r.status,body:await r.json()};
+          }
+          const cal={operator_id:op,source_type:'manual',raw_text:'15 dicembre 2030 ore 10:30 - '+marker};
+          check('anonymous calendar denied',(await calendar(cal)).status===401);
+          const invalid=await calendar({...cal,raw_text:'15 dicembre 2030 - '+marker},cookie);
+          check('missing calendar time rejected',invalid.status===422);
+          const before=await db.from('event_import_batches').select('id').eq('operator_id',op);
+          check('invalid calendar creates no batch',!before.error&&before.data.length===0);
+          const imported=await calendar(cal,cookie);
+          check('calendar HTTP import succeeds',imported.status===200&&imported.body.ok===true&&imported.body.parsed_count===1);
+          const batch=await db.from('event_import_batches').select('status,parsed_count').eq('id',imported.body.batch_id).single();
+          check('calendar batch persisted',!batch.error&&batch.data.status==='parsed'&&batch.data.parsed_count===1);
+          const events=await db.from('events').select('id,published,verification_status').eq('import_batch_id',imported.body.batch_id);
+          check('calendar event remains unpublished pending',!events.error&&events.data.length===1&&events.data[0].published===false&&events.data[0].verification_status==='pending');
+          const duplicate=await calendar(cal,cookie);
+          check('duplicate calendar not reimported',duplicate.status===200&&duplicate.body.parsed_count===0&&duplicate.body.skipped_count===1);
+          for(const [table,column,value] of [['profiles','id',user.data.user.id],['event_import_batches','id',imported.body.batch_id]]){
+            for(const [label,client] of [['anonymous',pub],['authenticated',tokenClient]]){
+              const read=await client.from(table).select(column).eq(column,value);
+              check(table+' '+label+' direct read denied',read.error?.code==='42501');
+              const del=await client.from(table).delete().eq(column,value);
+              check(table+' '+label+' direct delete denied',del.error?.code==='42501');
+            }
+          }
+          const batchAfter=await db.from('event_import_batches').select('id').eq('id',imported.body.batch_id).single();
+          check('calendar batch remains intact',!batchAfter.error);
           console.log('SEC-R05 FUNCTIONAL PASS '+count+' checks; local synthetic stack only');
           JS
