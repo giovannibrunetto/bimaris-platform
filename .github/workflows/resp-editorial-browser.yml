@@ -92,7 +92,7 @@ jobs:
           assert.equal(url,'http://127.0.0.1:54321');
           const db=createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
           for(const [slug,title,image] of [['crono-falce-porto','Crono e la falce del porto','/stories/crono-cover.png'],['dina-e-clarenza','Dina e Clarenza','/stories/dina-e-clarenza-cover.png']]){
-            const {error}=await db.from('stories').upsert({slug,title,excerpt:'Scheda sintetica per verifica responsive.',body:'Testo sintetico per verificare la disposizione del racconto e dei crediti.',story_type:'leggenda',published:true,image_url:image,image_alt:title,image_author:'BIMARIS – illustrazione generata mediante IA (ChatGPT)',image_license:'Utilizzo secondo le condizioni OpenAI e la normativa applicabile',image_source_url:'https://example.invalid/source',image_license_url:'https://example.invalid/license'},{onConflict:'slug'});
+            const {error}=await db.from('stories').insert({slug,title,excerpt:'Scheda sintetica per verifica responsive.',body:'Testo sintetico per verificare la disposizione del racconto e dei crediti.',story_type:'leggenda',published:true,image_url:image,image_alt:title,image_author:'BIMARIS – illustrazione generata mediante IA (ChatGPT)',image_license:'Utilizzo secondo le condizioni OpenAI e la normativa applicabile',image_source_url:'https://example.invalid/source',image_license_url:'https://example.invalid/license'});
             assert.ifError(error);
           }
           JS
