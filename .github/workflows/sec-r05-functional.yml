@@ -54,15 +54,18 @@ jobs:
           rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
           assert len(rows) == 160
           phase1 = Path(os.environ["GITHUB_WORKSPACE"]) / "supabase/migrations/20261127124649_dt_qa_sec_r05_phase1_least_privilege.sql"
+          # Local fixture only, not a deployable migration. The registered SQL below stays byte-identical.
+          fixture = "DO $local_fixture$\nDECLARE n integer;\nBEGIN\n  SELECT count(*) INTO n FROM unnest(ARRAY['analytics_events','contact_messages','operator_applications']) t\n  CROSS JOIN unnest(ARRAY['anon','authenticated']) r\n  CROSS JOIN unnest(ARRAY['TRUNCATE','REFERENCES','TRIGGER']) v\n  WHERE has_table_privilege(r,format('public.%I',t),v);\n  RAISE NOTICE 'LOCAL_PRE_MIGRATION_EXTRA_ACL_COUNT=%',n;\n  IF n<>18 THEN RAISE EXCEPTION 'Unexpected local ACL difference: %',n; END IF;\n  REVOKE TRUNCATE,REFERENCES,TRIGGER ON public.analytics_events,public.contact_messages,public.operator_applications FROM anon,authenticated;\n  SELECT count(*) INTO n FROM unnest(ARRAY['analytics_events','contact_messages','operator_applications']) t\n  CROSS JOIN unnest(ARRAY['anon','authenticated']) r\n  CROSS JOIN unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','MAINTAIN']) v\n  WHERE has_table_privilege(r,format('public.%I',t),v);\n  IF n<>30 THEN RAISE EXCEPTION 'Staging ACL baseline mismatch: %',n; END IF;\n  RAISE NOTICE 'LOCAL_FIXTURE_MATCHES_OBSERVED_STAGING_BASELINE=30';\nEND $local_fixture$;"
+          rows.append({"version":"20261127124648","name":"local_only_sec_r05_acl_fixture","sql":fixture})
           rows.append({"version":"20261127124649","name":"dt_qa_sec_r05_phase1_least_privilege","sql":phase1.read_text()})
-          assert len(rows) == 161
+          assert len(rows) == 162
           assert len({r["version"] for r in rows}) == len(rows)
           for row in rows:
               assert re.fullmatch(r"\d{14}", row["version"])
               assert re.fullmatch(r"[a-z0-9_]+", row["name"])
               path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
               path.write_text(row["sql"].rstrip() + "\n")
-          print("Candidate canonical sequence: 161 local-only migrations")
+          print("Candidate canonical sequence: 161 source migrations plus one explicitly local ACL fixture")
           PY
           python3 - <<'PY'
           from pathlib import Path
@@ -102,7 +105,7 @@ jobs:
           const opts={auth:{persistSession:false,autoRefreshToken:false}};
           const db=createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY,opts);
           const pub=createClient(url,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,opts);
-          const email='sec-r05-'+randomUUID()+'@example.invalid';
+          const email='sec-r05-'+randomUUID()+'@example.com';
           const marker='SEC-R05-'+randomUUID();
           let count=0;
           function check(label,condition){assert.ok(condition,label);count++;console.log('PASS '+label);}
