@@ -226,8 +226,12 @@ jobs:
             const edited=await own.from('experience_revisions').update({status:'draft',content:f.content}).eq('id',f.id).select('id').single();
             check('owner corrects rejected revision '+i,!edited.error&&edited.data?.id===f.id);
             const bytes=Buffer.from('UklGRhwAAABXRUJQVlA4TA8AAAAvAUAAAAcQ/Y/+ByKi/wEA','base64');
-            const privatePath=f.op+'/'+f.exp+'/'+f.id+'/new.webp';
+            const wrongPath=f.op+'/'+f.exp+'/'+f.id+'/new.webp';
+            const wrongUpload=await own.storage.from('experience-revision-media').upload(wrongPath,bytes,{contentType:'image/webp'});
+            check('incorrect revision path denied '+i,!!wrongUpload.error);
+            const privatePath=f.op+'/revisions/'+f.id+'/new.webp';
             const up=await own.storage.from('experience-revision-media').upload(privatePath,bytes,{contentType:'image/webp'});
+            if(up.error) console.log('Private upload diagnostic:',up.error.name,up.error.statusCode,up.error.message);
             check('owner uploads new private file '+i,!up.error);
             const newMedia=await own.from('experience_revision_media').insert({revision_id:f.id,operator_id:f.op,storage_path:privatePath,is_cover:false,sort_order:1}).select('id').single();
             check('owner links new private file '+i,!newMedia.error&&!!newMedia.data?.id);
