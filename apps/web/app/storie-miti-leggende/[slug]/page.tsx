@@ -11,20 +11,6 @@ import "./story-detail-mobile.css";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const editorialIllustrations: Record<string, string> = {
-  "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
-  colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana-stretto": "/storie-miti-leggende/fata-morgana.png?v=20261030-3",
-  "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
-  "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
-  "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
-  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
-  "orione-origini-mitiche-messina": "/stories/orione-cover.png",
-  "crono-falce-porto": "/stories/crono-cover.png",
-  "dina-e-clarenza": "/stories/dina-e-clarenza-cover.png",
-  "truvatura-via-cardines": "/stories/cardines-cover.png",
-};
-
 const storyTypeLabels: Record<string, string> = {
   "tradizione leggendaria legata a un fenomeno naturale": "Leggenda naturale",
   "racconto religioso/devozionale": "Tradizione devozionale",
@@ -43,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const story = await getPublishedStoryBySlug(slug);
   if (!story) return {};
-  const image = editorialIllustrations[slug] ?? story.imageUrl;
+  const image = story.imageUrl;
   return { title: `${story.title} | Miti e leggende di Messina | BIMARIS`, description: story.excerpt, openGraph: image ? { images: [image] } : undefined };
 }
 
@@ -57,9 +43,10 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
   const isLongStory = paragraphs.length > 5;
   const visibleParagraphs = isLongStory ? paragraphs.slice(0, 3) : paragraphs;
   const hiddenParagraphs = isLongStory ? paragraphs.slice(3) : [];
-  const narrativeIllustration = editorialIllustrations[slug];
-  const heroImage = narrativeIllustration ?? story.imageUrl;
-  const heroAlt = narrativeIllustration ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
+  const heroImage = story.imageUrl;
+  const heroAlt = story.imageAlt ?? story.title;
+  const heroCaption = story.images.find(image => image.imageUrl === heroImage)?.caption;
+  const hasHeroCredit = Boolean(story.imageAuthor || story.imageLicense || story.imageSourceUrl || story.imageLicenseUrl);
   const heroObjectPosition = slug === "mata-e-grifone" ? "center top" : "center center";
   const heroObjectFit: "cover" | "contain" = slug === "dina-e-clarenza" ? "contain" : "cover";
   const heroContainClass = heroObjectFit === "contain" ? " story-detail-figure--contain" : "";
@@ -82,7 +69,13 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
         <div className="story-detail-media-column">
           {heroImage && <figure className={`culture-hero-figure story-detail-figure${heroContainClass}`} style={{ margin: 0, overflow: "hidden" }}>
             <img src={heroImage} alt={heroAlt} decoding="async" style={{ width: "100%", height: 286, objectFit: heroObjectFit, objectPosition: heroObjectPosition, display: "block" }} />
-            {!narrativeIllustration && <figcaption>{story.images.find(image => image.isPrimary)?.caption ?? story.imageAlt}</figcaption>}
+            {(heroCaption || hasHeroCredit) && <figcaption className="photo-credit" data-testid="story-image-credit" style={{ margin: 0, padding: "8px 10px", fontSize: 12, lineHeight: 1.5, overflowWrap: "anywhere", whiteSpace: "normal" }}>
+              {heroCaption && <>{heroCaption}{hasHeroCredit && " · "}</>}
+              {story.imageAuthor && <>Immagine: {story.imageAuthor}</>}
+              {story.imageLicense && <>{story.imageAuthor && " · "}{story.imageLicense}</>}
+              {story.imageSourceUrl && <> · <a href={story.imageSourceUrl} target="_blank" rel="noreferrer">fonte</a></>}
+              {story.imageLicenseUrl && <> · <a href={story.imageLicenseUrl} target="_blank" rel="noreferrer">condizioni di utilizzo</a></>}
+            </figcaption>}
           </figure>}
           <div className="story-detail-actions" style={{ display: "grid", gridTemplateColumns: story.places.length > 0 ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 10, marginTop: 12 }}>
             {story.places.length > 0 && <BehaviorTrackedLink className="button" style={actionStyle} href={`/mappa?storia=${encodeURIComponent(story.slug)}`} analyticsEvent="map_open" analyticsData={{ source: "story", story_id: story.id }} behaviorEvent="map_open" contentType="story" contentId={story.slug} interestKey="miti-leggende" weight={1.5}>Vedi sulla mappa BIMARIS</BehaviorTrackedLink>}
