@@ -1,0 +1,142 @@
+name: SEC-R05 isolated functional regression
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/sec-r05-functional.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sec-r05-functional
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Replay schema and test backend-only tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          phase1 = Path(os.environ["GITHUB_WORKSPACE"]) / "supabase/migrations/20261127124649_dt_qa_sec_r05_phase1_least_privilege.sql"
+          rows.append({"version":"20261127124649","name":"dt_qa_sec_r05_phase1_least_privilege","sql":phase1.read_text()})
+          assert len(rows) == 161
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 161 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("ANON_KEY") or d["PUBLISHABLE_KEY"])')"
+          export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          export BIMARIS_ANALYTICS_ENABLED=true
+          export BIMARIS_RATE_LIMIT_HMAC_SECRET="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          export NEXT_TELEMETRY_DISABLED=1
+          cd "$GITHUB_WORKSPACE/apps/web"
+          pnpm exec next dev --hostname 127.0.0.1 --port 3100 > "$work/next.log" 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; cd "$work"; supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          for attempt in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:3100/accedi; then break; fi
+            sleep 2
+          done
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {createClient} from '@supabase/supabase-js';
+          import {randomUUID} from 'node:crypto';
+          const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+          assert.equal(url,'http://127.0.0.1:54321');
+          const opts={auth:{persistSession:false,autoRefreshToken:false}};
+          const db=createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY,opts);
+          const pub=createClient(url,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,opts);
+          const email='sec-r05-'+randomUUID()+'@example.invalid';
+          const marker='SEC-R05-'+randomUUID();
+          let count=0;
+          function check(label,condition){assert.ok(condition,label);count++;console.log('PASS '+label);}
+          async function post(path,body){
+            const r=await fetch('http://127.0.0.1:3100'+path,{method:'POST',headers:{'content-type':'application/json','x-real-ip':'127.0.0.1'},body:JSON.stringify(body)});
+            return {status:r.status,body:await r.json()};
+          }
+          const bad=await post('/api/analytics/track',{event:'invalid'});
+          check('invalid analytics rejected',bad.status===400);
+          const a=await post('/api/analytics/track',{event:'page_view',path:'/'+marker,sessionId:marker,anonymousId:marker});
+          check('analytics HTTP persists',a.status===200&&a.body.persisted===true);
+          const c=await post('/api/contact',{name:marker,email,message:marker,privacy_consent:true});
+          check('contact HTTP succeeds',c.status===200&&c.body.ok===true);
+          const o=await post('/api/operator-applications',{business_name:marker,contact_name:marker,email,category:'Cultura e visite',operating_mode:'itinerant',location:'Messina',description:marker,privacy_consent:true});
+          check('application HTTP succeeds',o.status===200&&o.body.ok===true);
+          const user=await db.auth.admin.createUser({email,password:randomUUID()+'!aA9',email_confirm:true});
+          assert.ifError(user.error);
+          const tokenClient=createClient(url,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,opts);
+          const password=randomUUID()+'!aA9';
+          const reset=await db.auth.admin.updateUserById(user.data.user.id,{password});
+          assert.ifError(reset.error);
+          const login=await tokenClient.auth.signInWithPassword({email,password});
+          check('synthetic Auth login',!login.error&&!!login.data.session);
+          for(const [table,column,value] of [['analytics_events','session_id',marker],['contact_messages','email',email],['operator_applications','email',email]]){
+            const got=await db.from(table).select('id').eq(column,value);
+            check(table+' backend record persisted',!got.error&&got.data.length===1);
+            for(const [label,client] of [['anonymous',pub],['authenticated',tokenClient]]){
+              const read=await client.from(table).select('id').eq(column,value);
+              check(table+' '+label+' direct read denied',!!read.error);
+              const write=await client.from(table).delete().eq('id',got.data[0].id);
+              check(table+' '+label+' direct delete denied',!!write.error);
+            }
+            const still=await db.from(table).select('id').eq('id',got.data[0].id);
+            check(table+' record unchanged',!still.error&&still.data.length===1);
+          }
+          console.log('SEC-R05 FUNCTIONAL PASS '+count+' checks; local synthetic stack only');
+          JS
