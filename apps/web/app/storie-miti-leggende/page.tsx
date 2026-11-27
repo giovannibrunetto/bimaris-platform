@@ -15,20 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-const editorialIllustrations: Record<string, string> = {
-  "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
-  colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana-stretto": "/storie-miti-leggende/fata-morgana.png?v=20261030-3",
-  "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
-  "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
-  "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
-  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
-  "orione-origini-mitiche-messina": "/stories/orione-cover.png",
-  "crono-falce-porto": "/stories/crono-cover.png",
-  "dina-e-clarenza": "/stories/dina-e-clarenza-cover.png",
-  "truvatura-via-cardines": "/stories/cardines-cover.png",
-};
-
 const cardImagePositions: Record<string, string> = {
   "orione-origini-mitiche-messina": "center 35%",
   "crono-falce-porto": "center 80%",
@@ -74,8 +60,9 @@ export default async function StoriesPage() {
         {stories.length > 0 ? (
           <div className="cards stories-cards">
             {stories.map((story, index) => {
-              const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
-              const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
+              const cardImage = story.imageUrl;
+              const cardAlt = story.imageAlt ?? story.title;
+              const isBundledImage = Boolean(cardImage?.startsWith("/storie-miti-leggende/"));
               const cardImagePosition = cardImagePositions[story.slug] ?? "center";
               const cardImageFit = cardImageFits[story.slug] ?? "cover";
               const containClass = cardImageFit === "contain" ? " story-card-media--contain" : "";
@@ -85,7 +72,7 @@ export default async function StoriesPage() {
                     {cardImage && cardImageFit === "contain" && (
                       <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
                     )}
-                    {cardImage && (editorialIllustrations[story.slug] ? (
+                    {cardImage && (isBundledImage ? (
                       <Image src={cardImage} alt={cardAlt} fill unoptimized={story.slug === "fata-morgana-stretto"} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} style={{ objectFit: cardImageFit, objectPosition: cardImagePosition }} />
                     ) : (
                       <img src={cardImage} alt={cardAlt} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />
