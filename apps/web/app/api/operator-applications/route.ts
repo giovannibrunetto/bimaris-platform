@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 const OPERATOR_CATEGORIES = [
   "Ristorazione ed enogastronomia",
   "Produttori e aziende agricole",
+  "Cantine e produttori di vino",
   "Guide, escursioni e outdoor",
   "Cultura e visite",
   "Artigianato",

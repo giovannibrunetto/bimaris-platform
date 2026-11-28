@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import VillageRouteBuilder from "@/components/VillageRouteBuilder";
 import { SaveToCollectionButton } from "@/components/SaveToCollectionButton";
 import { UserBehaviorSignal } from "@/components/UserBehaviorSignal";
-import { getPublishedVillageBySlug, getPublishedVillagePoints, getVillageNarrative } from "@/data/villages";
+import { getPublishedVillageBySlug, getPublishedVillagePoints, getPublishedVillageSources, getVillageNarrative } from "@/data/villages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,7 +28,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const village = await getPublishedVillageBySlug(slug);
   if (!village) notFound();
-  const points = await getPublishedVillagePoints(village.id);
+  const [points, sources] = await Promise.all([getPublishedVillagePoints(village.id), getPublishedVillageSources(village.id)]);
   const narrative = getVillageNarrative(village.slug);
   const isMassa = massaSlugs.has(village.slug);
 
@@ -38,19 +38,35 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
       {village.imageUrl&&<><img src={village.imageUrl} alt="" aria-hidden="true" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",display:"block"}}/><div aria-hidden="true" style={{position:"absolute",inset:0,background:"linear-gradient(90deg, rgba(4,15,24,.82) 0%, rgba(4,15,24,.56) 52%, rgba(4,15,24,.24) 100%)"}}/></>}
       <div className="village-hero-content" style={{position:"relative",zIndex:1}}><div className="kicker">{village.territory?.name ?? "Borghi"}</div><h1>{village.name}</h1><p>{village.excerpt}</p><SaveToCollectionButton itemType="village" itemId={village.slug} interestKey="borghi" /></div>
     </section>
+    {village.imageAuthor && <p className="photo-credit">Foto: {village.imageSourceUrl ? <a href={village.imageSourceUrl} target="_blank" rel="noreferrer">{village.imageAuthor}</a> : village.imageAuthor}{village.imageLicense && <> · {village.imageLicenseUrl ? <a href={village.imageLicenseUrl} target="_blank" rel="noreferrer">{village.imageLicense}</a> : village.imageLicense}</>}</p>}
     <section className="section detail-grid" style={{alignItems:"start"}}>
       <article>
         {isMassa&&<section style={{marginBottom:36,paddingBottom:30,borderBottom:"1px solid #dfe4e8"}}><div className="kicker">Le Masse di Messina</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{massesContext.title}</h2>{massesContext.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>}
         {narrative?<section><div className="kicker">Il racconto</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>{narrative.title}</h2>{narrative.paragraphs.map((p,i)=><p key={i} style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{p}</p>)}</section>:<><div className="kicker">Il borgo</div><h2 style={{fontFamily:"Georgia,serif",fontSize:"clamp(2rem,5vw,2.625rem)",marginTop:8}}>Identità e territorio</h2><p style={{fontSize:18,lineHeight:1.75,color:"#4d5962"}}>{village.description}</p>{village.identity&&<><h3>Perché è unico</h3><p>{village.identity}</p></>}{village.history&&<><h3>Storia</h3><p>{village.history}</p></>}</>}
+        {village.thingsToSee && <section><h2>Cosa vedere</h2>
+          {village.thingsToSee.split(/\n\s*\n/).filter(Boolean).map((paragraph, index) => <p key={index} style={{ whiteSpace: "pre-line" }}>{paragraph}</p>)}
+        </section>}
+        {sources.length > 0 && <section><h2>Fonti e riferimenti</h2><ul className="list">
+          {sources.map(source => <li key={source.id}>{source.url
+            ? <a className="text-link" href={source.url} target="_blank" rel="noreferrer">{source.label}</a>
+            : source.label}{source.note && ` · ${source.note}`}</li>)}
+        </ul></section>}
         {points.length>0&&<VillageRouteBuilder villageName={village.name} points={points}/>} 
       </article>
-      <aside className="detail-panel" style={{alignSelf:"start",height:"auto",minHeight:0}}>
+      <aside className="detail-panel village-visit-panel">
+        <style>{`
+          .detail-panel.village-visit-panel{margin-top:24px;padding:clamp(18px,3vw,28px);border:1px solid var(--color-border);border-radius:18px;background:var(--bimaris-ivory)}
+          .village-visit-panel .kicker{color:var(--color-text-muted)}
+          .village-visit-panel .village-visit-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+          .village-visit-actions .button.ghost.village-directions{background:transparent;border:1px solid var(--bimaris-gold);color:var(--color-text);box-shadow:none}
+          .village-visit-actions .text-link{display:inline-flex;align-items:center;min-height:44px;padding-inline:8px}
+        `}</style>
         <div className="kicker">Esplora il territorio</div>
         <h3 style={{marginTop:8,marginBottom:10}}>Continua il viaggio da {village.name}</h3>
         <p style={{color:"#6e7680",lineHeight:1.55,marginTop:0}}>Scopri il borgo e continua a esplorare luoghi, sapori ed esperienze del territorio.</p>
-        <div className="actions" style={{marginTop:20}}>
+        <div className="actions village-visit-actions">
           <Link className="button" href={`/mappa?borgo=${encodeURIComponent(village.slug)}`}>Esplora sulla mappa BIMARIS</Link>
-          <a className="button ghost" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi con Google Maps</a>
+          <a className="button ghost village-directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(village.googleMapsQuery)}`} target="_blank" rel="noreferrer">Raggiungi con Google Maps</a>
           <Link className="text-link" href="/borghi">Scopri gli altri borghi →</Link>
         </div>
       </aside>

@@ -1,0 +1,189 @@
+name: FUN-01 differential search browser
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/fun-01-search-browser.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fun-01-search-browser
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Install pinned browser harness
+        run: |
+          npm install --prefix "$RUNNER_TEMP/fun-01-search-browser" --no-audit --no-fund playwright@1.58.2
+          "$RUNNER_TEMP/fun-01-search-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Test search and personal area in isolated Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("ANON_KEY") or d["PUBLISHABLE_KEY"])')"
+          export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          export NEXT_TELEMETRY_DISABLED=1
+          cd "$GITHUB_WORKSPACE/apps/web"
+          node --experimental-strip-types --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {rankTerritorySearch,searchInterestKeys} from './lib/territory-search.ts';
+          import {createClient} from '@supabase/supabase-js';
+          import {createServerClient} from '@supabase/ssr';
+          import {randomUUID} from 'node:crypto';
+          import {writeFileSync} from 'node:fs';
+          const now=new Date('2026-11-28T12:00:00Z');
+          const a={title:'Visita al museo',href:'/a',kind:'Luoghi',interestKeys:['cultura']};
+          const b={title:'Visita al museo',href:'/b',kind:'Luoghi',interestKeys:['borghi']};
+          const c={title:'Degustazione',href:'/c',kind:'Esperienze',interestKeys:['sapori']};
+          const d={title:'Visita',description:'museo',href:'/d',kind:'Luoghi',interestKeys:['borghi']};
+          const items=[a,b,c,d];
+          assert.equal(rankTerritorySearch('museo',items,now)[0].item.href,'/a');
+          assert.equal(rankTerritorySearch('museo',items,now,new Set(['borghi']))[0].item.href,'/b');
+          assert.equal(rankTerritorySearch('museo',items,now,new Set(['sapori']))[0].item.href,'/a');
+          assert.deepEqual(rankTerritorySearch('xyzqnonexistent',items,now,new Set(['sapori'])),[]);
+          assert.deepEqual([...searchInterestKeys([{interest_key:'culture',explicit_score:1},{interest_key:'food-wine',explicit_score:0},{interest_key:'unknown',explicit_score:1}])],['cultura']);
+          const e={title:'Evento musicale',href:'/e',kind:'Appuntamenti',startsAt:'2026-11-28T18:00:00+01:00'};
+          const f={...e,href:'/f',startsAt:'2026-11-29T18:00:00+01:00'};
+          assert.deepEqual(rankTerritorySearch('evento oggi',[e,f],now).map(x=>x.item.href),['/e']);
+          console.log('PASS 6 ranking assertions');
+          const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+          assert.equal(url,'http://127.0.0.1:54321');
+          const db=createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+          const anon=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+          const sessions=[];
+          for(const [index,interest] of ['cultura','borghi'].entries()){
+            const email='fun01-'+index+'@example.invalid',password=randomUUID()+randomUUID();
+            const {data,error}=await db.auth.admin.createUser({email,password,email_confirm:true});assert.ifError(error);
+            const id=data.user.id;
+            const p=await db.from('user_profiles').upsert({user_id:id,display_name:'QA '+index,onboarding_completed:true},{onConflict:'user_id'});assert.ifError(p.error);
+            const pref=await db.from('user_interests').insert({user_id:id,interest_key:interest,explicit_score:1,behavioral_score:0});assert.ifError(pref.error);
+            const jar=new Map();
+            const client=createServerClient(url,anon,{cookies:{getAll:()=>[...jar].map(([name,value])=>({name,value})),setAll:xs=>xs.forEach(({name,value})=>jar.set(name,value))}});
+            const login=await client.auth.signInWithPassword({email,password});assert.ifError(login.error);
+            const own=await client.from('user_interests').select('user_id,interest_key');assert.ifError(own.error);
+            assert.ok(own.data.length===1&&own.data[0].user_id===id&&own.data[0].interest_key===interest);
+            sessions.push([...jar].map(([name,value])=>({name,value,url:'http://127.0.0.1:3100'})));
+          }
+          console.log('PASS 2 isolated preference reads');
+          const story=await db.from('stories').insert({slug:'fun01-search-fixture',title:'Qafunmonte passeggiata',excerpt:'Fixture sintetica',body:'Fixture sintetica di ricerca',story_type:'leggenda',published:true});assert.ifError(story.error);
+          writeFileSync(process.env.RUNNER_TEMP+'/fun01-sessions.json',JSON.stringify(sessions),{mode:0o600});
+          JS
+          pnpm exec next dev --hostname 127.0.0.1 --port 3100 > "$work/next.log" 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; cd "$work"; supabase stop --no-backup >/dev/null 2>&1 || true; rm -f "$RUNNER_TEMP/fun01-sessions.json"; cd /; rm -rf "$work"' EXIT
+          for attempt in $(seq 1 90); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3100/cerca; then break; fi
+            sleep 2
+          done
+          mkdir -p "$RUNNER_TEMP/fun01-screenshots"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          const {chromium}=await import('file://'+process.env.RUNNER_TEMP+'/fun-01-search-browser/node_modules/playwright/index.mjs');
+          const sessions=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/fun01-sessions.json','utf8'));
+          const browser=await chromium.launch();
+          const base='http://127.0.0.1:3100';
+          try{
+            for(const [width,height] of [[360,640],[375,667],[390,844],[430,932],[768,1024],[1280,800],[1440,900]]){
+              const context=await browser.newContext({viewport:{width,height}});
+              try{
+                await context.route('**/*',route=>['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort());
+                await context.addCookies(sessions[0]);
+                const page=await context.newPage();
+                await page.goto(base+'/profilo');
+                const form=page.locator('form[action="/cerca"]');
+                await form.waitFor({state:'visible'});
+                assert.ok(await form.locator('input[name=q]').isVisible());
+                assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'profile overflow');
+                await page.screenshot({path:process.env.RUNNER_TEMP+'/fun01-screenshots/profile-'+width+'.png',fullPage:true});
+                await form.locator('input[name=q]').fill('Qafunmonte');
+                await form.locator('button').click();
+                await page.waitForURL(u=>u.pathname==='/cerca'&&u.searchParams.get('q')==='Qafunmonte');
+                await page.getByRole('heading',{name:'Qafunmonte passeggiata'}).waitFor();
+                assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'search overflow');
+                assert.equal(await page.getByRole('heading',{name:'E se BIMARIS si ricordasse di ciò che ti piace?'}).count(),0);
+                await page.goto(base+'/cerca?q=xyzqnonexistent');
+                await page.getByRole('heading',{name:'Nessun risultato per questa ricerca'}).waitFor();
+                assert.ok(await page.getByRole('link',{name:'Esplora altre idee'}).isVisible());
+                console.log('PASS profile, submit, results, empty state '+width+'x'+height);
+              }finally{await context.close();}
+            }
+            const context=await browser.newContext();
+            try{
+              const page=await context.newPage();
+              await page.goto(base+'/cerca?q=Qafunmonte');
+              await page.getByRole('heading',{name:'Qafunmonte passeggiata'}).waitFor();
+              await page.getByRole('heading',{name:'E se BIMARIS si ricordasse di ciò che ti piace?'}).waitFor();
+              console.log('PASS anonymous search');
+            }finally{await context.close();}
+          }finally{await browser.close();}
+          JS
+      - name: Save synthetic browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fun01-screenshots
+          path: ${{ runner.temp }}/fun01-screenshots/
+          retention-days: 7
+          if-no-files-found: warn

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedCultureEntries } from "@/data/live";
 import { historicalPeriodLabel } from "@/lib/historical-periods";
+import CultureMonumentCard from "@/components/CultureMonumentCard";
 import "../culture-compact.css";
 
 export const dynamic = "force-dynamic";
@@ -36,25 +37,10 @@ export default async function CultureMonumentsPage() {
         <section className="section culture-places-section">
           <div className="cards">
             {orderedEntries.map(entry => (
-              <article className="card culture-card" key={entry.id}>
-                <Link className="culture-card-link" href={`/cultura/${entry.slug}`}>
-                  <div className="culture-card-media">
-                    {entry.imageUrl ? (
-                      <img src={entry.imageUrl} alt={entry.imageAlt ?? entry.title} loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="culture-card-placeholder" />
-                    )}
-                    <span>{entry.category}</span>
-                  </div>
-                  <div className="card-body">
-                    <div className="eyebrow">{entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod)}</div>
-                    <h3>{entry.title}</h3>
-                    <p>{entry.excerpt}</p>
-                    <span className="text-link">Scopri il luogo →</span>
-                  </div>
-                </Link>
-                {entry.imageAuthor && entry.imageLicense && <div className="photo-credit">Foto: {entry.imageAuthor} · {entry.imageLicense}</div>}
-              </article>
+              <CultureMonumentCard key={entry.id} href={`/cultura/${entry.slug}`} card={{
+                ...entry,
+                period: entry.primaryHistoricalPeriod === "trasversale" ? "Più epoche" : historicalPeriodLabel(entry.primaryHistoricalPeriod),
+              }} />
             ))}
           </div>
         </section>

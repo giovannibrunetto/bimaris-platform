@@ -1,0 +1,58 @@
+.storytelling-page{background:var(--bimaris-abyssal-teal);color:#f7f3eb}
+.storytelling-intro{padding-top:34px;background:var(--bimaris-abyssal-teal)}
+.storytelling-intro-copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.58fr);gap:34px;align-items:end;margin-bottom:28px}
+.storytelling-intro-copy .kicker{color:var(--gold-light)}
+.storytelling-intro-copy h2{font-family:Georgia,serif;font-size:clamp(28px,3vw,42px);line-height:1.12;margin:5px 0 0;color:#fffdf9}
+.storytelling-intro-copy p{margin:0;line-height:1.55;color:#dce7e4}
+.storytelling-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.storytelling-card{position:relative;display:flex;flex-direction:column;min-height:300px;padding:28px;border:1px solid var(--gold);border-radius:24px;background:rgba(248,248,245,.78);box-shadow:0 12px 34px rgba(3,33,38,.05);color:inherit;text-decoration:none;cursor:pointer}
+.storytelling-number{position:absolute;right:22px;top:20px;font-family:Georgia,serif;font-size:36px;color:rgba(3,33,38,.16)}
+.storytelling-card .kicker{padding-right:46px;color:#705d39}
+.storytelling-card h3{font-family:Georgia,serif;font-size:clamp(28px,2.6vw,38px);line-height:1.04;margin:12px 0;color:var(--bimaris-abyssal-teal)}
+.storytelling-card>p{line-height:1.55;margin:0 0 22px;color:#52605f}
+.storytelling-card .text-link{margin-top:auto}
+.storytelling-more{background:var(--bimaris-pearl)}
+.storytelling-periods{display:grid;gap:1px;border-radius:20px;overflow:hidden;border:1px solid rgba(3,33,38,.1)}
+.storytelling-period{display:grid;grid-template-columns:minmax(210px,.55fr) minmax(0,1fr) auto;gap:28px;align-items:center;padding:20px 24px;background:#fff}
+.storytelling-period div{display:flex;flex-direction:column;gap:3px}
+.storytelling-period span{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#6b716f}
+.storytelling-period strong{font-family:Georgia,serif;font-size:22px;color:var(--bimaris-abyssal-teal)}
+.storytelling-period p{margin:0;color:#596564;line-height:1.45}
+.storytelling-period .storytelling-period-count{white-space:nowrap;color:#705d39}
+.storytelling-exit{background:var(--bimaris-abyssal-teal)}
+.storytelling-exit-copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.65fr);gap:28px;align-items:end;margin-bottom:18px}
+.storytelling-exit-copy h2{margin:5px 0 0}
+.storytelling-exit-copy p{margin:0;line-height:1.5}
+@media(min-width:761px){.storytelling-intro{padding-bottom:42px}.storytelling-exit{padding-top:26px!important;padding-bottom:26px!important}}
+@media(max-width:900px){.storytelling-grid{grid-template-columns:1fr}.storytelling-card{min-height:0}.storytelling-intro-copy,.storytelling-exit-copy{grid-template-columns:1fr}.storytelling-period{grid-template-columns:1fr;gap:8px}}
+@media(max-width:760px){
+.storytelling-intro{padding-top:18px;padding-bottom:24px}
+.storytelling-intro-copy{gap:8px;margin-bottom:14px}
+.storytelling-intro-copy h2{margin-top:4px}
+.storytelling-intro-copy p{line-height:1.42}
+.storytelling-grid{gap:12px}
+.storytelling-card{padding:18px 20px;border-radius:20px;min-height:0}
+.storytelling-card .kicker{padding-right:42px;font-size:11px;line-height:1.2;letter-spacing:.1em}
+.storytelling-card h3{font-size:27px;line-height:1.06;margin:9px 0 7px}
+.storytelling-card>p{font-size:16px;line-height:1.38;margin-bottom:12px}
+.storytelling-number{right:20px;top:17px;font-size:28px}
+.storytelling-exit{padding-top:15px!important;padding-bottom:15px!important}
+.storytelling-exit-copy{gap:2px;margin-bottom:10px}
+.storytelling-exit-copy .kicker{font-size:10px;line-height:1.1;letter-spacing:.13em}
+.storytelling-exit-copy h2{font-size:23px;line-height:1.04;margin-top:2px}
+.storytelling-exit-copy p{font-size:14px;line-height:1.25}
+.storytelling-exit .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.storytelling-exit .button{min-height:40px;padding:9px 10px;text-align:center;font-size:14px}
+.storytelling-period{padding:18px}
+}
+
+/* Keep the chooser readable against the light editorial background. */
+.storytelling-page .storytelling-intro .storytelling-intro-copy h2 {
+  color: #132f32;
+}
+.storytelling-page .storytelling-intro .storytelling-intro-copy p {
+  color: #465e61;
+}
+.storytelling-page .storytelling-intro .storytelling-intro-copy .kicker {
+  color: #76551e;
+}

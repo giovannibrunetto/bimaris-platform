@@ -14,7 +14,7 @@ export function Footer() {
         <span className={styles.brandImage} />
       </Link>
       <div className={styles.links}>
-        <Link href="/operatori/candidatura">Operatori</Link>
+        <Link href="/operatori/candidatura">Candida la tua attività</Link>
         <Link href="/contatti">Contatti</Link>
         <Link href="/privacy">Privacy</Link>
         <Link href="/cookie">Cookie</Link>

@@ -30,12 +30,13 @@ export default async function VillagesPage() {
 
         {villages.length > 0 ? (
           <div className="cards village-cards">
-            {villages.map(village => (
-              <article className="card village-card" key={village.id}>
+            {villages.map((village, index) => (
+              <article className="card village-card public-discovery-card" key={village.id}>
                 {village.imageUrl && (
                   <div className="village-card-media">
-                    <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading="lazy" decoding="async" />
-                    {village.slug === "san-marco-d-alunzio" && (
+                    <img src={village.imageUrl} alt={village.imageAlt ?? village.name} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" />
+                    {village.imageAuthor && <div className="photo-credit">Foto: {village.imageAuthor}{village.imageLicense && ` · ${village.imageLicense}`}</div>}
+                    {village.slug === "san-marco-d-alunzio" && !village.imageAuthor && (
                       <div style={{ fontSize: "0.72rem", lineHeight: 1.35, padding: "0.35rem 0.55rem", color: "#5f6368" }}>
                         Fonte immagine: <a href="https://www.comune.sanmarcodalunzio.me.it/" target="_blank" rel="noreferrer">Comune di San Marco d’Alunzio</a>
                       </div>
@@ -46,7 +47,7 @@ export default async function VillagesPage() {
                   <div className="kicker">{village.territory?.name ?? "Territorio messinese"}</div>
                   <h3>{village.name}</h3>
                   <p>{village.excerpt}</p>
-                  <Link className="text-link" href={`/borghi/${village.slug}`}>Scopri il borgo →</Link>
+                  <Link className="text-link village-card-primary-link" href={`/borghi/${village.slug}`} aria-label={`Scopri il borgo di ${village.name}`}>Scopri il borgo →</Link>
                 </div>
               </article>
             ))}

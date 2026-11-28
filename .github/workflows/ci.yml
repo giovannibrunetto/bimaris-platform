@@ -2,21 +2,84 @@ name: CI
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, staging, feature/admin-individual-mfa, integration/ds-mfa-ux-identity-20261111]
   pull_request:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch repository refs for secret scanning
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git -c credential.helper= -c 'credential.helper=!gh auth git-credential' \
+            fetch --no-recurse-submodules origin '+refs/*:refs/audit/origin/*'
+      - name: Install verified Gitleaks
+        shell: bash
+        run: |
+          version=8.30.1
+          archive="gitleaks_${version}_linux_x64.tar.gz"
+          cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${version}/${archive}" \
+            --output "$archive"
+          printf '%s  %s\n' '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb' "$archive" \
+            | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/gitleaks-bin"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/gitleaks-bin" gitleaks
+          test "$("$RUNNER_TEMP/gitleaks-bin/gitleaks" version)" = "$version"
+          echo "$RUNNER_TEMP/gitleaks-bin" >> "$GITHUB_PATH"
+      - name: Scan Git history and tracked files for secrets
+        shell: bash
+        run: |
+          work=$(mktemp -d)
+          trap 'rm -rf -- "$work"' EXIT
+          mkdir "$work/tracked"
+          touch "$work/empty-ignore"
+          flags=(--config .gitleaks.toml --redact=100 --no-banner --ignore-gitleaks-allow
+                 --gitleaks-ignore-path "$work/empty-ignore" --max-archive-depth 2)
+          git checkout-index --all --prefix="$work/tracked/"
+          gitleaks git . --log-opts='--all --full-history --root -m' "${flags[@]}"
+          gitleaks dir "$work/tracked" "${flags[@]}"
+          git log --all --format='%B' | gitleaks stdin "${flags[@]}"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --no-frozen-lockfile
+      - name: Audit production dependencies
+        run: pnpm audit --prod
+      - name: Audit development dependencies
+        run: pnpm audit --dev
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @bimaris/web lint
       - run: pnpm --filter @bimaris/web typecheck
       - run: pnpm --filter @bimaris/mobile typecheck
       - run: pnpm test:auth
+      - run: node --experimental-strip-types --test apps/web/tests/admin-event-transitions.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-events-route-runtime.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/admin-review-queues-regression.test.mjs apps/web/tests/admin-ready-to-publish.test.mjs apps/web/tests/admin-publication-runtime.test.mjs apps/web/tests/editorial-confirmation-runtime.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/operator-workspace-consolidation.test.mjs
+      - run: node --test apps/web/tests/operator-notifications-source.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/survey-validation.test.mjs apps/web/tests/survey-security.test.mjs apps/web/tests/survey-live.test.mjs
+      - run: node --experimental-strip-types --test apps/web/tests/survey-isolated-surface.test.mjs
+      - run: bash scripts/tests/backup-production-synthetic.sh
+      - run: python3 scripts/tests/backup-production-windows-synthetic.py
+      - run: node --test apps/web/tests/survey-production-candidate.test.mjs
+      - run: node --test scripts/tests/business-account-tax-id-static.test.mjs
+      - run: node --test scripts/tests/survey-production-sql-safety.test.mjs
       - run: pnpm --filter @bimaris/web build
+      - name: Scan Next.js client bundles for secrets
+        shell: bash
+        run: |
+          ignore_file=$(mktemp)
+          trap 'rm -f -- "$ignore_file"' EXIT
+          test -d apps/web/.next/static/chunks
+          gitleaks dir apps/web/.next/static --config .gitleaks.toml --redact=100 \
+            --no-banner --ignore-gitleaks-allow --gitleaks-ignore-path "$ignore_file"

@@ -1,0 +1,1154 @@
+{
+  "as_of": "2026-11-25",
+  "ref": "20c4ae92eaa7a9b9a34718a9e413265871bb5d51",
+  "method": "Text match after outer whitespace and CRLF normalization; format candidates ignore blank lines and trailing spaces. Name matches are not semantic proof; unmapped files may be represented by split or superseded registry entries. No register changes.",
+  "counts": {
+    "application:unmapped": 30,
+    "application:text_match": 18,
+    "application:name_match_text_diff": 10,
+    "excluded_survey:name_match_text_diff": 2,
+    "excluded_survey:text_match": 7
+  },
+  "rows": [
+    {
+      "file": "001_init.sql",
+      "sha": "e110ce55a1e70dfc46ead8119b9dee339fa3915b",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "002_experience_media_management.sql",
+      "sha": "d4e322d58ef17d89ad9432d15ea219c5dbc334fa",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "003_experience_draft_step.sql",
+      "sha": "0c271d60f76c35b438a2308c278cb412959706ed",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "004_experience_review_sections.sql",
+      "sha": "316d83586b8a7c45673699ebef3a8e144ff0b149",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "005_experience_revisions.sql",
+      "sha": "5e89b94c8bd7880ccc4b17dc1e3d36c985308b43",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "006_atomic_apply_experience_revision.sql",
+      "sha": "2412d1aca54c761ae164dafa5ce2189501210988",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "007_revision_media_staging.sql",
+      "sha": "8b7e3157c74479e8b5bf8e3e57219f7d6b4c9f86",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "008_apply_revision_media.sql",
+      "sha": "8e13d69584115413fbe3295549970d415f6511fd",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "009_operator_profile_revisions.sql",
+      "sha": "14bebd2776dad0ae92614909fb61fa74e3953692",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "010_secure_operator_profile_revision_workflow.sql",
+      "sha": "ebe33176428c1d92a374ea1a938e2ffddcd28957",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "011_allow_approved_unpublished_experience_revisions.sql",
+      "sha": "6e6caab6f09a34ec4b144c3a1c20f3cde997dfdd",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "012_harden_experience_revision_apply.sql",
+      "sha": "95c0051381f820daeb0e8b39e4ce3f1a1623720a",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "013_secure_experience_operators_rls.sql",
+      "sha": "dd35a6c1857e4492bff3f375c54dde3bca770132",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021171403",
+          "name": "staging_experience_participants_security"
+        }
+      ]
+    },
+    {
+      "file": "014_enforce_experience_review_state_machine.sql",
+      "sha": "86952d4ae6d8c06d0e134fab0dd6afcca9f80e5b",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021171222",
+          "name": "staging_experience_review_state_machine"
+        }
+      ]
+    },
+    {
+      "file": "015_preserve_rejected_experience_state_until_resubmission.sql",
+      "sha": "7335946c1df7390fd01daa849bbdb26b717f5253",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "016_harden_public_visibility_and_operator_permissions.sql",
+      "sha": "21a46a656a2be35922dc7169e26e9b15efdd5905",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "017_persistent_api_rate_limits.sql",
+      "sha": "e58dd356561d146c21a1bcc1f60782f2e69efac9",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021170836",
+          "name": "staging_persistent_api_rate_limits"
+        }
+      ]
+    },
+    {
+      "file": "018_operator_b2b_profiles.sql",
+      "sha": "ad645eec41ce2bc551e417b19999e0fba76dd41d",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261023124309",
+          "name": "operator_b2b_profiles"
+        }
+      ]
+    },
+    {
+      "file": "019_fix_experience_activity_links_read_isolation.sql",
+      "sha": "59aee7aa7cd97a6dfbdbe587445dd5c40c25dc19",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024053809",
+          "name": "fix_experience_activity_links_read_isolation"
+        }
+      ]
+    },
+    {
+      "file": "019_post_018_staging_alignment.sql",
+      "sha": "814e7db8ec3fb8c177a6597509f607ff843b6f83",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "020_collaboration_response_and_rls_cleanup.sql",
+      "sha": "27e29fdfde220085976933cb7c3d3f636dfcaed1",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "020_enforce_partner_owned_collaboration_decision.sql",
+      "sha": "436a2789377f2c6f17d53dc8b8b7a4987a9586db",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024070643",
+          "name": "enforce_partner_owned_collaboration_decision"
+        }
+      ]
+    },
+    {
+      "file": "020_index_experience_collaboration_inviter.sql",
+      "sha": "085f52223a4d56ce58cc4b4285fb1f891fa2acde",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024053947",
+          "name": "index_experience_collaboration_inviter"
+        }
+      ]
+    },
+    {
+      "file": "021_harden_partner_collaboration_updates.sql",
+      "sha": "d82bb0a0953df5b28a5edba21d01f0c4ca36d5d3",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261024065948",
+          "name": "harden_partner_collaboration_updates"
+        }
+      ]
+    },
+    {
+      "file": "022_allow_operator_manage_discovery_profiles.sql",
+      "sha": "4746c283c623ccf1396d329c79c1f46eccb30af6",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024091016",
+          "name": "allow_operator_manage_discovery_profiles"
+        }
+      ]
+    },
+    {
+      "file": "022_extend_discovery_temporal_weather_rules.sql",
+      "sha": "179771496e1d0a036d5a0c660341d7955108dd20",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261024081851",
+          "name": "extend_discovery_temporal_weather_rules"
+        }
+      ]
+    },
+    {
+      "file": "023_fix_activity_link_operator_delete_action.sql",
+      "sha": "1aa1ce03ad815a4b0c569a65a8d92aebdba885a5",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024092648",
+          "name": "fix_activity_link_operator_delete_action"
+        }
+      ]
+    },
+    {
+      "file": "024_allow_operator_create_and_read_experience_media.sql",
+      "sha": "0de93cbd9a4623eb826695323de6b1cf15a701a8",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024093320",
+          "name": "allow_operator_create_and_read_experience_media"
+        }
+      ]
+    },
+    {
+      "file": "025_harden_activity_link_editor_roles.sql",
+      "sha": "8a66b766d4a2904a6e137fef35f100a2d4096fb5",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261024093458",
+          "name": "harden_activity_link_editor_roles"
+        }
+      ]
+    },
+    {
+      "file": "026_revision_lifecycle_guards.sql",
+      "sha": "a0d47bfe5a4163cd90c8afa6c4f1a2fbed965b37",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "027_apply_revision_optional_taxonomy.sql",
+      "sha": "ce38d9096de39b067a486bde4a862ee411193935",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "028_operator_interest_privacy_retention.sql",
+      "sha": "ad10e738c524cdd74aab55a81fbd13e75235af4e",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261028132408",
+          "name": "operator_interest_privacy_retention"
+        }
+      ]
+    },
+    {
+      "file": "029_private_experience_revision_media.sql",
+      "sha": "95774f023aea275dfd9fab90f0d9efeb959c46ac",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261028193340",
+          "name": "private_experience_revision_media"
+        }
+      ]
+    },
+    {
+      "file": "030_aggregate_operator_analytics.sql",
+      "sha": "733caa34d1a65416af25cf5c8a08fa84b79fee35",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261028195955",
+          "name": "aggregate_operator_analytics"
+        }
+      ]
+    },
+    {
+      "file": "031_guard_duplicate_operator_application_acceptance.sql",
+      "sha": "2fef5090856a93b52663e71b04a545818d2a6a66",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261029070103",
+          "name": "guard_duplicate_operator_application_acceptance"
+        }
+      ]
+    },
+    {
+      "file": "032_harden_public_discovery_visibility.sql",
+      "sha": "6e2df87c36d8570ea1f36b7c7bca2412b584c6b4",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "033_protect_last_operator_owner.sql",
+      "sha": "72ef13223753bee059686d5de0d0ae7d201c94aa",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261104101934",
+          "name": "protect_last_operator_owner"
+        }
+      ]
+    },
+    {
+      "file": "034_align_operator_viewer_role.sql",
+      "sha": "71e546353d9481c29865746bf2287c0622e52994",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261104102528",
+          "name": "align_operator_viewer_role"
+        }
+      ]
+    },
+    {
+      "file": "035_normalize_applied_revision_cover.sql",
+      "sha": "ef1290630d42941557cb900bb2aeac3262ab0697",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "036_apply_experience_revision_details.sql",
+      "sha": "62f17bc7ca3c96a5ca744e7a61dc5602473a30a8",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261122063634",
+          "name": "apply_experience_revision_details"
+        }
+      ]
+    },
+    {
+      "file": "20261106220140_ds_mfa_01_b1_private_admin_roles.sql",
+      "sha": "a508a51d060d42333f53c3b79c6d088a065cf0db",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261106220140",
+          "name": "ds_mfa_01_b1_private_admin_roles"
+        }
+      ]
+    },
+    {
+      "file": "20261106220141_ds_mfa_01_b2_session_revocation.sql",
+      "sha": "bb30005b2c18c52a921339b64bc47f8326ff0e1b",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261116170327_citizen_survey_staging.sql",
+      "sha": "378b55c6abde250583f8cd03f3ec53644b12b2fd",
+      "scope": "excluded_survey",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261116170829",
+          "name": "citizen_survey_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261117052153_citizen_survey_retention_v4.sql",
+      "sha": "1aee2e08d2328bc10403a9d908abd014ca1b92fc",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117052703",
+          "name": "citizen_survey_retention_v4"
+        }
+      ]
+    },
+    {
+      "file": "20261117052751_citizen_survey_privacy_v2.sql",
+      "sha": "e80ed6fe0db687ca00066920cda2669b8a93e775",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117053054",
+          "name": "citizen_survey_privacy_v2"
+        }
+      ]
+    },
+    {
+      "file": "20261117074430_citizen_survey_release_ready_v5.sql",
+      "sha": "f27b9fab8dd8076351609cf1b9aebe00c1183f48",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117074637",
+          "name": "citizen_survey_release_ready_v5"
+        }
+      ]
+    },
+    {
+      "file": "20261117074827_citizen_survey_release_multiline_v5.sql",
+      "sha": "23b1c47e2aad51d07b3d760d15847b7ca631ea5e",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117074931",
+          "name": "citizen_survey_release_multiline_v5"
+        }
+      ]
+    },
+    {
+      "file": "20261117104500_citizen_survey_admin_readonly.sql",
+      "sha": "16024cdae73f3b3307057bdb98a9eac0192b34a2",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102401",
+          "name": "citizen_survey_admin_readonly"
+        }
+      ]
+    },
+    {
+      "file": "20261117111500_citizen_survey_admin_summary_fix.sql",
+      "sha": "e302a7186a0b7c6c2a32e11e7dd50cdb5bdcd410",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102435",
+          "name": "citizen_survey_admin_summary_fix"
+        }
+      ]
+    },
+    {
+      "file": "20261117113500_citizen_survey_admin_ideas_paging.sql",
+      "sha": "9aca6bbbd3b786e215d5f68256bde65069c0a514",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102508",
+          "name": "citizen_survey_admin_ideas_paging"
+        }
+      ]
+    },
+    {
+      "file": "20261117142500_citizen_survey_admin_rehearsal_readonly.sql",
+      "sha": "055db2bf651fd0988042e594892a652e8ee9af8f",
+      "scope": "excluded_survey",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261117124447",
+          "name": "citizen_survey_admin_rehearsal_readonly"
+        }
+      ]
+    },
+    {
+      "file": "20261120133000_b2b_new_match_notifications.sql",
+      "sha": "d0259f3704fa9722b037904aa8889affb8a12a0e",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261120122600",
+          "name": "b2b_new_match_notifications_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261120142500_operator_notifications_center.sql",
+      "sha": "487536763a8ca85edb789e5bec84061a6287154b",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261120123559",
+          "name": "operator_notifications_center_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261123221000_editorial_culture_pilot.sql",
+      "sha": "43ed938fbb71d7ba9cbc84ef011560d6bc74e87f",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261123221354",
+          "name": "editorial_culture_pilot"
+        }
+      ]
+    },
+    {
+      "file": "20261123225000_editorial_culture_new_place.sql",
+      "sha": "8d0ed9652c8238219716a516af5738c933cfc87c",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261123230000_editorial_culture_maps_links.sql",
+      "sha": "cc2f1612820be2d157a3159ceeb39b5693acd479",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124071000_editorial_culture_maps_only.sql",
+      "sha": "48f1b5c52f362cf2133029c990688139e22dfe62",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124074000_editorial_culture_coordinates.sql",
+      "sha": "492e61a6b573c5298844281630d1d7e51270879e",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124090000_editorial_culture_delete_archived.sql",
+      "sha": "b310a4128644a3f969b480eed9e4524083a0e3c8",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124093000_editorial_legends_villages.sql",
+      "sha": "2ad05794019c5757cc198ce87928c04fc87670eb",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124101000_editorial_sources.sql",
+      "sha": "16bdafcd379a72a31881afcbd9225a208702f021",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124104000_editorial_plain_references.sql",
+      "sha": "6b65d8f8ed8a3d89fab73f67d06bba500e93e348",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124113000_editorial_historical_stories.sql",
+      "sha": "f4ee295a9d519f3a4c1827816d647dd4189e0f06",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124134509_dt_qa_sec_01_r04_editorial_least_privilege.sql",
+      "sha": "51b90bf9b1c1384e1cdfddf40b3dc017c38a3534",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261124134509",
+          "name": "dt_qa_sec_01_r04_editorial_least_privilege"
+        }
+      ]
+    },
+    {
+      "file": "20261125091633_dt_rel_sec_01_review_integrity.sql",
+      "sha": "dd97f3d19f54ec0a71a885e36e43a3837e41f997",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261125091633",
+          "name": "dt_rel_sec_01_review_integrity"
+        }
+      ]
+    },
+    {
+      "file": "20261125095740_dt_rel_storage_01_media_integrity.sql",
+      "sha": "8fc7b43949ac816f7ec634df7310215f8761a21b",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261125095740",
+          "name": "dt_rel_storage_01_media_integrity"
+        }
+      ]
+    },
+    {
+      "file": "20261125100942_dt_rel_storage_02_private_experience_media.sql",
+      "sha": "c44aaec237e92c1dc2a4254364f9c7ca8f0dae69",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261125100942",
+          "name": "dt_rel_storage_02_private_experience_media"
+        }
+      ]
+    }
+  ],
+  "registry_unmapped": [
+    {
+      "version": "20261021170603",
+      "name": "bimaris_initial_schema"
+    },
+    {
+      "version": "20261021170831",
+      "name": "staging_contact_messages"
+    },
+    {
+      "version": "20261021170928",
+      "name": "staging_culture_and_food_schema"
+    },
+    {
+      "version": "20261021170935",
+      "name": "staging_villages_and_user_schema"
+    },
+    {
+      "version": "20261021170944",
+      "name": "staging_preferences_and_memberships"
+    },
+    {
+      "version": "20261021170951",
+      "name": "staging_experience_revision_tables"
+    },
+    {
+      "version": "20261021171041",
+      "name": "staging_align_application_columns"
+    },
+    {
+      "version": "20261021171049",
+      "name": "staging_align_itinerary_stops"
+    },
+    {
+      "version": "20261021171129",
+      "name": "staging_restore_foreign_keys"
+    },
+    {
+      "version": "20261021171212",
+      "name": "staging_public_visibility_and_operator_revision_policies"
+    },
+    {
+      "version": "20261021171347",
+      "name": "staging_preserve_rejected_review_state"
+    },
+    {
+      "version": "20261021171355",
+      "name": "staging_operator_revision_admin_function"
+    },
+    {
+      "version": "20261021171820",
+      "name": "staging_secure_apply_experience_revision"
+    },
+    {
+      "version": "20261021171830",
+      "name": "staging_revision_media_policies_and_snapshot"
+    },
+    {
+      "version": "20261021171842",
+      "name": "staging_experience_revision_policies"
+    },
+    {
+      "version": "20261021171850",
+      "name": "staging_approved_unpublished_revision_policy"
+    },
+    {
+      "version": "20261021174528",
+      "name": "staging_experience_media_bucket"
+    },
+    {
+      "version": "20261021174533",
+      "name": "staging_public_experience_media_read"
+    },
+    {
+      "version": "20261021174540",
+      "name": "staging_operator_experience_media_update"
+    },
+    {
+      "version": "20261021174544",
+      "name": "staging_operator_experience_media_delete"
+    },
+    {
+      "version": "20261021174548",
+      "name": "staging_operator_storage_upload"
+    },
+    {
+      "version": "20261021174553",
+      "name": "staging_operator_storage_update"
+    },
+    {
+      "version": "20261021174557",
+      "name": "staging_operator_storage_delete"
+    },
+    {
+      "version": "20261021184920",
+      "name": "staging_public_curated_content_read"
+    },
+    {
+      "version": "20261021184924",
+      "name": "staging_public_places_and_story_links"
+    },
+    {
+      "version": "20261021184929",
+      "name": "staging_operator_membership_self_read"
+    },
+    {
+      "version": "20261021184933",
+      "name": "staging_user_profile_interest_ownership"
+    },
+    {
+      "version": "20261021184942",
+      "name": "staging_saved_items_self_read"
+    },
+    {
+      "version": "20261021185028",
+      "name": "staging_saved_items_self_delete"
+    },
+    {
+      "version": "20261021185032",
+      "name": "staging_newsletter_self_read"
+    },
+    {
+      "version": "20261021185037",
+      "name": "staging_newsletter_self_insert"
+    },
+    {
+      "version": "20261021185041",
+      "name": "staging_newsletter_self_update"
+    },
+    {
+      "version": "20261021185045",
+      "name": "staging_saved_items_self_insert_retry"
+    },
+    {
+      "version": "20261021185054",
+      "name": "staging_public_food_experience_links"
+    },
+    {
+      "version": "20261021185059",
+      "name": "staging_public_food_operator_links"
+    },
+    {
+      "version": "20261021185131",
+      "name": "staging_core_relationship_indexes"
+    },
+    {
+      "version": "20261021185144",
+      "name": "staging_culture_place_index"
+    },
+    {
+      "version": "20261021185519",
+      "name": "staging_optimize_revision_media_read_rls"
+    },
+    {
+      "version": "20261021185523",
+      "name": "staging_optimize_revision_media_insert_rls"
+    },
+    {
+      "version": "20261021185527",
+      "name": "staging_optimize_revision_media_delete_rls"
+    },
+    {
+      "version": "20261021185532",
+      "name": "staging_optimize_revision_media_update_rls"
+    },
+    {
+      "version": "20261021185539",
+      "name": "staging_optimize_revision_read_rls"
+    },
+    {
+      "version": "20261021185543",
+      "name": "staging_optimize_revision_insert_rls"
+    },
+    {
+      "version": "20261021185549",
+      "name": "staging_optimize_revision_update_rls"
+    },
+    {
+      "version": "20261021185603",
+      "name": "staging_optimize_favorites_rls"
+    },
+    {
+      "version": "20261021185607",
+      "name": "staging_optimize_experience_participant_rls"
+    },
+    {
+      "version": "20261021185611",
+      "name": "staging_optimize_experience_insert_rls"
+    },
+    {
+      "version": "20261021185616",
+      "name": "staging_optimize_experience_update_rls"
+    },
+    {
+      "version": "20261021190719",
+      "name": "staging_merge_experience_participants_read_policies"
+    },
+    {
+      "version": "20261021190725",
+      "name": "staging_village_points_village_index"
+    },
+    {
+      "version": "20261021190729",
+      "name": "staging_food_experience_link_index"
+    },
+    {
+      "version": "20261021190733",
+      "name": "staging_food_operator_link_index"
+    },
+    {
+      "version": "20261021190736",
+      "name": "staging_food_products_territory_index"
+    },
+    {
+      "version": "20261021190740",
+      "name": "staging_villages_territory_index"
+    },
+    {
+      "version": "20261021190744",
+      "name": "staging_story_places_place_index"
+    },
+    {
+      "version": "20261021190755",
+      "name": "staging_itinerary_stop_relation_indexes"
+    },
+    {
+      "version": "20261021190834",
+      "name": "staging_experience_operator_navigation_indexes"
+    },
+    {
+      "version": "20261021190841",
+      "name": "staging_event_operator_index"
+    },
+    {
+      "version": "20261021190846",
+      "name": "staging_event_territory_index"
+    },
+    {
+      "version": "20261021190850",
+      "name": "staging_favorites_experience_index"
+    },
+    {
+      "version": "20261021190902",
+      "name": "staging_revision_application_reference_indexes"
+    },
+    {
+      "version": "20261021190905",
+      "name": "staging_analytics_behavior_user_indexes"
+    },
+    {
+      "version": "20261021191046",
+      "name": "staging_restore_completed_experience_review_trigger"
+    },
+    {
+      "version": "20261021191058",
+      "name": "staging_restore_operator_application_admin_rpc"
+    },
+    {
+      "version": "20261021195753",
+      "name": "restore_places_slug_unique_for_operator_approval"
+    },
+    {
+      "version": "20261022073829",
+      "name": "staging_user_interests_self_delete"
+    },
+    {
+      "version": "20261022082131",
+      "name": "add_discovery_v1_foundations"
+    },
+    {
+      "version": "20261022134215",
+      "name": "operator_application_location_model"
+    },
+    {
+      "version": "20261023052614",
+      "name": "preserve_application_coordinates_on_operator_accept"
+    },
+    {
+      "version": "20261023082156",
+      "name": "operator_manage_experience_discovery_intents"
+    },
+    {
+      "version": "20261023082929",
+      "name": "extend_experience_collaborations"
+    },
+    {
+      "version": "20261023082949",
+      "name": "require_collaborator_approval_before_experience_submission"
+    },
+    {
+      "version": "20261023082956",
+      "name": "limit_experience_interests_to_three"
+    },
+    {
+      "version": "20261023100740",
+      "name": "add_experience_activity_taxonomy"
+    },
+    {
+      "version": "20261023102337",
+      "name": "event_calendar_imports"
+    },
+    {
+      "version": "20261026063958",
+      "name": "operator_interest_manifestations"
+    },
+    {
+      "version": "20261026064324",
+      "name": "align_operator_interest_manifestation_spec"
+    },
+    {
+      "version": "20261026080933",
+      "name": "standardize_operator_interest_location"
+    },
+    {
+      "version": "20261026104536",
+      "name": "allow_operator_interest_rate_limit_scope"
+    },
+    {
+      "version": "20261027074636",
+      "name": "harden_experience_media_bucket_limits"
+    },
+    {
+      "version": "20261027074722",
+      "name": "harden_workflow_state_constraints"
+    },
+    {
+      "version": "20261027082014",
+      "name": "restore_record_user_behavior_rpc"
+    },
+    {
+      "version": "20261027082203",
+      "name": "harden_record_user_behavior_invoker"
+    },
+    {
+      "version": "20261027083847",
+      "name": "allow_authenticated_own_behavior_event_insert"
+    },
+    {
+      "version": "20261027084213",
+      "name": "restore_user_behavior_event_id_generation"
+    },
+    {
+      "version": "20261027103538",
+      "name": "allow_members_read_linked_operators"
+    },
+    {
+      "version": "20261027113056",
+      "name": "allow_operator_members_read_own_experiences"
+    },
+    {
+      "version": "20261027115638",
+      "name": "require_experience_cover_before_submission"
+    },
+    {
+      "version": "20261027131945",
+      "name": "allow_applied_experience_revision_status"
+    },
+    {
+      "version": "20261028073013",
+      "name": "fix_collaboration_dual_role_response"
+    },
+    {
+      "version": "20261028092010",
+      "name": "sync_experience_bookable_from_discovery_profile"
+    },
+    {
+      "version": "20261028115843",
+      "name": "fix_apply_experience_revision_optional_taxonomy"
+    },
+    {
+      "version": "20261028115913",
+      "name": "set_revision_source_media_fk_on_delete_null"
+    },
+    {
+      "version": "20261028120529",
+      "name": "initialize_experience_revision_from_live_source"
+    },
+    {
+      "version": "20261028121432",
+      "name": "guard_noop_experience_revision_submission"
+    },
+    {
+      "version": "20261028121448",
+      "name": "harden_noop_revision_numeric_comparison"
+    },
+    {
+      "version": "20261029075712",
+      "name": "restrict_public_discovery_to_published_experiences"
+    },
+    {
+      "version": "20261029124018",
+      "name": "extend_culture_content_model"
+    },
+    {
+      "version": "20261029135441",
+      "name": "extend_stories_editorial_structure"
+    },
+    {
+      "version": "20261031070157",
+      "name": "add_editorial_culture_relations"
+    },
+    {
+      "version": "20261104140415",
+      "name": "allow_operator_read_unpublished_discovery_profiles"
+    },
+    {
+      "version": "20261104141328",
+      "name": "align_pilot_territories_messina_ionica_tirrenica"
+    },
+    {
+      "version": "20261104141643",
+      "name": "add_experience_locality_to_distinguish_macroarea_and_place"
+    },
+    {
+      "version": "20261104142553",
+      "name": "add_verified_experience_meeting_location"
+    },
+    {
+      "version": "20261104144900",
+      "name": "record_experience_municipality_classification_status"
+    },
+    {
+      "version": "20261105144742",
+      "name": "b2b_require_pending_on_invite_insert"
+    },
+    {
+      "version": "20261105145032",
+      "name": "b2b_lock_collaboration_identity_columns"
+    },
+    {
+      "version": "20261105145053",
+      "name": "b2b_enforce_accepted_agreement_consistency"
+    },
+    {
+      "version": "20261106094919",
+      "name": "guard_operator_application_rejection_transition"
+    },
+    {
+      "version": "20261109114012",
+      "name": "secure_b2b_collaboration_inviter_membership"
+    },
+    {
+      "version": "20261109114202",
+      "name": "guard_b2b_collaboration_update_transitions"
+    },
+    {
+      "version": "20261109114219",
+      "name": "remove_redundant_b2b_update_guard_preserve_reinvite"
+    },
+    {
+      "version": "20261111071355",
+      "name": "add_optional_vat_to_operator_lifecycle"
+    },
+    {
+      "version": "20261111071516",
+      "name": "transfer_vat_on_operator_application_acceptance"
+    },
+    {
+      "version": "20261111071606",
+      "name": "add_stable_operator_management_code"
+    },
+    {
+      "version": "20261111073141",
+      "name": "add_isolated_business_account_foundation"
+    },
+    {
+      "version": "20261111073207",
+      "name": "add_authenticated_account_membership_lookup"
+    },
+    {
+      "version": "20261111073317",
+      "name": "add_owner_verified_business_account_link"
+    },
+    {
+      "version": "20261112143047",
+      "name": "allow_unpublished_operator_experience_revision_apply"
+    },
+    {
+      "version": "20261113064719",
+      "name": "revision_cover_storage_origin_portability"
+    },
+    {
+      "version": "20261113143945",
+      "name": "ds_ux_rev_01_staging_taxonomy_atomic_pilot"
+    }
+  ]
+}

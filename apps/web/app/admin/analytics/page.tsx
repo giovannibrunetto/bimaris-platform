@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import AdminBarChart from "@/components/AdminBarChart";
 
@@ -22,7 +22,7 @@ async function getSummary(){
  return {users,sessions,registered,pageViews,contacts,events,pages,interests,intent,daily};
 }
 export default async function AnalyticsPage(){
- if(!(await isAdminAuthenticated()))redirect("/admin/login"); const live=await getSummary();
+ if(!(await isAuthorizedAdmin()))redirect("/admin/login"); const live=await getSummary();
  const summary=live??{users:0,sessions:0,registered:0,pageViews:0,contacts:0,events:[] as [string,number][],pages:[] as {label:string,value:number}[],interests:[] as {label:string,value:number}[],intent:[] as {label:string,value:number}[],daily:[] as {label:string,value:number}[]};
  return <><section className="page-hero"><div className="kicker">Area privata</div><h1>BIMARIS Analytics</h1><p>Dati reali degli ultimi 30 giorni, inclusi interessi aggregati degli utenti anonimi che hanno accettato gli analytics.</p></section><section className="section sand">
  <div className="dashboard"><div className="metric">Visitatori unici<strong>{summary.users}</strong></div><div className="metric">Sessioni<strong>{summary.sessions}</strong></div><div className="metric">Registrati rilevati<strong>{summary.registered}</strong></div><div className="metric">Contatti / intenti<strong>{summary.contacts}</strong></div></div>

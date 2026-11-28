@@ -1,0 +1,236 @@
+/* Mobile-first refinements for the admin operator detail. Scoped to this route. */
+.admin-operator-detail { min-width: 0; }
+.admin-operator-detail input,
+.admin-operator-detail textarea { box-sizing: border-box; max-width: 100%; min-width: 0; }
+.admin-operator-detail__fields > label { min-width: 0; overflow-wrap: anywhere; }
+.admin-operator-detail__header > div:first-child { min-width: 0; }
+.admin-operator-detail__header h1 { overflow-wrap: anywhere; }
+.admin-operator-detail__tabs a { text-decoration: none; }
+@media (max-width: 600px) {
+  .admin-operator-detail { padding: 12px 12px 48px !important; }
+  .admin-operator-detail__header { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 14px !important; padding: 16px !important; }
+  .admin-operator-detail__header h1 { font-size: 27px !important; line-height: 1.12 !important; }
+  .admin-operator-detail__tabs { flex-wrap: nowrap !important; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; margin: 12px 0 16px !important; }
+  .admin-operator-detail__tabs > a { flex: 0 0 auto; white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
+  .admin-operator-detail__profile { padding: 16px !important; }
+  .admin-operator-detail__profile h2 { font-size: 23px !important; margin-bottom: 14px !important; }
+  .admin-operator-detail__fields { grid-template-columns: minmax(0, 1fr) !important; gap: 12px !important; }
+  .admin-operator-detail__fields > label { grid-column: 1 / -1 !important; }
+  .admin-operator-detail .detail-panel { max-width: 100%; overflow-wrap: anywhere; }
+  .admin-operator-detail .detail-panel textarea { width: 100%; }
+}
+@media (max-width: 360px) {
+  .admin-operator-detail__header h1 { font-size: 25px !important; }
+}
+
+/* Dossier navigation and less intrusive contextual actions. */
+.admin-operator-detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-bottom: 6px;
+  color: #75562e;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.admin-operator-detail__back:hover,
+.admin-operator-detail__back:focus-visible { text-decoration: underline; }
+.admin-operator-detail__profile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.admin-operator-detail__public-link {
+  color: #285367;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.admin-operator-detail__visibility {
+  padding: 12px 14px;
+  margin: 4px 0 18px;
+  border: 1px solid #decdb8;
+  border-radius: 10px;
+  background: #fcf8f1;
+}
+.admin-operator-detail__visibility summary { cursor: pointer; font-weight: 700; }
+.admin-operator-detail__visibility p { font-size: 13px; line-height: 1.5; }
+@media (max-width: 600px) {
+  .admin-operator-detail__header { gap: 6px !important; }
+  .admin-operator-detail__back { margin-bottom: 8px; }
+  .admin-operator-detail__tabs > a { padding: 9px 12px !important; }
+  .admin-operator-detail__public-link { margin-top: 4px; }
+}
+
+/* Unified Profile and Management: secondary information stays collapsed. */
+.admin-operator-detail__management .detail-panel { padding: 16px 18px !important; }
+.admin-operator-detail__metadata {
+  padding: 12px 0;
+  border-top: 1px solid #e8ddd0;
+}
+.admin-operator-detail__metadata summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #243d41;
+}
+.admin-operator-detail__metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap: 14px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+.admin-operator-detail__metadata-grid span { display: block; margin-top: 3px; overflow-wrap: anywhere; }
+.admin-operator-detail__management .admin-operator-detail__visibility { margin: 12px 0; }
+@media(max-width:600px) {
+  .admin-operator-detail__management .detail-panel { padding: 14px !important; }
+  .admin-operator-detail__metadata-grid { grid-template-columns: minmax(0,1fr); gap: 10px; }
+}
+
+/* DT2 visual revision — scoped exclusively to the operator dossier. */
+.admin-operator-detail { --dossier-ink:#102d32; --dossier-gold:#bd9254; --dossier-border:#e6ddd0; }
+.admin-operator-detail > div { min-width:0; }
+.admin-operator-detail__header {
+  background:linear-gradient(135deg,#10383d 0%,#09282e 100%) !important;
+  border:1px solid #284d4e !important;
+  border-radius:18px !important;
+  box-shadow:0 12px 26px rgba(14,38,39,.12) !important;
+  color:#f8f5ef;
+}
+.admin-operator-detail__back { color:#e8c894 !important; font-size:12px; }
+.admin-operator-detail__header h1 { color:#fff !important; font-family:Georgia,serif; letter-spacing:-.02em; }
+.admin-operator-detail__identity { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.admin-operator-detail__status, .admin-operator-detail__plan { border:1px solid rgba(255,255,255,.18); }
+.admin-operator-detail__status.is-online { background:#dff1e4 !important; color:#174b32 !important; }
+.admin-operator-detail__status.is-offline { background:#f7e5da !important; color:#75432d !important; }
+.admin-operator-detail__plan { background:rgba(255,255,255,.12) !important; color:#faf7ed !important; }
+.admin-operator-detail__subtitle { color:#d2e0dd !important; line-height:1.45; }
+.admin-operator-detail__tabs {
+  box-sizing:border-box;
+  background:#fff !important;
+  border:1px solid var(--dossier-border) !important;
+  box-shadow:0 3px 12px rgba(14,38,39,.045);
+  gap:5px !important;
+}
+.admin-operator-detail__tabs > a {
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  flex:1 1 0; min-width:0; border-radius:9px !important;
+  font-weight:700; line-height:1.25;
+}
+.admin-operator-detail__tabs > a[aria-current="page"] { background:var(--dossier-ink) !important; color:#fff !important; }
+.admin-operator-detail__tabs > a:not([aria-current="page"]) { background:transparent !important; color:#425257 !important; }
+.admin-operator-detail__profile {
+  background:#fff !important;
+  border:1px solid var(--dossier-border) !important;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(16,45,50,.055) !important;
+}
+.admin-operator-detail__profile .kicker { color:#a8783e; }
+.admin-operator-detail__profile h2 { color:var(--dossier-ink); letter-spacing:-.025em; }
+.admin-operator-detail__reference {
+  display:flex; flex-wrap:wrap; gap:8px 18px;
+  border-bottom:1px solid #ece6de; padding-bottom:16px; margin:0 0 19px;
+  line-height:1.5;
+}
+.admin-operator-detail__reference span { display:inline-flex; gap:5px; flex-wrap:wrap; }
+.admin-operator-detail__fields label { display:flex; flex-direction:column; gap:6px; font-weight:650; font-size:13px; color:#354b4d; }
+.admin-operator-detail__fields input {
+  min-height:46px; padding:11px 13px !important;
+  border:1px solid #d9dedb !important;
+  border-radius:11px !important;
+  background:#fbfcfb !important; color:#183339;
+  font-size:15px; font-weight:450;
+}
+.admin-operator-detail__fields input:focus-visible, .admin-operator-detail textarea:focus-visible {
+  outline:2px solid #b48b4e; outline-offset:1px; border-color:#b48b4e !important;
+}
+.admin-operator-detail__save > button { min-height:44px; }
+@media (max-width:600px) {
+  .admin-operator-detail { padding:12px 14px 55px !important; }
+  .admin-operator-detail__header { padding:17px 17px 19px !important; }
+  .admin-operator-detail__header h1 { font-size:clamp(25px,7vw,32px) !important; }
+  .admin-operator-detail__identity { gap:8px; }
+  .admin-operator-detail__status, .admin-operator-detail__plan { font-size:11px !important; padding:5px 9px !important; }
+  .admin-operator-detail__tabs {
+    display:grid !important;
+    grid-template-columns:1fr 1.3fr 1fr;
+    overflow:visible !important;
+    margin:12px 0 14px !important;
+    padding:5px !important;
+  }
+  .admin-operator-detail__tabs > a {
+    box-sizing:border-box; min-height:44px !important; padding:8px 5px !important;
+    white-space:normal !important; font-size:12px !important;
+  }
+  .admin-operator-detail__profile { padding:18px 17px !important; }
+  .admin-operator-detail__profile-top { align-items:flex-start; gap:10px; }
+  .admin-operator-detail__profile h2 { font-size:24px !important; margin:9px 0 12px !important; }
+  .admin-operator-detail__reference { font-size:12px !important; margin-bottom:18px; padding-bottom:14px; }
+  .admin-operator-detail__fields { gap:15px !important; }
+  .admin-operator-detail__fields label { font-size:13px; }
+  .admin-operator-detail__save { margin-top:12px !important; }
+  .admin-operator-detail__save button { width:100%; }
+}
+@media (max-width:360px) {
+  .admin-operator-detail { padding-inline:10px !important; }
+  .admin-operator-detail__header { padding:15px !important; }
+  .admin-operator-detail__tabs > a { font-size:11px !important; }
+}
+
+/* Separate advanced management from the everyday operator profile. */
+.admin-operator-detail__manage-link {
+  margin-top:16px;
+  padding:18px 20px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap;
+  border:1px solid #d5c8b7; border-radius:15px;
+  background:#fff; box-shadow:0 5px 18px rgba(16,45,50,.055);
+}
+.admin-operator-detail__manage-link strong { display:block; font-size:17px; color:#12343a; }
+.admin-operator-detail__manage-link p { margin:5px 0 0; font-size:13px; color:#63716d; line-height:1.45; }
+.admin-operator-detail__manage-link a { text-align:center; white-space:normal; }
+.admin-operator-detail__management-page > form > article { margin-top:18px !important; border-radius:14px; }
+.admin-operator-detail__management-page > form summary { color:#10383d; }
+.admin-operator-detail__management-page textarea { width:100%; min-height:145px !important; }
+@media (max-width:600px) {
+  .admin-operator-detail__manage-link { padding:16px; align-items:stretch; }
+  .admin-operator-detail__manage-link > a { width:100%; box-sizing:border-box; }
+}
+
+/* Read-only profile by default; deliberate editing only on demand. */
+.admin-operator-detail__read-only { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 22px; }
+.admin-operator-detail__read-row { padding:11px 0; border-bottom:1px solid #e9e6df; min-width:0; }
+.admin-operator-detail__read-row > span { display:block; font-size:12px; color:#667475; margin-bottom:4px; }
+.admin-operator-detail__read-row > strong { display:block; font-size:15px; color:#19373b; font-weight:600; overflow-wrap:anywhere; }
+.admin-operator-detail__edit-disclosure { margin-top:20px; }
+.admin-operator-detail__edit-disclosure > summary { display:flex; cursor:pointer; align-items:center; justify-content:center; min-height:44px; padding:8px 16px; box-sizing:border-box; border:1px solid #ae874c; border-radius:999px; background:#c9a66c; color:#132f32; font-size:14px; font-weight:750; list-style:none; }
+.admin-operator-detail__edit-disclosure > summary::-webkit-details-marker { display:none; }
+.admin-operator-detail__edit-disclosure[open] > summary { background:#f5eee2; }
+.admin-operator-detail__edit-form { padding-top:16px; }
+.admin-operator-detail__edit-note { margin:0 0 16px; color:#5b6664; font-size:13px; line-height:1.5; }
+.admin-operator-detail__premium-check { display:flex; align-items:center; gap:8px; margin-top:18px; font-size:14px; }
+.admin-operator-detail__edit-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-top:20px; }
+.admin-operator-detail__edit-actions > a, .admin-operator-detail__edit-actions > button { min-height:44px; box-sizing:border-box; }
+@media(max-width:600px) {
+ .admin-operator-detail__read-only { grid-template-columns:minmax(0,1fr); }
+ .admin-operator-detail__read-row { padding:10px 0; }
+ .admin-operator-detail__edit-actions { display:grid; grid-template-columns:1fr 1fr; }
+ .admin-operator-detail__edit-actions > a, .admin-operator-detail__edit-actions > button { width:100%; font-size:12px; }
+}
+
+/* Semantic actions have consistent colors even within the dossier's scoped rules. */
+.admin-operator-detail__edit-disclosure > summary.action-open,
+.admin-operator-detail__edit-disclosure[open] > summary.action-open {
+  background:var(--action-open-bg) !important;
+  border-color:var(--action-open-bg) !important;
+  color:var(--action-open-text) !important;
+}
+.admin-operator-detail__manage-link a.action-open {
+  background:var(--action-open-bg) !important;
+  border-color:var(--action-open-bg) !important;
+  color:var(--action-open-text) !important;
+}

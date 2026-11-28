@@ -35,7 +35,7 @@ export async function uploadExperienceMedia(client:MediaClient,input:UploadInput
  if(upload.error)return {ok:false as const,reason:"upload" as const,error:upload.error};
  const inserted=await client.from("experience_media").insert({experience_id:input.experienceId,storage_path:path,sort_order:input.sortOrder,is_cover:false,alt_text:input.altText}).select("id").single();
  if(inserted.error||!inserted.data){const cleanup=await client.storage.from(LIVE_MEDIA_BUCKET).remove([path]);return {ok:false as const,reason:"database" as const,error:inserted.error,cleanupFailed:Boolean(cleanup.error)};}
- const url=client.storage.from(LIVE_MEDIA_BUCKET).getPublicUrl(path).data.publicUrl as string;
+ const url=`/api/experience-photo?path=${encodeURIComponent(path)}`;
  return {ok:true as const,id:inserted.data.id as string,storagePath:path,url};
 }
 

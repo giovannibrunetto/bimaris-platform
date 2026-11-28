@@ -48,13 +48,13 @@ export default async function SaporiTerritoriPage() {
         {products.length > 0 ? (
           <div className="cards">
             {products.map(product => (
-              <article className="card" key={product.id} id={product.territory ? `territorio-${product.territory.slug}` : undefined}>
+              <article className="card card-hit-area" key={product.id} id={product.territory ? `territorio-${product.territory.slug}` : undefined}>
                 {product.imageUrl && <img src={product.imageUrl} alt={product.imageAlt ?? product.name} loading="lazy" decoding="async" />}
                 <div className="card-body">
                   <div className="kicker">{product.territory?.name ?? "Territorio messinese"}</div>
                   <h3>{product.name}</h3>
                   <p>{product.excerpt}</p>
-                  <Link className="text-link" href={`/sapori-territori/${product.slug}`}>Scopri il prodotto →</Link>
+                  <Link className="text-link card-primary-link" href={`/sapori-territori/${product.slug}`} aria-label={`Scopri ${product.name}`}>Scopri il prodotto →</Link>
                 </div>
               </article>
             ))}

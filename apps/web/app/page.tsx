@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SearchForm from "./cerca/SearchForm";
 import { PrelaunchHome } from "@/components/PrelaunchHome";
 import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
 import "./home-journey-v2.css";
@@ -10,10 +11,17 @@ export default function Home() {
 
   return (
     <>
-      <section className="brand-hero brand-hero-compact">
-        <h1 className="sr-only">BIMARIS — Messina da Vivere</h1>
-        <div className="brand-hero-visual">
+      <section className="home-discovery" aria-labelledby="home-discovery-title">
+        <div className="home-discovery-brand">
           <img src="/brand/bimaris-home-hero.jpg" alt="BIMARIS — Messina da Vivere" />
+        </div>
+        <div className="home-discovery-content">
+          <div className="home-discovery-heading">
+            <h1 id="home-discovery-title">Come vuoi vivere Messina?</h1>
+            <h2>Che ti va di fare?</h2>
+            <p>Trova luoghi, eventi ed esperienze che fanno per te.</p>
+          </div>
+          <SearchForm />
         </div>
       </section>
 
@@ -21,18 +29,17 @@ export default function Home() {
         <div className="home-journey-inner">
           <div className="home-journey-intro">
             <div className="home-journey-heading">
-              <div className="kicker">Scopri Messina con BIMARIS</div>
-              <h2 id="home-journey-title">Scegli come vivere la città.</h2>
+              <h2 id="home-journey-title">Esplora Messina</h2>
             </div>
             <p>Entra nella sua storia, vivi un’esperienza oppure esplora liberamente luoghi e territorio.</p>
           </div>
 
           <div className="home-journey-paths home-journey-paths-v2">
-            <Link className="home-journey-path home-journey-story" href="/mappa/epoche">
+            <Link className="home-journey-path home-journey-story" href="/ti-racconto-la-storia-di-messina">
               <span className="home-journey-number">01</span>
               <div className="home-journey-path-copy">
                 <span className="home-journey-label">Entra nella storia della città</span>
-                <h3>Ti racconto Messina</h3>
+                <h3>Ti racconto la storia di Messina</h3>
                 <p>Epoche, eventi e luoghi si collegano per farti conoscere Messina attraverso le sue storie.</p>
                 <span className="home-journey-action">Inizia a scoprire <b>→</b></span>
               </div>
@@ -43,19 +50,19 @@ export default function Home() {
                 <span className="home-journey-number">02</span>
                 <div className="home-journey-path-copy">
                   <span className="home-journey-label">Vivi il territorio</span>
-                  <h3>Esperienze BIMARIS</h3>
-                  <p>Degustazioni, mare, natura, visite e attività selezionate per vivere Messina e il suo territorio.</p>
-                  <span className="home-journey-action">Scopri le esperienze <b>→</b></span>
+                  <h3>Esperienze e appuntamenti</h3>
+                  <p>Attività degli operatori ed eventi verificati per vivere Messina e il suo territorio.</p>
+                  <span className="home-journey-action">Scopri cosa fare <b>→</b></span>
                 </div>
               </Link>
 
-              <Link className="home-journey-path home-journey-map" href="/mappa">
+              <Link className="home-journey-path home-journey-map" href="/storie-miti-leggende">
                 <span className="home-journey-number">03</span>
                 <div className="home-journey-path-copy">
-                  <span className="home-journey-label">Esplora liberamente</span>
-                  <h3>Mappa BIMARIS</h3>
-                  <p>Scegli ciò che ti incuriosisce e scopri luoghi, cultura ed esperienze direttamente sulla mappa.</p>
-                  <span className="home-journey-action">Apri la mappa <b>→</b></span>
+                  <span className="home-journey-label">Tra racconti e tradizioni</span>
+                  <h3>Messina, tra mito e leggenda</h3>
+                  <p>Scopri i miti, le leggende e le storie tramandate nei secoli, tra la città e lo Stretto.</p>
+                  <span className="home-journey-action">Scopri i racconti <b>→</b></span>
                 </div>
               </Link>
             </div>

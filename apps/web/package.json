@@ -7,14 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prebuild": "node scripts/mfa-staging-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.4",
     "next": "^16.4.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "nodemailer": "^10.6.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19.1.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.4.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "@types/nodemailer": "^8.0.2"
   }
 }

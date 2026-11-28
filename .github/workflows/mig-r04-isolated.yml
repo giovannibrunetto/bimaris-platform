@@ -1,0 +1,121 @@
+name: MIG-R04 isolated schema replay
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/mig-r04-isolated.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mig-r04-isolated
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Replay repository migrations in disposable local stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase db start --help >/dev/null
+          supabase db start
+          compare_structure() {
+          # Only the default local CLI database endpoint, never a remote database.
+          db_container="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test "$(printf '%s\n' "$db_container" | grep -c '^supabase_db_')" -eq 1
+          docker exec -i "$db_container" psql -X -U postgres -d postgres -v ON_ERROR_STOP=1 --csv < "$GITHUB_WORKSPACE/docs/qa/mig-r04/structure-fingerprints.sql" > local-structure.csv
+          python3 - <<'PY'
+          import csv, json, os, collections
+          from pathlib import Path
+          from collections import Counter
+          reference = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/staging-structure-fingerprints.json"
+          expected = json.loads(reference.read_text())["objects"]
+          with open("local-structure.csv", newline="") as f:
+              actual = list(csv.DictReader(f))
+          assert expected and actual
+          # Exact allowlist of public survey functions intentionally outside replay.
+          survey_names = {"admin_citizen_survey_ideas", "admin_citizen_survey_summary", "admin_citizen_survey_test_summary", "citizen_survey_collection_open", "consume_citizen_survey_limit", "consume_citizen_survey_live_limit", "submit_citizen_survey", "submit_citizen_survey_test"}
+          def excluded(row):
+              return row["kind"] in {"function", "function_grant"} and row["name"].split("(")[0] in {"public." + n for n in survey_names}
+          excluded_expected = [r for r in expected if excluded(r)]
+          assert len(excluded_expected) == 32
+          assert not any(excluded(r) for r in actual)
+          expected = [r for r in expected if not excluded(r)]
+          print("PARITY_EXCLUDED_SURVEY", len(excluded_expected))
+          def grouped(rows):
+              d = collections.defaultdict(Counter)
+              for r in rows:
+                  d[(r["kind"], r["name"])][r["fingerprint"]] += 1
+              return d
+          a, b = grouped(expected), grouped(actual)
+          stats = collections.defaultdict(Counter)
+          for k in sorted(a.keys() | b.keys()):
+              status = "missing" if k not in b else "extra" if k not in a else "match" if a[k] == b[k] else "different"
+              stats[k[0]][status] += 1
+              if status != "match":
+                  print("PARITY_DIFF", status, *k)
+          for kind, counts in sorted(stats.items()):
+              print("PARITY_SUMMARY", kind, json.dumps(dict(counts), sort_keys=True))
+          print("PARITY_TOTAL", len(expected), len(actual))
+          if any(v.get("missing", 0) or v.get("extra", 0) or v.get("different", 0) for v in stats.values()):
+              raise SystemExit("Structural parity not established: diagnostic differences require review")
+          print("PARITY_PASS: normalized structural fingerprints match within selected scope")
+          PY
+          }
+          echo "CANONICAL_PHASE clean_boot"
+          supabase migration list --local
+          compare_structure
+          echo "CANONICAL_PHASE clean_reset"
+          supabase db reset --local --no-seed
+          supabase migration list --local
+          compare_structure
+          echo 'MIG-R04: candidate canonical baseline matched after clean boot and reset; remote adoption not authorized.'

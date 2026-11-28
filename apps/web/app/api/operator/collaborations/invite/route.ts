@@ -1,5 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
 import {createUserServerClient} from "@/lib/supabase/user-server";
+import {recordOperatorNotice} from "@/lib/operator-notifications";
 
 export async function POST(request:NextRequest){
  const db=await createUserServerClient();if(!db)return NextResponse.json({error:"Accesso richiesto."},{status:401});
@@ -28,6 +29,7 @@ export async function POST(request:NextRequest){
  }
  const {error}=await db.from("experience_operators").upsert({experience_id:experienceId,operator_id:partnerId,role:"participant",activity_label:activity,approval_status:"pending",approved_at:null,invited_by_operator_id:operatorId,updated_at:new Date().toISOString()},{onConflict:"experience_id,operator_id"});
  if(error)return NextResponse.json({error:error.message},{status:400});
+ await recordOperatorNotice({operatorId:partnerId,category:"collaboration",eventKey:`collaboration-invite:${experienceId}:${partnerId}`,title:"Nuova proposta di collaborazione",description:"Un operatore BIMARIS ti ha invitato a collaborare a una propria esperienza.",targetPath:`/area-operatore?collaboration=pending&invito=${encodeURIComponent(experienceId)}`});
  return NextResponse.json({ok:true,status:"pending"});
 }
 

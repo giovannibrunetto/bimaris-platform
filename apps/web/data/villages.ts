@@ -27,6 +27,10 @@ export type Village = {
   longitude?: number;
   imageUrl?: string;
   imageAlt?: string;
+  imageAuthor?: string;
+  imageLicense?: string;
+  imageSourceUrl?: string;
+  imageLicenseUrl?: string;
   featured: boolean;
   territory?: { slug: string; name: string };
 };
@@ -134,11 +138,19 @@ export const massesContext: VillageNarrative = { title: "Un territorio condiviso
 export function getVillageNarrative(slug: string): VillageNarrative | undefined { return villageNarratives[slug]; }
 export function isMassaVillage(slug: string): boolean { return ["massa-san-giorgio","massa-san-nicola","massa-santa-lucia","massa-san-giovanni"].includes(slug); }
 
-type RawVillage = { id:string; slug:string; name:string; excerpt:string|null; description:string|null; history:string|null; identity:string|null; things_to_see:string|null; address:string|null; google_maps_query:string; latitude:number|null; longitude:number|null; image_url:string|null; image_alt:string|null; featured:boolean|null; territory:{slug:string;name:string}|null; };
+type RawVillage = { id:string; slug:string; name:string; excerpt:string|null; description:string|null; history:string|null; identity:string|null; things_to_see:string|null; address:string|null; google_maps_query:string; latitude:number|null; longitude:number|null; image_url:string|null; image_alt:string|null; image_author:string|null; image_license:string|null; image_source_url:string|null; image_license_url:string|null; featured:boolean|null; territory:{slug:string;name:string}|null; };
 type RawVillagePoint = { id:string; slug:string; name:string; description:string|null; address:string|null; google_maps_query:string; latitude:number|null; longitude:number|null; position:number|null; };
-const select = "id,slug,name,excerpt,description,history,identity,things_to_see,address,google_maps_query,latitude,longitude,image_url,image_alt,featured,territory:territories(slug,name)";
-function mapVillage(row: RawVillage): Village { return { id:row.id,slug:row.slug,name:row.name,excerpt:row.excerpt??"",description:row.description??"",history:row.history??undefined,identity:row.identity??undefined,thingsToSee:row.things_to_see??undefined,address:row.address??undefined,googleMapsQuery:row.google_maps_query,latitude:row.latitude??undefined,longitude:row.longitude??undefined,imageUrl:row.image_url??undefined,imageAlt:row.image_alt??undefined,featured:row.featured??false,territory:row.territory??undefined }; }
+const select = "id,slug,name,excerpt,description,history,identity,things_to_see,address,google_maps_query,latitude,longitude,image_url,image_alt,image_author,image_license,image_source_url,image_license_url,featured,territory:territories(slug,name)";
+function mapVillage(row: RawVillage): Village { return { id:row.id,slug:row.slug,name:row.name,excerpt:row.excerpt??"",description:row.description??"",history:row.history??undefined,identity:row.identity??undefined,thingsToSee:row.things_to_see??undefined,address:row.address??undefined,googleMapsQuery:row.google_maps_query,latitude:row.latitude??undefined,longitude:row.longitude??undefined,imageUrl:row.image_url??undefined,imageAlt:row.image_alt??undefined,imageAuthor:row.image_author??undefined,imageLicense:row.image_license??undefined,imageSourceUrl:row.image_source_url??undefined,imageLicenseUrl:row.image_license_url??undefined,featured:row.featured??false,territory:row.territory??undefined }; }
 function mapVillagePoint(row: RawVillagePoint): VillagePoint { return { id:row.id,slug:row.slug,name:row.name,description:row.description??undefined,address:row.address??undefined,googleMapsQuery:row.google_maps_query,latitude:row.latitude??undefined,longitude:row.longitude??undefined,position:row.position??0 }; }
 export async function getPublishedVillages(): Promise<Village[]> { const client=createPublicClient(); if(!client)return[]; const {data,error}=await client.from("villages").select(select).eq("published",true).order("featured",{ascending:false}).order("name"); if(error){console.error("BIMARIS villages read failed",error.message);return[];} return(data as unknown as RawVillage[]).map(mapVillage); }
 export async function getPublishedVillageBySlug(slug:string):Promise<Village|null>{const client=createPublicClient();if(!client)return null;const{data,error}=await client.from("villages").select(select).eq("published",true).eq("slug",slug).maybeSingle();if(error){console.error("BIMARIS village detail read failed",error.message);return null;}return data?mapVillage(data as unknown as RawVillage):null;}
 export async function getPublishedVillagePoints(villageId:string):Promise<VillagePoint[]>{const client=createPublicClient();if(!client)return[];const{data,error}=await client.from("village_points").select("id,slug,name,description,address,google_maps_query,latitude,longitude,position").eq("published",true).eq("village_id",villageId).order("position").order("name");if(error){console.error("BIMARIS village points read failed",error.message);return[];}return(data as unknown as RawVillagePoint[]).map(mapVillagePoint);}
+
+export async function getPublishedVillageSources(villageId: string) {
+  const client = createPublicClient();
+  if (!client) return [];
+  const { data, error } = await client.from("village_sources").select("id,label,url,note").eq("village_id", villageId).order("sort_order");
+  if (error) console.error("BIMARIS village sources read failed", error.message);
+  return data ?? [];
+}

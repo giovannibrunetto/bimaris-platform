@@ -11,6 +11,24 @@
     "typecheck:web": "pnpm --filter @bimaris/web exec tsc --noEmit",
     "typecheck:mobile": "pnpm --filter @bimaris/mobile exec tsc --noEmit",
     "check": "pnpm lint:web && pnpm typecheck:web && pnpm typecheck:mobile && pnpm test:auth",
-    "test:auth": "node --experimental-strip-types --test apps/web/tests/auth-redirect.test.mjs"
+    "test:auth": "node --experimental-strip-types --test apps/web/tests/auth-redirect.test.mjs apps/web/tests/admin-oauth-shared-callback.test.mjs apps/web/tests/admin-origin-guard.test.mjs apps/web/tests/admin-origin-runtime.test.mjs apps/web/tests/admin-policy.test.mjs apps/web/tests/api-rate-limit.test.mjs apps/web/tests/admin-mfa-regression.test.mjs apps/web/tests/admin-integration-regression.test.mjs apps/web/tests/mfa-smoke-context.test.mjs apps/web/tests/admin-mfa-guard-runtime.test.mjs apps/web/tests/admin-operators-runtime.test.mjs"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript-eslint": "8.72.2",
+      "@typescript-eslint/parser": "8.72.2",
+      "@typescript-eslint/eslint-plugin": "8.72.2",
+      "@typescript-eslint/types": "8.72.2",
+      "@typescript-eslint/utils": "8.72.2",
+      "@typescript-eslint/typescript-estree": "8.72.2",
+      "@typescript-eslint/scope-manager": "8.72.2",
+      "@typescript-eslint/type-utils": "8.72.2",
+      "@typescript-eslint/visitor-keys": "8.72.2",
+      "@typescript-eslint/project-service": "8.72.2",
+      "@typescript-eslint/tsconfig-utils": "8.72.2",
+      "query-string@7.1.3>decode-uri-component": "0.5.1",
+      "@expo/fingerprint@0.20.17>minimatch": "11.0.1",
+      "@typescript-eslint/typescript-estree@8.72.2>minimatch": "11.0.1"
+    }
   }
 }

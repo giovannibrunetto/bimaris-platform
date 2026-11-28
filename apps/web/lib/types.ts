@@ -1,5 +1,7 @@
 export type TerritorySlug =
   | "messina-stretto"
+  | "area-ionica"
+  | "area-tirrenica"
   | "milazzo-tirrenica"
   | "nebrodi"
   | "isole-eolie";
@@ -28,7 +30,7 @@ export type Experience = {
   excerpt: string;
   description: string;
   territory: TerritorySlug;
-  /** Compatibility field for older public filters; new records are classified by interests + activities. */
+  /** Public category assigned from the stored category or the selected activities and interests. */
   category: CategorySlug;
   categoryName: string;
   interestKey?: string;

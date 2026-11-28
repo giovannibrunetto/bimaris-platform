@@ -1,116 +1,108 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 import "./admin-dashboard.css";
+import { loadPendingPublicationRevisions, loadReadyPublicationCounts } from "./ready-publication-counts";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminPage() {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
   const db = createServiceClient();
   if (!db) throw new Error("Supabase non configurato");
 
-  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, onlineItinsRes, eventsRes] = await Promise.all([
+  const [appsRes, opsRes, pendingExpsRes, onlineExpsRes, revsRes, opRevsRes, eventsRes, allEventsRes, publicationCounts] = await Promise.all([
     db.from("operator_applications").select("id", { count: "exact", head: true }).in("status", ["new", "reviewing"]),
     db.from("operators").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experiences").select("id", { count: "exact", head: true }).in("review_status", ["pending", "submitted"]),
+    db.from("experiences").select("id").neq("experience_origin","bimaris").in("review_status", ["pending", "submitted"]).eq("published",false),
     db.from("experiences").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("experience_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    loadPendingPublicationRevisions(),
     db.from("operator_revisions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    db.from("itineraries").select("id", { count: "exact", head: true }).eq("published", true),
-    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending"),
+    db.from("events").select("id", { count: "exact", head: true }).eq("verification_status", "pending").eq("published", false),
+    db.from("events").select("id", { count: "exact", head: true }),
+    loadReadyPublicationCounts(),
   ]);
+
+  if ([appsRes,opsRes,pendingExpsRes,onlineExpsRes,revsRes,opRevsRes,eventsRes,allEventsRes].some(result => result.error)) {
+    throw new Error("Impossibile caricare i contatori della dashboard amministrativa");
+  }
 
   const pendingApps = appsRes.count ?? 0;
   const pendingRevs = revsRes.count ?? 0;
   const pendingProfileRevs = opRevsRes.count ?? 0;
   const pendingEvents = eventsRes.count ?? 0;
-  const pendingExperiences = pendingExpsRes.count ?? 0;
+  const { eventsToPublish, experiencesToPublish, editorialToPublish, readyToPublish } = publicationCounts;
+  const pendingRevisionIds=new Set((revsRes.data??[]).map(revision=>revision.experience_id));
+  const pendingExperiences = (pendingExpsRes.data??[]).filter(item=>!pendingRevisionIds.has(item.id)).length;
   const pendingOperatorArea = pendingRevs + pendingExperiences + pendingProfileRevs;
   const onlineOperators = opsRes.count ?? 0;
   const onlineExperiences = onlineExpsRes.count ?? 0;
-  const onlineItineraries = onlineItinsRes.count ?? 0;
+  const acquiredAppointments = allEventsRes.count ?? 0;
 
-  const pendingTotal=pendingApps+pendingOperatorArea+pendingEvents;
-  const workItems=[
-    {href:"/admin/operatori",label:"Operatori ed esperienze",description:"Proposte, modifiche e profili in attesa di valutazione",value:pendingOperatorArea},
-    {href:"/admin/eventi",label:"Eventi da verificare",description:"Controlli editoriali e validazione degli eventi",value:pendingEvents},
-    {href:"/admin/candidature",label:"Candidature",description:"Nuove richieste di accesso alla rete BIMARIS",value:pendingApps},
+  const reviewBreakdown = [
+    { count: pendingApps, singular: "candidatura", plural: "candidature" },
+    { count: pendingProfileRevs, singular: "modifica al profilo", plural: "modifiche ai profili" },
+    { count: pendingExperiences + pendingRevs, singular: "esperienza", plural: "esperienze" },
+    { count: pendingEvents, singular: "appuntamento MAI", plural: "appuntamenti MAI" },
+  ].filter(item => item.count > 0).map(item => `${item.count} ${item.count === 1 ? item.singular : item.plural}`).join(" · ");
+  const workItems = [
+    {href:"/admin/contenuti",label:"Contenuti da esaminare",description:reviewBreakdown || "Nessuna pratica in attesa",value:pendingApps+pendingOperatorArea+pendingEvents},
+    {href:"/admin/attivita?view=ready",label:"Contenuti pronti da pubblicare",description:readyToPublish>0?`${experiencesToPublish} esperienze · ${eventsToPublish} appuntamenti · ${editorialToPublish} editoriali`:"Nessun contenuto pronto",value:readyToPublish},
   ];
-  const liveItems=[
-    {href:"/admin/operatori",label:"Operatori online",value:onlineOperators},
-    {href:"/admin/esperienze",label:"Esperienze online",value:onlineExperiences},
-    {href:"/admin/itinerari",label:"Itinerari online",value:onlineItineraries},
+  const statusItems = [
+    { href: "/admin/operatori", label: "Operatori online", value: onlineOperators },
+    { href: "/admin/attivita?tipo=esperienze", label: "Esperienze online", value: onlineExperiences },
+    { href: "/admin/attivita?view=acquisiti", label: "Appuntamenti acquisiti", value: acquiredAppointments },
   ];
 
   return <div className="admin-dashboard">
-    <section className="admin-dashboard__intro" aria-labelledby="admin-dashboard-title">
-      <div className="admin-dashboard__container admin-dashboard__intro-layout">
-        <div className="admin-dashboard__intro-copy">
-          <span className="admin-dashboard__eyebrow">BIMARIS / Pannello di controllo</span>
-          <h1 id="admin-dashboard-title">Centro operativo</h1>
-          <p>Attività da esaminare, stato della piattaforma e accesso agli strumenti di gestione.</p>
-        </div>
-        <div className="admin-dashboard__intro-actions">
-          <Link className="admin-dashboard__site-link" href="/">Apri il sito</Link>
-          <form method="post" action="/api/admin/logout"><button type="submit">Esci</button></form>
-        </div>
-      </div>
-    </section>
-
     <section className="admin-dashboard__overview" aria-label="Riepilogo amministrativo">
       <div className="admin-dashboard__container">
-        <div className="admin-dashboard__summary">
-          <div className="admin-dashboard__summary-copy">
-            <span className="admin-dashboard__eyebrow">Riepilogo operativo</span>
-            <h2>Le priorità di oggi</h2>
-            <p>{pendingTotal===0?"Nessuna attività attualmente in attesa nei tre ambiti monitorati.":"Attività in attesa di valutazione nei tre ambiti monitorati."}</p>
-          </div>
-          <div className="admin-dashboard__total" aria-label={`${pendingTotal} attività in attesa`}>
-            <strong>{pendingTotal}</strong>
-            <span>Da gestire</span>
-          </div>
-        </div>
-
         <div className="admin-dashboard__workspace">
           <section className="admin-dashboard__workpanel" aria-labelledby="admin-work-heading">
             <div className="admin-dashboard__panel-heading">
-              <div><span className="admin-dashboard__overline">01 / Azioni richieste</span><h3 id="admin-work-heading">In attesa di intervento</h3></div>
-              <span className="admin-dashboard__count-label">{pendingTotal} attività in attesa</span>
+              <h2 id="admin-work-heading">Azioni richieste</h2>
             </div>
             <div className="admin-dashboard__tasklist">
-              {workItems.map((item,i)=><Link key={item.href} href={item.href} className="admin-dashboard__task">
-                <span className="admin-dashboard__task-index">{String(i+1).padStart(2,"0")}</span>
-                <span className="admin-dashboard__task-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
-                <span className={`admin-dashboard__task-count${item.value>0?" admin-dashboard__task-count--pending":""}`}>{item.value}</span>
+              {workItems.map(item => <Link key={item.href} href={item.href} className="admin-dashboard__task">
+                <span className="admin-dashboard__task-copy">
+                  <strong>{item.label}</strong>
+                  <small>{item.description}</small>
+                </span>
+                <span className={`admin-dashboard__task-count${item.value > 0 ? " admin-dashboard__task-count--pending" : ""}`}>{item.value}</span>
                 <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
               </Link>)}
             </div>
-            <p className="admin-dashboard__panel-footnote">I conteggi indicano elementi in attesa, non il numero di operatori complessivi.</p>
           </section>
 
-          <aside className="admin-dashboard__sidepanel" aria-labelledby="admin-status-heading">
-            <div className="admin-dashboard__panel-heading"><div><span className="admin-dashboard__overline">02 / Stato piattaforma</span><h3 id="admin-status-heading">Contenuti online</h3></div></div>
-            <div className="admin-dashboard__live-list">
-              {liveItems.map(item=><Link key={item.label} href={item.href} className="admin-dashboard__live-item">
-                <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">↗</span>
-              </Link>)}
+          <section className="admin-dashboard__sidepanel" aria-labelledby="admin-status-heading">
+            <div className="admin-dashboard__panel-heading">
+              <h2 id="admin-status-heading">Stato della piattaforma</h2>
             </div>
-            <div className="admin-dashboard__workflow"><span className="admin-dashboard__overline">Regola di pubblicazione</span><p>L'approvazione non rende automaticamente pubblica un'esperienza.</p><div><span>Approva</span><span aria-hidden="true">→</span><span>Seleziona, quando previsto</span><span aria-hidden="true">→</span><span>Pubblica</span></div></div>
-          </aside>
+            <ul className="admin-dashboard__live-list">
+              {statusItems.map(item => <li key={item.label}>
+                <Link href={item.href} className="admin-dashboard__live-item">
+                  <strong>{item.value}</strong><span>{item.label}</span><span aria-hidden="true">→</span>
+                </Link>
+              </li>)}
+            </ul>
+          </section>
+          <section className="admin-dashboard__workpanel" aria-labelledby="admin-editorial-heading" style={{ gridColumn: "1 / -1" }}>
+            <div className="admin-dashboard__panel-heading">
+              <h2 id="admin-editorial-heading">Archivio editoriale</h2>
+            </div>
+            <Link href="/admin/archivio-editoriale" className="admin-dashboard__task" style={{ gridTemplateColumns: "minmax(0, 1fr) auto" }}>
+              <span className="admin-dashboard__task-copy">
+                <strong>Gestisci le schede Cultura</strong>
+                <small>Bozze, anteprime e pubblicazione</small>
+              </span>
+              <span className="admin-dashboard__task-arrow" aria-hidden="true">→</span>
+            </Link>
+          </section>
         </div>
-
-        <nav className="admin-dashboard__quicklinks" aria-label="Sezioni amministrative">
-          <div><span className="admin-dashboard__overline">Accesso rapido</span><strong>Strumenti di gestione</strong></div>
-          <Link href="/admin/candidature">Candidature <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/operatori">Operatori ed esperienze <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/eventi">Eventi <span aria-hidden="true">↗</span></Link>
-          <Link href="/admin/itinerari">Itinerari <span aria-hidden="true">↗</span></Link>
-        </nav>
       </div>
     </section>
   </div>;
-
 }

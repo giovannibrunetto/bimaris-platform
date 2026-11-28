@@ -1,3 +1,4 @@
+import { googleMapsPlaceUrl } from "@/lib/google-maps-place-url";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,14 +23,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: `${entry.title} | Cultura a Messina | BIMARIS`, description: entry.excerpt, openGraph: entry.imageUrl ? { images: [entry.imageUrl] } : undefined };
 }
 
-export default async function CultureDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CultureDetailPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ da?: string }> }) {
   const { slug } = await params;
   const entry = await getPublishedCultureEntryBySlug(slug);
   if (!entry) notFound();
+  const fromProfile = (await searchParams).da === "profilo";
   const hasCoordinates = Number.isFinite(entry.latitude) && Number.isFinite(entry.longitude);
-  const destination = hasCoordinates ? `${entry.latitude},${entry.longitude}` : entry.googleMapsQuery;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-  const mapUrl = hasCoordinates ? `/mappa?lat=${entry.latitude}&lng=${entry.longitude}` : `/mappa?q=${encodeURIComponent(entry.googleMapsQuery)}`;
+  const savedMapsUrl = googleMapsPlaceUrl(entry.googleMapsQuery);
+  const mapQuery = savedMapsUrl ? entry.placeName : entry.googleMapsQuery;
+  const destination = hasCoordinates ? `${entry.latitude},${entry.longitude}` : mapQuery;
+  const directionsUrl = savedMapsUrl ?? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+  const mapUrl = hasCoordinates ? `/mappa?lat=${entry.latitude}&lng=${entry.longitude}` : `/mappa?q=${encodeURIComponent(mapQuery)}`;
   const periodLabel = historicalPeriodLabel(entry.primaryHistoricalPeriod);
   const gallery = entry.images.length ? entry.images : entry.imageUrl ? [{ imageUrl: entry.imageUrl, altText: entry.imageAlt, author: entry.imageAuthor, license: entry.imageLicense, sourceUrl: entry.imageSourceUrl, licenseUrl: entry.imageLicenseUrl, isPrimary: true }] : [];
   const hero = gallery.find(image => image.isPrimary) ?? gallery[0];
@@ -39,6 +43,9 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
   return <>
     <UserBehaviorSignal contentType="culture" contentId={entry.slug} interestKey="cultura" weight={0.5} />
     <style>{`
+      html:has(.culture-detail){scroll-padding-top:80px}
+      .culture-detail-back{display:inline-block;margin-bottom:16px;color:#e4c58a;font-weight:700}.culture-detail-back:hover{text-decoration:underline}
+
       .culture-detail{background:#f7f9f7;color:#172326;padding-bottom:28px}
       .culture-detail-shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
       .culture-detail-hero{background:linear-gradient(115deg,#07343b 0%,#032126 72%);color:#fff;padding:24px 0 22px}
@@ -60,10 +67,10 @@ export default async function CultureDetailPage({ params }: { params: Promise<{ 
       @media(max-width:520px){.culture-detail-shell{width:min(100% - 24px,1180px)}.culture-detail-hero h1{font-size:36px}.culture-detail-hero p{font-size:15px}.culture-detail-main-photo img{height:300px;border-radius:16px}.culture-detail-main-photo--preserve{border-radius:16px}.culture-detail-main-photo--preserve img{height:min(116vw,470px);border-radius:0}.culture-detail-body{font-size:16px}.culture-detail-card,.culture-detail-sources-card{padding:20px}.culture-detail-related-card{grid-template-columns:96px minmax(0,1fr)}.culture-detail-related-title{font-size:17px}}
     `}</style>
     <main className="culture-detail">
-      <section className="culture-detail-hero"><div className="culture-detail-shell"><div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="culture-detail-actions"><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></div></section>
+      <section className="culture-detail-hero"><div className="culture-detail-shell">{fromProfile && <Link className="culture-detail-back" href="/profilo">← Torna all’Area personale</Link>}<div className="kicker">Cultura · {entry.category}{periodLabel ? ` · ${periodLabel}` : ""}</div><h1>{entry.title}</h1><p>{entry.excerpt}</p><div className="culture-detail-actions"><SaveToCollectionButton itemType="culture" itemId={entry.slug} interestKey="cultura" /></div></div></section>
       {hero && <section className="culture-detail-media"><div className="culture-detail-shell"><figure className={`culture-detail-main-photo${preserveFullHero ? " culture-detail-main-photo--preserve" : ""}`}><img src={hero.imageUrl} alt={hero.altText ?? entry.title} decoding="async" />{(hero.caption || hero.author || hero.license) && <figcaption className="culture-detail-caption">{hero.caption && <>{hero.caption} · </>}Foto: {hero.author ?? "Wikimedia Commons"}{hero.license && <> · {hero.license}</>}{hero.sourceUrl && <> · <a href={hero.sourceUrl} target="_blank" rel="noreferrer">fonte</a></>}{hero.licenseUrl && <> · <a href={hero.licenseUrl} target="_blank" rel="noreferrer">licenza</a></>}</figcaption>}</figure></div></section>}
       <div className="culture-detail-shell"><section className="culture-detail-story"><article className="culture-detail-copy"><div className="kicker">La storia</div><h2>Conosci il luogo</h2><p className="culture-detail-body">{entry.body}</p></article><aside className="culture-detail-side">{entry.historicalPeriodNote && <div className="culture-detail-card"><div className="kicker">Epoca storica</div><h3>{periodLabel ?? "Più epoche"}</h3><p>{entry.historicalPeriodNote}</p>{entry.primaryHistoricalPeriod && entry.primaryHistoricalPeriod !== "trasversale" && <Link className="text-link" style={{display:"inline-block",marginTop:14}} href={`/mappa/epoche?epoca=${entry.primaryHistoricalPeriod}`}>Vedi i luoghi della stessa epoca →</Link>}</div>}<div className="culture-detail-card"><div className="kicker">Esplora</div><h3>{entry.placeName}</h3><ul className="culture-detail-facts">{entry.address && <li><strong>Indirizzo</strong>{entry.address}</li>}<li><strong>Territorio</strong>Messina</li></ul><div className="actions"><Link className="button" href={mapUrl}>BIMARIS Map</Link><BehaviorTrackedLink className="button ghost" href={directionsUrl} target="_blank" rel="noreferrer" external analyticsEvent="directions_click" analyticsData={{ content_type: "culture", content_id: entry.id }} behaviorEvent="directions_open" contentType="culture" contentId={entry.slug} interestKey="cultura" weight={2}>Google Maps</BehaviorTrackedLink></div></div></aside></section>
-      {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Fonti e riferimenti</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}><a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a>{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
+      {entry.sources.length > 0 && <section className="culture-detail-sources"><div className="culture-detail-sources-card"><div className="kicker">Fonti</div><h2>Fonti e riferimenti</h2><ul className="culture-detail-source-list">{entry.sources.map((source,index)=><li key={`${source.url}-${index}`}>{source.url ? <a href={source.url} target="_blank" rel="noreferrer">{source.label} →</a> : <strong>{source.label}</strong>}{source.note && <span>{source.note}</span>}</li>)}</ul></div></section>}
       {related.length > 0 && <section className="culture-detail-related"><div className="culture-detail-related-head"><div><div className="kicker">Continua a scoprire</div><h2>Luoghi collegati a questa storia</h2><p className="culture-detail-related-intro">Collegamenti editoriali selezionati e motivati da BIMARIS.</p></div><Link className="text-link" href="/cultura">Vedi tutta Cultura →</Link></div><div className="culture-detail-related-grid">{related.map(({ target:item, relationLabel, reason }) => <Link className="culture-detail-related-card" href={`/cultura/${item.slug}`} key={item.slug}>{item.imageUrl ? <img src={item.imageUrl} alt={item.imageAlt ?? item.title} loading="lazy" decoding="async" /> : <div aria-hidden="true" /> }<span className="culture-detail-related-copy"><span className="culture-detail-related-meta">{relationLabel}</span><span className="culture-detail-related-title">{item.title}</span><span className="culture-detail-related-reason"><strong>Perché:</strong> {reason}</span><span className="culture-detail-related-link">Scopri il luogo →</span></span></Link>)}</div></section>}
       </div>
     </main>

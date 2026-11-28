@@ -1,0 +1,478 @@
+name: REL-R01 integrated synthetic recovery
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/rel-r01-integrated-restore.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rel-r01-integrated-restore
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Replay schema and recover synthetic database and Storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          # Include only the reviewed, registry-matched application migrations.
+          # Survey migrations and temporary backup grants are deliberately excluded.
+          approved = ["20261126094241_village_unified_save","20261126120048_editorial_unified_save","20261126121339_editorial_save_receipts","20261126124309_historical_protected_publication","20261126131503_restrict_public_table_ddl_privileges"]
+          migration_root = Path(os.environ["GITHUB_WORKSPACE"]) / "supabase/migrations"
+          for stem in approved:
+              version, name = stem.split("_", 1)
+              sql = (migration_root / (stem + ".sql")).read_text()
+              assert sql.strip()
+              rows.append({"version": version, "name": name, "sql": sql})
+          assert len(rows) == 165
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 165 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, uuid, secrets
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:", "http://localhost:"))
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          def request(path, key, token=None, method="GET", data=None):
+              headers={"apikey":key,"Content-Type":"application/json","Prefer":"return=representation"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+path, headers=headers, method=method, data=None if data is None else json.dumps(data).encode())
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      raw=r.read()
+                      return r.status,json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  return e.code,None
+          def expect(label,condition):
+              if not condition: raise SystemExit("FAIL "+label)
+              print("PASS "+label)
+          actors=[]
+          credentials=[]
+          for label in ("a","b"):
+              email="sec-r01-"+label+"@example.invalid"
+              password=secrets.token_urlsafe(32)
+              code,u=request("/auth/v1/admin/users",service,service,"POST",{"email":email,"password":password,"email_confirm":True})
+              expect(label+" create Auth identity",code in (200,201) and bool(u and u.get("id")))
+              code,s=request("/auth/v1/token?grant_type=password",anon,None,"POST",{"email":email,"password":password})
+              expect(label+" real Auth login",code==200 and s["user"]["id"]==u["id"] and bool(s["access_token"]))
+              op=str(uuid.uuid4())
+              exp=str(uuid.uuid4())
+              actors.append((u["id"],s["access_token"],op,exp,s["refresh_token"]))
+              credentials.append(dict(id=u["id"],email=email,password=password,email_confirm=True))
+              for table,data in [
+                  ("operators",{"id":op,"slug":"sec-r01-"+label,"name":"Synthetic "+label,"published":False,"operator_code":None}),
+                  ("operator_memberships",{"operator_id":op,"user_id":u["id"],"role":"owner"}),
+                  ("experiences",{"id":exp,"operator_id":op,"slug":"sec-r01-exp-"+label,"name":"Synthetic experience "+label,"published":False,"review_status":"draft"})]:
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect(label+" fixture "+table,code in (200,201,204))
+          Path("actors.json").write_text(json.dumps(actors))
+          Path("synthetic-credentials.json").write_text(json.dumps(credentials))
+          import base64, hashlib
+          webp=base64.b64decode("UklGRhwAAABXRUJQVlA4TA8AAAAvAUAAAAcQ/Y/+ByKi/wEA",validate=True)
+          def storage(path,method="GET",data=None):
+              req=urllib.request.Request(base+"/storage/v1/"+path,headers={"apikey":service,"Authorization":"Bearer "+service,"Content-Type":"image/webp"},method=method,data=data)
+              with urllib.request.urlopen(req,timeout=20) as response:
+                  return response.status,response.read()
+          manifest=[]
+          Path("storage-backup").mkdir()
+          for i,(uid,token,op,exp,refresh) in enumerate(actors):
+              rev=str(uuid.uuid4())
+              original=op+"/"+exp+"/fixture.webp"
+              revision=op+"/revisions/"+rev+"/fixture.webp"
+              # Exercise both a draft with no initial snapshot and an applied
+              # revision whose insertion requires an existing cover.
+              live=("experience_media",dict(experience_id=exp,storage_path=original,is_cover=True))
+              rev_row=("experience_revisions",dict(id=rev,experience_id=exp,operator_id=op,status="applied" if i else "draft"))
+              for table,data in ((live,rev_row) if i else (rev_row,live)):
+                  code,_=request("/rest/v1/"+table,service,service,"POST",data)
+                  expect("linked fixture "+table,code in (200,201,204))
+              table="/rest/v1/experience_revision_media"
+              if i:
+                  code,rows=request(table+"?revision_id=eq."+rev,service,service,"PATCH",dict(storage_path=revision))
+                  expect("applied fixture preserves snapshot provenance",code==200 and len(rows)==1 and bool(rows[0]["source_media_id"]))
+              else:
+                  code,_=request(table,service,service,"POST",dict(revision_id=rev,operator_id=op,storage_path=revision))
+                  expect("linked fixture experience_revision_media",code in (200,201,204))
+              for bucket,path in [("experience-media",original),("experience-revision-media",revision)]:
+                  code,_=storage("object/"+bucket+"/"+path,"POST",webp)
+                  expect("source upload "+bucket,code in (200,201))
+                  code,raw=storage("object/authenticated/"+bucket+"/"+path)
+                  expect("source download "+bucket,code==200 and raw==webp)
+                  file=str(len(manifest))+".webp"
+                  Path("storage-backup",file).write_bytes(raw)
+                  manifest.append(dict(bucket=bucket,path=path,file=file,sha256=hashlib.sha256(raw).hexdigest(),actor=i))
+          Path("storage-manifest.json").write_text(json.dumps(manifest))
+          expect("source Storage scope",len(manifest)==4)
+          PY
+          chmod 600 "$work/actors.json" "$work/local-status.json" "$work/synthetic-credentials.json"
+          source_db="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test "$(printf '%s\n' "$source_db" | wc -l)" -eq 1
+          test -n "$source_db"
+          psql_local() { docker exec -i "$source_db" psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d postgres "$@"; }
+          tables=(public.analytics_events public.api_rate_limits public.b2b_match_notifications public.b2b_notification_preferences public.business_account_memberships public.business_accounts public.categories public.contact_messages public.culture_entries public.culture_images public.culture_relations public.culture_sources public.discovery_intents public.editorial_activity public.editorial_workspaces public.event_import_batches public.events public.experience_activities public.experience_activity_links public.experience_availability public.experience_discovery_intents public.experience_discovery_profiles public.experience_media public.experience_operators public.experience_revision_media public.experience_revisions public.experiences public.favorites public.food_product_experiences public.food_product_operators public.food_products public.historical_editorial_stories public.itineraries public.itinerary_stops public.newsletter_preferences public.operator_applications public.operator_b2b_profiles public.operator_interest_manifestations public.operator_memberships public.operator_notifications public.operator_revisions public.operators public.places public.profiles public.stories public.story_editorial_context public.story_images public.story_places public.story_sources public.territories public.user_behavior_events public.user_interests public.user_profiles public.user_saved_items public.village_points public.village_sources public.villages security.admin_members)
+          test "${#tables[@]}" -eq 58
+          args=()
+          for t in "${tables[@]}"; do args+=(--table="$t"); done
+          # Synthetic Auth identities only: store UUIDs, no tokens or passwords in dump.
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path("actors.json").read_text())
+          Path("synthetic-ids.sql").write_text("\n".join("INSERT INTO auth.users(id) VALUES ('"+x[0]+"') ON CONFLICT (id) DO NOTHING;" for x in a)+"\n")
+          PY
+          for t in "${tables[@]}"; do
+            printf "SELECT '%s',count(*),md5(coalesce(string_agg(md5(to_jsonb(t)::text),'' ORDER BY md5(to_jsonb(t)::text)),'')) FROM %s t;\n" "$t" "$t"
+          done > manifest.sql
+          psql_local < manifest.sql > before.tsv
+          test "$(wc -l < before.tsv)" -eq 58
+          docker exec "$source_db" pg_dump -U postgres -d postgres -Fc --data-only --no-owner --no-acl --strict-names "${args[@]}" > application.dump
+          test -s application.dump
+          # All contents synthetic; key is ephemeral and never logged or uploaded.
+          python3 -c 'import secrets; print(secrets.token_hex(32))' > archive-key
+          tar -cf integrated.tar application.dump storage-manifest.json storage-backup
+          gpg --batch --pinentry-mode loopback --passphrase-file archive-key --symmetric --cipher-algo AES256 --output application.gpg integrated.tar
+          sha256sum application.dump | cut -d ' ' -f 1 > before.sha
+          gpg --batch --pinentry-mode loopback --passphrase-file archive-key --decrypt --output recovered.tar application.gpg
+          cmp -s integrated.tar recovered.tar
+          mkdir recovered
+          tar -xf recovered.tar -C recovered
+          cp recovered/application.dump recovered.dump
+          test "$(sha256sum recovered.dump | cut -d ' ' -f 1)" = "$(cat before.sha)"
+          echo "PASS recovered database archive SHA-256"
+          echo "PASS encrypted archive round trip"
+          # Restore no external environment and do not contact remote Supabase.
+          # Fresh Supabase stack replays the real migration sequence.
+          started=$(date +%s)
+          supabase stop --no-backup
+          supabase start
+          source_db="$(docker ps --filter name=supabase_db_ --format '{{.Names}}')"
+          test -n "$source_db"
+          test "$(printf '%s\n' "$source_db" | wc -l)" -eq 1
+          # The fresh local stack may contain migration seed rows.
+          # Clear only the verified scope in this disposable target.
+          list=$(IFS=,; echo "${tables[*]}")
+          psql_local -c "TRUNCATE TABLE $list CASCADE"
+          supabase status -o json > "$work/local-status.json"
+          # Recreate only ephemeral synthetic identities using the local Auth API.
+          python3 - <<'PY'
+          import json, urllib.request
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:","http://localhost:"))
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          actors=json.loads(Path("actors.json").read_text())
+          credentials=json.loads(Path("synthetic-credentials.json").read_text())
+          def post(path,key,data,admin=False):
+              headers={"apikey":key,"Content-Type":"application/json"}
+              if admin: headers["Authorization"]="Bearer "+key
+              req=urllib.request.Request(base+path,headers=headers,method="POST",data=json.dumps(data).encode())
+              with urllib.request.urlopen(req,timeout=20) as response: return json.load(response)
+          for i,credential in enumerate(credentials):
+              u=post("/auth/v1/admin/users",service,credential,True)
+              assert u["id"]==actors[i][0],"Synthetic identity UUID mismatch"
+              a=post("/auth/v1/token?grant_type=password",anon,dict(email=credential["email"],password=credential["password"]))
+              assert a["user"]["id"]==actors[i][0]
+              actors[i][1]=a["access_token"]
+              actors[i][4]=a["refresh_token"]
+              print("PASS fresh synthetic login "+str(i))
+          Path("actors.json").write_text(json.dumps(actors))
+          PY
+          # Auth creation may populate profile rows; clear application seed rows again.
+          psql_local -c "TRUNCATE TABLE $list CASCADE"
+          docker cp recovered.dump "$source_db:/tmp/rel-r01-synthetic.dump"
+          # Order COPY operations by actual foreign-key dependencies. Keep all triggers active.
+          psql_local -F '|' -c "SELECT ns.nspname||'.'||s.relname,np.nspname||'.'||p.relname FROM pg_constraint k JOIN pg_class s ON s.oid=k.conrelid JOIN pg_namespace ns ON ns.oid=s.relnamespace JOIN pg_class p ON p.oid=k.confrelid JOIN pg_namespace np ON np.oid=p.relnamespace WHERE k.contype='f' AND k.conrelid<>k.confrelid ORDER BY 1,2" > dependencies.tsv
+          docker exec "$source_db" pg_restore -l /tmp/rel-r01-synthetic.dump > archive.list
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          counts={}
+          for line in Path("before.tsv").read_text().splitlines():
+              name,count,_=line.split("|")
+              counts[name]=int(count)
+          assert len(counts)==58
+          entries={}
+          remaining=[]
+          for line in Path("archive.list").read_text().splitlines():
+              m=re.match(r"^\d+;\s+\d+\s+\d+\s+TABLE DATA\s+(\S+)\s+(\S+)\s+",line)
+              if m:
+                  name=m[1]+"."+m[2]
+                  assert name in counts and name not in entries, name
+                  entries[name]=line
+              elif line and not line.startswith(";"):
+                  remaining.append(line)
+          assert set(entries)==set(counts),"Archive scope mismatch"
+          deps={n:set() for n in counts}
+          for line in Path("dependencies.tsv").read_text().splitlines():
+              child,parent=line.split("|")
+              if child in deps and parent in deps and counts[child] and counts[parent]:
+                  deps[child].add(parent)
+          order=[]
+          while deps:
+              ready=sorted(n for n,parents in deps.items() if not parents)
+              if not ready:
+                  raise SystemExit("Nonempty FK cycle requires a dedicated restore strategy: "+", ".join(sorted(deps)))
+              for n in ready:
+                  order.append(n)
+                  del deps[n]
+              for parents in deps.values():
+                  parents.difference_update(ready)
+          split=order.index("public.experience_revision_media")
+          parents={"public.experience_media","public.experience_revisions"}
+          assert parents.issubset(order[:split]), "Revision snapshot parents must precede archived rows"
+          Path("before-snapshot.list").write_text("\n".join(entries[n] for n in order[:split])+"\n")
+          Path("after-snapshot.list").write_text("\n".join([entries[n] for n in order[split:]]+remaining)+"\n")
+          print("PASS dependency-ordered archive scope (58 tables)")
+          PY
+          # Generate both SQL sections before opening the restore transaction.
+          for section in before-snapshot after-snapshot; do
+            docker cp "$section.list" "$source_db:/tmp/$section.list"
+            docker exec "$source_db" pg_restore --file=- --data-only --no-owner --no-acl --use-list="/tmp/$section.list" /tmp/rel-r01-synthetic.dump > "$section.sql"
+          done
+          cat > assert-empty.sql <<'SQL'
+          DO $check$
+          BEGIN
+            IF EXISTS (SELECT 1 FROM public.experience_revision_media) THEN
+              RAISE EXCEPTION 'Revision media target must be empty before restore';
+            END IF;
+          END $check$;
+          SQL
+          cat > reconcile-snapshots.sql <<'SQL'
+          DO $check$
+          DECLARE removed bigint;
+          BEGIN
+            IF EXISTS (
+              WITH expected AS (
+                SELECT r.id, r.operator_id, m.id AS source_media_id,
+                       m.storage_path, m.alt_text, m.sort_order, m.is_cover
+                FROM public.experience_revisions r
+                CROSS JOIN LATERAL (
+                  SELECT m.id, m.storage_path, m.alt_text, m.sort_order, m.is_cover
+                  FROM public.experience_media m
+                  WHERE m.experience_id = r.experience_id
+                  ORDER BY m.sort_order LIMIT 6
+                ) m
+              ), actual AS (
+                SELECT revision_id, operator_id, source_media_id,
+                       storage_path, alt_text, sort_order, is_cover
+                FROM public.experience_revision_media
+              )
+              (SELECT * FROM actual EXCEPT ALL SELECT * FROM expected)
+              UNION ALL
+              (SELECT * FROM expected EXCEPT ALL SELECT * FROM actual)
+            ) THEN
+              RAISE EXCEPTION 'Unexpected rows before loading archived revision media';
+            END IF;
+
+            DELETE FROM public.experience_revision_media snapshot
+            USING public.experience_revisions revision, public.experience_media media
+            WHERE snapshot.revision_id = revision.id
+              AND snapshot.source_media_id = media.id
+              AND media.experience_id = revision.experience_id;
+            GET DIAGNOSTICS removed = ROW_COUNT;
+            IF removed <> 2 THEN
+              RAISE EXCEPTION 'Expected two synthetic snapshot rows, removed %', removed;
+            END IF;
+            RAISE NOTICE 'PASS reconciled % trigger-generated synthetic snapshot rows', removed;
+          END $check$;
+          SQL
+          # Keep all application triggers and FK checks active in the same transaction.
+          {
+            printf 'BEGIN;\n'
+            cat assert-empty.sql before-snapshot.sql reconcile-snapshots.sql after-snapshot.sql
+            printf 'COMMIT;\n'
+          } | psql_local
+          echo "PASS ordered pg_restore completed"
+          psql_local < manifest.sql > after.tsv
+          python3 - <<'PY'
+          from pathlib import Path
+          def load(filename):
+              rows={}
+              for line in Path(filename).read_text().splitlines():
+                  name,count,digest=line.split("|")
+                  assert name not in rows
+                  rows[name]=(int(count),digest)
+              return rows
+          before,after=load("before.tsv"),load("after.tsv")
+          assert len(before)==58 and set(before)==set(after),"Manifest table scope mismatch"
+          differences=[]
+          for name in sorted(before):
+              if before[name]!=after[name]:
+                  differences.append(name)
+                  print("FAIL fingerprint "+name+" source_count="+str(before[name][0])+" restored_count="+str(after[name][0])+" content_equal="+str(before[name][1]==after[name][1]),flush=True)
+          print("Matching table fingerprints: "+str(58-len(differences))+"/58",flush=True)
+          if differences: raise SystemExit("Restored application fingerprint mismatch")
+          PY
+          echo "PASS 58 application table fingerprints"
+          psql_local -c "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN ('r','p') AND c.relrowsecurity AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))" | grep -Fxq 58
+          echo "PASS RLS enabled on all 58 tables"
+          # Independently verify every FK in scope after restore with triggers enabled.
+          python3 - <<'PY'
+          from pathlib import Path
+          Path("fk-check.sql").write_text("""DO $check$
+          DECLARE f record; predicate text; joiner text; missing bigint;
+          BEGIN
+            FOR f IN SELECT k.oid,k.conrelid,k.confrelid,k.conkey,k.confkey,k.conname
+              FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid
+              JOIN pg_namespace n ON n.oid=c.relnamespace
+              WHERE k.contype='f' AND (n.nspname='public' OR (n.nspname='security' AND c.relname='admin_members'))
+            LOOP
+              SELECT string_agg(format('s.%I IS NOT NULL',a.attname),' AND '),string_agg(format('s.%I = p.%I',a.attname,b.attname),' AND ')
+              INTO predicate,joiner
+              FROM unnest(f.conkey,f.confkey) AS x(src,dst)
+              JOIN pg_attribute a ON a.attrelid=f.conrelid AND a.attnum=x.src
+              JOIN pg_attribute b ON b.attrelid=f.confrelid AND b.attnum=x.dst;
+              EXECUTE format('SELECT count(*) FROM %s s WHERE %s AND NOT EXISTS (SELECT 1 FROM %s p WHERE %s)',f.conrelid::regclass,predicate,f.confrelid::regclass,joiner) INTO missing;
+              IF missing<>0 THEN RAISE EXCEPTION 'Foreign key violation: %',f.conname; END IF;
+            END LOOP;
+          END $check$;""")
+          PY
+          psql_local < fk-check.sql
+          echo "PASS foreign key integrity (non-null keys)"
+          python3 - <<'PY'
+          import json,hashlib,urllib.request,urllib.error
+          from pathlib import Path
+          cfg=json.loads(Path("local-status.json").read_text())
+          base=cfg["API_URL"]
+          assert base.startswith(("http://127.0.0.1:","http://localhost:"))
+          service=cfg.get("SERVICE_ROLE_KEY") or cfg["SECRET_KEY"]
+          anon=cfg.get("ANON_KEY") or cfg["PUBLISHABLE_KEY"]
+          actors=json.loads(Path("actors.json").read_text())
+          manifest=json.loads(Path("recovered/storage-manifest.json").read_text())
+          def call(path,key,token=None,method="GET",data=None):
+              headers={"apikey":key,"Content-Type":"image/webp"}
+              if token: headers["Authorization"]="Bearer "+token
+              req=urllib.request.Request(base+"/storage/v1/"+path,headers=headers,method=method,data=data)
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as r: return r.status,r.read()
+              except urllib.error.HTTPError as e: return e.code,b""
+          assert len(manifest)==4
+          for m in manifest:
+              path=m["bucket"]+"/"+m["path"]
+              raw=Path("recovered/storage-backup",m["file"]).read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==m["sha256"]
+              code,_=call("object/authenticated/"+path,service,service)
+              assert code in (400,404),"Target object already exists"
+              code,_=call("object/"+path,service,service,"POST",raw)
+              assert code in (200,201),"Restore upload failed"
+              own=actors[m["actor"]][1]
+              other=actors[1-m["actor"]][1]
+              code,data=call("object/authenticated/"+path,anon,own)
+              assert code==200 and hashlib.sha256(data).hexdigest()==m["sha256"]
+              print("PASS restored own bytes "+m["bucket"])
+              for label,tok in [("cross",other),("anonymous",None)]:
+                  code,_=call("object/authenticated/"+path,anon,tok)
+                  assert code in (400,401,403,404)
+                  print("PASS restored "+label+" denied "+m["bucket"])
+          PY
+          export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("ANON_KEY") or d["PUBLISHABLE_KEY"])')"
+          export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          export NEXT_TELEMETRY_DISABLED=1
+          export REL_RECOVERY_WORK="$work"
+          cd "$GITHUB_WORKSPACE/apps/web"
+          pnpm exec next dev --hostname 127.0.0.1 --port 3100 > "$work/next.log" 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; cd "$work"; supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          for attempt in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:3100/accedi; then break; fi
+            sleep 2
+          done
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          import {createServerClient} from '@supabase/ssr';
+          import {createHash} from 'node:crypto';
+          const work=process.env.REL_RECOVERY_WORK;
+          const actors=JSON.parse(readFileSync(work+'/actors.json','utf8'));
+          const manifest=JSON.parse(readFileSync(work+'/recovered/storage-manifest.json','utf8'));
+          const cookies=[];
+          for(const [uid,token,op,exp,refresh] of actors){
+            const jar=new Map();
+            const client=createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,{cookies:{getAll:()=>[...jar].map(([name,value])=>({name,value})),setAll:items=>items.forEach(({name,value})=>jar.set(name,value))}});
+            const {error}=await client.auth.setSession({access_token:token,refresh_token:refresh});
+            assert.ifError(error);assert.ok(jar.size);
+            cookies.push([...jar].map(([k,v])=>k+'='+v).join('; '));
+          }
+          for(const m of manifest){
+            const q=new URLSearchParams({path:m.path,...(m.bucket==='experience-revision-media'?{revision:'1'}:{})});
+            const call=cookie=>fetch('http://127.0.0.1:3100/api/experience-photo?'+q,{headers:cookie?{cookie}:{},redirect:'manual'});
+            const res=await call(cookies[m.actor]);
+            assert.equal(res.status,200);
+            assert.equal(res.headers.get('content-type'),'image/webp');
+            assert.equal(createHash('sha256').update(Buffer.from(await res.arrayBuffer())).digest('hex'),m.sha256);
+            assert.match(res.headers.get('cache-control')||'',/no-store/);
+            console.log('PASS recovered application image '+m.bucket);
+            for(const cookie of [cookies[1-m.actor],undefined]){
+              const denied=await call(cookie);
+              assert.equal(denied.status,404);
+              assert.equal((await denied.arrayBuffer()).byteLength,0);
+              console.log('PASS recovered application private denial '+m.bucket);
+            }
+          }
+          JS
+          echo "Integrated local recovery elapsed seconds: $(($(date +%s)-started))"
+          echo "REL-R01 INTEGRATED SYNTHETIC RECOVERY PASS; actual Staging data and real Auth recovery excluded"

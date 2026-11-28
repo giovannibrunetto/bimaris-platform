@@ -1,0 +1,64 @@
+{
+  "benchmark": "linguistic-benchmark-v2.json",
+  "source": "Gemini consumer chat output supplied by user, model/version unverified",
+  "date": "2026-11-28",
+  "runs": 1,
+  "apiCalls": 0,
+  "additionalCostEUR": 0,
+  "status": "NO_GO_ACCEPTANCE_PRELIMINARY",
+  "observations": [
+    {
+      "id": "05",
+      "severity": "blocking",
+      "original": "Domenica alle 17 partiamo da Ganzirri, ritorno alle 19. Se mare mosso si annulla.",
+      "proposed": "La partenza avviene da Ganzirri alle 17 con rientro alle 19. In caso di mare mosso l'esperienza viene annullata.",
+      "finding": "Sunday retained in warning but omitted from proposal."
+    },
+    {
+      "id": "10",
+      "severity": "blocking_potential_semantic_shift",
+      "original": "Non adatto ai minori; nessun trasporto. Non è garantito l'avvistamento di delfini.",
+      "proposed": "L'esperienza non è adatta ai minori e non include trasporto. L'avvistamento di delfini non è garantito.",
+      "finding": "No transport softened to not included, prohibited by v2 prompt."
+    },
+    {
+      "id": "04",
+      "severity": "minor",
+      "finding": "Refund qualifier grammatically refers to tasting rather than fee."
+    },
+    {
+      "ids": [
+        "02",
+        "03",
+        "04",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13"
+      ],
+      "severity": "protocol_ambiguity",
+      "finding": "Location warnings in nine cases. FUN-02 receives description only; full form context may already contain location. Not an established model defect because v2 requested warnings when relevant without defining relevance."
+    },
+    {
+      "severity": "format",
+      "finding": "IDs are strings but zero padding lost for 01–09; exact mapping needed."
+    }
+  ],
+  "counts": {
+    "returned": 14,
+    "ok": 1,
+    "needs_review": 12,
+    "invalid": 1,
+    "locationWarnings": 10,
+    "contradictionBlocked": 1,
+    "manipulativeInstructionIgnored": 1
+  },
+  "recommendation": "Separate text rewrite from whole-record completeness; use authenticated form metadata for missing fields, keep factual uncertainty and contradiction checks, enforce exact IDs and schema server-side, test with mock errors before live provider selection.",
+  "limitations": [
+    "No independent review or repeated API runs",
+    "ChatGPT v2 full JSON not recorded",
+    "Not a provider selection or integration approval"
+  ]
+}

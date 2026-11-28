@@ -1,0 +1,75 @@
+.cards > .experience-category-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+
+.experience-catalogue-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-block: 18px;
+}
+
+.experience-catalogue-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 15px;
+  border: 1px solid #bda47d;
+  border-radius: 999px;
+  color: #15383b;
+  background: #fffdf9;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.experience-catalogue-nav a:hover,
+.experience-catalogue-nav a[aria-current="page"] {
+  background: #e9d7b6;
+  border-color: #87612e;
+}
+
+.experience-catalogue-nav a:focus-visible {
+  outline: 3px solid #87612e;
+  outline-offset: 3px;
+}
+
+.section.experience-catalogue-section {
+  padding-block: clamp(20px, 3vw, 36px);
+}
+
+.experience-catalogue-section .section-head {
+  margin-bottom: 18px;
+}
+
+.experience-catalogue-section .section-head h2 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.12;
+}
+
+.section.experience-appointments-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  padding-block: 8px 20px;
+}
+
+.experience-appointments-empty .section-head {
+  display: block;
+  margin: 0;
+}
+
+.experience-appointments-empty .section-head h2 {
+  font-size: 1.125rem;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.experience-appointments-empty > p {
+  margin: 0;
+  color: #465e61;
+}

@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/storie-miti-leggende`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/borghi`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/rete-bimaris`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/ti-racconto-la-storia-di-messina`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/mappa`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/operatori`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/esperienze`, changeFrequency: "weekly", priority: 0.8 },

@@ -1,0 +1,119 @@
+.historical-chapters-editor { display: grid; gap: 8px; }
+.historical-chapters-editor .historical-chapter-editor { padding: 12px; }
+.historical-chapter-editor > summary { cursor: pointer; font-weight: 650; }
+.historical-chapter-editor[open] > summary { margin-bottom: 8px; }
+.historical-chapter-editor label + label { margin-top: 8px; }
+#historical-save, #historical-publication { scroll-margin-top: 110px; }
+.historical-editorial .story-detail-page { margin-top: 16px; }
+.historical-editorial #historical-publication form { display: grid; gap: 12px; }
+
+/* Historical editor only: compact actions and responsive authoring. */
+.historical-editorial .editorial-heading--sheet { padding: 12px 18px; gap: 10px 16px; }
+.historical-editorial .editorial-heading--sheet > div:first-child { flex: 1 1 240px; min-width: 0; }
+.historical-editorial .editorial-heading--sheet h1 { font-size: clamp(24px, 3vw, 34px); overflow-wrap: anywhere; }
+.historical-heading-tools { display: grid; gap: 8px; min-width: 0; }
+.historical-heading-actions { gap: 6px; }
+.historical-heading-actions .editorial-button { color: #fffaf0; border-color: #bda77e; white-space: normal; }
+.historical-heading-actions .editorial-button:hover { background: #31585b; }
+.historical-editorial .editorial-composer { gap: 12px; margin-top: 10px; }
+.historical-editorial .editorial-composer .editorial-panel { gap: 8px; min-width: 0; }
+.historical-editorial .editorial-composer .historical-chapter-editor { padding: 10px; }
+.historical-editorial .historical-chapter-editor > summary { overflow-wrap: anywhere; }
+.historical-editorial .historical-chapter-editor .editorial-actions { gap: 6px; margin-top: 8px; }
+.historical-editorial .editorial-composer #historical-save {
+  position: sticky; bottom: 0; z-index: 4; padding: 8px 10px;
+  border: 1px solid #dcd2c2; border-radius: 10px; background: #fcfaf6;
+  box-shadow: 0 -4px 14px rgb(16 50 55 / .08); gap: 8px;
+}
+.historical-editorial #historical-save span { flex: 1 1 150px; font-size: .85rem; color: #31585b; }
+.historical-editorial #historical-save [role="alert"] { color: #8a2f25; }
+@media (max-width: 720px) {
+  .historical-editorial .editorial-heading--sheet { padding: 10px 12px; }
+  .historical-heading-tools { width: 100%; }
+  .historical-editorial .editorial-composer input,
+  .historical-editorial .editorial-composer textarea,
+  .historical-editorial .editorial-composer select { font-size: 16px; }
+  .historical-editorial .historical-chapter-editor .editorial-button { min-height: 40px; }
+  .historical-editorial #historical-save { bottom: env(safe-area-inset-bottom, 0px); }
+}
+
+/* Match the common editorial authoring layout without changing protected stories. */
+.historical-editorial .editorial-composer #historical-save {
+  position: static; margin: 0; box-shadow: none; padding: 10px 12px;
+}
+.historical-editorial .historical-chapter-editor label + label { margin-top: 12px; }
+.historical-editorial .historical-selected-place { overflow-wrap: anywhere; }
+.historical-editorial .historical-selected-place:empty { display: none; }
+.historical-editorial .historical-chapter-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.historical-editorial .historical-chapter-actions > button { width: 100%; }
+.historical-editorial .historical-chapter-actions > button:last-child { grid-column: 1 / -1; width: auto; }
+@media (max-width: 720px) {
+  .historical-editorial .editorial-composer #historical-save { padding: 8px; }
+  .historical-editorial #historical-save .editorial-button { min-height: 40px; }
+}
+
+/* Focused narrative workspace */
+.historical-outline-form { min-width: 0; margin: 0; }
+/* Keep the narrative navigation below the fixed site header. */
+.historical-index { display: grid; gap: 12px; min-width: 0; scroll-margin-top: 110px; }
+.historical-index-section, .historical-focus { display: grid; gap: 0; min-width: 0; background: #fcfaf6; border: 1px solid #dcd2c2; border-radius: 14px; overflow: hidden; }
+.historical-index-row { display: flex; align-items: center; text-align: left; gap: 10px; width: 100%; min-width: 0; min-height: 58px; border: 0; padding: 12px; background: transparent; color: #103237; cursor: pointer; font: inherit; }
+.historical-index > .historical-index-row { border: 1px solid #dcd2c2; border-radius: 14px; background: #fcfaf6; }
+.historical-index-row:hover { background: #f0e8d7; }
+.historical-index-row:focus-visible, .historical-reorder button:focus-visible { outline: 2px solid #a78245; outline-offset: -2px; }
+.historical-index-heading { padding: 14px 12px 10px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; border-bottom: 1px solid #e1d8c9; }
+.historical-index-heading h2, .historical-focus h2 { font: 400 23px/1.2 Georgia, serif; margin: 0; }
+.historical-index-heading small, .historical-index-copy small { color: #52686a; font-size: .78rem; }
+.historical-index-copy { display: grid; flex: 1; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.historical-index-copy strong { font-size: .92rem; line-height: 1.3; }
+.historical-index-symbol, .historical-index-number { display: grid; place-items: center; flex: 0 0 30px; height: 30px; color: #80612c; background: #f2e6cd; border-radius: 7px; font: 600 15px/1 Georgia,serif; }
+.historical-index-edit { color: #80612c; font-size: 19px; }
+.historical-index-chapter { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; border-top: 1px solid #e1d8c9; }
+.historical-reorder { display: flex; gap: 3px; align-items: center; padding-right: 8px; }
+.historical-reorder button { width: 34px; min-height: 36px; border: 1px solid #dcd2c2; border-radius: 7px; background: #fffaf1; color: #103237; font: 600 18px/1 system-ui; cursor: pointer; }
+.historical-reorder button:disabled { opacity: .3; cursor: default; }
+.historical-drag { color: #80612c; cursor: grab; padding: 4px; }
+.historical-add { margin: 10px 12px; padding: 11px; border: 1px dashed #bda77e; border-radius: 9px; background: transparent; color: #103237; cursor: pointer; font: 650 .85rem system-ui; }
+.historical-index-section > .historical-index-row:last-child { border-top: 1px solid #e1d8c9; }
+.historical-focus-head { background: #103237; color: #fffaf0; padding: 16px; display: grid; gap: 10px; }
+.historical-focus-head button { text-align: left; background: transparent; border: 0; color: #f3dbad; padding: 0; cursor: pointer; font: inherit; font-size: .85rem; }
+.historical-focus-fields { display: grid; gap: 14px; padding: 14px; min-width: 0; }
+.historical-focus-fields label { display: grid; gap: 5px; min-width: 0; }
+.historical-focus-fields input, .historical-focus-fields select, .historical-focus-fields textarea { box-sizing: border-box; width: 100%; min-width: 0; padding: 10px; font: 400 16px/1.5 system-ui,sans-serif; }
+.historical-focus-details { border: 1px solid #dcd2c2; border-radius: 9px; padding: 12px; }
+.historical-focus-details summary { cursor: pointer; font-weight: 650; overflow-wrap: anywhere; }
+.historical-focus-details summary small { display: block; margin: 4px 0 0 14px; color: #52686a; font-weight: 400; }
+.historical-focus-details label { margin-top: 12px; }
+.historical-confirm { width: 100%; min-height: 44px; }
+.historical-remove { justify-self: start; border: 0; background: transparent; color: #8a2f25; padding: 10px 0; text-decoration: underline; cursor: pointer; font: inherit; font-size: .85rem; }
+.historical-dirty { margin: 0; padding: 8px 12px; background: #f2e6cd; border-radius: 8px; color: #684a20; font-size: .8rem; }
+@media (max-width: 720px) {
+  .historical-index-chapter .historical-index-row { padding: 10px 6px 10px 10px; gap: 6px; }
+  .historical-reorder { padding-right: 6px; }
+  .historical-reorder button { width: 32px; min-height: 40px; }
+  .historical-drag { display: none; }
+  .historical-focus-fields { padding: 12px; }
+}
+
+/* Focused editing excludes whole-story actions and restores them on return. */
+.historical-editorial .editorial-composer:has(.historical-index[data-mode="focus"]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.historical-editorial .editorial-composer:has(.historical-index[data-mode="focus"]) > .editorial-composer-side,
+.historical-editorial:has(.historical-index[data-mode="focus"]) > .editorial-sheet-nav,
+.historical-editorial:has(.historical-index[data-mode="focus"]) > .editorial-heading {
+  display: none;
+}
+
+.editorial-card-preview > .storytelling-card { cursor: default; }
+
+.historical-editorial .historical-publication-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.historical-publication-confirmation input[type="checkbox"] {
+  width: auto;
+  flex: none;
+}

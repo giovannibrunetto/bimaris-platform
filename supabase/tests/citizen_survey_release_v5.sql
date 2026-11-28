@@ -1,0 +1,73 @@
+BEGIN;
+-- Synthetic fixtures only. Gate changes, records, triggers and audits all roll back.
+CREATE TEMP TABLE release_checks(name text,passed boolean);
+CREATE FUNCTION pg_temp.check_release(p_name text,p_ok boolean) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN IF p_ok IS DISTINCT FROM true THEN RAISE EXCEPTION 'test failed: %',p_name; END IF;
+INSERT INTO release_checks VALUES(p_name,true); END $$;
+CREATE FUNCTION pg_temp.submit_fixture(p_id uuid,p_email text DEFAULT NULL,p_rehearsal boolean DEFAULT true,p_version text DEFAULT '2026-11-17-v2',p_idea text DEFAULT 'COLLAUDO: prova')
+RETURNS boolean LANGUAGE sql AS $$ SELECT public.submit_citizen_survey(p_id,1::smallint,2::smallint,ARRAY[1,3]::smallint[],NULL::smallint,p_idea,p_email,p_email IS NOT NULL,p_version,'launch-only-v1','Sì, desidero ricevere esclusivamente la comunicazione del lancio via email e ho letto l’informativa privacy',p_rehearsal) $$;
+CREATE FUNCTION pg_temp.fail_release_delete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'DO_NOT_LOG_PERSONAL_PAYLOAD'; END $$;
+DO $$
+DECLARE rid uuid:=gen_random_uuid(); lid uuid:=gen_random_uuid(); failed boolean; before_runs bigint; i integer;
+BEGIN
+  PERFORM pg_temp.check_release('live gate initially closed',NOT public.citizen_survey_collection_open('2026-11-17-v2'));
+  PERFORM pg_temp.check_release('deployment lock retained',(SELECT NOT enabled AND staging_only AND release_authorized_by IS NULL FROM survey_private.collection_control));
+  PERFORM pg_temp.check_release('anon cannot execute',NOT has_function_privilege('anon','public.submit_citizen_survey(uuid,smallint,smallint,smallint[],smallint,text,text,boolean,text,text,text,boolean)','EXECUTE'));
+  PERFORM pg_temp.check_release('authenticated cannot execute',NOT has_function_privilege('authenticated','public.submit_citizen_survey(uuid,smallint,smallint,smallint[],smallint,text,text,boolean,text,text,text,boolean)','EXECUTE'));
+  PERFORM pg_temp.check_release('ordinary users cannot read responses',NOT has_table_privilege('anon','survey_private.responses','SELECT') AND NOT has_table_privilege('authenticated','survey_private.responses','SELECT'));
+  PERFORM pg_temp.check_release('ordinary users cannot read contacts',NOT has_table_privilege('anon','survey_private.launch_contacts','SELECT') AND NOT has_table_privilege('authenticated','survey_private.launch_contacts','SELECT'));
+  PERFORM pg_temp.check_release('service cannot enable collection',NOT has_table_privilege('service_role','survey_private.collection_control','UPDATE'));
+  PERFORM pg_temp.check_release('service cannot erase contacts',NOT has_function_privilege('service_role','survey_private.erase_launch_contact(text)','EXECUTE'));
+  PERFORM pg_temp.check_release('RLS on all new tables',(SELECT bool_and(relrowsecurity) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='survey_private' AND c.relname IN ('responses','launch_contacts','collection_control','rate_limits','release_retention_runs')));
+  failed:=false; BEGIN PERFORM pg_temp.submit_fixture(rid,NULL,false); EXCEPTION WHEN OTHERS THEN failed:=SQLERRM='survey_submission_failed'; END;
+  PERFORM pg_temp.check_release('live submissions rejected while disabled',failed);
+  failed:=false; BEGIN PERFORM pg_temp.submit_fixture(rid,NULL,true,'wrong'); EXCEPTION WHEN OTHERS THEN failed:=true; END;
+  PERFORM pg_temp.check_release('wrong privacy rejected',failed);
+  failed:=false; BEGIN PERFORM pg_temp.submit_fixture(rid,NULL,true,'2026-11-17-v2','not prefixed'); EXCEPTION WHEN OTHERS THEN failed:=true; END;
+  PERFORM pg_temp.check_release('rehearsal rejects unmarked free text',failed);
+  failed:=false; BEGIN PERFORM pg_temp.submit_fixture(rid,'test@example.com',true); EXCEPTION WHEN OTHERS THEN failed:=true; END;
+  PERFORM pg_temp.check_release('rehearsal rejects nonreserved email',failed);
+  PERFORM pg_temp.check_release('synthetic rehearsal persists',pg_temp.submit_fixture(rid,'v5-fixture@example.invalid'));
+  PERFORM pg_temp.check_release('response stored',(SELECT count(*)=1 FROM survey_private.responses WHERE request_id=rid));
+  PERFORM pg_temp.check_release('separate contact with exact approved version',(SELECT privacy_version='2026-11-17-v2' AND consent_version='launch-only-v1' AND rehearsal FROM survey_private.launch_contacts WHERE email='v5-fixture@example.invalid'));
+  PERFORM pg_temp.check_release('contact schema has no correlation key',NOT EXISTS(SELECT FROM information_schema.columns WHERE table_schema='survey_private' AND table_name='launch_contacts' AND column_name IN ('request_id','response_id','payload_digest','q1','q2','q3','q4','idea','actor_hash')));
+  PERFORM pg_temp.check_release('retry succeeds',pg_temp.submit_fixture(rid,'v5-fixture@example.invalid'));
+  PERFORM pg_temp.check_release('retry no duplicate',(SELECT count(*)=1 FROM survey_private.responses WHERE request_id=rid));
+  failed:=false; BEGIN PERFORM pg_temp.submit_fixture(rid,NULL,true,'2026-11-17-v2','COLLAUDO: changed'); EXCEPTION WHEN OTHERS THEN failed:=true; END;
+  PERFORM pg_temp.check_release('idempotency conflict rejected',failed);
+  PERFORM pg_temp.submit_fixture(gen_random_uuid());
+  PERFORM pg_temp.check_release('no consent adds no contact',(SELECT count(*)=1 FROM survey_private.launch_contacts WHERE email='v5-fixture@example.invalid'));
+  PERFORM pg_temp.check_release('test retention seven days',(SELECT expires_at=now()+interval '7 days' FROM survey_private.responses WHERE request_id=rid));
+  -- Simulate approval in this rollback-only transaction; never activate a deployed gate.
+  UPDATE survey_private.collection_control SET staging_only=false,enabled=true,release_authorized_by='SYNTHETIC TRANSACTION',release_authorized_at=now();
+  PERFORM pg_temp.check_release('matching approved gate opens in simulation',public.citizen_survey_collection_open('2026-11-17-v2'));
+  PERFORM pg_temp.check_release('version mismatch closes gate',NOT public.citizen_survey_collection_open('wrong'));
+  PERFORM pg_temp.submit_fixture(lid,NULL,false,'2026-11-17-v2',E'COLLAUDO: synthetic\nmultiline');
+  PERFORM pg_temp.check_release('live-mode synthetic response persists in transaction',(SELECT NOT rehearsal FROM survey_private.responses WHERE request_id=lid));
+  PERFORM pg_temp.check_release('live-mode twelve month limit',(SELECT expires_at=now()+interval '12 months' AND review_on=current_date+90 FROM survey_private.responses WHERE request_id=lid));
+  FOR i IN 1..30 LOOP PERFORM public.consume_citizen_survey_live_limit(repeat('a',64)); END LOOP;
+  PERFORM pg_temp.check_release('31st request throttled',NOT public.consume_citizen_survey_live_limit(repeat('a',64)));
+  UPDATE survey_private.collection_control SET enabled=false,staging_only=true,release_authorized_by=NULL,release_authorized_at=NULL;
+  UPDATE survey_private.launch_contacts SET consent_at=now()-interval '8 days' WHERE email='v5-fixture@example.invalid';
+  UPDATE survey_private.responses SET expires_at=now()-interval '1 hour' WHERE request_id=rid;
+  SELECT count(*) INTO before_runs FROM survey_private.release_retention_runs;
+  CREATE TRIGGER fail_test BEFORE DELETE ON survey_private.responses FOR EACH ROW EXECUTE FUNCTION pg_temp.fail_release_delete();
+  failed:=false; BEGIN PERFORM survey_private.run_release_retention('manual'); EXCEPTION WHEN OTHERS THEN failed:=SQLERRM='survey_retention_failed'; END;
+  PERFORM pg_temp.check_release('delete failure sanitized',failed);
+  PERFORM pg_temp.check_release('failure rollback preserves expired row',EXISTS(SELECT FROM survey_private.responses WHERE request_id=rid));
+  PERFORM pg_temp.check_release('failure writes no success audit',(SELECT count(*)=before_runs FROM survey_private.release_retention_runs));
+  DROP TRIGGER fail_test ON survey_private.responses;
+  PERFORM survey_private.run_release_retention('manual');
+  PERFORM pg_temp.check_release('retry removes expired row',NOT EXISTS(SELECT FROM survey_private.responses WHERE request_id=rid));
+  PERFORM pg_temp.check_release('retry removes expired contact',NOT EXISTS(SELECT FROM survey_private.launch_contacts WHERE email='v5-fixture@example.invalid'));
+  PERFORM pg_temp.check_release('fresh row remains',EXISTS(SELECT FROM survey_private.responses WHERE request_id=lid));
+  PERFORM pg_temp.submit_fixture(gen_random_uuid(),'v5-revoke@example.invalid');
+  PERFORM survey_private.erase_launch_contact('v5-revoke@example.invalid');
+  PERFORM survey_private.erase_launch_contact('v5-revoke@example.invalid');
+  PERFORM pg_temp.check_release('revocation immediately and idempotently erases',NOT EXISTS(SELECT FROM survey_private.launch_contacts WHERE email='v5-revoke@example.invalid'));
+  PERFORM pg_temp.check_release('revocation does not erase responses',EXISTS(SELECT FROM survey_private.responses WHERE request_id=lid));
+  PERFORM pg_temp.check_release('launch plus thirty days calculation',survey_private.contact_expiry('2026-01-01 UTC','2026-02-01 UTC',NULL,false)='2026-03-03 UTC'::timestamptz);
+  PERFORM pg_temp.check_release('new scheduler active',(SELECT active AND schedule='19 * * * *' FROM cron.job WHERE jobname='bimaris-citizen-survey-release-retention'));
+END $$;
+SELECT count(*) AS passed_checks, bool_and(passed) AS all_passed FROM release_checks;
+ROLLBACK;

@@ -1,0 +1,165 @@
+{
+  "ref": "20c4ae92eaa7a9b9a34718a9e413265871bb5d51",
+  "rows": [
+    {
+      "file": "027_apply_revision_optional_taxonomy.sql",
+      "sha": "ce38d9096de39b067a486bde4a862ee411193935",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "028_operator_interest_privacy_retention.sql",
+      "sha": "ad10e738c524cdd74aab55a81fbd13e75235af4e",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261028132408",
+          "name": "operator_interest_privacy_retention"
+        }
+      ]
+    },
+    {
+      "file": "029_private_experience_revision_media.sql",
+      "sha": "95774f023aea275dfd9fab90f0d9efeb959c46ac",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261028193340",
+          "name": "private_experience_revision_media"
+        }
+      ]
+    },
+    {
+      "file": "030_aggregate_operator_analytics.sql",
+      "sha": "733caa34d1a65416af25cf5c8a08fa84b79fee35",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261028195955",
+          "name": "aggregate_operator_analytics"
+        }
+      ]
+    },
+    {
+      "file": "031_guard_duplicate_operator_application_acceptance.sql",
+      "sha": "2fef5090856a93b52663e71b04a545818d2a6a66",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261029070103",
+          "name": "guard_duplicate_operator_application_acceptance"
+        }
+      ]
+    },
+    {
+      "file": "032_harden_public_discovery_visibility.sql",
+      "sha": "6e2df87c36d8570ea1f36b7c7bca2412b584c6b4",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "033_protect_last_operator_owner.sql",
+      "sha": "72ef13223753bee059686d5de0d0ae7d201c94aa",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261104101934",
+          "name": "protect_last_operator_owner"
+        }
+      ]
+    },
+    {
+      "file": "034_align_operator_viewer_role.sql",
+      "sha": "71e546353d9481c29865746bf2287c0622e52994",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261104102528",
+          "name": "align_operator_viewer_role"
+        }
+      ]
+    },
+    {
+      "file": "035_normalize_applied_revision_cover.sql",
+      "sha": "ef1290630d42941557cb900bb2aeac3262ab0697",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "036_apply_experience_revision_details.sql",
+      "sha": "62f17bc7ca3c96a5ca744e7a61dc5602473a30a8",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261122063634",
+          "name": "apply_experience_revision_details"
+        }
+      ]
+    },
+    {
+      "file": "20261106220140_ds_mfa_01_b1_private_admin_roles.sql",
+      "sha": "a508a51d060d42333f53c3b79c6d088a065cf0db",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261106220140",
+          "name": "ds_mfa_01_b1_private_admin_roles"
+        }
+      ]
+    },
+    {
+      "file": "20261106220141_ds_mfa_01_b2_session_revocation.sql",
+      "sha": "bb30005b2c18c52a921339b64bc47f8326ff0e1b",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261116170327_citizen_survey_staging.sql",
+      "sha": "378b55c6abde250583f8cd03f3ec53644b12b2fd",
+      "scope": "excluded_survey",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261116170829",
+          "name": "citizen_survey_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261117052153_citizen_survey_retention_v4.sql",
+      "sha": "1aee2e08d2328bc10403a9d908abd014ca1b92fc",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117052703",
+          "name": "citizen_survey_retention_v4"
+        }
+      ]
+    },
+    {
+      "file": "20261117052751_citizen_survey_privacy_v2.sql",
+      "sha": "e80ed6fe0db687ca00066920cda2669b8a93e775",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117053054",
+          "name": "citizen_survey_privacy_v2"
+        }
+      ]
+    }
+  ]
+}

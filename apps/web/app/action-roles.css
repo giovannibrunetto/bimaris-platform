@@ -1,0 +1,63 @@
+/* BIMARIS DS-UI-ACTIONS-01: semantic button palette across the application.
+   Explicit roles take precedence; legacy .button anchors are navigation,
+   legacy .button form buttons are confirmation. Do not override components
+   with custom, role-specific styling (maps, media, survey and sign-in). */
+:root {
+  --action-open-bg:#08747a;
+  --action-open-text:#ffffff;
+  --action-save-bg:#caa86a;
+  --action-save-text:#102e32;
+  --action-neutral-bg:#eef1f0;
+  --action-neutral-text:#223b3d;
+  --action-danger-bg:#ac4037;
+  --action-danger-text:#ffffff;
+}
+:is(a,button).action-open,
+a.button:not(.ghost):not(.secondary):not(.danger):not(.action-save):not(.action-cancel):not(.action-danger) {
+  background:var(--action-open-bg);
+  border-color:var(--action-open-bg);
+  color:var(--action-open-text);
+}
+:is(a,button).action-save,
+button.button:not(.ghost):not(.secondary):not(.danger):not(.action-open):not(.action-cancel):not(.action-danger) {
+  background:var(--action-save-bg);
+  border-color:var(--action-save-bg);
+  color:var(--action-save-text);
+}
+:is(a,button).action-cancel,
+:is(a,button).button.ghost:not(.action-open):not(.action-save):not(.action-danger) {
+  background:var(--action-neutral-bg);
+  border-color:#cdd6d3;
+  color:var(--action-neutral-text);
+}
+:is(a,button).action-danger,
+:is(a,button).button.danger {
+  background:var(--action-danger-bg);
+  border-color:var(--action-danger-bg);
+  color:var(--action-danger-text);
+}
+:is(a,button).action-open:is(:hover,:focus-visible),
+a.button:not(.ghost):not(.secondary):not(.danger):not(.action-save):not(.action-cancel):not(.action-danger):hover {
+  background:#075f65;
+}
+:is(a,button).action-save:is(:hover,:focus-visible) { background:#b79457; }
+:is(a,button).action-danger:is(:hover,:focus-visible) { background:#8e3028; }
+:is(a,button).action-open:focus-visible,
+:is(a,button).action-save:focus-visible,
+:is(a,button).action-cancel:focus-visible,
+:is(a,button).action-danger:focus-visible { outline:3px solid #d0a35e; outline-offset:3px; }
+:is(a,button):disabled:is(.action-open,.action-save,.action-cancel,.action-danger) {
+  background:#e7e3dc; border-color:#d7dfdc; color:#7b817f; cursor:not-allowed;
+}
+
+/* BIMARIS historical pill shape: one radius for all action controls.
+   Navigation tabs, cards, text inputs and menus retain their own geometry. */
+:root { --bimaris-action-radius:999px; }
+a.button, button.button, input[type="submit"].button,
+:is(a,button,input[type="submit"]):is(.action-open,.action-save,.action-cancel,.action-danger),
+.admin-operator-detail__edit-disclosure > summary.action-open,
+.admin-shell-header__actions :is(a,button),
+.admin-itineraries-new-button,
+.personal-google,.personal-email-button {
+  border-radius:var(--bimaris-action-radius) !important;
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { track } from "@/lib/analytics";
 
 declare global { interface Window { google?: any } }
@@ -22,14 +23,68 @@ const letterOf = (k: Kind) => k === "culture" ? "C" : k === "village" ? "B" : k 
 const kindLabel = (k: Kind) => k === "culture" ? "Monumento e cultura" : k === "village" ? "Borgo" : k === "village-poi" ? "Luogo del borgo" : k === "operator" ? "Operatore BIMARIS" : k === "experience" ? "Esperienza BIMARIS" : "Miti e leggende";
 function markerIcon(maps:any, kind:Kind, selected:boolean){ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="52" viewBox="0 0 40 52"><path d="M20 1C9.5 1 1 9.5 1 20c0 14 19 31 19 31s19-17 19-31C39 9.5 30.5 1 20 1Z" fill="${colorOf(kind)}" stroke="${selected?"#101820":"#fff"}" stroke-width="${selected?4:2}"/><circle cx="20" cy="20" r="9" fill="rgba(3,17,26,.3)"/></svg>`; return {url:`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,scaledSize:new maps.Size(40,52),anchor:new maps.Point(20,51),labelOrigin:new maps.Point(20,20)}; }
 function pointLocation(p:BimarisMapPoint){ return Number.isFinite(p.latitude)&&Number.isFinite(p.longitude)?`${p.latitude},${p.longitude}`:p.googleMapsQuery; }
-function mapsRouteUrl(points:BimarisMapPoint[],mode:Mode){ if(!points.length)return ""; const l=points.map(pointLocation); const q=new URLSearchParams({api:"1",destination:l[l.length-1],travelmode:mode}); if(l.length>1)q.set("origin",l[0]); if(l.length>2)q.set("waypoints",l.slice(1,-1).join("|")); return `https://www.google.com/maps/dir/?${q.toString()}`; }
+function mapsRouteUrl(points: BimarisMapPoint[], mode: Mode, origin?: string) {
+ const locations = points.map(pointLocation);
+ const params = new URLSearchParams({
+  api: "1",
+  destination: locations[locations.length - 1],
+  travelmode: mode,
+ });
+ if (origin) params.set("origin", origin);
+ if (locations.length > 1) params.set("waypoints", locations.slice(0, -1).join("|"));
+ return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
 
 export function BimarisGoogleMap({points,initialVisiblePointKeys}:{points:BimarisMapPoint[];initialVisiblePointKeys?:string[]}){
- const el=useRef<HTMLDivElement|null>(null), map=useRef<any>(null), info=useRef<any>(null), markers=useRef<any[]>([]), cache=useRef(new Map<string,{lat:number;lng:number}>()), routeManuallyCollapsed=useRef(false), initialFitDone=useRef(false), lastFitScope=useRef("");
- const [selectedPeriods,setSelectedPeriods]=useState<string[]>([]), [status,setStatus]=useState<"loading"|"ready"|"error">("loading"), [filter,setFilter]=useState<Filter>("all"), [selected,setSelected]=useState<string[]>([]), [mode,setMode]=useState<Mode>("walking"), [routeExpanded,setRouteExpanded]=useState(false), [periodMenuOpen,setPeriodMenuOpen]=useState(false), [contextScopeActive,setContextScopeActive]=useState(Boolean(initialVisiblePointKeys?.length));
+ const el=useRef<HTMLDivElement|null>(null), map=useRef<any>(null), info=useRef<any>(null), markers=useRef<any[]>([]), cache=useRef(new Map<string,{lat:number;lng:number}>()), initialFitDone=useRef(false), lastFitScope=useRef("");
+ const [selectedPeriods,setSelectedPeriods]=useState<string[]>([]), [status,setStatus]=useState<"loading"|"ready"|"error">("loading"), [filter,setFilter]=useState<Filter>("all"), [selected,setSelected]=useState<string[]>([]), [mode,setMode]=useState<Mode>("walking"), [routeExpanded,setRouteExpanded]=useState(false), [periodMenuOpen,setPeriodMenuOpen]=useState(false), [mobileFiltersOpen,setMobileFiltersOpen]=useState(false), [contextScopeActive,setContextScopeActive]=useState(Boolean(initialVisiblePointKeys?.length));
+ const routePanel = useRef<HTMLElement>(null);
+ const [addedStop, setAddedStop] = useState<{ key: string; title: string } | null>(null);
+ useEffect(() => {
+  if (!addedStop) return;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  routePanel.current?.scrollIntoView({ block: "start", behavior: reducedMotion ? "instant" : "smooth" });
+ }, [addedStop]);
+ const mobileFilterTrigger=useRef<HTMLButtonElement>(null), mobileFilterClose=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{
+  if(!mobileFiltersOpen)return;
+  const previous=document.body.style.overflow;
+  document.body.style.overflow="hidden";
+  mobileFilterClose.current?.focus();
+  function handleKey(event:KeyboardEvent){
+   if(event.key==="Escape"){setMobileFiltersOpen(false);return;}
+   if(event.key!=="Tab")return;
+   const dialog=document.querySelector<HTMLElement>(".bimaris-map-mobile-dialog");
+   if(!dialog)return;
+   const controls=Array.from(dialog.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
+   if(!controls.length)return;
+   const first=controls[0], last=controls[controls.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+  document.addEventListener("keydown",handleKey);
+  return()=>{document.removeEventListener("keydown",handleKey);document.body.style.overflow=previous;mobileFilterTrigger.current?.focus();};
+ },[mobileFiltersOpen]);
  const initialVisibleSet=useMemo(()=>new Set(initialVisiblePointKeys??[]),[initialVisiblePointKeys]);
  const selectedPoints=useMemo(()=>selected.map(k=>points.find(p=>keyOf(p)===k)).filter(Boolean) as BimarisMapPoint[],[points,selected]);
- const routeUrl=mapsRouteUrl(selectedPoints,mode); const count=(f:Filter)=>f==="all"?points.length:points.filter(p=>p.filterCategories.includes(f)).length;
+ const [locating, setLocating] = useState(false);
+ const openRoute = () => {
+  track("route_open", { mode, stops: selectedPoints.length });
+  const openMaps = (origin?: string) => {
+   setLocating(false);
+   window.location.assign(mapsRouteUrl(selectedPoints, mode, origin));
+  };
+  if (!navigator.geolocation) {
+   openMaps();
+   return;
+  }
+  setLocating(true);
+  navigator.geolocation.getCurrentPosition(
+   ({ coords }) => openMaps(`${coords.latitude},${coords.longitude}`),
+   () => openMaps(),
+   { enableHighAccuracy: true, timeout: 10000 },
+  );
+ }; const count=(f:Filter)=>f==="all"?points.length:points.filter(p=>p.filterCategories.includes(f)).length;
  const visiblePoints=useMemo(()=>points.filter(p=>{
    if(contextScopeActive&&initialVisibleSet.size>0)return initialVisibleSet.has(keyOf(p));
    return (filter==="all"||p.filterCategories.includes(filter))&&(!(filter==="cultura"||filter==="borghi")||selectedPeriods.length===0||((p.kind==="culture"||p.kind==="village"||p.kind==="village-poi")&&selectedPeriods.some(x=>p.historicalPeriods?.includes(x))));
@@ -37,20 +92,72 @@ export function BimarisGoogleMap({points,initialVisiblePointKeys}:{points:Bimari
  const filterLabel=FILTERS.find(x=>x.key===filter)?.label??"Tutto"; const selectedPeriodLabels=PERIODS.filter(x=>x.key!=="all"&&selectedPeriods.includes(x.key)).map(x=>x.label);
  const chooseFilter=(value:Filter)=>{ setContextScopeActive(false); setFilter(value); setPeriodMenuOpen(value==="cultura"||value==="borghi"); info.current?.close(); track("filter_used",{section:"map",filter:"category",value}); };
  const choosePeriod=(index:number)=>{ setContextScopeActive(false); const item=PERIODS[index]; setSelectedPeriods(cur=>item.key==="all"?[]:cur.includes(item.key)?cur.filter(v=>v!==item.key):[...cur,item.key]); info.current?.close(); track("filter_used",{section:"map",filter:"historical_period",value:item.key}); };
- const toggle=(point:BimarisMapPoint)=>{ const key=keyOf(point); setSelected(cur=>{ if(cur.includes(key))return cur.filter(v=>v!==key); if(cur.length>=10)return cur; const next=[...cur,key]; if(next.length>=2&&!routeManuallyCollapsed.current)setRouteExpanded(true); return next;}); info.current?.close(); };
+ const toggle = (point: BimarisMapPoint) => {
+  const key = keyOf(point);
+  if (selected.includes(key)) {
+   setSelected(current => current.filter(value => value !== key));
+   setAddedStop(current => current?.key === key ? null : current);
+  } else if (selected.length < 10) {
+   setSelected(current => [...current, key]);
+   setRouteExpanded(true);
+   setAddedStop({ key, title: point.title });
+  }
+  info.current?.close();
+ };
 
  useEffect(()=>{ const apiKey=process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY; if(!apiKey){setStatus("error");return;} const init=()=>{if(!el.current||!window.google?.maps||map.current)return; map.current=new window.google.maps.Map(el.current,{center:CENTER,zoom:12,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,gestureHandling:"greedy"}); info.current=new window.google.maps.InfoWindow(); setStatus("ready"); track("map_open",{points:points.length});}; if(window.google?.maps){init();return;} const existing=document.getElementById("bimaris-google-maps") as HTMLScriptElement|null; if(existing){existing.addEventListener("load",init,{once:true});return;} const s=document.createElement("script"); s.id="bimaris-google-maps"; s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly`; s.async=true;s.defer=true;s.addEventListener("load",init,{once:true});s.addEventListener("error",()=>setStatus("error"),{once:true});document.head.appendChild(s); },[points.length]);
 
  useEffect(()=>{ if(status!=="ready"||!map.current||!window.google?.maps)return; const maps=window.google.maps, geocoder=new maps.Geocoder(); const fitScope=[filter,selectedPeriods.join(","),contextScopeActive?"context":"all"].join("|"); let cancelled=false; markers.current.forEach(m=>m.setMap(null));markers.current=[];info.current?.close();
-  const resolve=async(p:BimarisMapPoint)=>{if(Number.isFinite(p.latitude)&&Number.isFinite(p.longitude))return{lat:p.latitude!,lng:p.longitude!};const c=cache.current.get(p.googleMapsQuery);if(c)return c;try{const r=await geocoder.geocode({address:p.googleMapsQuery});const l=r.results?.[0]?.geometry?.location;if(!l)return null;const pos={lat:l.lat(),lng:l.lng()};cache.current.set(p.googleMapsQuery,pos);return pos;}catch{return null;}};
-  (async()=>{const resolved=await Promise.all(visiblePoints.map(async p=>({point:p,pos:await resolve(p)})));if(cancelled)return;const bounds=new maps.LatLngBounds();let rendered=0;for(const {point,pos} of resolved){if(!pos)continue;const index=selected.indexOf(keyOf(point)),isSelected=index>=0,routeIsFull=selected.length>=10&&!isSelected;const marker=new maps.Marker({map:map.current,position:pos,title:point.title,icon:markerIcon(maps,point.kind,isSelected),label:{text:isSelected?String(index+1):letterOf(point.kind),color:"#fff",fontSize:"11px",fontWeight:"700"},zIndex:isSelected?1000+index:undefined});marker.addListener("click",()=>{const root=document.createElement("div");root.style.cssText="max-width:260px;color:#101820;font-family:Arial,sans-serif";const meta=document.createElement("div");meta.textContent=point.categoryLabel?`${kindLabel(point.kind)} · ${point.categoryLabel}`:kindLabel(point.kind);meta.style.cssText=`color:${colorOf(point.kind)};font-size:11px;font-weight:700`;root.appendChild(meta);const title=document.createElement("div");title.textContent=point.title;title.style.cssText="font-family:Georgia,serif;font-size:18px;font-weight:700;margin:5px 0";root.appendChild(title);if(point.address){const a=document.createElement("div");a.textContent=point.address;a.style.cssText="font-size:12px;color:#59656d;margin-bottom:7px";root.appendChild(a);}const add=document.createElement("button");add.type="button";add.textContent=isSelected?`Rimuovi dal percorso · tappa ${index+1}`:routeIsFull?"Limite di 10 tappe raggiunto":"Aggiungi al mio percorso";add.disabled=routeIsFull;add.style.cssText=`width:100%;min-height:38px;padding:8px 10px;border-radius:9px;border:1px solid ${routeIsFull?"#aeb9c0":"#caa86a"};background:${isSelected?"#101820":routeIsFull?"#eef1f2":"#f7f0e4"};color:${isSelected?"#fff":routeIsFull?"#66737b":"#101820"};font-weight:700`;if(!routeIsFull)add.onclick=()=>toggle(point);root.appendChild(add);point.links.forEach(link=>{const a=document.createElement("a");a.href=link.href;a.textContent=`${link.label} →`;a.style.cssText="display:flex;align-items:center;min-height:34px;margin-top:3px;color:#8d6b34;font-size:12px;font-weight:700;text-decoration:none";root.appendChild(a);});info.current?.setContent(root);info.current?.open({map:map.current,anchor:marker});track("map_marker_click",{point_id:point.id,kind:point.kind,title:point.title,filter});});markers.current.push(marker);bounds.extend(pos);rendered++;}
+  const resolve=async(p:BimarisMapPoint)=>{const c=cache.current.get(p.googleMapsQuery);if(c)return c;try{const r=await geocoder.geocode({address:p.googleMapsQuery});const l=r.results?.[0]?.geometry?.location;if(!l)return null;const pos={lat:l.lat(),lng:l.lng()};cache.current.set(p.googleMapsQuery,pos);return pos;}catch{return null;}};
+  const bounds = new maps.LatLngBounds();
+  let rendered = 0;
+  const renderMarker = (point: BimarisMapPoint, pos: { lat: number; lng: number } | null) => {
+   if (cancelled || !pos) return;
+   const index=selected.indexOf(keyOf(point)),isSelected=index>=0,routeIsFull=selected.length>=10&&!isSelected;const marker=new maps.Marker({map:map.current,position:pos,title:point.title,icon:markerIcon(maps,point.kind,isSelected),label:{text:isSelected?String(index+1):letterOf(point.kind),color:"#fff",fontSize:"11px",fontWeight:"700"},zIndex:isSelected?1000+index:undefined});marker.addListener("click",()=>{const root=document.createElement("div");root.style.cssText="max-width:260px;color:#101820;font-family:Arial,sans-serif";const meta=document.createElement("div");meta.textContent=point.categoryLabel?`${kindLabel(point.kind)} · ${point.categoryLabel}`:kindLabel(point.kind);meta.style.cssText=`color:${colorOf(point.kind)};font-size:11px;font-weight:700`;root.appendChild(meta);const title=document.createElement("div");title.textContent=point.title;title.style.cssText="font-family:Georgia,serif;font-size:18px;font-weight:700;margin:5px 0";root.appendChild(title);if(point.address){const a=document.createElement("div");a.textContent=point.address;a.style.cssText="font-size:12px;color:#59656d;margin-bottom:7px";root.appendChild(a);}const add=document.createElement("button");add.type="button";add.textContent=isSelected?`Rimuovi dal percorso · tappa ${index+1}`:routeIsFull?"Limite di 10 tappe raggiunto":"Aggiungi al mio percorso";add.disabled=routeIsFull;add.style.cssText=`width:100%;min-height:38px;padding:8px 10px;border-radius:9px;border:1px solid ${routeIsFull?"#aeb9c0":"#caa86a"};background:${isSelected?"#101820":routeIsFull?"#eef1f2":"#f7f0e4"};color:${isSelected?"#fff":routeIsFull?"#66737b":"#101820"};font-weight:700`;if(!routeIsFull)add.onclick=()=>toggle(point);root.appendChild(add);point.links.forEach(link=>{const a=document.createElement("a");a.href=link.href;a.textContent=`${link.label} →`;a.style.cssText="display:flex;align-items:center;min-height:34px;margin-top:3px;color:#8d6b34;font-size:12px;font-weight:700;text-decoration:none";root.appendChild(a);});info.current?.setContent(root);info.current?.open({map:map.current,anchor:marker});track("map_marker_click",{point_id:point.id,kind:point.kind,title:point.title,filter});});markers.current.push(marker);bounds.extend(pos);rendered++;
+  };
+  const pending: Promise<void>[] = [];
+  for (const point of visiblePoints) {
+   if (typeof point.latitude === "number" && Number.isFinite(point.latitude) && typeof point.longitude === "number" && Number.isFinite(point.longitude)) {
+    renderMarker(point, { lat: point.latitude, lng: point.longitude });
+   } else {
+    pending.push(resolve(point).then(pos => renderMarker(point, pos)));
+   }
+  }
+  const fitMarkers = () => {
+   if (cancelled) return;
    if(rendered&&(!initialFitDone.current||lastFitScope.current!==fitScope)){initialFitDone.current=true;lastFitScope.current=fitScope;if(rendered===1){map.current.setCenter(bounds.getCenter());map.current.setZoom(15);}else{map.current.fitBounds(bounds,58);maps.event.addListenerOnce(map.current,"idle",()=>{if(cancelled)return;const z=map.current.getZoom();if(z>14)map.current.setZoom(14);});}}
-  })();return()=>{cancelled=true;};
+  };
+  if (pending.length) void Promise.all(pending).then(fitMarkers);
+  else fitMarkers();
+  return () => { cancelled = true; };
  },[visiblePoints,selected,status,filter,selectedPeriods,contextScopeActive]);
 
- return <div className="bimaris-map-card"><div className="bimaris-map-card-head"><div><div className="map-card-eyebrow">Esplora la mappa</div></div><div className="bimaris-map-count" aria-live="polite">{visiblePoints.length} {visiblePoints.length===1?"punto visibile":"punti visibili"} su {points.length} totali · {selected.length>=10?"limite di 10 tappe raggiunto":"seleziona fino a 10 tappe"}</div></div><div className="bimaris-map-layout"><div className="bimaris-map-main"><div className="bimaris-map-canvas-wrap"><div ref={el} className="bimaris-map-canvas" aria-label="Mappa interattiva BIMARIS" />{status==="loading"&&<div className="bimaris-map-status">Caricamento mappa...</div>}{status==="error"&&<div className="bimaris-map-status">Mappa temporaneamente non disponibile.</div>}{status==="ready"&&visiblePoints.length===0&&<div className="bimaris-map-empty" role="status"><strong>Nessun punto disponibile</strong><span>Il filtro “{filterLabel}”{selectedPeriodLabels.length?` nelle epoche “${selectedPeriodLabels.join(", ")}”`:""} non contiene punti nella selezione attuale.</span><button type="button" onClick={()=>chooseFilter("all")}>Mostra tutti i punti</button></div>}
+ return <div className="bimaris-map-card"><div className="bimaris-map-card-head"><div><div className="map-card-eyebrow">Esplora la mappa</div></div><div className="bimaris-map-count" aria-live="polite">{visiblePoints.length} {visiblePoints.length===1?"punto visibile":"punti visibili"} su {points.length} totali · {selected.length>=10?"limite di 10 tappe raggiunto":"seleziona fino a 10 tappe"}</div><button ref={mobileFilterTrigger} className="bimaris-map-mobile-filter-trigger" type="button" aria-haspopup="dialog" aria-expanded={mobileFiltersOpen} onClick={()=>setMobileFiltersOpen(true)}><span aria-hidden="true">☷</span> Filtri{filter!=="all"||selectedPeriods.length>0?" · Attivi":""}</button></div><div className="bimaris-map-layout"><div className="bimaris-map-main"><div className="bimaris-map-canvas-wrap"><div ref={el} className="bimaris-map-canvas" aria-label="Mappa interattiva BIMARIS" />{status==="loading"&&<div className="bimaris-map-status">Caricamento mappa...</div>}{status==="error"&&<div className="bimaris-map-status">Mappa temporaneamente non disponibile.</div>}{status==="ready"&&visiblePoints.length===0&&<div className="bimaris-map-empty" role="status"><strong>Nessun punto disponibile</strong><span>Il filtro “{filterLabel}”{selectedPeriodLabels.length?` nelle epoche “${selectedPeriodLabels.join(", ")}”`:""} non contiene punti nella selezione attuale.</span><button type="button" onClick={()=>chooseFilter("all")}>Mostra tutti i punti</button></div>}
  <div className="bimaris-map-filter-overlay"><div className="bimaris-map-filter-desktop" aria-label="Filtra i punti della mappa">{FILTERS.map(item=><button key={item.key} type="button" className={filter===item.key?"active":""} onClick={()=>chooseFilter(item.key)}>{item.label}<span>{count(item.key)}</span></button>)}</div><div className="bimaris-map-filter-mobile" aria-label="Filtra i punti della mappa">{FILTERS.map(item=><button key={item.key} type="button" className={filter===item.key?"active":""} aria-pressed={filter===item.key} onClick={()=>chooseFilter(item.key)}>{item.shortLabel}<span>{count(item.key)}</span></button>)}</div></div>
  {(filter==="cultura"||filter==="borghi")&&<div className="bimaris-map-period-overlay"><div className="bimaris-map-period-desktop" aria-label="Filtra per periodo storico">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>{periodMenuOpen&&<div className="bimaris-map-period-mobile" aria-label="Filtra per periodo storico">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>}</div>}</div><div className="bimaris-map-legend">B = borgo · P = luogo del borgo · C = cultura · M = miti e leggende · E = esperienza · O = operatore</div></div>
- <aside className={`bimaris-route-panel ${routeExpanded?"expanded":"collapsed"}`}><button type="button" className="bimaris-route-panel-toggle" aria-expanded={routeExpanded} onClick={()=>setRouteExpanded(v=>{const n=!v;routeManuallyCollapsed.current=!n;return n;})}><span><strong>Il mio percorso</strong><small>{selected.length>=10?"10/10 · limite raggiunto":`${selected.length}/10 tappe`}</small></span><span>{routeExpanded?"−":"+"}</span></button>{routeExpanded&&<div className="bimaris-route-panel-body"><div className="bimaris-route-panel-mode"><button type="button" className={mode==="walking"?"active":""} onClick={()=>setMode("walking")}>A piedi</button><button type="button" className={mode==="driving"?"active":""} onClick={()=>setMode("driving")}>In auto</button></div>{selectedPoints.length?<><ol className="bimaris-route-list">{selectedPoints.map((point,index)=><li key={keyOf(point)}><span>{index+1}</span><div><strong>{point.title}</strong><small>{kindLabel(point.kind)}</small></div><button type="button" aria-label={`Rimuovi ${point.title}`} onClick={()=>toggle(point)}>×</button></li>)}</ol><div className="bimaris-route-panel-actions"><button type="button" className="button" onClick={()=>{setSelected([]);info.current?.close();}}>Svuota percorso</button>{routeUrl&&<a className="button" href={routeUrl} target="_blank" rel="noreferrer" onClick={()=>track("route_open",{mode,stops:selectedPoints.length})}>Apri percorso in Google Maps</a>}</div></>:<p>Apri un punto sulla mappa e aggiungilo al tuo percorso.</p>}</div>}</aside>
- </div></div>;
+ <aside ref={routePanel} style={{ scrollMarginTop: 100 }} className={`bimaris-route-panel ${routeExpanded?"expanded":"collapsed"}`}><button type="button" className="bimaris-route-panel-toggle" aria-expanded={routeExpanded} onClick={()=>setRouteExpanded(value=>!value)}><span><strong>Il mio percorso</strong><small>{selected.length>=10?"10/10 · limite raggiunto":`${selected.length}/10 tappe`}</small></span><span>{routeExpanded?"−":"+"}</span></button>{routeExpanded&&<div className="bimaris-route-panel-body">{addedStop&&<p role="status">Aggiunto al percorso: <strong>{addedStop.title}</strong></p>}<div className="bimaris-route-panel-mode"><button type="button" className={mode==="walking"?"active":""} onClick={()=>setMode("walking")}>A piedi</button><button type="button" className={mode==="driving"?"active":""} onClick={()=>setMode("driving")}>In auto</button></div>{selectedPoints.length?<><ol className="bimaris-route-list">{selectedPoints.map((point,index)=><li key={keyOf(point)}><span>{index+1}</span><div><strong>{point.title}</strong><small>{kindLabel(point.kind)}</small></div><button type="button" aria-label={`Rimuovi ${point.title}`} onClick={()=>toggle(point)}>×</button></li>)}</ol><div className="bimaris-route-panel-actions"><button type="button" className="button" onClick={()=>{setSelected([]);setAddedStop(null);info.current?.close();}}>Svuota percorso</button><button type="button" className="button" disabled={locating} onClick={openRoute}>{locating ? "Ricerca della posizione…" : "Apri percorso in Google Maps"}</button></div></>:<p>Apri un punto sulla mappa e aggiungilo al tuo percorso.</p>}</div>}</aside>
+ </div> {mobileFiltersOpen&&typeof document!=="undefined"&&createPortal(
+  <div className="bimaris-map-mobile-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMobileFiltersOpen(false);}}>
+   <section className="bimaris-map-mobile-dialog" role="dialog" aria-modal="true" aria-label="Filtri della mappa">
+    <div className="bimaris-map-mobile-dialog-head">
+     <div><strong>Filtri della mappa</strong><p>Scegli cosa visualizzare sulla mappa BIMARIS.</p></div>
+     <button ref={mobileFilterClose} type="button" className="bimaris-map-mobile-close" onClick={()=>setMobileFiltersOpen(false)} aria-label="Chiudi filtri">×</button>
+    </div>
+    <div className="bimaris-map-mobile-dialog-scroll">
+     <fieldset className="bimaris-map-mobile-fieldset">
+      <legend>Categorie</legend>
+      <div className="bimaris-map-mobile-options">{FILTERS.map(item=><button key={item.key} type="button" aria-pressed={filter===item.key} className={filter===item.key?"active":""} onClick={()=>chooseFilter(item.key)}><span>{item.label}</span><small>{count(item.key)}</small></button>)}</div>
+     </fieldset>
+     {(filter==="cultura"||filter==="borghi")&&<fieldset className="bimaris-map-mobile-fieldset">
+      <legend>Epoche storiche</legend>
+      <div className="bimaris-map-mobile-options">{PERIODS.map((item,index)=><button key={item.key} type="button" aria-pressed={item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key)} className={(item.key==="all"?selectedPeriods.length===0:selectedPeriods.includes(item.key))?"active":""} onClick={()=>choosePeriod(index)}>{item.label}</button>)}</div>
+     </fieldset>}
+    </div>
+    <div className="bimaris-map-mobile-dialog-footer">
+     <button type="button" className="bimaris-map-mobile-reset" onClick={()=>{chooseFilter("all");setSelectedPeriods([]);}}>Azzera filtri</button>
+     <button type="button" className="bimaris-map-mobile-apply" onClick={()=>setMobileFiltersOpen(false)}>Mostra {visiblePoints.length} {visiblePoints.length===1?"risultato":"risultati"}</button>
+    </div>
+   </section>
+  </div>,document.body)}
+</div>;
 }

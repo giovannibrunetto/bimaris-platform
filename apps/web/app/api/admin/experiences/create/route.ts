@@ -1,5 +1,6 @@
+import { rejectCrossSiteAdminMutation } from "@/lib/admin-request-origin";
 import {NextRequest,NextResponse} from "next/server";
-import {isAdminAuthenticated} from "@/lib/admin-auth";
+import {isAuthorizedAdmin} from "@/lib/admin-access";
 import {createServiceClient} from "@/lib/supabase/server";
 
 function text(v:FormDataEntryValue|null,max:number){return typeof v==="string"?v.trim().slice(0,max):""}
@@ -10,7 +11,9 @@ function jsonMode(req:NextRequest){return req.headers.get("sec-fetch-dest")!=="d
 function fail(req:NextRequest,state:string,status=400){return jsonMode(req)?NextResponse.json({ok:false,error:state},{status}):back(req,state)}
 
 export async function POST(request:NextRequest){
- if(!(await isAdminAuthenticated()))return jsonMode(request)?NextResponse.json({ok:false,error:"unauthorized"},{status:401}):NextResponse.redirect(new URL("/admin/login",request.url),303);
+  const crossSiteRejection = rejectCrossSiteAdminMutation(request);
+  if (crossSiteRejection) return crossSiteRejection;
+ if(!(await isAuthorizedAdmin()))return jsonMode(request)?NextResponse.json({ok:false,error:"unauthorized"},{status:401}):NextResponse.redirect(new URL("/admin/login",request.url),303);
  const db=createServiceClient();if(!db)return fail(request,"error",500);
  let createdId:string|null=null;const uploadedPaths:string[]=[];
  try{
@@ -36,7 +39,7 @@ export async function POST(request:NextRequest){
    const file=photos[i],ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"").toLowerCase()||"jpg",path=`${operatorId}/${created.id}/admin-${Date.now()}-${i}.${ext}`;
    const upload=await db.storage.from("experience-media").upload(path,file,{upsert:false,contentType:file.type});if(upload.error)throw new Error(`photo-upload-failed:${i}`);uploadedPaths.push(path);
    const {error:mediaError}=await db.from("experience_media").insert({experience_id:created.id,storage_path:path,sort_order:i,is_cover:i===0,alt_text:`${name} - foto ${i+1}`});if(mediaError)throw mediaError;
-   if(i===0)coverUrl=db.storage.from("experience-media").getPublicUrl(path).data.publicUrl;
+   if(i===0)coverUrl=`/api/experience-photo?path=${encodeURIComponent(path)}`;
   }
   if(coverUrl){const {error:coverError}=await db.from("experiences").update({image_url:coverUrl,image_alt:`${name} - copertina`}).eq("id",created.id);if(coverError)throw coverError;}
   if(jsonMode(request))return NextResponse.json({ok:true,id:created.id,url:`/admin/operatori?state=experience-created&id=${encodeURIComponent(created.id)}`});

@@ -1,0 +1,127 @@
+.operator-workspace-switcher{width:100%;display:flex;align-items:center;gap:clamp(16px,2.5vw,34px);min-height:104px;padding:16px clamp(18px,2.5vw,34px);border:1px solid rgba(202,168,106,.2);border-radius:22px;background:linear-gradient(110deg,#07343b,#032126);color:#fff;box-shadow:0 14px 32px rgba(5,37,39,.13)}
+.operator-workspace-switcher__activity{display:flex;align-items:center;gap:16px;min-width:0;flex:0 1 490px}
+.operator-workspace-switcher__activity-label{display:flex;align-items:center;gap:10px;white-space:nowrap;font-size:17px;font-weight:750}
+.operator-workspace-switcher__activity-icon{color:#caa86a;font-size:26px;line-height:1}
+.operator-workspace-switcher__activity select{width:100%;min-width:140px;max-width:360px;min-height:48px;padding:10px 36px 10px 15px;border:1px solid #c5cfc9;border-radius:12px;background:#07343b;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.operator-workspace-switcher__activity select option{background:#07343b;color:#fff}
+.operator-workspace-switcher__divider{width:1px;height:44px;flex:none;background:rgba(255,255,255,.35)}
+.operator-workspace-switcher__sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1.5vw,22px);flex:1;min-width:0;align-self:stretch}
+.operator-workspace-switcher__link{min-width:0;display:flex;justify-content:center;align-items:center;gap:9px;padding:12px 4px 9px;border-bottom:3px solid transparent;color:#f2f3ed;text-align:center;text-decoration:none;font-size:clamp(12px,1.15vw,16px);font-weight:650;line-height:1.3}
+.operator-workspace-switcher__link:hover{color:#eac888;background:rgba(255,255,255,.04)}
+.operator-workspace-switcher__link[aria-current="page"]{color:#eac888;border-bottom-color:#caa86a}
+.operator-workspace-switcher__section-icon{font-size:23px;line-height:1;color:#d5b274}
+.operator-workspace-switcher__link:focus-visible,.operator-workspace-switcher__activity select:focus-visible{outline:3px solid #caa86a;outline-offset:3px}
+@media(max-width:950px){.operator-workspace-switcher{flex-wrap:wrap;gap:12px;min-height:0}.operator-workspace-switcher__activity{flex:1 1 100%}.operator-workspace-switcher__activity select{max-width:none}.operator-workspace-switcher__divider{display:none}.operator-workspace-switcher__sections{flex:1 1 100%;border-top:1px solid rgba(255,255,255,.22)}}
+@media(max-width:540px){.operator-workspace-switcher{padding:12px;border-radius:16px}.operator-workspace-switcher__activity{flex-wrap:wrap;gap:8px}.operator-workspace-switcher__activity select{width:100%}.operator-workspace-switcher__sections{gap:3px}.operator-workspace-switcher__link{flex-direction:column;gap:5px;font-size:11px;overflow-wrap:anywhere;padding:12px 2px 9px}.operator-workspace-switcher__section-icon{font-size:19px}}
+
+
+/* PR58 mobile QA / 375x667 — two-row operator navigation, bell next to activity selector.
+   Scoped to narrow screens, preserving existing desktop and tablet layout. */
+@media(max-width:600px){
+ .operator-workspace-switcher{
+  display:grid;grid-template-columns:minmax(0,1fr) 44px;
+  column-gap:9px;row-gap:8px;align-items:center;
+  min-height:0;padding:10px!important;border-radius:16px;
+ }
+ .operator-workspace-switcher__activity{
+  display:flex;align-items:center;flex-wrap:nowrap;gap:8px;
+  width:100%;min-width:0;flex:none;
+ }
+ .operator-workspace-switcher__activity-label{gap:5px;font-size:13px;flex:none}
+ .operator-workspace-switcher__activity-icon{font-size:18px}
+ .operator-workspace-switcher__activity select{
+  flex:1 1 0;width:auto;min-width:0;max-width:none;
+  min-height:42px;padding:8px 27px 8px 10px;font-size:14px;
+ }
+ .operator-workspace-switcher>.operator-notice{grid-column:2;grid-row:1;justify-self:end}
+ .operator-workspace-switcher__divider{display:none}
+ .operator-workspace-switcher__sections{
+  grid-column:1/-1;grid-row:2;min-width:0;width:100%;
+  flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;border-top:1px solid rgba(216,169,79,.23);padding-top:6px;
+ }
+ .operator-workspace-switcher__link{
+  min-height:54px;padding:6px 2px 7px;gap:4px;
+  flex-direction:column;line-height:1.2;font-size:11px;
+  overflow-wrap:normal;word-break:normal;
+ }
+ .operator-workspace-switcher__section-icon,
+ .operator-workspace-switcher__section-icon svg{width:20px;height:20px;font-size:20px}
+}
+@media(max-width:345px){
+ .operator-workspace-switcher__activity-label{font-size:12px}
+ .operator-workspace-switcher__activity-icon{display:none}
+ .operator-workspace-switcher__activity{gap:5px}
+}
+
+
+/* PR58 tablet QA (601–950px): activity and bell share the top row.
+   Mobile <=600px keeps its previously approved compact arrangement. */
+@media(min-width:601px) and (max-width:950px){
+ .operator-workspace-switcher{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 48px;
+  align-items:center;
+  column-gap:14px;
+  row-gap:10px;
+  min-height:0;
+  padding:12px 18px;
+ }
+ .operator-workspace-switcher__activity{
+  grid-column:1;
+  grid-row:1;
+  display:flex;
+  flex:none;
+  min-width:0;
+  width:100%;
+  gap:12px;
+  flex-wrap:nowrap;
+ }
+ .operator-workspace-switcher__activity select{
+  flex:1 1 auto;
+  width:auto;
+  max-width:none;
+  min-width:0;
+  min-height:44px;
+ }
+ .operator-workspace-switcher>.operator-notice{
+  grid-column:2;
+  grid-row:1;
+  justify-self:end;
+ }
+ .operator-workspace-switcher__divider{display:none}
+ .operator-workspace-switcher__sections{
+  grid-column:1/-1;
+  grid-row:2;
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  padding-top:6px;
+  border-top:1px solid rgba(216,169,79,.23);
+ }
+ .operator-workspace-switcher__link{
+  min-height:48px;
+  padding:8px 6px;
+  font-size:13px;
+ }
+}
+
+/* Mobile: secondary operator workspaces are available on demand, not a second tab bar. */
+.operator-workspace-switcher__single-label{font-size:13px;font-weight:700;color:#d5bd84}
+.operator-workspace-switcher__mobile-tools{display:none}
+@media(max-width:600px){
+ .operator-workspace-switcher{display:grid!important;grid-template-columns:minmax(0,1fr) 44px;row-gap:5px;padding:7px 10px!important}
+ .operator-workspace-switcher__single-label{grid-column:1;grid-row:1;align-self:center;font-size:12px}
+ .operator-workspace-switcher__sections{display:none!important}
+ .operator-workspace-switcher__mobile-tools{display:block;grid-column:1/-1;grid-row:2;border-top:1px solid rgba(216,169,79,.18);padding-top:2px}
+ .operator-workspace-switcher__mobile-tools>summary{cursor:pointer;list-style:none;min-height:38px;display:flex;align-items:center;justify-content:space-between;color:#e1c78d;font-size:12px;font-weight:700}
+ .operator-workspace-switcher__mobile-tools>summary::after{content:"⌄";font-size:18px;margin-left:8px}
+ .operator-workspace-switcher__mobile-tools[open]>summary::after{content:"⌃"}
+ .operator-workspace-switcher__mobile-tools>summary::-webkit-details-marker{display:none}
+ .operator-workspace-switcher__mobile-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:5px 0 10px}
+ .operator-workspace-switcher__mobile-links>a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;padding:7px 10px;border:1px solid rgba(216,169,79,.28);border-radius:999px;color:#f7f2e9;font-size:12px;font-weight:700}
+ .operator-workspace-switcher__mobile-tools>summary:focus-visible,.operator-workspace-switcher__mobile-links>a:focus-visible{outline:3px solid #caa86a;outline-offset:2px}
+}
+@media(min-width:601px){.operator-workspace-switcher__single-label{flex:0 1 170px}}

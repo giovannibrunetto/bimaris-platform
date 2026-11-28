@@ -1,0 +1,161 @@
+name: RESP differential editorial browser
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/resp-editorial-browser.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: resp-editorial-browser
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Install pinned browser harness
+        run: |
+          npm install --prefix "$RUNNER_TEMP/resp-editorial-browser" --no-audit --no-fund playwright@1.58.2
+          "$RUNNER_TEMP/resp-editorial-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Replay schema and check responsive editorial pages in isolated Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          export NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+          export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("ANON_KEY") or d["PUBLISHABLE_KEY"])')"
+          export SUPABASE_SERVICE_ROLE_KEY="$(python3 -c 'import json; d=json.load(open("local-status.json")); print(d.get("SERVICE_ROLE_KEY") or d["SECRET_KEY"])')"
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+          export SUPABASE_SECRET_KEY="$SUPABASE_SERVICE_ROLE_KEY"
+          unset BIMARIS_SURVEY_PUBLIC_ONLY BIMARIS_SURVEY_PUBLIC_PROJECT_ID VERCEL_PROJECT_ID BIMARIS_PRELAUNCH_MODE BIMARIS_PRELAUNCH_AUDIT VERCEL_ENV
+          export NEXT_TELEMETRY_DISABLED=1
+          cd "$GITHUB_WORKSPACE/apps/web"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {createClient} from '@supabase/supabase-js';
+          const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+          assert.equal(url,'http://127.0.0.1:54321');
+          const db=createClient(url,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+          for(const [slug,title,image] of [['crono-falce-porto','Crono e la falce del porto','/stories/crono-cover.png'],['dina-e-clarenza','Dina e Clarenza','/stories/dina-e-clarenza-cover.png']]){
+            const {error}=await db.from('stories').insert({slug,title,excerpt:'Scheda sintetica per verifica responsive.',body:'Testo sintetico per verificare la disposizione del racconto e dei crediti.',story_type:'leggenda',published:true,image_url:image,image_alt:title,image_author:'BIMARIS – illustrazione generata mediante IA (ChatGPT)',image_license:'Utilizzo secondo le condizioni OpenAI e la normativa applicabile',image_source_url:'https://example.invalid/source',image_license_url:'https://example.invalid/license'});
+            assert.ifError(error);
+          }
+          JS
+          pnpm exec next dev --hostname 127.0.0.1 --port 3100 > "$work/next.log" 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; cd "$work"; supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          for attempt in $(seq 1 90); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3100/storie-miti-leggende; then break; fi
+            sleep 2
+          done
+          mkdir -p "$RUNNER_TEMP/resp-screenshots"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const {chromium}=await import('file://'+process.env.RUNNER_TEMP+'/resp-editorial-browser/node_modules/playwright/index.mjs');
+          const browser=await chromium.launch({headless:true});
+          let count=0; const failures=[];
+          const base='http://127.0.0.1:3100';
+          const sizes=[[360,640],[375,667],[390,844],[430,932],[768,1024],[1280,800],[1440,900]];
+          try{
+            for(const [width,height] of sizes){
+              const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1});
+              try{
+                await context.route('**/*',route=>{const u=new URL(route.request().url());return ['127.0.0.1','localhost'].includes(u.hostname)?route.continue():route.abort();});
+                const page=await context.newPage();
+                for(const slug of ['crono-falce-porto','dina-e-clarenza']){
+                  const label=slug+' '+width+'x'+height;
+                  try{
+                    const response=await page.goto(base+'/storie-miti-leggende/'+slug,{waitUntil:'domcontentloaded'});
+                    assert.equal(response?.status(),200);
+                    const credit=page.getByTestId('story-image-credit');
+                    await credit.waitFor({state:'visible',timeout:20000});
+                    await page.locator('.story-detail-figure img').evaluate(img=>img.decode());
+                    await page.screenshot({path:process.env.RUNNER_TEMP+'/resp-screenshots/'+slug+'-'+width+'.png',fullPage:true});
+                    const m=await page.evaluate(()=>{
+                      const c=document.querySelector('[data-testid="story-image-credit"]');
+                      const f=document.querySelector('.story-detail-figure');
+                      const im=f.querySelector('img');
+                      const cb=c.getBoundingClientRect(),fb=f.getBoundingClientRect();
+                      const style=getComputedStyle(c);
+                      const range=document.createRange();range.selectNodeContents(c);
+                      const rects=[...range.getClientRects()];
+                      return {viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,creditWidth:c.clientWidth,creditScrollWidth:c.scrollWidth,creditFont:parseFloat(style.fontSize),creditHeight:cb.height,creditInside:cb.left>=fb.left-1&&cb.right<=fb.right+1&&cb.bottom<=fb.bottom+1,textInside:rects.every(r=>r.left>=cb.left-1&&r.right<=cb.right+1&&r.bottom<=cb.bottom+1),links:[...c.querySelectorAll('a')].map(a=>a.getBoundingClientRect().width),imageLoaded:im.complete&&im.naturalWidth>0};
+                    });
+                    console.log('METRICS '+label+' '+JSON.stringify(m));
+                    assert.ok(m.documentWidth<=width+1,'document horizontal overflow');
+                    assert.ok(m.creditScrollWidth<=m.creditWidth+1&&m.creditInside&&m.textInside,'credit overflow or clipping');
+                    assert.ok(m.creditFont>=12&&m.creditHeight>0,'credit text size');
+                    assert.ok(m.links.length===2&&m.links.every(n=>n>0),'credit links');
+                    assert.ok(m.imageLoaded,'image decoded');
+                    console.log('PASS '+label);count++;
+                  }catch(e){failures.push(label+': '+e.message);console.log('FAIL '+label+' '+e.message);}
+                }
+              }finally{await context.close();}
+            }
+          }finally{await browser.close();}
+          console.log('RESP EDITORIAL '+count+'/14 PASS; '+failures.length+' FAIL');
+          assert.equal(failures.length,0,failures.join('; '));
+          JS
+      - name: Save actual browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resp-editorial-screenshots
+          path: ${{ runner.temp }}/resp-screenshots/
+          retention-days: 7
+          if-no-files-found: warn

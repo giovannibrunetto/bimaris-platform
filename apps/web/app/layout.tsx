@@ -1,3 +1,4 @@
+import { ContextualReturnLink } from "@/components/ContextualReturnLink";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
@@ -16,11 +17,12 @@ import "./map-route-polish.css";
 import "./section-hero-uniform.css";
 import "./culture-detail-compact.css";
 import "./ux-brand-05-hero.css";
+import "./action-roles.css";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { AnalyticsClickTracker } from "@/components/AnalyticsClickTracker";
-import { isPrelaunchEnabled } from "@/lib/prelaunch-mode";
+import { isPrelaunchEnabled, isIsolatedSurveyDeployment } from "@/lib/prelaunch-mode";
 import { SITE_URL, publicRobotsMetadata, serializeJsonLd } from "@/lib/seo";
 
 const organizationJsonLd = {
@@ -42,7 +44,7 @@ const websiteJsonLd = {
 };
 
 export function generateMetadata(): Metadata {
-  const prelaunch = isPrelaunchEnabled();
+  const prelaunch = isPrelaunchEnabled() || isIsolatedSurveyDeployment();
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -55,12 +57,12 @@ export function generateMetadata(): Metadata {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const prelaunch = isPrelaunchEnabled();
+  const prelaunch = isPrelaunchEnabled() || isIsolatedSurveyDeployment();
   return (
     <html lang="it">
       <body>
-        <script id="bimaris-organization-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }} />
-        <script id="bimaris-website-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }} />
+        {!isIsolatedSurveyDeployment() && <script id="bimaris-organization-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }} />}
+        {!isIsolatedSurveyDeployment() && <script id="bimaris-website-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }} />}
         {prelaunch ? (
           <main><Suspense fallback={null}>{children}</Suspense></main>
         ) : (
@@ -68,7 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteHeader />
             <AnalyticsTracker />
             <AnalyticsClickTracker />
-            <main>{children}</main>
+            <main>{children}<ContextualReturnLink /></main>
             <SiteFooter />
             <ConsentBanner />
           </Suspense>

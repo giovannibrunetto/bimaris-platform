@@ -1,0 +1,76 @@
+name: Village unified save — isolated QA
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/village-unified-save-qa.yml', 'docs/qa/sql/village-unified-save-candidate.sql']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: village-unified-save-qa
+  cancel-in-progress: false
+jobs:
+  replay:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Replay canonical schema and test atomic village save
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD DATABASE_URL
+          test ! -f supabase/.temp/project-ref
+          test -d supabase/migrations
+          printf 'Candidate commit: '; git rev-parse HEAD
+          find supabase/migrations -maxdepth 1 -type f -name '*.sql' | sort
+          test "$(git hash-object docs/qa/mig-r04/20261021-registry-replay.json)" = e3e1e6d3e528bb1c31ceda3acc5637f95fd64e4b
+          test "$(git hash-object docs/qa/mig-r04/20261022-20261125-replay.json)" = 13672e7ee86c70a5f1f1b274a2b7fed6302fa107
+          test "$(git hash-object docs/qa/mig-r04/observed-staging-reconciliation.sql)" = edec7fdfa79ca96ddb979301d2b325e2f8c72ce0
+          work="$(mktemp -d)"
+          cd "$work"
+          supabase init
+          mkdir -p supabase/migrations
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "docs/qa/mig-r04/20261021-registry-replay.json"
+          rows = json.loads(source.read_text())["migrations"]
+          later = source.with_name("20261022-20261125-replay.json")
+          rows += json.loads(later.read_text())["migrations"]
+          assert len(rows) == 159
+          reconciliation = source.with_name("observed-staging-reconciliation.sql")
+          rows.append({"version": "20261125100943", "name": "diagnostic_canonical_reconciliation", "sql": reconciliation.read_text()})
+          assert len(rows) == 160
+          assert len({r["version"] for r in rows}) == len(rows)
+          for row in rows:
+              assert re.fullmatch(r"\d{14}", row["version"])
+              assert re.fullmatch(r"[a-z0-9_]+", row["name"])
+              path = Path("supabase/migrations") / (row["version"] + "_" + row["name"] + ".sql")
+              path.write_text(row["sql"].rstrip() + "\n")
+          print("Candidate canonical sequence: 160 local-only migrations")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("supabase/config.toml")
+          s = p.read_text()
+          s, n = re.subn(r'(?m)^major_version\s*=\s*\d+', 'major_version = 17', s)
+          assert n == 1, "Missing or ambiguous local PG version"
+          p.write_text(s)
+          PY
+          trap 'supabase stop --no-backup >/dev/null 2>&1 || true; cd /; rm -rf "$work"' EXIT
+          supabase start
+          supabase status -o json > "$work/local-status.json"
+          mapfile -t db_containers < <(docker ps --format '{{.Names}}' | grep '^supabase_db_')
+          test "${#db_containers[@]}" -eq 1
+          docker exec -i "${db_containers[0]}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres < "$GITHUB_WORKSPACE/docs/qa/sql/village-unified-save-candidate.sql"
+          docker exec "${db_containers[0]}" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres -c "NOTIFY pgrst, 'reload schema';"
+          sleep 2
+          python3 "$GITHUB_WORKSPACE/docs/qa/scripts/village-unified-save-qa.py"

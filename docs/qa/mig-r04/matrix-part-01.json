@@ -1,0 +1,120 @@
+{
+  "ref": "20c4ae92eaa7a9b9a34718a9e413265871bb5d51",
+  "rows": [
+    {
+      "file": "001_init.sql",
+      "sha": "e110ce55a1e70dfc46ead8119b9dee339fa3915b",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "002_experience_media_management.sql",
+      "sha": "d4e322d58ef17d89ad9432d15ea219c5dbc334fa",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "003_experience_draft_step.sql",
+      "sha": "0c271d60f76c35b438a2308c278cb412959706ed",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "004_experience_review_sections.sql",
+      "sha": "316d83586b8a7c45673699ebef3a8e144ff0b149",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "005_experience_revisions.sql",
+      "sha": "5e89b94c8bd7880ccc4b17dc1e3d36c985308b43",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "006_atomic_apply_experience_revision.sql",
+      "sha": "2412d1aca54c761ae164dafa5ce2189501210988",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "007_revision_media_staging.sql",
+      "sha": "8b7e3157c74479e8b5bf8e3e57219f7d6b4c9f86",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "008_apply_revision_media.sql",
+      "sha": "8e13d69584115413fbe3295549970d415f6511fd",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "009_operator_profile_revisions.sql",
+      "sha": "14bebd2776dad0ae92614909fb61fa74e3953692",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "010_secure_operator_profile_revision_workflow.sql",
+      "sha": "ebe33176428c1d92a374ea1a938e2ffddcd28957",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "011_allow_approved_unpublished_experience_revisions.sql",
+      "sha": "6e6caab6f09a34ec4b144c3a1c20f3cde997dfdd",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "012_harden_experience_revision_apply.sql",
+      "sha": "95c0051381f820daeb0e8b39e4ce3f1a1623720a",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "013_secure_experience_operators_rls.sql",
+      "sha": "dd35a6c1857e4492bff3f375c54dde3bca770132",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021171403",
+          "name": "staging_experience_participants_security"
+        }
+      ]
+    },
+    {
+      "file": "014_enforce_experience_review_state_machine.sql",
+      "sha": "86952d4ae6d8c06d0e134fab0dd6afcca9f80e5b",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261021171222",
+          "name": "staging_experience_review_state_machine"
+        }
+      ]
+    },
+    {
+      "file": "015_preserve_rejected_experience_state_until_resubmission.sql",
+      "sha": "7335946c1df7390fd01daa849bbdb26b717f5253",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    }
+  ]
+}

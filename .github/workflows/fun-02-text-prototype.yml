@@ -1,0 +1,21 @@
+name: FUN-02 local text prototype
+on:
+  push:
+    branches: [fix/dt16-isolated-survey-surface-20261117]
+    paths: ['.github/workflows/fun-02-text-prototype.yml', 'apps/web/lib/experience-text-prototype.ts', 'apps/web/tests/experience-text-prototype.test.mjs']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prototype:
+    if: github.ref == 'refs/heads/fix/dt16-isolated-survey-surface-20261117'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --experimental-strip-types --test apps/web/tests/experience-text-prototype.test.mjs

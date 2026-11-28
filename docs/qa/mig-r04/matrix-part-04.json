@@ -1,0 +1,155 @@
+{
+  "ref": "20c4ae92eaa7a9b9a34718a9e413265871bb5d51",
+  "rows": [
+    {
+      "file": "20261117074430_citizen_survey_release_ready_v5.sql",
+      "sha": "f27b9fab8dd8076351609cf1b9aebe00c1183f48",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117074637",
+          "name": "citizen_survey_release_ready_v5"
+        }
+      ]
+    },
+    {
+      "file": "20261117074827_citizen_survey_release_multiline_v5.sql",
+      "sha": "23b1c47e2aad51d07b3d760d15847b7ca631ea5e",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117074931",
+          "name": "citizen_survey_release_multiline_v5"
+        }
+      ]
+    },
+    {
+      "file": "20261117104500_citizen_survey_admin_readonly.sql",
+      "sha": "16024cdae73f3b3307057bdb98a9eac0192b34a2",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102401",
+          "name": "citizen_survey_admin_readonly"
+        }
+      ]
+    },
+    {
+      "file": "20261117111500_citizen_survey_admin_summary_fix.sql",
+      "sha": "e302a7186a0b7c6c2a32e11e7dd50cdb5bdcd410",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102435",
+          "name": "citizen_survey_admin_summary_fix"
+        }
+      ]
+    },
+    {
+      "file": "20261117113500_citizen_survey_admin_ideas_paging.sql",
+      "sha": "9aca6bbbd3b786e215d5f68256bde65069c0a514",
+      "scope": "excluded_survey",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261117102508",
+          "name": "citizen_survey_admin_ideas_paging"
+        }
+      ]
+    },
+    {
+      "file": "20261117142500_citizen_survey_admin_rehearsal_readonly.sql",
+      "sha": "055db2bf651fd0988042e594892a652e8ee9af8f",
+      "scope": "excluded_survey",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261117124447",
+          "name": "citizen_survey_admin_rehearsal_readonly"
+        }
+      ]
+    },
+    {
+      "file": "20261120133000_b2b_new_match_notifications.sql",
+      "sha": "d0259f3704fa9722b037904aa8889affb8a12a0e",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261120122600",
+          "name": "b2b_new_match_notifications_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261120142500_operator_notifications_center.sql",
+      "sha": "487536763a8ca85edb789e5bec84061a6287154b",
+      "scope": "application",
+      "status": "name_match_text_diff",
+      "registry": [
+        {
+          "version": "20261120123559",
+          "name": "operator_notifications_center_staging"
+        }
+      ]
+    },
+    {
+      "file": "20261123221000_editorial_culture_pilot.sql",
+      "sha": "43ed938fbb71d7ba9cbc84ef011560d6bc74e87f",
+      "scope": "application",
+      "status": "text_match",
+      "registry": [
+        {
+          "version": "20261123221354",
+          "name": "editorial_culture_pilot"
+        }
+      ]
+    },
+    {
+      "file": "20261123225000_editorial_culture_new_place.sql",
+      "sha": "8d0ed9652c8238219716a516af5738c933cfc87c",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261123230000_editorial_culture_maps_links.sql",
+      "sha": "cc2f1612820be2d157a3159ceeb39b5693acd479",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124071000_editorial_culture_maps_only.sql",
+      "sha": "48f1b5c52f362cf2133029c990688139e22dfe62",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124074000_editorial_culture_coordinates.sql",
+      "sha": "492e61a6b573c5298844281630d1d7e51270879e",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124090000_editorial_culture_delete_archived.sql",
+      "sha": "b310a4128644a3f969b480eed9e4524083a0e3c8",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    },
+    {
+      "file": "20261124093000_editorial_legends_villages.sql",
+      "sha": "2ad05794019c5757cc198ce87928c04fc87670eb",
+      "scope": "application",
+      "status": "unmapped",
+      "registry": []
+    }
+  ]
+}

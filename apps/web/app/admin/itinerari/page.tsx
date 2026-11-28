@@ -1,6 +1,9 @@
+import AdminSectionHeader from "../AdminSectionHeader";
 import Link from "next/link";
+import AdminItineraryCreate from "./AdminItineraryCreate";
+import { CULTURE_STORIES } from "@/data/ti-racconto-messina";
 import { redirect } from "next/navigation";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAuthorizedAdmin } from "@/lib/admin-access";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +58,7 @@ function stopLabel(stop: NonNullable<ItineraryRow["stops"]>[number]) {
 }
 
 export default async function AdminItinerariesPage({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login");
+  if (!(await isAuthorizedAdmin())) redirect("/admin/login");
 
   const supabase = createServiceClient();
   if (!supabase) throw new Error("Supabase service client non configurato");
@@ -78,15 +81,12 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
 
   return (
     <>
-      <section className="page-hero">
-        <div className="kicker">Area privata</div>
-        <h1>Gestione itinerari</h1>
-        <p>Crea percorsi ordinati collegando cultura, miti e leggende, esperienze e operatori già verificati.</p>
-        <div className="actions">
-          <Link className="button ghost" href="/admin">Dashboard</Link>
-          <Link className="button" href="/itinerari" target="_blank" rel="noreferrer">Apri itinerari pubblici ↗</Link>
-        </div>
-      </section>
+      <AdminSectionHeader
+      title="Itinerari"
+      description="Prepara itinerari e organizza le tappe. Il sito presenta i percorsi storici in Ti racconto la storia di Messina."
+      actions={<><Link href="/ti-racconto-la-storia-di-messina" target="_blank" rel="noreferrer">Ti racconto la storia di Messina ↗</Link></>}
+    />
+      
 
       {message && (
         <section style={{ padding: "22px 6vw 0" }}>
@@ -94,54 +94,31 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
         </section>
       )}
 
-      <section className="section sand">
+      <section className="admin-itineraries-managed" id="itinerari-gestiti">
         <div className="section-head">
-          <div><div className="kicker">Nuovo percorso</div><h2>Crea una bozza</h2></div>
-          <p>Prima creiamo il percorso, poi aggiungiamo e ordiniamo le tappe. La pubblicazione avviene solo quando il percorso è pronto.</p>
-        </div>
-
-        <form className="form" method="post" action="/api/admin/itineraries">
-          <input type="hidden" name="action" value="create" />
-          <label>Titolo<input required name="title" placeholder="Es. Messina tra miti e monumenti" /></label>
-          <label>Slug<input name="slug" placeholder="Generato dal titolo se lasciato vuoto" /></label>
-          <label>Durata in minuti<input name="duration_minutes" inputMode="numeric" placeholder="Es. 240" /></label>
-          <label>Ideale per<input name="target" placeholder="Es. Crocieristi, famiglie, food lovers" /></label>
-          <label className="wide">Territorio<input name="territory" placeholder="Es. Messina e Stretto" /></label>
-          <label className="wide">Testo breve<input required name="excerpt" maxLength={320} placeholder="Una frase chiara per la card" /></label>
-          <label className="wide">Descrizione<textarea required name="description" /></label>
-          <label className="wide">URL immagine<input name="image_url" placeholder="https://..." /></label>
-          <label className="wide">Testo alternativo immagine<input name="image_alt" /></label>
-          <label className="privacy-check"><input type="checkbox" name="featured" value="yes" /><span>Metti in evidenza</span></label>
-          <div className="wide"><button className="button" type="submit">Crea bozza itinerario</button></div>
-        </form>
-      </section>
-
-      <section className="section">
-        <div className="section-head">
-          <div><div className="kicker">Percorsi</div><h2>Itinerari presenti</h2></div>
-          <p>{itineraries.filter(item => item.published).length} pubblicati su {itineraries.length} percorsi.</p>
+          <div><div className="kicker">01 / GESTIONE</div><h2>Itinerari gestiti</h2></div>
+          <p><strong>{itineraries.length} itinerari</strong> nel gestionale · <strong>{itineraries.filter(item => item.published).length} con stato pubblicato nel gestionale</strong>. I percorsi storici e personali sono gestiti separatamente.</p>
         </div>
 
         <div style={{ display: "grid", gap: 22 }}>
           {itineraries.map(itinerary => {
             const stops = [...(itinerary.stops ?? [])].sort((a, b) => a.position - b.position);
             return (
-              <article className="detail-panel" key={itinerary.id}>
+              <article className="detail-panel admin-itinerary-card" key={itinerary.id}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 18, flexWrap: "wrap" }}>
                   <div>
-                    <div className="eyebrow">{itinerary.territory ?? "Territorio non indicato"} · {itinerary.published ? "Online" : "Bozza"}</div>
+                    <div className="eyebrow">{itinerary.territory ?? "Territorio non indicato"} · {itinerary.published ? "Pubblicato nel gestionale" : "Bozza"}</div>
                     <h3 style={{ marginBottom: 6 }}>{itinerary.title}</h3>
                     <div className="muted">{itinerary.duration_minutes ? `${itinerary.duration_minutes} min` : "Durata da definire"} · {stops.length} {stops.length === 1 ? "tappa" : "tappe"}</div>
                   </div>
                   <div className="actions" style={{ marginTop: 0 }}>
-                    {itinerary.published && <Link className="text-link" href={`/itinerari/${itinerary.slug}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>}
                     <form method="post" action="/api/admin/itineraries">
                       <input type="hidden" name="itinerary_id" value={itinerary.id} />
                       <button className="button ghost" name="action" value={itinerary.published ? "unpublish" : "publish"} type="submit">{itinerary.published ? "Nascondi" : "Pubblica"}</button>
                     </form>
                     <form method="post" action="/api/admin/itineraries">
                       <input type="hidden" name="itinerary_id" value={itinerary.id} />
-                      <button className="button ghost" name="action" value={itinerary.featured ? "unfeature" : "feature"} type="submit">{itinerary.featured ? "Togli evidenza" : "In evidenza"}</button>
+                      <button className="button ghost" name="action" value={itinerary.featured ? "unfeature" : "feature"} type="submit">{itinerary.featured ? "Rimuovi evidenza sul sito" : "Metti in evidenza sul sito"}</button>
                     </form>
                   </div>
                 </div>
@@ -174,7 +151,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                 </div>
 
                 <div style={{ marginTop: 22, paddingTop: 20, borderTop: "1px solid var(--line)" }}>
-                  <strong>Tappe</strong>
+                  <strong>Luoghi e tappe del percorso</strong><p className="muted" style={{margin:"6px 0 14px"}}>Seleziona i luoghi già presenti in BIMARIS oppure aggiungi una tappa personalizzata. Le tappe sono elencate nell’ordine del percorso.</p>
                   {stops.length > 0 ? (
                     <ol style={{ paddingLeft: 22, marginBottom: 20 }}>
                       {stops.map(stop => (
@@ -192,7 +169,7 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
                   <form className="form" method="post" action="/api/admin/itineraries" style={{ marginTop: 16 }}>
                     <input type="hidden" name="action" value="add_stop" />
                     <input type="hidden" name="itinerary_id" value={itinerary.id} />
-                    <label className="wide">Aggiungi contenuto
+                    <label className="wide">Seleziona il luogo o il contenuto
                       <select required name="source_key" defaultValue="">
                         <option value="" disabled>Seleziona una tappa</option>
                         {cultures.length > 0 && <optgroup label="Cultura">{cultures.map(item => <option key={`culture-${item.id}`} value={`culture:${item.id}`}>{item.label}</option>)}</optgroup>}
@@ -212,9 +189,26 @@ export default async function AdminItinerariesPage({ searchParams }: { searchPar
               </article>
             );
           })}
-          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario presente.</p></div>}
+          {itineraries.length === 0 && <div className="detail-panel"><p>Nessun itinerario creato nel gestionale. I percorsi storici pubblici restano disponibili separatamente.</p></div>}
         </div>
       </section>
+      <section className="admin-itineraries-public" aria-labelledby="public-paths-title">
+        <div className="kicker">PERCORSI GIÀ DISPONIBILI</div>
+        <h2 id="public-paths-title">Percorsi pubblici BIMARIS</h2>
+        <p>Questi racconti sono già disponibili sul sito e provengono dal catalogo editoriale. Non sono registrati nella tabella degli itinerari gestionali e qui sono consultabili, non modificabili.</p>
+        <div className="admin-itineraries-public-grid">
+          {CULTURE_STORIES.map(story => (
+            <article className="admin-itineraries-public-card" key={story.key}>
+              <div><span className="admin-itineraries-public-status">Editoriale · Sul sito</span><h3>{story.title}</h3><p>{story.subtitle}</p></div>
+              <Link className="text-link" href={`/ti-racconto-la-storia-di-messina/${story.key}`} target="_blank" rel="noreferrer">Apri sul sito ↗</Link>
+            </article>
+          ))}
+        </div>
+        <p className="admin-itineraries-public-note">Per creare e pubblicare nuovi percorsi gestionali usa «Nuovo itinerario». Non vengono creati duplicati dei racconti editoriali.</p>
+      </section>
+      <AdminItineraryCreate />
+
+
     </>
   );
 }

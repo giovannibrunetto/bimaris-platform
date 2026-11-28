@@ -16,14 +16,27 @@ export default function OperatorLogoutButton() {
 
     setLoading(true);
     setError("");
-    const { error: signOutError } = await supabase.auth.signOut();
-    if (signOutError) {
+    try {
+      const { error: globalError } = await supabase.auth.signOut();
+      if (globalError) {
+        // A revoked or expired remote session can return session_not_found.
+        // In that case, explicitly clear the browser session and its SSR cookies.
+        if (globalError.code !== "session_not_found") {
+          setError("Non è stato possibile uscire. Riprova.");
+          return;
+        }
+        const { error: localError } = await supabase.auth.signOut({ scope: "local" });
+        if (localError) {
+          setError("Non è stato possibile completare l'uscita. Riprova.");
+          return;
+        }
+      }
+      window.location.replace("/accedi");
+    } catch {
+      setError("Non è stato possibile completare l'uscita. Riprova.");
+    } finally {
       setLoading(false);
-      setError("Non è stato possibile uscire. Riprova.");
-      return;
     }
-
-    window.location.replace("/accedi");
   }
 
   return (

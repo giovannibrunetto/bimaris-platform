@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { getPublishedStories } from "@/data/stories";
 import "./stories-mobile.css";
@@ -7,25 +8,11 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Storia, miti e leggende di Messina | BIMARIS",
+  title: "Messina, tra mito e leggenda | BIMARIS",
   description: "Scopri miti e leggende di Messina e dello Stretto: Colapesce, Mata e Grifone, Fata Morgana, Scilla e Cariddi e i luoghi reali cui sono legati.",
   alternates: {
     canonical: "/storie-miti-leggende",
   },
-};
-
-const editorialIllustrations: Record<string, string> = {
-  "scilla-e-cariddi": "/storie-miti-leggende/scilla-e-cariddi.webp",
-  colapesce: "/storie-miti-leggende/colapesce.webp",
-  "fata-morgana-stretto": "/storie-miti-leggende/fata-morgana.png?v=20261030-3",
-  "mata-e-grifone": "/storie-miti-leggende/mata-e-grifone.webp",
-  "madonna-della-lettera": "/storie-miti-leggende/madonna-della-lettera.webp",
-  "leggende-madonna-dinnammare": "/storie-miti-leggende/madonna-dinnammare.webp",
-  "risa-citta-sommersa-ganzirri": "/storie-miti-leggende/risa-citta-sommersa-ganzirri.webp",
-  "orione-origini-mitiche-messina": "/stories/orione-cover.png",
-  "crono-falce-porto": "/stories/crono-cover.png",
-  "dina-e-clarenza": "/stories/dina-e-clarenza-cover.png",
-  "truvatura-via-cardines": "/stories/cardines-cover.png",
 };
 
 const cardImagePositions: Record<string, string> = {
@@ -60,7 +47,7 @@ export default async function StoriesPage() {
   return (
     <>
       <section className="page-hero discovery-page-hero bimaris-ambient-hero stories-page-hero ux-brand-05-hero ux-brand-05-hero--standard" style={{ minHeight: 0 }}>
-        <h1 style={{ marginTop: 0, marginBottom: 14 }}>Storia, miti e leggende</h1>
+        <h1 style={{ marginTop: 0, marginBottom: 14 }}>Messina, tra mito e leggenda</h1>
         <p style={{ marginBottom: 0 }}>Racconti che nascono dal mare, dai quartieri e dalla memoria della città. Leggi la storia e poi raggiungi i luoghi reali cui è legata.</p>
       </section>
 
@@ -72,19 +59,24 @@ export default async function StoriesPage() {
 
         {stories.length > 0 ? (
           <div className="cards stories-cards">
-            {stories.map(story => {
-              const cardImage = editorialIllustrations[story.slug] ?? story.imageUrl;
-              const cardAlt = editorialIllustrations[story.slug] ? `Illustrazione BIMARIS dedicata a ${story.title}` : story.imageAlt ?? story.title;
+            {stories.map((story, index) => {
+              const cardImage = story.imageUrl;
+              const cardAlt = story.imageAlt ?? story.title;
+              const isBundledImage = Boolean(cardImage?.startsWith("/storie-miti-leggende/"));
               const cardImagePosition = cardImagePositions[story.slug] ?? "center";
               const cardImageFit = cardImageFits[story.slug] ?? "cover";
               const containClass = cardImageFit === "contain" ? " story-card-media--contain" : "";
               return (
-                <Link className="card story-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
+                <Link className="card story-card public-discovery-card" href={`/storie-miti-leggende/${story.slug}`} key={story.id}>
                   <div className={`card-media story-card-media${containClass}`} style={{ position: "relative", minHeight: 0, height: "190px", padding: 0, overflow: "hidden", background: "linear-gradient(135deg, #8d7354, #4f3b28)" }}>
                     {cardImage && cardImageFit === "contain" && (
                       <img src={cardImage} alt="" aria-hidden="true" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "blur(24px) brightness(.76)", transform: "scale(1.14)", pointerEvents: "none" }} />
                     )}
-                    {cardImage && <img src={cardImage} alt={cardAlt} loading="lazy" decoding="async" style={{ position: "relative", width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />}
+                    {cardImage && (isBundledImage ? (
+                      <Image src={cardImage} alt={cardAlt} fill unoptimized={story.slug === "fata-morgana-stretto"} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} style={{ objectFit: cardImageFit, objectPosition: cardImagePosition }} />
+                    ) : (
+                      <img src={cardImage} alt={cardAlt} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : undefined} decoding="async" style={{ width: "100%", height: "100%", display: "block", objectFit: cardImageFit, objectPosition: cardImagePosition }} />
+                    ))}
                     <span style={{ position: "absolute", top: 12, right: 12 }}>{storyTypeLabel(story.storyType)}</span>
                   </div>
                   <div className="card-body story-card-body" style={{ padding: "18px 20px 20px" }}>
