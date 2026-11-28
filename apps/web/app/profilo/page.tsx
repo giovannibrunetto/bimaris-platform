@@ -9,6 +9,7 @@ import { getPublishedFoodProducts } from "@/data/food-products";
 import { getPublishedOperators } from "@/data/operators";
 import { getPublishedAppointments } from "@/data/public-appointments";
 import LogoutButton from "./LogoutButton";
+import SearchForm from "../cerca/SearchForm";
 
 export const dynamic = "force-dynamic";
 type Recommendation={key:string;href:string;title:string;copy:string;kind:string;score:number;featured:boolean;interestKey:string;operatorSlug?:string};
@@ -101,6 +102,7 @@ export default async function ProfiloPage({searchParams}:{searchParams:Promise<{
    <h2>Cosa vuoi fare?</h2>
    <p>Ritrova ciò che ti interessa e scopri nuove idee.</p>
   </div>
+  <div style={{ marginBottom: 24 }}><SearchForm /></div>
   <nav className="overview-grid personal-action-grid" aria-label="Scegli cosa fare">
    <Link className="overview-item personal-action-card" href="/profilo/raccolta">
     <span className="personal-action-icon" aria-hidden="true">▤</span>
