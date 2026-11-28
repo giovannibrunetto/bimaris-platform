@@ -10,6 +10,7 @@ export type SearchItem = {
   imageUrl?: string;
   imageAlt?: string;
   location?: string | null;
+  interestKeys?: readonly string[];
 };
 
 const stopWords = new Set("a al alla alle ai allo all con che come cosa da dal dei del della di dov e ed gli il in la le lo mi nel nella ne per piu quale qualche qualcuno qualcosa si su sul sulla uno un una vorrei voglio fare vedere trovare posso consigliami adatto adatta".split(" "));
@@ -83,7 +84,15 @@ function termScore(term: string, title: string[], body: string[]): number {
   return 0;
 }
 
-export function rankTerritorySearch(query: string, items: SearchItem[], now = new Date()) {
+export type SearchInterest = { interest_key: string; explicit_score?: number | null };
+
+// Explicit preferences only; never let personalization outrank textual relevance.
+export function searchInterestKeys(interests: readonly SearchInterest[]): ReadonlySet<string> {
+  const allowed = new Set(["cultura", "miti-leggende", "borghi", "sapori", "mare", "natura-trekking", "avventura", "esperienze"]);
+  return new Set(interests.filter(item => Number(item.explicit_score) > 0).map(item => item.interest_key === "culture" ? "cultura" : item.interest_key === "food-wine" ? "sapori" : item.interest_key).filter(key => allowed.has(key)));
+}
+
+export function rankTerritorySearch(query: string, items: SearchItem[], now = new Date(), interests: ReadonlySet<string> = new Set()) {
   const { terms, date } = interpretTerritorySearch(query, now);
   const meaningfulTerms = terms.filter(term => !meanings[2].test(term));
   return items.flatMap(item => {
@@ -99,5 +108,5 @@ export function rankTerritorySearch(query: string, items: SearchItem[], now = ne
       + (terms.some(term => meanings[2].test(term)) && body.some(word => meanings[2].test(word)) ? 3 : 0);
     if (!score) return [];
     return [{ item, score, partial: matches < meaningfulTerms.length, dateUnconfirmed: Boolean(date && !knownDay) }];
-  }).sort((first, second) => Number(first.partial) - Number(second.partial) || second.score - first.score).slice(0, 24);
+  }).sort((first, second) => Number(first.partial) - Number(second.partial) || second.score - first.score || Number(Boolean(second.item.interestKeys?.some(key => interests.has(key)))) - Number(Boolean(first.item.interestKeys?.some(key => interests.has(key))))).slice(0, 24);
 }
